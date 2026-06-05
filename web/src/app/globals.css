@@ -45,6 +45,10 @@ a:hover {
   font-weight: 700;
   color: var(--text);
 }
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
 
 .container {
   max-width: 960px;

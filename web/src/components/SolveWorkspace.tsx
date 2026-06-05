@@ -12,6 +12,7 @@ import {
   type TestResult,
 } from "@/lib/runner";
 import { usePyodideRunner } from "@/hooks/usePyodideRunner";
+import { useSession } from "next-auth/react";
 
 export function SolveWorkspace({
   meta,
@@ -25,12 +26,42 @@ export function SolveWorkspace({
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [bundleError, setBundleError] = useState<string | null>(null);
   const runner = usePyodideRunner(meta.pyDeps);
+  const { data: session } = useSession();
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
+  const postedRef = useRef<RunResult | null>(null);
 
-  // Restore saved code after mount (init with starter to avoid hydration mismatch).
+  // Which submission to preload, from ?submission=… (read client-side so the
+  // problem page stays statically generated).
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   useEffect(() => {
+    setSubmissionId(new URLSearchParams(window.location.search).get("submission"));
+  }, []);
+
+  // Restore the saved draft after mount — unless we're loading a submission.
+  useEffect(() => {
+    if (submissionId) return;
     const saved = localStorage.getItem(storageKey);
     if (saved != null) setCode(saved);
-  }, [storageKey]);
+  }, [storageKey, submissionId]);
+
+  // Load a specific submission's code into the editor (owner-only API).
+  useEffect(() => {
+    if (!submissionId) return;
+    let alive = true;
+    fetch(`/api/submissions/${submissionId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive && typeof d?.code === "string") {
+          setCode(d.code);
+          // Drop ?submission= so a refresh keeps edits instead of reloading it.
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [submissionId]);
 
   // Autosave.
   useEffect(() => {
@@ -47,6 +78,29 @@ export function SolveWorkspace({
       alive = false;
     };
   }, [meta]);
+
+  // Persist each completed run (logged-in users only), once per result.
+  useEffect(() => {
+    const r = runner.result;
+    if (runner.status !== "done" || !r || postedRef.current === r) return;
+    postedRef.current = r;
+    if (!session?.user) return;
+    setSaveState("saving");
+    fetch("/api/submissions", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        problemId: meta.id,
+        code,
+        clientStatus: r.total > 0 && r.passed === r.total ? "passed" : "failed",
+        passed: r.passed,
+        total: r.total,
+        durationMs: r.durationMs,
+      }),
+    })
+      .then((res) => setSaveState(res.ok ? "saved" : "error"))
+      .catch(() => setSaveState("error"));
+  }, [runner.status, runner.result, session, meta.id, code]);
 
   const busy = runner.status === "running" || runner.status === "loading";
 
@@ -102,6 +156,20 @@ export function SolveWorkspace({
           Reset
         </button>
         <kbd className="hint">⌘/Ctrl + ↵</kbd>
+        {runner.status === "done" &&
+          (session?.user ? (
+            <span className="muted">
+              {saveState === "saving"
+                ? "Saving…"
+                : saveState === "saved"
+                  ? "Saved ✓"
+                  : saveState === "error"
+                    ? "Save failed"
+                    : ""}
+            </span>
+          ) : (
+            <span className="muted">Sign in to save progress</span>
+          ))}
         {bundleError && (
           <span className="result-bad">Failed to load: {bundleError}</span>
         )}

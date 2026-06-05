@@ -13,4 +13,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "database" },
   // Required for self-hosted / `next start` (Vercel sets this automatically).
   trustHost: true,
+  callbacks: {
+    session({ session, user }) {
+      if (session.user) session.user.id = user.id;
+      return session;
+    },
+  },
 });

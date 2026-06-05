@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   constraintSummary,
@@ -11,6 +11,15 @@ import {
 export function ProblemBrowser({ manifest }: { manifest: Manifest }) {
   const [topic, setTopic] = useState<string>("all");
   const [difficulty, setDifficulty] = useState<string>("all");
+  const [solved, setSolved] = useState<Set<string>>(new Set());
+
+  // Mark solved problems for the logged-in user (empty set if logged out).
+  useEffect(() => {
+    fetch("/api/progress")
+      .then((r) => (r.ok ? r.json() : { solved: [] }))
+      .then((d) => setSolved(new Set<string>(d.solved ?? [])))
+      .catch(() => {});
+  }, []);
 
   const problems = useMemo(
     () =>
@@ -66,6 +75,11 @@ export function ProblemBrowser({ manifest }: { manifest: Manifest }) {
                 >
                   <span className="title">{p.title}</span>
                   <span className="meta">
+                    {solved.has(p.id) && (
+                      <span className="result-good" title="Solved">
+                        ✓
+                      </span>
+                    )}
                     {constraints.length > 0 && (
                       <span className="topic-tag">{constraints.join(" · ")}</span>
                     )}

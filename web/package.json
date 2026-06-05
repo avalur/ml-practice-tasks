@@ -8,7 +8,8 @@
     "build": "next build",
     "start": "next start",
     "postinstall": "prisma generate",
-    "db:push": "dotenv -e .env.local -- prisma db push"
+    "db:push": "dotenv -e .env.local -- prisma db push",
+    "db:sync-problems": "dotenv -e .env.local -- node scripts/sync-problems.cjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

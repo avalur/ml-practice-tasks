@@ -22,8 +22,9 @@ export default function RootLayout({
             <Link href="/" className="brand">
               ML&nbsp;Practice
             </Link>
-            <nav>
+            <nav className="nav-links">
               <Link href="/problems">Problems</Link>
+              <Link href="/profile">Profile</Link>
             </nav>
             <div className="header-right">
               <AuthStatus />

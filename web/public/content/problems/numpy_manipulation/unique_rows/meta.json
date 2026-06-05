@@ -1,0 +1,25 @@
+{
+  "id": "numpy_manipulation/unique_rows",
+  "topic": "numpy_manipulation",
+  "slug": "unique_rows",
+  "title": "Unique Rows",
+  "difficulty": "medium",
+  "entry": "unique_rows",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `unique_rows(X)`.\n\nGiven a 2D array `X`, return its distinct rows as a 2D array, sorted in\nascending (lexicographic) order — i.e. the result of treating each row as a\nunit. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/unique_rows",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.unique(X, axis=0) returns the distinct rows (sorted)."
+  ],
+  "contentHash": "a42c5815e8140a0da9a9396d40b51de61a61159d9944aab1ce9c8fa19f369992"
+}

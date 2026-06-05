@@ -1,0 +1,25 @@
+{
+  "id": "numpy_manipulation/block_sum",
+  "topic": "numpy_manipulation",
+  "slug": "block_sum",
+  "title": "Block Sum",
+  "difficulty": "medium",
+  "entry": "block_sum",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `block_sum(X, b)`.\n\nGiven a 2D array `X` of shape `(n, n)` where `n` is divisible by `b`, return\na `(n//b, n//b)` array whose entry `(r, c)` is the sum of the non-overlapping\n`b x b` block at block-row `r`, block-column `c`. Use reshaping — no\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/block_sum",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
+  ],
+  "contentHash": "170dafb60014af021e4dd5a17957fc09c807d642f12c426c5468608e335b7cc9"
+}

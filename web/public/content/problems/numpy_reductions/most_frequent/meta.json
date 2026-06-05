@@ -1,0 +1,25 @@
+{
+  "id": "numpy_reductions/most_frequent",
+  "topic": "numpy_reductions",
+  "slug": "most_frequent",
+  "title": "Most Frequent Value",
+  "difficulty": "medium",
+  "entry": "most_frequent",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `most_frequent(x)`.\n\nGiven a 1D array `x` of non-negative integers, return the value that occurs\nmost often. If several values tie, return the smallest of them. No\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_reductions/most_frequent",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.bincount counts occurrences of each value; argmax gives the most frequent."
+  ],
+  "contentHash": "e3ae5b4b90f587275528eee57db6050eaff8a42939b1c8b93e675fa820dd3091"
+}

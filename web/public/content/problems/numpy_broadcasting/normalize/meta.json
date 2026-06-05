@@ -1,0 +1,25 @@
+{
+  "id": "numpy_broadcasting/normalize",
+  "topic": "numpy_broadcasting",
+  "slug": "normalize",
+  "title": "Normalize an Array",
+  "difficulty": "easy",
+  "entry": "normalize",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `normalize(x)`.\n\nReturn `x` z-normalized over **all** its elements: subtract the overall mean\nand divide by the overall standard deviation, i.e. `(x - mean) / std`.\nVectorize it — no `for`/`while` loops. Assume `std > 0`.",
+  "bundlePath": "/content/problems/numpy_broadcasting/normalize",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Compute the mean and std over the whole array, then broadcast them back."
+  ],
+  "contentHash": "c67755f7866b50d996ef9385b1e810e5e7b0075932938a483fd58b3c9c513522"
+}

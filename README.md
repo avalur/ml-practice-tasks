@@ -44,3 +44,8 @@ python generate.py          # rebuild tasks/
 python generate.py --check  # CI: verify tasks/ is up to date
 pytest problems             # CI: reference solutions must pass
 ```
+
+## Credits
+
+NumPy tasks are adapted from [100 numpy exercises](https://github.com/rougier/numpy-100)
+by Nicolas P. Rougier (MIT License).

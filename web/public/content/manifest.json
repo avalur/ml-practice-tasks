@@ -1,6 +1,8 @@
 {
   "topics": [
-    "numpy_basics"
+    "numpy_basics",
+    "numpy_broadcasting",
+    "numpy_reductions"
   ],
   "difficulties": [
     "easy",
@@ -32,6 +34,131 @@
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
       ],
       "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
+    },
+    {
+      "id": "numpy_basics/reverse_vector",
+      "topic": "numpy_basics",
+      "slug": "reverse_vector",
+      "title": "Reverse a Vector",
+      "difficulty": "easy",
+      "entry": "reverse_vector",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `reverse_vector(x)`.\n\nGiven a 1D array `x`, return its elements in reverse order (last element\nfirst). Use slicing — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/reverse_vector",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "A slice with a negative step walks the array backwards."
+      ],
+      "contentHash": "1ee080fdd6a1783bdfe0879b4bb1da479faf2f58fde47fa1950c8d3e0eabecb2"
+    },
+    {
+      "id": "numpy_broadcasting/normalize",
+      "topic": "numpy_broadcasting",
+      "slug": "normalize",
+      "title": "Normalize an Array",
+      "difficulty": "easy",
+      "entry": "normalize",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `normalize(x)`.\n\nReturn `x` z-normalized over **all** its elements: subtract the overall mean\nand divide by the overall standard deviation, i.e. `(x - mean) / std`.\nVectorize it — no `for`/`while` loops. Assume `std > 0`.",
+      "bundlePath": "/content/problems/numpy_broadcasting/normalize",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Compute the mean and std over the whole array, then broadcast them back."
+      ],
+      "contentHash": "c67755f7866b50d996ef9385b1e810e5e7b0075932938a483fd58b3c9c513522"
+    },
+    {
+      "id": "numpy_broadcasting/row_demean",
+      "topic": "numpy_broadcasting",
+      "slug": "row_demean",
+      "title": "Subtract Each Row's Mean",
+      "difficulty": "medium",
+      "entry": "row_demean",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `row_demean(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere the mean of each **row** has been subtracted from that row. Vectorize\nit with broadcasting — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_broadcasting/row_demean",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
+      ],
+      "contentHash": "b81aa461cdb6d6df82da9acb5f4519eef185aab4c3c6d91c03e839afd74a9b73"
+    },
+    {
+      "id": "numpy_reductions/moving_average",
+      "topic": "numpy_reductions",
+      "slug": "moving_average",
+      "title": "Moving Average",
+      "difficulty": "medium",
+      "entry": "moving_average",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `moving_average(a, n)`.\n\nGiven a 1D array `a` and a window length `n`, return the array of\nlength-`n` moving averages. The output has length `len(a) - n + 1`, where\noutput `i` is the mean of `a[i : i + n]`. Vectorize it — no `for`/`while`\nloops (hint: prefix sums).",
+      "bundlePath": "/content/problems/numpy_reductions/moving_average",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.cumsum gives prefix sums; a window sum is the difference of two of them."
+      ],
+      "contentHash": "318a48eb7bc3deacf5e72155e79bb110ec62586ffa093a475e0f1e711b27adf8"
+    },
+    {
+      "id": "numpy_reductions/one_hot",
+      "topic": "numpy_reductions",
+      "slug": "one_hot",
+      "title": "One-Hot Encoding",
+      "difficulty": "medium",
+      "entry": "one_hot",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `one_hot(labels, k)`.\n\nGiven a 1D integer array `labels` with values in `[0, k)`, return a\n`(len(labels), k)` array of 0/1 where row `i` has a `1.0` in column\n`labels[i]` and `0.0` elsewhere. Vectorize it — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_reductions/one_hot",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Index the rows with np.arange and the columns with the labels in a single assignment."
+      ],
+      "contentHash": "23927688c6c409967ed3c6e78344428da6af6ef6c5e85bb456c52fa3d66e977f"
     }
   ]
 }

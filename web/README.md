@@ -36,3 +36,27 @@ Then fill `.env.local`:
   `http://localhost:3000/api/auth/callback/github`
 - **Google** OAuth client (Cloud Console → Credentials) — redirect
   `http://localhost:3000/api/auth/callback/google`
+
+## Deploy (Vercel + Neon)
+
+Content is committed and the build runs `prisma generate` (no Python in the
+Vercel build); `trustHost: true` handles the production host; Pyodide is served
+same-origin from `/pyodide`.
+
+1. **Vercel → New Project** → import the GitHub repo.
+2. **Settings → Root Directory: `web`.** Framework auto-detects as Next.js;
+   pnpm is used (from the lockfile + `packageManager`).
+3. **Environment Variables** (Production + Preview):
+   - `AUTH_SECRET` — a fresh value (`npx auth secret`)
+   - `DATABASE_URL`, `DIRECT_URL` — Neon (pooled + direct)
+   - `AUTH_GITHUB_ID` / `AUTH_GITHUB_SECRET`, `AUTH_GOOGLE_ID` / `AUTH_GOOGLE_SECRET`
+4. **OAuth callbacks for the production domain:**
+   - GitHub OAuth Apps allow a single callback → create a **separate prod app**
+     with `https://<domain>/api/auth/callback/github` (keep the dev app for localhost).
+   - Google allows multiple → add `https://<domain>/api/auth/callback/google`
+     to the existing client's Authorized redirect URIs.
+5. **Database** — apply schema + seed problems against the prod DB once:
+   `prisma db push` then `pnpm db:sync-problems` (with prod `DATABASE_URL`/`DIRECT_URL`).
+   Re-run `db:sync-problems` whenever problems change. (Reusing the same Neon DB
+   as local needs no extra step — it's already set up.)
+6. **Deploy.** Then verify the OAuth callbacks match the final domain.

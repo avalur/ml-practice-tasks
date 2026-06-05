@@ -1,0 +1,34 @@
+{
+  "topics": [
+    "numpy_basics"
+  ],
+  "difficulties": [
+    "easy",
+    "medium",
+    "hard"
+  ],
+  "problems": [
+    {
+      "id": "numpy_basics/pairwise_distances",
+      "topic": "numpy_basics",
+      "slug": "pairwise_distances",
+      "title": "Pairwise Euclidean Distances",
+      "difficulty": "easy",
+      "entry": "pairwise_distances",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `pairwise_distances(x, y)`.\n\nGiven `x` of shape `(n, d)` and `y` of shape `(m, d)`, return an array `D`\nof shape `(n, m)` where `D[i, j]` is the Euclidean distance between `x[i]`\nand `y[j]`.\n\nThe whole point of this task is to practice broadcasting, so you must\nvectorize it.",
+      "bundlePath": "/content/problems/numpy_basics/pairwise_distances",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "contentHash": "252beb7857e1b741e8e6241e06444fbeb475d26ce81d07ef928c84cb682848e2"
+    }
+  ]
+}

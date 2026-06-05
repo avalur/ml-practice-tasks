@@ -1,0 +1,25 @@
+{
+  "id": "numpy_reductions/moving_average",
+  "topic": "numpy_reductions",
+  "slug": "moving_average",
+  "title": "Moving Average",
+  "difficulty": "medium",
+  "entry": "moving_average",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `moving_average(a, n)`.\n\nGiven a 1D array `a` and a window length `n`, return the array of\nlength-`n` moving averages. The output has length `len(a) - n + 1`, where\noutput `i` is the mean of `a[i : i + n]`. Vectorize it — no `for`/`while`\nloops (hint: prefix sums).",
+  "bundlePath": "/content/problems/numpy_reductions/moving_average",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.cumsum gives prefix sums; a window sum is the difference of two of them."
+  ],
+  "contentHash": "318a48eb7bc3deacf5e72155e79bb110ec62586ffa093a475e0f1e711b27adf8"
+}

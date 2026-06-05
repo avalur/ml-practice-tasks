@@ -1,0 +1,28 @@
+{
+  "id": "numpy_manipulation/pad_border",
+  "topic": "numpy_manipulation",
+  "slug": "pad_border",
+  "title": "Zero Border Around a Matrix",
+  "difficulty": "easy",
+  "entry": "pad_border",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "names": [
+      "pad"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `pad_border(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return a `(m + 2, n + 2)` array that\nis `X` surrounded by a one-cell border of zeros. Build it yourself with\nslicing — `np.pad` is **not allowed** — and no `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/pad_border",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
+  ],
+  "contentHash": "8362197177dfe8a0fa58bad9c95fb3c99db82682d0d4da08a111a8f789466f67"
+}

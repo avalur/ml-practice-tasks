@@ -1,0 +1,25 @@
+{
+  "id": "numpy_manipulation/swap_rows",
+  "topic": "numpy_manipulation",
+  "slug": "swap_rows",
+  "title": "Swap Two Rows",
+  "difficulty": "easy",
+  "entry": "swap_rows",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `swap_rows(X, i, j)`.\n\nGiven a 2D array `X` and two row indices `i`, `j`, return a **new** array\nequal to `X` with rows `i` and `j` swapped (leave `X` unchanged). No\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/swap_rows",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
+  ],
+  "contentHash": "efef053ed3e8d814b2fcaf0752ec705574244708f5f8ebbf1514d4c6c38d88c6"
+}

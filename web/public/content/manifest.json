@@ -4,6 +4,7 @@
     "numpy_broadcasting",
     "numpy_indexing",
     "numpy_linalg",
+    "numpy_manipulation",
     "numpy_reductions"
   ],
   "difficulties": [
@@ -414,6 +415,159 @@
         "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
       ],
       "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
+    },
+    {
+      "id": "numpy_manipulation/block_sum",
+      "topic": "numpy_manipulation",
+      "slug": "block_sum",
+      "title": "Block Sum",
+      "difficulty": "medium",
+      "entry": "block_sum",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `block_sum(X, b)`.\n\nGiven a 2D array `X` of shape `(n, n)` where `n` is divisible by `b`, return\na `(n//b, n//b)` array whose entry `(r, c)` is the sum of the non-overlapping\n`b x b` block at block-row `r`, block-column `c`. Use reshaping — no\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/block_sum",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
+      ],
+      "contentHash": "170dafb60014af021e4dd5a17957fc09c807d642f12c426c5468608e335b7cc9"
+    },
+    {
+      "id": "numpy_manipulation/pad_border",
+      "topic": "numpy_manipulation",
+      "slug": "pad_border",
+      "title": "Zero Border Around a Matrix",
+      "difficulty": "easy",
+      "entry": "pad_border",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "names": [
+          "pad"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `pad_border(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return a `(m + 2, n + 2)` array that\nis `X` surrounded by a one-cell border of zeros. Build it yourself with\nslicing — `np.pad` is **not allowed** — and no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/pad_border",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
+      ],
+      "contentHash": "8362197177dfe8a0fa58bad9c95fb3c99db82682d0d4da08a111a8f789466f67"
+    },
+    {
+      "id": "numpy_manipulation/repeat_counts",
+      "topic": "numpy_manipulation",
+      "slug": "repeat_counts",
+      "title": "Inverse of bincount",
+      "difficulty": "medium",
+      "entry": "repeat_counts",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `repeat_counts(counts)`.\n\nGiven a 1D non-negative integer array `counts`, return a 1D array in which\nindex `i` appears `counts[i]` times, in order. For example\n`counts = [2, 0, 3]` → `[0, 0, 2, 2, 2]`. (This is the inverse of\n`np.bincount`.) No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/repeat_counts",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
+      ],
+      "contentHash": "b61d50e268e1ea75850615938cd2bd5cf23ab74ce4645581d04ceaed47f70b6f"
+    },
+    {
+      "id": "numpy_manipulation/swap_rows",
+      "topic": "numpy_manipulation",
+      "slug": "swap_rows",
+      "title": "Swap Two Rows",
+      "difficulty": "easy",
+      "entry": "swap_rows",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `swap_rows(X, i, j)`.\n\nGiven a 2D array `X` and two row indices `i`, `j`, return a **new** array\nequal to `X` with rows `i` and `j` swapped (leave `X` unchanged). No\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/swap_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
+      ],
+      "contentHash": "efef053ed3e8d814b2fcaf0752ec705574244708f5f8ebbf1514d4c6c38d88c6"
+    },
+    {
+      "id": "numpy_manipulation/unique_rows",
+      "topic": "numpy_manipulation",
+      "slug": "unique_rows",
+      "title": "Unique Rows",
+      "difficulty": "medium",
+      "entry": "unique_rows",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `unique_rows(X)`.\n\nGiven a 2D array `X`, return its distinct rows as a 2D array, sorted in\nascending (lexicographic) order — i.e. the result of treating each row as a\nunit. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/unique_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.unique(X, axis=0) returns the distinct rows (sorted)."
+      ],
+      "contentHash": "a42c5815e8140a0da9a9396d40b51de61a61159d9944aab1ce9c8fa19f369992"
+    },
+    {
+      "id": "numpy_reductions/most_frequent",
+      "topic": "numpy_reductions",
+      "slug": "most_frequent",
+      "title": "Most Frequent Value",
+      "difficulty": "medium",
+      "entry": "most_frequent",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `most_frequent(x)`.\n\nGiven a 1D array `x` of non-negative integers, return the value that occurs\nmost often. If several values tie, return the smallest of them. No\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_reductions/most_frequent",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.bincount counts occurrences of each value; argmax gives the most frequent."
+      ],
+      "contentHash": "e3ae5b4b90f587275528eee57db6050eaff8a42939b1c8b93e675fa820dd3091"
     },
     {
       "id": "numpy_reductions/moving_average",

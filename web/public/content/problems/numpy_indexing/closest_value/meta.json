@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/closest_value",
+  "topic": "numpy_indexing",
+  "slug": "closest_value",
+  "title": "Closest Value",
+  "difficulty": "easy",
+  "entry": "closest_value",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `closest_value(x, v)`.\n\nGiven a 1D array `x` and a scalar `v`, return the element of `x` closest to\n`v` (the one minimizing `|x - v|`). No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/closest_value",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.abs(x - v).argmin() gives the index of the nearest element."
+  ],
+  "contentHash": "830f6b795eb6a8ddff95584ad67d2534e8f9156506126362e5363864f4cb973e"
+}

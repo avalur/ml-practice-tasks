@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/sort_by_column",
+  "topic": "numpy_indexing",
+  "slug": "sort_by_column",
+  "title": "Sort Rows by a Column",
+  "difficulty": "medium",
+  "entry": "sort_by_column",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `sort_by_column(X, k)`.\n\nGiven a 2D array `X` and a column index `k`, return `X` with its **rows**\nreordered so that column `k` is ascending. Use `argsort` + fancy indexing —\nno `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/sort_by_column",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "argsort the chosen column to get a row order, then index the rows with it."
+  ],
+  "contentHash": "aeaa00b8d46f59506277fa4b8010b3645f27696e02aa2341b02bb6578a44f3ae"
+}

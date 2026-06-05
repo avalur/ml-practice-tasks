@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/mask_negate",
+  "topic": "numpy_indexing",
+  "slug": "mask_negate",
+  "title": "Negate Values in a Range",
+  "difficulty": "medium",
+  "entry": "mask_negate",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `mask_negate(x, lo, hi)`.\n\nGiven a 1D array `x` and scalars `lo < hi`, return a **new** array equal to\n`x` but with every element strictly between `lo` and `hi` negated (multiplied\nby -1). Leave `x` unchanged. Use a boolean mask — no `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/mask_negate",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Build a boolean mask (x > lo) & (x < hi) and flip the sign of those entries in a copy."
+  ],
+  "contentHash": "c6ae1ac25d29169420655665b19b81c51885d6d20b182569fb6f64b4f26f5073"
+}

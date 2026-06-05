@@ -34,8 +34,8 @@ A problem lives in `problems/<topic>/<slug>/`:
 - `test.py` — pytest tests. Use the `impl` fixture to call the implementation,
   `rng_for(seed)` for deterministic randomness, and `assert_clean(impl_source,
   banned)` to enforce constraints.
-- `meta.py` — a `META` dict: title, topic, difficulty, statement, and `banned`
-  (`modules`, `names`, `loops`).
+- `meta.py` — a `META` dict: title, topic, difficulty, entry, statement, and
+  `banned` (`modules`, `names`, `loops`).
 
 After editing `problems/`, regenerate the student tree:
 

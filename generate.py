@@ -4,8 +4,8 @@
 For each problem we:
   * strip the reference solution body (between the solution markers) to make a
     ``submission.py`` stub that keeps the signature, docstring and imports;
-  * copy ``test.py`` and ``meta.yaml`` verbatim;
-  * render a ``README.md`` problem statement from ``meta.yaml``.
+  * copy ``test.py`` and ``meta.py`` verbatim;
+  * render a ``README.md`` problem statement from ``meta.py``.
 
 Run ``python generate.py`` to (re)build, or ``python generate.py --check`` to
 verify the committed ``tasks/`` tree is up to date (used in CI).

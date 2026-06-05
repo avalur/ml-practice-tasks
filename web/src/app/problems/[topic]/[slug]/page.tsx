@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { getManifest, getProblem, getStarterCode } from "@/lib/content";
 import { constraintSummary } from "@/lib/problem";
+import { SolveWorkspace } from "@/components/SolveWorkspace";
 
 type Params = { topic: string; slug: string };
 
@@ -61,14 +62,12 @@ export default async function ProblemPage({
         </div>
       )}
 
-      <h2>Starter code</h2>
-      <pre className="code">{starter}</pre>
-
-      <div className="placeholder">
-        ✏️ Interactive editor and in-browser tests land in the next step. For now
-        this is read-only; soon you’ll edit <code>{problem.entry}</code> here and
-        run the real pytest suite via Pyodide — no install required.
-      </div>
+      <h2>Your solution</h2>
+      <p className="muted">
+        Edit <code>{problem.entry}</code> and run the real pytest suite in your
+        browser — no install required. Your code is saved locally.
+      </p>
+      <SolveWorkspace meta={problem} starter={starter} />
     </article>
   );
 }

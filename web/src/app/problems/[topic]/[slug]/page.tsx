@@ -62,6 +62,13 @@ export default async function ProblemPage({
         </div>
       )}
 
+      <h2>Your solution</h2>
+      <p className="muted">
+        Edit <code>{problem.entry}</code> and run the real pytest suite in your
+        browser — no install required. Your code is saved locally.
+      </p>
+      <SolveWorkspace meta={problem} starter={starter} />
+
       {problem.hints.length > 0 && (
         <div className="hints">
           <h2>Hints</h2>
@@ -73,13 +80,6 @@ export default async function ProblemPage({
           ))}
         </div>
       )}
-
-      <h2>Your solution</h2>
-      <p className="muted">
-        Edit <code>{problem.entry}</code> and run the real pytest suite in your
-        browser — no install required. Your code is saved locally.
-      </p>
-      <SolveWorkspace meta={problem} starter={starter} />
     </article>
   );
 }

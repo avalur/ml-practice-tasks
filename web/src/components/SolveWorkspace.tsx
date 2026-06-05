@@ -150,8 +150,7 @@ function ResultsPanel({
     );
   if (status === "error")
     return <p className="results result-bad">Runner error: {error}</p>;
-  if (status !== "done" || !result)
-    return <p className="results muted">Write your solution and run the tests.</p>;
+  if (status !== "done" || !result) return null;
 
   const allPass = result.total > 0 && result.passed === result.total;
   return (

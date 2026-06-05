@@ -380,3 +380,155 @@ pre.code {
     flex-direction: column;
   }
 }
+
+/* Problems shell: sidebar + content */
+.problems-shell {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+}
+.problems-main {
+  flex: 1;
+  min-width: 0;
+}
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 0.5rem;
+  position: sticky;
+  top: 1rem;
+  max-height: calc(100vh - 2rem);
+  overflow: auto;
+}
+.sidebar.collapsed {
+  width: auto;
+  padding: 0.4rem;
+}
+.sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 0.4rem 0.5rem;
+}
+.sidebar-title {
+  font-weight: 600;
+}
+.sidebar-toggle {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.85rem;
+}
+.sidebar-progress {
+  padding: 0 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+}
+.streak {
+  color: var(--medium);
+  font-weight: 700;
+}
+.bar {
+  height: 6px;
+  background: var(--panel-2);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-top: 0.3rem;
+}
+.bar-fill {
+  height: 100%;
+  background: var(--easy);
+  transition: width 0.3s;
+}
+.tree {
+  font-size: 0.9rem;
+}
+.folder-head {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  cursor: pointer;
+  padding: 0.25rem 0.4rem;
+  text-align: left;
+}
+.folder-head:hover {
+  background: var(--panel-2);
+  border-radius: 6px;
+}
+.caret {
+  color: var(--muted);
+  width: 0.8rem;
+  font-size: 0.7rem;
+}
+.folder-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+.folder-count {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+.folder-body {
+  padding-left: 0.9rem;
+}
+.file {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  color: var(--text);
+}
+.file:hover {
+  background: var(--panel-2);
+  text-decoration: none;
+}
+.file.active {
+  background: var(--panel-2);
+  color: var(--accent);
+}
+.check {
+  color: var(--muted);
+  width: 0.9rem;
+  text-align: center;
+}
+.check.done {
+  color: var(--easy);
+}
+.file-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Previous / next task navigation */
+.prevnext {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+@media (max-width: 760px) {
+  .problems-shell {
+    flex-direction: column;
+  }
+  .sidebar {
+    width: auto;
+    position: static;
+    max-height: none;
+  }
+}

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { getManifest, getProblem, getStarterCode } from "@/lib/content";
@@ -35,6 +36,12 @@ export default async function ProblemPage({
     marked.parse(problem.statementMd),
   ]);
   const constraints = constraintSummary(problem.banned);
+
+  // Linear prev/next in catalog order.
+  const order = (await getManifest()).problems;
+  const idx = order.findIndex((p) => p.topic === topic && p.slug === slug);
+  const prev = idx > 0 ? order[idx - 1] : null;
+  const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
 
   return (
     <article>
@@ -80,6 +87,19 @@ export default async function ProblemPage({
           ))}
         </div>
       )}
+
+      <nav className="prevnext">
+        {prev ? (
+          <Link href={`/problems/${prev.topic}/${prev.slug}`}>← {prev.title}</Link>
+        ) : (
+          <span />
+        )}
+        {next ? (
+          <Link href={`/problems/${next.topic}/${next.slug}`}>{next.title} →</Link>
+        ) : (
+          <span />
+        )}
+      </nav>
     </article>
   );
 }

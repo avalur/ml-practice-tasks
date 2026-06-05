@@ -1,0 +1,25 @@
+{
+  "id": "numpy_reductions/accumulate_at",
+  "topic": "numpy_reductions",
+  "slug": "accumulate_at",
+  "title": "Scatter-Add by Index",
+  "difficulty": "medium",
+  "entry": "accumulate_at",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `accumulate_at(values, idx, n)`.\n\nGiven 1D arrays `values` and `idx` (same length, `idx` values in `[0, n)`),\nreturn an array `out` of length `n` where `out[k]` is the sum of all\n`values[j]` for which `idx[j] == k`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_reductions/accumulate_at",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.bincount(idx, weights=values, minlength=n) sums values into bins by index."
+  ],
+  "contentHash": "e4b1bf6dd97cdaec7255117b0fc10e1131f52d4bff6ae05f2979d9cb6434d4c7"
+}

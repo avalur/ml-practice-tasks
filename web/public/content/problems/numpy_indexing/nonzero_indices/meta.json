@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/nonzero_indices",
+  "topic": "numpy_indexing",
+  "slug": "nonzero_indices",
+  "title": "Indices of Non-Zero Elements",
+  "difficulty": "easy",
+  "entry": "nonzero_indices",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `nonzero_indices(x)`.\n\nGiven a 1D array `x`, return a 1D array of the indices where `x` is non-zero,\nin increasing order. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/nonzero_indices",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.nonzero(x) returns the indices of the non-zero entries (take [0] for 1D)."
+  ],
+  "contentHash": "d9f590238d7813118328df302da5b9dfd01e1f397478ea1b1c8829c5fb7dd4b0"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "numpy_reductions/sum_last_two",
+  "topic": "numpy_reductions",
+  "slug": "sum_last_two",
+  "title": "Sum Over the Last Two Axes",
+  "difficulty": "medium",
+  "entry": "sum_last_two",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `sum_last_two(A)`.\n\nGiven an array `A` with at least 2 dimensions, return the array obtained by\nsumming over its **last two** axes (result shape `A.shape[:-2]`). No\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_reductions/sum_last_two",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
+  ],
+  "contentHash": "4f272e81d640e425ac5b3a8943aaf3c4b1d23bc2b471315f7e17fda792fc6c0b"
+}

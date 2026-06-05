@@ -18,5 +18,8 @@
     "numpy"
   ],
   "webRunnable": true,
-  "contentHash": "252beb7857e1b741e8e6241e06444fbeb475d26ce81d07ef928c84cb682848e2"
+  "hints": [
+    "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
+  ],
+  "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
 }

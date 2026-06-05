@@ -7,6 +7,9 @@ META = {
         "modules": ["scipy", "sklearn"],
         "loops": True,
     },
+    "hints": [
+        "Think about 2D shape of the final result and how to get it from two input vectors (1D array).",
+    ],
     "statement": """
 Implement `pairwise_distances(x, y)`.
 

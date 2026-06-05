@@ -22,6 +22,7 @@ export type ProblemMeta = {
   bundlePath: string;
   pyDeps: string[];
   webRunnable: boolean;
+  hints: string[];
   contentHash: string;
 };
 

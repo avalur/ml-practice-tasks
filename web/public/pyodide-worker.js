@@ -54,7 +54,7 @@ def _run_once(files, test_path):
                 "nodeid": report.nodeid,
                 "when": report.when,
                 "outcome": report.outcome,
-                "longrepr": (str(report.longrepr)[:1500] if report.longrepr else ""),
+                "longrepr": (str(report.longrepr) if report.longrepr else ""),
             })
     buf = io.StringIO()
     t0 = time.time()

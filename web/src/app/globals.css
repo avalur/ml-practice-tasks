@@ -305,6 +305,32 @@ pre.code {
   padding: 0;
 }
 
+/* Hints */
+.hints {
+  margin: 1.25rem 0;
+}
+.hint-box {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 1rem;
+  margin: 0.4rem 0;
+}
+.hint-box summary {
+  cursor: pointer;
+  color: var(--accent);
+  font-weight: 600;
+}
+.hint-box p {
+  margin: 0.5rem 0 0;
+}
+
+/* Scrollable trace / raw output: bounded height, vertical scroll */
+.trace {
+  max-height: 360px;
+  overflow: auto;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
   .container {

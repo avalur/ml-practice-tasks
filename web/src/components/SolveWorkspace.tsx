@@ -169,7 +169,7 @@ function ResultsPanel({
       {result.output && (
         <details className="raw-output">
           <summary>Raw pytest output</summary>
-          <pre className="code">{result.output}</pre>
+          <pre className="code trace">{result.output}</pre>
         </details>
       )}
     </div>
@@ -188,7 +188,7 @@ function TestRow({ test }: { test: TestResult }) {
       {test.detail && test.outcome !== "passed" && (
         <details>
           <summary>details</summary>
-          <pre className="code">{test.detail}</pre>
+          <pre className="code trace">{test.detail}</pre>
         </details>
       )}
     </li>

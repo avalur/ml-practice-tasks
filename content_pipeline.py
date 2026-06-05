@@ -100,6 +100,9 @@ def validate_meta(meta: dict, topic: str, slug: str) -> None:
     py_deps = meta.get("py_deps", ["numpy"])
     if not isinstance(py_deps, (list, tuple)) or not all(isinstance(d, str) for d in py_deps):
         raise ValueError(f"{where} py_deps must be a list of strings")
+    hints = meta.get("hints", [])
+    if not isinstance(hints, (list, tuple)) or not all(isinstance(h, str) for h in hints):
+        raise ValueError(f"{where} hints must be a list of strings")
 
 
 @dataclass(frozen=True)
@@ -115,6 +118,7 @@ class ProblemBundle:
     statement_md: str
     py_deps: tuple[str, ...]
     web_runnable: bool
+    hints: tuple[str, ...]
     reference_src: str
     stub_src: str
     test_src: str
@@ -155,6 +159,7 @@ def iter_problems() -> list[ProblemBundle]:
                 statement_md=meta.get("statement", "").strip(),
                 py_deps=tuple(meta.get("py_deps", ["numpy"])),
                 web_runnable=bool(meta.get("web_runnable", True)),
+                hints=tuple(meta.get("hints", [])),
                 reference_src=reference_src,
                 stub_src=make_stub(reference_src),
                 test_src=(problem_dir / "test.py").read_text(),

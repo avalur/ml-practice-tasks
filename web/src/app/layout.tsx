@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Providers } from "@/components/Providers";
+import { AuthStatus } from "@/components/AuthStatus";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -15,15 +17,20 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        <header className="site-header">
-          <Link href="/" className="brand">
-            ML&nbsp;Practice
-          </Link>
-          <nav>
-            <Link href="/problems">Problems</Link>
-          </nav>
-        </header>
-        <main className="container">{children}</main>
+        <Providers>
+          <header className="site-header">
+            <Link href="/" className="brand">
+              ML&nbsp;Practice
+            </Link>
+            <nav>
+              <Link href="/problems">Problems</Link>
+            </nav>
+            <div className="header-right">
+              <AuthStatus />
+            </div>
+          </header>
+          <main className="container">{children}</main>
+        </Providers>
       </body>
     </html>
   );

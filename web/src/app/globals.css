@@ -221,6 +221,29 @@ pre.code {
   border-color: var(--accent);
   font-weight: 600;
 }
+.btn.small {
+  padding: 0.3rem 0.6rem;
+  font-size: 0.82rem;
+}
+
+/* Header auth */
+.header-right {
+  margin-left: auto;
+}
+.auth-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.auth-name {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+}
 
 .muted {
   color: var(--muted);

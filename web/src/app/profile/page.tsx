@@ -45,7 +45,10 @@ export default async function ProfilePage() {
             const ok = s.total > 0 && s.passed === s.total;
             return (
               <li key={s.id}>
-                <Link href={`/submissions/${s.id}`} className="problem-card">
+                <Link
+                  href={`/problems/${s.problem.topic}/${s.problem.slug}?submission=${s.id}`}
+                  className="problem-card"
+                >
                   <span className="title">{s.problem.title}</span>
                   <span className="meta">
                     <span className={ok ? "result-good" : "result-bad"}>

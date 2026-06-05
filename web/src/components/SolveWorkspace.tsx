@@ -30,11 +30,38 @@ export function SolveWorkspace({
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const postedRef = useRef<RunResult | null>(null);
 
-  // Restore saved code after mount (init with starter to avoid hydration mismatch).
+  // Which submission to preload, from ?submission=… (read client-side so the
+  // problem page stays statically generated).
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   useEffect(() => {
+    setSubmissionId(new URLSearchParams(window.location.search).get("submission"));
+  }, []);
+
+  // Restore the saved draft after mount — unless we're loading a submission.
+  useEffect(() => {
+    if (submissionId) return;
     const saved = localStorage.getItem(storageKey);
     if (saved != null) setCode(saved);
-  }, [storageKey]);
+  }, [storageKey, submissionId]);
+
+  // Load a specific submission's code into the editor (owner-only API).
+  useEffect(() => {
+    if (!submissionId) return;
+    let alive = true;
+    fetch(`/api/submissions/${submissionId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (alive && typeof d?.code === "string") {
+          setCode(d.code);
+          // Drop ?submission= so a refresh keeps edits instead of reloading it.
+          window.history.replaceState(null, "", window.location.pathname);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [submissionId]);
 
   // Autosave.
   useEffect(() => {

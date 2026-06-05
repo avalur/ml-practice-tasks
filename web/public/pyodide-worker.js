@@ -15,10 +15,11 @@
  *        { type: "ERROR", runId?, error }
  */
 
-const PYODIDE_VERSION = "0.29.4";
-const CDN = `https://cdn.jsdelivr.net/pyodide/v${PYODIDE_VERSION}/full/`;
+// Pyodide 0.29.4 is vendored under web/public/pyodide (see export note), so the
+// runtime is served same-origin — no CDN dependency at runtime.
+const BASE = "/pyodide/";
 
-importScripts(`${CDN}pyodide.js`);
+importScripts(`${BASE}pyodide.js`);
 
 // Python harness — defines _run_once(files, test_path) → structured results.
 const HARNESS = `
@@ -92,7 +93,7 @@ function ensurePyodide(pyDeps) {
   if (!pyodidePromise) {
     pyodidePromise = (async () => {
       self.postMessage({ type: "STATUS", stage: "loading-pyodide" });
-      const pyodide = await loadPyodide({ indexURL: CDN });
+      const pyodide = await loadPyodide({ indexURL: BASE });
       self.postMessage({ type: "STATUS", stage: "loading-packages" });
       const pkgs = [...new Set(["pytest", ...(pyDeps || ["numpy"])])];
       await pyodide.loadPackage(pkgs, { messageCallback: () => {} });

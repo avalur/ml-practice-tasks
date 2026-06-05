@@ -1,0 +1,25 @@
+{
+  "id": "numpy_linalg/gram_matrix",
+  "topic": "numpy_linalg",
+  "slug": "gram_matrix",
+  "title": "Gram Matrix",
+  "difficulty": "easy",
+  "entry": "gram_matrix",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `gram_matrix(X)`.\n\nGiven a 2D array `X` of shape `(m, n)` (m rows / samples), return the\n`(m, m)` Gram matrix `G` where `G[i, j]` is the dot product of row `i` and\nrow `j`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_linalg/gram_matrix",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "The Gram matrix of rows is X @ X.T."
+  ],
+  "contentHash": "cf54317944216636d0cf798d9ca5662b6306c4a0ec58fc9b22788ffa1a7c0c2e"
+}

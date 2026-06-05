@@ -3,6 +3,7 @@
     "numpy_basics",
     "numpy_broadcasting",
     "numpy_indexing",
+    "numpy_linalg",
     "numpy_reductions"
   ],
   "difficulties": [
@@ -260,6 +261,159 @@
         "argsort the chosen column to get a row order, then index the rows with it."
       ],
       "contentHash": "aeaa00b8d46f59506277fa4b8010b3645f27696e02aa2341b02bb6578a44f3ae"
+    },
+    {
+      "id": "numpy_linalg/cauchy",
+      "topic": "numpy_linalg",
+      "slug": "cauchy",
+      "title": "Cauchy Matrix",
+      "difficulty": "medium",
+      "entry": "cauchy",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `cauchy(x, y)`.\n\nGiven 1D arrays `x` (length n) and `y` (length m) with all `x[i] != y[j]`,\nreturn the `(n, m)` Cauchy matrix `C` where `C[i, j] = 1 / (x[i] - y[j])`.\nUse broadcasting — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/cauchy",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
+      ],
+      "contentHash": "8f58225f5cf4eca9fb0a5b758bc2abcd616bc3c19aa92848cbf9b4245de6141b"
+    },
+    {
+      "id": "numpy_linalg/diag_of_product",
+      "topic": "numpy_linalg",
+      "slug": "diag_of_product",
+      "title": "Diagonal of a Matrix Product",
+      "difficulty": "medium",
+      "entry": "diag_of_product",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `diag_of_product(A, B)`.\n\nGiven `A` of shape `(n, k)` and `B` of shape `(k, n)`, return the diagonal of\nthe product `A @ B` as a 1D array of length `n` — i.e. element `i` is\n`A[i] . B[:, i]`. Do it **without** forming the full `A @ B`, and with no\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/diag_of_product",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "Entry i of diag(A@B) is row i of A dotted with column i of B — np.einsum('ij,ji->i', A, B) does it without building the full product."
+      ],
+      "contentHash": "5d55ac1b849857d7d075d4df8055f2dd711df6ba0eebddd40f6e079fa8312894"
+    },
+    {
+      "id": "numpy_linalg/gram_matrix",
+      "topic": "numpy_linalg",
+      "slug": "gram_matrix",
+      "title": "Gram Matrix",
+      "difficulty": "easy",
+      "entry": "gram_matrix",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `gram_matrix(X)`.\n\nGiven a 2D array `X` of shape `(m, n)` (m rows / samples), return the\n`(m, m)` Gram matrix `G` where `G[i, j]` is the dot product of row `i` and\nrow `j`. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/gram_matrix",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "The Gram matrix of rows is X @ X.T."
+      ],
+      "contentHash": "cf54317944216636d0cf798d9ca5662b6306c4a0ec58fc9b22788ffa1a7c0c2e"
+    },
+    {
+      "id": "numpy_linalg/normalize_rows",
+      "topic": "numpy_linalg",
+      "slug": "normalize_rows",
+      "title": "Normalize Rows to Unit Length",
+      "difficulty": "medium",
+      "entry": "normalize_rows",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `normalize_rows(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere each **row** is scaled to unit L2 norm (`row / ||row||`). Assume no\nrow is all zeros. Vectorize with broadcasting — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/normalize_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
+      ],
+      "contentHash": "3709a60bc1f1fe12ed30c3ec3e1388e287a5db6d37b157c00076595b79ea93b5"
+    },
+    {
+      "id": "numpy_linalg/solve_system",
+      "topic": "numpy_linalg",
+      "slug": "solve_system",
+      "title": "Solve a Linear System",
+      "difficulty": "medium",
+      "entry": "solve_system",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `solve_system(A, b)`.\n\nGiven a square, invertible matrix `A` of shape `(n, n)` and a vector `b` of\nlength `n`, return the solution `x` of the linear system `A @ x = b`. No\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/solve_system",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
+      ],
+      "contentHash": "bcd18ab82b8c2e1e08b39eabaebf0fbdab6f371a8cd91bc3bf161c76b733c43e"
+    },
+    {
+      "id": "numpy_linalg/trace",
+      "topic": "numpy_linalg",
+      "slug": "trace",
+      "title": "Trace by Hand",
+      "difficulty": "easy",
+      "entry": "trace",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "names": [
+          "trace"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `trace(X)`.\n\nReturn the trace of a square matrix `X` (the sum of its diagonal entries).\nCompute it yourself — `np.trace` is **not allowed** — and no `for`/`while`\nloops.",
+      "bundlePath": "/content/problems/numpy_linalg/trace",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hints": [
+        "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
+      ],
+      "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
     },
     {
       "id": "numpy_reductions/moving_average",

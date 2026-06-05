@@ -1,0 +1,25 @@
+{
+  "id": "numpy_linalg/cauchy",
+  "topic": "numpy_linalg",
+  "slug": "cauchy",
+  "title": "Cauchy Matrix",
+  "difficulty": "medium",
+  "entry": "cauchy",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `cauchy(x, y)`.\n\nGiven 1D arrays `x` (length n) and `y` (length m) with all `x[i] != y[j]`,\nreturn the `(n, m)` Cauchy matrix `C` where `C[i, j] = 1 / (x[i] - y[j])`.\nUse broadcasting — no `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_linalg/cauchy",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
+  ],
+  "contentHash": "8f58225f5cf4eca9fb0a5b758bc2abcd616bc3c19aa92848cbf9b4245de6141b"
+}

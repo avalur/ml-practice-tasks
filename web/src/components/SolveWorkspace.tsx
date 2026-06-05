@@ -1,10 +1,16 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
 import type { ProblemMeta } from "@/lib/problem";
-import { loadBundle, type Bundle, type TestResult } from "@/lib/runner";
+import {
+  loadBundle,
+  type Bundle,
+  type RunResult,
+  type RunnerStatus,
+  type TestResult,
+} from "@/lib/runner";
 import { usePyodideRunner } from "@/hooks/usePyodideRunner";
 
 export function SolveWorkspace({
@@ -42,20 +48,10 @@ export function SolveWorkspace({
     };
   }, [meta]);
 
-  if (!meta.webRunnable) {
-    return (
-      <div className="placeholder">
-        This problem needs Python packages that don’t run in the browser yet, so
-        it can’t be solved here. Clone the repo and run <code>pytest</code>{" "}
-        locally.
-      </div>
-    );
-  }
-
   const busy = runner.status === "running" || runner.status === "loading";
 
   const onRun = () => {
-    if (!bundle) return;
+    if (busy || !bundle) return;
     runner.run({
       files: { ...bundle.files, [bundle.submissionPath]: code },
       testPath: bundle.testPath,
@@ -67,6 +63,30 @@ export function SolveWorkspace({
     setCode(starter);
     localStorage.removeItem(storageKey);
   };
+
+  // Cmd/Ctrl+Enter to run, from anywhere on the page (incl. the editor).
+  const onRunRef = useRef(onRun);
+  onRunRef.current = onRun;
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "Enter") {
+        e.preventDefault();
+        onRunRef.current();
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  if (!meta.webRunnable) {
+    return (
+      <div className="placeholder">
+        This problem needs Python packages that don’t run in the browser yet, so
+        it can’t be solved here. Clone the repo and run <code>pytest</code>{" "}
+        locally.
+      </div>
+    );
+  }
 
   return (
     <div className="workspace">
@@ -81,7 +101,10 @@ export function SolveWorkspace({
         <button className="btn" onClick={onReset} disabled={busy}>
           Reset
         </button>
-        {bundleError && <span className="result-bad">Failed to load: {bundleError}</span>}
+        <kbd className="hint">⌘/Ctrl + ↵</kbd>
+        {bundleError && (
+          <span className="result-bad">Failed to load: {bundleError}</span>
+        )}
       </div>
 
       <CodeMirror
@@ -106,14 +129,14 @@ function ResultsPanel({
   error,
   result,
 }: {
-  status: ReturnType<typeof usePyodideRunner>["status"];
+  status: RunnerStatus;
   error: string | null;
-  result: ReturnType<typeof usePyodideRunner>["result"];
+  result: RunResult | null;
 }) {
   if (status === "loading")
     return (
       <p className="results muted">
-        Loading the Python runtime (first time downloads a few MB)…
+        Loading the Python runtime (first run only)…
       </p>
     );
   if (status === "running")
@@ -133,8 +156,8 @@ function ResultsPanel({
   const allPass = result.total > 0 && result.passed === result.total;
   return (
     <div className="results">
-      <p className={allPass ? "result-good" : "result-bad"}>
-        {allPass ? "✓ " : "✗ "}
+      <p className={allPass ? "result-good banner" : "result-bad banner"}>
+        {allPass ? "🎉 " : "✗ "}
         {result.passed}/{result.total} tests passed
         <span className="muted"> · {result.durationMs} ms</span>
       </p>
@@ -143,6 +166,12 @@ function ResultsPanel({
           <TestRow key={t.nodeid} test={t} />
         ))}
       </ul>
+      {result.output && (
+        <details className="raw-output">
+          <summary>Raw pytest output</summary>
+          <pre className="code">{result.output}</pre>
+        </details>
+      )}
     </div>
   );
 }

@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/intersect",
+  "topic": "numpy_indexing",
+  "slug": "intersect",
+  "title": "Common Values",
+  "difficulty": "medium",
+  "entry": "intersect",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `intersect(a, b)`.\n\nGiven two 1D arrays `a` and `b`, return the sorted array of unique values\nthat appear in **both**. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/intersect",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.intersect1d(a, b) returns the sorted, unique values common to both."
+  ],
+  "contentHash": "f8dee86b3288cefcd1844a030f58f6d2b82d11fbe60db973c0f13442c6f30db0"
+}

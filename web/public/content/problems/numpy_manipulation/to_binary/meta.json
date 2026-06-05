@@ -1,0 +1,25 @@
+{
+  "id": "numpy_manipulation/to_binary",
+  "topic": "numpy_manipulation",
+  "slug": "to_binary",
+  "title": "Integers to Binary Matrix",
+  "difficulty": "medium",
+  "entry": "to_binary",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `to_binary(x, bits)`.\n\nGiven a 1D array `x` of non-negative integers, return a `(len(x), bits)` array\nof 0/1 where row `i` is the binary representation of `x[i]`, **most\nsignificant bit first**. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/to_binary",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
+  ],
+  "contentHash": "5bcf8fc3a96be7663fe55f0be2a9f8e73b669b96698be0d65fd8ec507a401e16"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "numpy_manipulation/interleave_zeros",
+  "topic": "numpy_manipulation",
+  "slug": "interleave_zeros",
+  "title": "Interleave Zeros",
+  "difficulty": "medium",
+  "entry": "interleave_zeros",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `interleave_zeros(z, nz)`.\n\nGiven a 1D array `z` and a count `nz`, return a new 1D array with `nz` zeros\ninserted between each pair of consecutive elements of `z`. The result has\nlength `len(z) + (len(z) - 1) * nz`. Example: `z = [1, 2, 3]`, `nz = 2`\n→ `[1, 0, 0, 2, 0, 0, 3]`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/interleave_zeros",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
+  ],
+  "contentHash": "87e88ae95cfcc61e947df93ce22597624019d51f2a1bcac0f9ef82e9c00b1f8b"
+}

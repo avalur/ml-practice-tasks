@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { getManifest } from "@/lib/content";
+import { computeStreak } from "@/lib/stats";
 
 export const metadata = { title: "Profile — ML Practice" };
 
@@ -16,7 +18,7 @@ export default async function ProfilePage() {
   }
 
   const userId = session.user.id;
-  const [solvedCount, recent] = await Promise.all([
+  const [solvedCount, recent, streak, manifest] = await Promise.all([
     prisma.userProblemProgress.count({ where: { userId, clientSolved: true } }),
     prisma.submission.findMany({
       where: { userId },
@@ -24,7 +26,10 @@ export default async function ProfilePage() {
       take: 10,
       include: { problem: { select: { title: true, topic: true, slug: true } } },
     }),
+    computeStreak(userId),
+    getManifest(),
   ]);
+  const total = manifest.problems.length;
 
   return (
     <section>
@@ -32,8 +37,9 @@ export default async function ProfilePage() {
       <p>
         Signed in as <strong>{session.user.name ?? session.user.email}</strong>
       </p>
+      {streak > 0 && <p className="streak">🔥 {streak}-day streak</p>}
       <p className="result-good">
-        {solvedCount} problem{solvedCount === 1 ? "" : "s"} solved
+        {solvedCount}/{total} solved
       </p>
 
       <h2>Recent submissions</h2>

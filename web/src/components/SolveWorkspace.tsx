@@ -1,8 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CodeMirror from "@uiw/react-codemirror";
+import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
+
+// Breathing room so code/comments don't butt against the editor's right edge.
+const editorPadding = EditorView.theme({
+  ".cm-content": { paddingRight: "1.25rem" },
+});
 import type { ProblemMeta } from "@/lib/problem";
 import {
   loadBundle,
@@ -179,7 +184,7 @@ export function SolveWorkspace({
         value={code}
         height="360px"
         theme="dark"
-        extensions={[python()]}
+        extensions={[python(), editorPadding]}
         onChange={setCode}
       />
 

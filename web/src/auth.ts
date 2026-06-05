@@ -9,7 +9,12 @@ import { prisma } from "@/lib/db";
 // power per-user progress (requires DATABASE_URL).
 export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: PrismaAdapter(prisma),
-  providers: [GitHub, Google],
+  providers: [
+    // Link accounts that share a verified email across providers (GitHub +
+    // Google both verify emails) so one email = one account.
+    GitHub({ allowDangerousEmailAccountLinking: true }),
+    Google({ allowDangerousEmailAccountLinking: true }),
+  ],
   session: { strategy: "database" },
   // Required for self-hosted / `next start` (Vercel sets this automatically).
   trustHost: true,

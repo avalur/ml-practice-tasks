@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/rows_not_constant",
+  "topic": "numpy_indexing",
+  "slug": "rows_not_constant",
+  "title": "Rows That Are Not Constant",
+  "difficulty": "medium",
+  "entry": "rows_not_constant",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `rows_not_constant(X)`.\n\nGiven a 2D array `X`, return the sub-array of rows that are **not** constant\n(rows whose values are not all equal), preserving their order. Use a boolean\nrow mask — no `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/rows_not_constant",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "A row is constant iff its max equals its min — compare per-row max and min, then mask rows."
+  ],
+  "contentHash": "72ea12758b6cc68152a4f41dac71b8467c8dedc0b977829699c77aec72d21ba9"
+}

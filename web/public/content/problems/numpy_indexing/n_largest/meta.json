@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/n_largest",
+  "topic": "numpy_indexing",
+  "slug": "n_largest",
+  "title": "N Largest Values",
+  "difficulty": "medium",
+  "entry": "n_largest",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `n_largest(x, n)`.\n\nGiven a 1D array `x` and an integer `n` (with `1 <= n <= len(x)`), return the\n`n` largest values of `x`, **sorted in descending order**. No `for`/`while`\nloops. (Hint: `np.argpartition` finds the top `n` without a full sort.)",
+  "bundlePath": "/content/problems/numpy_indexing/n_largest",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.argpartition puts the n largest in front (unordered); take them, then sort descending."
+  ],
+  "contentHash": "b9ab057c1a9f30d1b47b8849fb278f2f77cdbc8e7cb42f206770da1ac1d570a1"
+}

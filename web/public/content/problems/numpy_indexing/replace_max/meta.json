@@ -1,0 +1,25 @@
+{
+  "id": "numpy_indexing/replace_max",
+  "topic": "numpy_indexing",
+  "slug": "replace_max",
+  "title": "Replace the Max with Zero",
+  "difficulty": "easy",
+  "entry": "replace_max",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `replace_max(x)`.\n\nGiven a 1D array `x`, return a **new** array equal to `x` but with its\nmaximum element replaced by `0` (leave `x` itself unchanged). If the max\noccurs more than once, replace the first occurrence. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/replace_max",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "argmax gives the index of the maximum; copy first so the input isn't mutated."
+  ],
+  "contentHash": "5168a3ed3999ba5aad56b6671b13704d8f6c685c83bc58a9d4cfcd4aff999bf1"
+}

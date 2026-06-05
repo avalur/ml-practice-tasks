@@ -21,8 +21,8 @@ def pairwise_distances(x, y):
 // don't have to type multi-line Python into CodeMirror.
 async function seed(page: import("@playwright/test").Page, code: string) {
   await page.addInitScript(
-    (args: [string, string]) => localStorage.setItem(args[0], args[1]),
-    [`mlp:code:${ID}`, code],
+    (a: { key: string; value: string }) => localStorage.setItem(a.key, a.value),
+    { key: `mlp:code:${ID}`, value: code },
   );
 }
 

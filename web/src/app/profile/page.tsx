@@ -44,21 +44,18 @@ export default async function ProfilePage() {
           {recent.map((s) => {
             const ok = s.total > 0 && s.passed === s.total;
             return (
-              <li key={s.id} className="problem-card">
-                <Link
-                  href={`/problems/${s.problem.topic}/${s.problem.slug}`}
-                  className="title"
-                >
-                  {s.problem.title}
+              <li key={s.id}>
+                <Link href={`/submissions/${s.id}`} className="problem-card">
+                  <span className="title">{s.problem.title}</span>
+                  <span className="meta">
+                    <span className={ok ? "result-good" : "result-bad"}>
+                      {s.passed}/{s.total}
+                    </span>
+                    <span className="topic-tag">
+                      {new Date(s.createdAt).toISOString().slice(0, 16).replace("T", " ")}
+                    </span>
+                  </span>
                 </Link>
-                <span className="meta">
-                  <span className={ok ? "result-good" : "result-bad"}>
-                    {s.passed}/{s.total}
-                  </span>
-                  <span className="topic-tag">
-                    {new Date(s.createdAt).toISOString().slice(0, 10)}
-                  </span>
-                </span>
               </li>
             );
           })}

@@ -59,6 +59,8 @@ jobs:
         run: pnpm prisma db push --skip-generate
       - name: Build
         run: pnpm build
+      - name: Typecheck
+        run: pnpm typecheck
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Run e2e (in-browser Pyodide runner)

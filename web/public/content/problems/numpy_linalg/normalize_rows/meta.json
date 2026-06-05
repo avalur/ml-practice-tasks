@@ -1,0 +1,25 @@
+{
+  "id": "numpy_linalg/normalize_rows",
+  "topic": "numpy_linalg",
+  "slug": "normalize_rows",
+  "title": "Normalize Rows to Unit Length",
+  "difficulty": "medium",
+  "entry": "normalize_rows",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `normalize_rows(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere each **row** is scaled to unit L2 norm (`row / ||row||`). Assume no\nrow is all zeros. Vectorize with broadcasting — no `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_linalg/normalize_rows",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
+  ],
+  "contentHash": "3709a60bc1f1fe12ed30c3ec3e1388e287a5db6d37b157c00076595b79ea93b5"
+}

@@ -1,0 +1,25 @@
+{
+  "id": "numpy_linalg/diag_of_product",
+  "topic": "numpy_linalg",
+  "slug": "diag_of_product",
+  "title": "Diagonal of a Matrix Product",
+  "difficulty": "medium",
+  "entry": "diag_of_product",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `diag_of_product(A, B)`.\n\nGiven `A` of shape `(n, k)` and `B` of shape `(k, n)`, return the diagonal of\nthe product `A @ B` as a 1D array of length `n` — i.e. element `i` is\n`A[i] . B[:, i]`. Do it **without** forming the full `A @ B`, and with no\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_linalg/diag_of_product",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "Entry i of diag(A@B) is row i of A dotted with column i of B — np.einsum('ij,ji->i', A, B) does it without building the full product."
+  ],
+  "contentHash": "5d55ac1b849857d7d075d4df8055f2dd711df6ba0eebddd40f6e079fa8312894"
+}

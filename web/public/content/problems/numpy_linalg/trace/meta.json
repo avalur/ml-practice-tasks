@@ -1,0 +1,28 @@
+{
+  "id": "numpy_linalg/trace",
+  "topic": "numpy_linalg",
+  "slug": "trace",
+  "title": "Trace by Hand",
+  "difficulty": "easy",
+  "entry": "trace",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "names": [
+      "trace"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `trace(X)`.\n\nReturn the trace of a square matrix `X` (the sum of its diagonal entries).\nCompute it yourself — `np.trace` is **not allowed** — and no `for`/`while`\nloops.",
+  "bundlePath": "/content/problems/numpy_linalg/trace",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hints": [
+    "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
+  ],
+  "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
+}

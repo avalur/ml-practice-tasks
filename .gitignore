@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 .venv/
 .pytest_cache/
+.idea/
+
+# Node
+node_modules/
+
+# Local Claude memory files (not part of the repo)
+/MEMORY.md
+/project_ml_leetcode.md
+/user_avalur_instructor.md

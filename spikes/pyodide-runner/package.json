@@ -1,0 +1,12 @@
+{
+  "name": "pyodide-runner-spike",
+  "private": true,
+  "type": "module",
+  "description": "Phase 0a de-risking spike: prove pytest+numpy run on the real repo files under Pyodide, with no state leakage across repeated runs.",
+  "scripts": {
+    "spike": "node spike.mjs"
+  },
+  "dependencies": {
+    "pyodide": "^0.29.4"
+  }
+}

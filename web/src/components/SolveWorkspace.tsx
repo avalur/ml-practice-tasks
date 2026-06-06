@@ -103,7 +103,18 @@ export function SolveWorkspace({
         durationMs: r.durationMs,
       }),
     })
-      .then((res) => setSaveState(res.ok ? "saved" : "error"))
+      .then(async (res) => {
+        setSaveState(res.ok ? "saved" : "error");
+        if (!res.ok) return;
+        const data = (await res.json().catch(() => null)) as { solved?: boolean } | null;
+        // Tell the sidebar (a sibling in the problems layout) to reflect the win
+        // immediately, instead of only after a page refresh.
+        window.dispatchEvent(
+          new CustomEvent("mlp:progress", {
+            detail: { problemId: meta.id, solved: !!data?.solved },
+          }),
+        );
+      })
       .catch(() => setSaveState("error"));
   }, [runner.status, runner.result, session, meta.id, code]);
 

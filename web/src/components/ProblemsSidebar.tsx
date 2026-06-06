@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -16,7 +16,7 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
     setCollapsed(localStorage.getItem("mlp:sidebar") === "1");
   }, []);
 
-  useEffect(() => {
+  const refreshProgress = useCallback(() => {
     fetch("/api/progress")
       .then((r) => (r.ok ? r.json() : { solved: [], streak: 0 }))
       .then((d) => {
@@ -25,6 +25,32 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
       })
       .catch(() => {});
   }, []);
+
+  useEffect(() => {
+    refreshProgress();
+  }, [refreshProgress]);
+
+  // A run saved elsewhere on the page (SolveWorkspace) fires this. Flip the
+  // badge to ✓ optimistically for instant feedback, then reconcile the count
+  // and streak from the server.
+  useEffect(() => {
+    const onProgress = (e: Event) => {
+      const detail = (e as CustomEvent<{ problemId?: string; solved?: boolean }>).detail;
+      if (!detail?.solved) return;
+      if (detail.problemId) {
+        const id = detail.problemId;
+        setSolved((prev) => {
+          if (prev.has(id)) return prev;
+          const next = new Set(prev);
+          next.add(id);
+          return next;
+        });
+      }
+      refreshProgress();
+    };
+    window.addEventListener("mlp:progress", onProgress);
+    return () => window.removeEventListener("mlp:progress", onProgress);
+  }, [refreshProgress]);
 
   const toggle = () =>
     setCollapsed((c) => {

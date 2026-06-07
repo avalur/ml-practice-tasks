@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.argpartition puts the n largest in front (unordered); take them, then sort descending."
   ],

@@ -22,6 +22,9 @@ export type ProblemMeta = {
   bundlePath: string;
   pyDeps: string[];
   webRunnable: boolean;
+  /** Unlisted: kept in the manifest (so it stays SSG-built and solvable by
+   *  direct URL) but filtered out of the catalog, sidebar and prev/next nav. */
+  hidden?: boolean;
   hints: string[];
   contentHash: string;
 };
@@ -31,6 +34,11 @@ export type Manifest = {
   difficulties: Difficulty[];
   problems: ProblemMeta[];
 };
+
+/** Problems shown in nav/lists — everything not flagged `hidden`. */
+export function visibleProblems(manifest: Manifest): ProblemMeta[] {
+  return manifest.problems.filter((p) => !p.hidden);
+}
 
 /** Human-readable one-line summary of a problem's constraints. */
 export function constraintSummary(banned: Banned): string[] {

@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Index the rows with np.arange and the columns with the labels in a single assignment."
   ],

@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
   ],

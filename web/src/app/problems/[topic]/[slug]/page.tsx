@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { getManifest, getProblem, getStarterCode } from "@/lib/content";
-import { constraintSummary } from "@/lib/problem";
+import { constraintSummary, visibleProblems } from "@/lib/problem";
 import { SolveWorkspace } from "@/components/SolveWorkspace";
 
 type Params = { topic: string; slug: string };
@@ -37,8 +37,9 @@ export default async function ProblemPage({
   ]);
   const constraints = constraintSummary(problem.banned);
 
-  // Linear prev/next in catalog order.
-  const order = (await getManifest()).problems;
+  // Linear prev/next in catalog order (visible problems only — a hidden task
+  // viewed directly gets no neighbours).
+  const order = visibleProblems(await getManifest());
   const idx = order.findIndex((p) => p.topic === topic && p.slug === slug);
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;

@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
   ],

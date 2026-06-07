@@ -1,7 +1,7 @@
 META = {
     "title": "Rows That Are Not Constant",
     "topic": "numpy_indexing",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "rows_not_constant",
     "banned": {
         "modules": ["scipy", "sklearn"],

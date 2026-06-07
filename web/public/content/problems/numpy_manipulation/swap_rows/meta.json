@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
   ],

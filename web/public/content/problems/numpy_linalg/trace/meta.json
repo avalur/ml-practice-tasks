@@ -21,6 +21,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
   ],

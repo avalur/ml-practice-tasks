@@ -1,6 +1,7 @@
 META = {
     "title": "Replace the Max with Zero",
-    "topic": "numpy_indexing",
+    "topic": "numpy_warmup",
+    "hidden": True,
     "difficulty": "easy",
     "entry": "replace_max",
     "banned": {

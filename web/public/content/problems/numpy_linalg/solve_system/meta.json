@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
   ],

@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Build a boolean mask (x > lo) & (x < hi) and flip the sign of those entries in a copy."
   ],

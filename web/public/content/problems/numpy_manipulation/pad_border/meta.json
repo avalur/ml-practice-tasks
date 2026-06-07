@@ -21,6 +21,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
   ],

@@ -1,6 +1,6 @@
 # Rows That Are Not Constant
 
-**Topic:** `numpy_indexing` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_indexing` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `rows_not_constant(X)`.
 

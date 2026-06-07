@@ -103,6 +103,8 @@ def validate_meta(meta: dict, topic: str, slug: str) -> None:
     hints = meta.get("hints", [])
     if not isinstance(hints, (list, tuple)) or not all(isinstance(h, str) for h in hints):
         raise ValueError(f"{where} hints must be a list of strings")
+    if not isinstance(meta.get("hidden", False), bool):
+        raise ValueError(f"{where} hidden must be a bool")
 
 
 @dataclass(frozen=True)
@@ -118,6 +120,7 @@ class ProblemBundle:
     statement_md: str
     py_deps: tuple[str, ...]
     web_runnable: bool
+    hidden: bool
     hints: tuple[str, ...]
     reference_src: str
     stub_src: str
@@ -159,6 +162,7 @@ def iter_problems() -> list[ProblemBundle]:
                 statement_md=meta.get("statement", "").strip(),
                 py_deps=tuple(meta.get("py_deps", ["numpy"])),
                 web_runnable=bool(meta.get("web_runnable", True)),
+                hidden=bool(meta.get("hidden", False)),
                 hints=tuple(meta.get("hints", [])),
                 reference_src=reference_src,
                 stub_src=make_stub(reference_src),

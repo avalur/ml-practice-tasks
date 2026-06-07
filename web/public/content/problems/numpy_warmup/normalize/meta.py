@@ -1,6 +1,7 @@
 META = {
     "title": "Normalize an Array",
-    "topic": "numpy_broadcasting",
+    "topic": "numpy_warmup",
+    "hidden": True,
     "difficulty": "easy",
     "entry": "normalize",
     "banned": {

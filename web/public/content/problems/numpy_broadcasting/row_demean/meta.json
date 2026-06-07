@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
   ],

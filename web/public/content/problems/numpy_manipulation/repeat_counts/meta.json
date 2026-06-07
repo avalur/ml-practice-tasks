@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
   ],

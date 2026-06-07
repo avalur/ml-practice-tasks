@@ -8,7 +8,7 @@ META = {
         "loops": True,
     },
     "hints": [
-        "np.abs(x - v).argmin() gives the index of the nearest element.",
+        "a.argmin() gives the index of the min element.",
     ],
     "statement": """
 Implement `closest_value(x, v)`.

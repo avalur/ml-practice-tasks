@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.nonzero(x) returns the indices of the non-zero entries (take [0] for 1D)."
   ],

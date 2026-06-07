@@ -1,4 +1,5 @@
 import { getManifest } from "@/lib/content";
+import { visibleProblems } from "@/lib/problem";
 import { ProblemsSidebar } from "@/components/ProblemsSidebar";
 
 export default async function ProblemsLayout({
@@ -7,7 +8,7 @@ export default async function ProblemsLayout({
   children: React.ReactNode;
 }) {
   const manifest = await getManifest();
-  const items = manifest.problems.map((p) => ({
+  const items = visibleProblems(manifest).map((p) => ({
     id: p.id,
     topic: p.topic,
     slug: p.slug,

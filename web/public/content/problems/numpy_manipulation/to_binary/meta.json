@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
   ],

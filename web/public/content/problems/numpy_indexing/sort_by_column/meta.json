@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "argsort the chosen column to get a row order, then index the rows with it."
   ],

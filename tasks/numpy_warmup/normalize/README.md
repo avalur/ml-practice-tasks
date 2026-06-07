@@ -1,6 +1,6 @@
 # Normalize an Array
 
-**Topic:** `numpy_broadcasting` &nbsp;|&nbsp; **Difficulty:** easy
+**Topic:** `numpy_warmup` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `normalize(x)`.
 
@@ -16,6 +16,6 @@ Vectorize it — no `for`/`while` loops. Assume `std > 0`.
 ## How to run
 
 ```bash
-pytest tasks/numpy_broadcasting/normalize
+pytest tasks/numpy_warmup/normalize
 ```
 Edit `submission.py` until every test passes.

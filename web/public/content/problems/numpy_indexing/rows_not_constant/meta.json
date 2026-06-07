@@ -3,7 +3,7 @@
   "topic": "numpy_indexing",
   "slug": "rows_not_constant",
   "title": "Rows That Are Not Constant",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "entry": "rows_not_constant",
   "banned": {
     "modules": [
@@ -18,8 +18,9 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "A row is constant iff its max equals its min — compare per-row max and min, then mask rows."
   ],
-  "contentHash": "72ea12758b6cc68152a4f41dac71b8467c8dedc0b977829699c77aec72d21ba9"
+  "contentHash": "9fd39506c3c85fb98ea516bc8dedbbab971f7356c54312cea0866a63cc21788f"
 }

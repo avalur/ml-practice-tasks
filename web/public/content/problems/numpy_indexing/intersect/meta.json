@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.intersect1d(a, b) returns the sorted, unique values common to both."
   ],

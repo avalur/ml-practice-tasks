@@ -5,7 +5,8 @@
     "numpy_indexing",
     "numpy_linalg",
     "numpy_manipulation",
-    "numpy_reductions"
+    "numpy_reductions",
+    "numpy_warmup"
   ],
   "difficulties": [
     "easy",
@@ -33,6 +34,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
       ],
@@ -58,35 +60,11 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "A slice with a negative step walks the array backwards."
       ],
       "contentHash": "1ee080fdd6a1783bdfe0879b4bb1da479faf2f58fde47fa1950c8d3e0eabecb2"
-    },
-    {
-      "id": "numpy_broadcasting/normalize",
-      "topic": "numpy_broadcasting",
-      "slug": "normalize",
-      "title": "Normalize an Array",
-      "difficulty": "easy",
-      "entry": "normalize",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `normalize(x)`.\n\nReturn `x` z-normalized over **all** its elements: subtract the overall mean\nand divide by the overall standard deviation, i.e. `(x - mean) / std`.\nVectorize it — no `for`/`while` loops. Assume `std > 0`.",
-      "bundlePath": "/content/problems/numpy_broadcasting/normalize",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hints": [
-        "Compute the mean and std over the whole array, then broadcast them back."
-      ],
-      "contentHash": "c67755f7866b50d996ef9385b1e810e5e7b0075932938a483fd58b3c9c513522"
     },
     {
       "id": "numpy_broadcasting/row_demean",
@@ -108,6 +86,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
       ],
@@ -133,10 +112,11 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
-        "np.abs(x - v).argmin() gives the index of the nearest element."
+        "a.argmin() gives the index of the min element."
       ],
-      "contentHash": "830f6b795eb6a8ddff95584ad67d2534e8f9156506126362e5363864f4cb973e"
+      "contentHash": "2d7b3a39811f6007739aa5eee5f0808f1988b79622ae4c5998ff7de008afa593"
     },
     {
       "id": "numpy_indexing/intersect",
@@ -158,6 +138,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.intersect1d(a, b) returns the sorted, unique values common to both."
       ],
@@ -183,6 +164,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Build a boolean mask (x > lo) & (x < hi) and flip the sign of those entries in a copy."
       ],
@@ -208,6 +190,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.argpartition puts the n largest in front (unordered); take them, then sort descending."
       ],
@@ -233,42 +216,18 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.nonzero(x) returns the indices of the non-zero entries (take [0] for 1D)."
       ],
       "contentHash": "d9f590238d7813118328df302da5b9dfd01e1f397478ea1b1c8829c5fb7dd4b0"
     },
     {
-      "id": "numpy_indexing/replace_max",
-      "topic": "numpy_indexing",
-      "slug": "replace_max",
-      "title": "Replace the Max with Zero",
-      "difficulty": "easy",
-      "entry": "replace_max",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `replace_max(x)`.\n\nGiven a 1D array `x`, return a **new** array equal to `x` but with its\nmaximum element replaced by `0` (leave `x` itself unchanged). If the max\noccurs more than once, replace the first occurrence. No `for`/`while` loops.",
-      "bundlePath": "/content/problems/numpy_indexing/replace_max",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hints": [
-        "argmax gives the index of the maximum; copy first so the input isn't mutated."
-      ],
-      "contentHash": "5168a3ed3999ba5aad56b6671b13704d8f6c685c83bc58a9d4cfcd4aff999bf1"
-    },
-    {
       "id": "numpy_indexing/rows_not_constant",
       "topic": "numpy_indexing",
       "slug": "rows_not_constant",
       "title": "Rows That Are Not Constant",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "rows_not_constant",
       "banned": {
         "modules": [
@@ -283,10 +242,11 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "A row is constant iff its max equals its min — compare per-row max and min, then mask rows."
       ],
-      "contentHash": "72ea12758b6cc68152a4f41dac71b8467c8dedc0b977829699c77aec72d21ba9"
+      "contentHash": "9fd39506c3c85fb98ea516bc8dedbbab971f7356c54312cea0866a63cc21788f"
     },
     {
       "id": "numpy_indexing/sort_by_column",
@@ -308,6 +268,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "argsort the chosen column to get a row order, then index the rows with it."
       ],
@@ -333,6 +294,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
       ],
@@ -358,6 +320,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Entry i of diag(A@B) is row i of A dotted with column i of B — np.einsum('ij,ji->i', A, B) does it without building the full product."
       ],
@@ -383,6 +346,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "The Gram matrix of rows is X @ X.T."
       ],
@@ -408,6 +372,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
       ],
@@ -433,6 +398,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
       ],
@@ -461,6 +427,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
       ],
@@ -486,6 +453,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
       ],
@@ -511,6 +479,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Start from zeros and set alternating slices to 1: Z[1::2, ::2] and Z[::2, 1::2]."
       ],
@@ -536,6 +505,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
       ],
@@ -564,6 +534,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
       ],
@@ -589,6 +560,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
       ],
@@ -614,6 +586,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
       ],
@@ -639,6 +612,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
       ],
@@ -664,6 +638,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.unique(X, axis=0) returns the distinct rows (sorted)."
       ],
@@ -689,6 +664,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.bincount(idx, weights=values, minlength=n) sums values into bins by index."
       ],
@@ -714,6 +690,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.bincount counts occurrences of each value; argmax gives the most frequent."
       ],
@@ -739,6 +716,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "np.cumsum gives prefix sums; a window sum is the difference of two of them."
       ],
@@ -764,6 +742,7 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Index the rows with np.arange and the columns with the labels in a single assignment."
       ],
@@ -789,10 +768,63 @@
         "numpy"
       ],
       "webRunnable": true,
+      "hidden": false,
       "hints": [
         "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
       ],
       "contentHash": "4f272e81d640e425ac5b3a8943aaf3c4b1d23bc2b471315f7e17fda792fc6c0b"
+    },
+    {
+      "id": "numpy_warmup/normalize",
+      "topic": "numpy_warmup",
+      "slug": "normalize",
+      "title": "Normalize an Array",
+      "difficulty": "easy",
+      "entry": "normalize",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `normalize(x)`.\n\nReturn `x` z-normalized over **all** its elements: subtract the overall mean\nand divide by the overall standard deviation, i.e. `(x - mean) / std`.\nVectorize it — no `for`/`while` loops. Assume `std > 0`.",
+      "bundlePath": "/content/problems/numpy_warmup/normalize",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": true,
+      "hints": [
+        "Compute the mean and std over the whole array, then broadcast them back."
+      ],
+      "contentHash": "46324e6e2a0db35ce796887008e31454c5063bd95b86de56f153dfcc231f5214"
+    },
+    {
+      "id": "numpy_warmup/replace_max",
+      "topic": "numpy_warmup",
+      "slug": "replace_max",
+      "title": "Replace the Max with Zero",
+      "difficulty": "easy",
+      "entry": "replace_max",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `replace_max(x)`.\n\nGiven a 1D array `x`, return a **new** array equal to `x` but with its\nmaximum element replaced by `0` (leave `x` itself unchanged). If the max\noccurs more than once, replace the first occurrence. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_warmup/replace_max",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": true,
+      "hints": [
+        "argmax gives the index of the maximum; copy first so the input isn't mutated."
+      ],
+      "contentHash": "1ea6fc6859f319c3325867d152ca261dfae01cebb866d54f018bb8f7bd931f5e"
     }
   ]
 }

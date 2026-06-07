@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
   ],

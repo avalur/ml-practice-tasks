@@ -2,6 +2,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getManifest } from "@/lib/content";
+import { visibleProblems } from "@/lib/problem";
 import { computeStreak } from "@/lib/stats";
 
 export const metadata = { title: "Profile — ML Practice" };
@@ -29,7 +30,7 @@ export default async function ProfilePage() {
     computeStreak(userId),
     getManifest(),
   ]);
-  const total = manifest.problems.length;
+  const total = visibleProblems(manifest).length;
 
   return (
     <section>

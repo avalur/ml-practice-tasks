@@ -1,6 +1,6 @@
 # Replace the Max with Zero
 
-**Topic:** `numpy_indexing` &nbsp;|&nbsp; **Difficulty:** easy
+**Topic:** `numpy_warmup` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `replace_max(x)`.
 
@@ -16,6 +16,6 @@ occurs more than once, replace the first occurrence. No `for`/`while` loops.
 ## How to run
 
 ```bash
-pytest tasks/numpy_indexing/replace_max
+pytest tasks/numpy_warmup/replace_max
 ```
 Edit `submission.py` until every test passes.

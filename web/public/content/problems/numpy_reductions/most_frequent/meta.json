@@ -18,6 +18,7 @@
     "numpy"
   ],
   "webRunnable": true,
+  "hidden": false,
   "hints": [
     "np.bincount counts occurrences of each value; argmax gives the most frequent."
   ],

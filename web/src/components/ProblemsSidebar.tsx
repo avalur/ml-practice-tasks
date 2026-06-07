@@ -11,6 +11,10 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
   const [collapsed, setCollapsed] = useState(false);
   const [solved, setSolved] = useState<Set<string>>(new Set());
   const [streak, setStreak] = useState(0);
+  // True until the first /api/progress resolves; pulses the bullets meanwhile.
+  const [loading, setLoading] = useState(true);
+  // Tasks whose passing run is being saved — their bullet pulses until the ✓ lands.
+  const [pending, setPending] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     setCollapsed(localStorage.getItem("mlp:sidebar") === "1");
@@ -23,22 +27,37 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
         setSolved(new Set<string>(d.solved ?? []));
         setStreak(d.streak ?? 0);
       })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
     refreshProgress();
   }, [refreshProgress]);
 
-  // A run saved elsewhere on the page (SolveWorkspace) fires this. Flip the
-  // badge to ✓ optimistically for instant feedback, then reconcile the count
-  // and streak from the server.
+  // Cross-component progress signals from SolveWorkspace:
+  //  • mlp:progress-pending — a passing run is being saved → pulse the bullet.
+  //  • mlp:progress         — the save settled → stop pulsing, and on a win flip
+  //    the badge to ✓ optimistically, then reconcile the count and streak.
   useEffect(() => {
+    const clearPending = (id: string) =>
+      setPending((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+
+    const onPending = (e: Event) => {
+      const id = (e as CustomEvent<{ problemId?: string }>).detail?.problemId;
+      if (id) setPending((prev) => (prev.has(id) ? prev : new Set(prev).add(id)));
+    };
     const onProgress = (e: Event) => {
       const detail = (e as CustomEvent<{ problemId?: string; solved?: boolean }>).detail;
+      const id = detail?.problemId;
+      if (id) clearPending(id);
       if (!detail?.solved) return;
-      if (detail.problemId) {
-        const id = detail.problemId;
+      if (id) {
         setSolved((prev) => {
           if (prev.has(id)) return prev;
           const next = new Set(prev);
@@ -48,8 +67,13 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
       }
       refreshProgress();
     };
+
+    window.addEventListener("mlp:progress-pending", onPending);
     window.addEventListener("mlp:progress", onProgress);
-    return () => window.removeEventListener("mlp:progress", onProgress);
+    return () => {
+      window.removeEventListener("mlp:progress-pending", onPending);
+      window.removeEventListener("mlp:progress", onProgress);
+    };
   }, [refreshProgress]);
 
   const toggle = () =>
@@ -119,7 +143,11 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
                     const active = pathname === href;
                     return (
                       <Link key={p.id} href={href} className={`file${active ? " active" : ""}`}>
-                        <span className={solved.has(p.id) ? "check done" : "check"}>
+                        <span
+                          className={`check${solved.has(p.id) ? " done" : ""}${
+                            loading || pending.has(p.id) ? " loading" : ""
+                          }`}
+                        >
                           {solved.has(p.id) ? "✓" : "•"}
                         </span>
                         <span className="file-title">{p.title}</span>

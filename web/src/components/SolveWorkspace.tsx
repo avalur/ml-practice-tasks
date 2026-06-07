@@ -90,6 +90,20 @@ export function SolveWorkspace({
     if (runner.status !== "done" || !r || postedRef.current === r) return;
     postedRef.current = r;
     if (!session?.user) return;
+    const allPass = r.total > 0 && r.passed === r.total;
+    // On a win, ask the sidebar to pulse this task's bullet while we persist —
+    // it stays pulsing until the save settles and the green ✓ is set.
+    if (allPass) {
+      window.dispatchEvent(
+        new CustomEvent("mlp:progress-pending", { detail: { problemId: meta.id } }),
+      );
+    }
+    // Settle the pulse once the save resolves — always fire (even on failure)
+    // so the bullet can't pulse forever; on a win this also flips the badge.
+    const settle = (solved: boolean) =>
+      window.dispatchEvent(
+        new CustomEvent("mlp:progress", { detail: { problemId: meta.id, solved } }),
+      );
     setSaveState("saving");
     fetch("/api/submissions", {
       method: "POST",
@@ -97,7 +111,7 @@ export function SolveWorkspace({
       body: JSON.stringify({
         problemId: meta.id,
         code,
-        clientStatus: r.total > 0 && r.passed === r.total ? "passed" : "failed",
+        clientStatus: allPass ? "passed" : "failed",
         passed: r.passed,
         total: r.total,
         durationMs: r.durationMs,
@@ -105,17 +119,15 @@ export function SolveWorkspace({
     })
       .then(async (res) => {
         setSaveState(res.ok ? "saved" : "error");
-        if (!res.ok) return;
-        const data = (await res.json().catch(() => null)) as { solved?: boolean } | null;
-        // Tell the sidebar (a sibling in the problems layout) to reflect the win
-        // immediately, instead of only after a page refresh.
-        window.dispatchEvent(
-          new CustomEvent("mlp:progress", {
-            detail: { problemId: meta.id, solved: !!data?.solved },
-          }),
-        );
+        const data = res.ok
+          ? ((await res.json().catch(() => null)) as { solved?: boolean } | null)
+          : null;
+        settle(!!data?.solved);
       })
-      .catch(() => setSaveState("error"));
+      .catch(() => {
+        setSaveState("error");
+        settle(false);
+      });
   }, [runner.status, runner.result, session, meta.id, code]);
 
   const busy = runner.status === "running" || runner.status === "loading";

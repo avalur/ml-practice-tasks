@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/vector_mean",
+  "topic": "numpy_basics",
+  "slug": "vector_mean",
+  "title": "Mean of a Vector",
+  "difficulty": "easy",
+  "entry": "vector_mean",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `vector_mean(x)`.\n\nReturn the arithmetic mean (average) of the 1D array `x`. (numpy-100 motivates\nthis by creating a random vector of size 30 and finding its mean — here you\njust compute the mean of the given vector.) No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/vector_mean",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "a.mean() averages all elements (it's the sum divided by the count)."
+  ],
+  "contentHash": "2c8d4c215653272dac6f5313a6acb3a3e5a3cb1884232737a1542bf1f909c753"
+}

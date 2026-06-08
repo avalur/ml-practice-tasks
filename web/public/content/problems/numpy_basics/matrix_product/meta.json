@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/matrix_product",
+  "topic": "numpy_basics",
+  "slug": "matrix_product",
+  "title": "Matrix Product",
+  "difficulty": "easy",
+  "entry": "matrix_product",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `matrix_product(a, b)`.\n\nGiven a matrix `a` of shape `(m, k)` and a matrix `b` of shape `(k, n)`,\nreturn their matrix product `a @ b` (shape `(m, n)`). For example, a 5×3\nmatrix times a 3×2 matrix gives a 5×2 matrix. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/matrix_product",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "The @ operator (or np.dot) computes the real matrix product."
+  ],
+  "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
+}

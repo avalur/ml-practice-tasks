@@ -146,6 +146,70 @@
       "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
     },
     {
+      "id": "numpy_basics/vector_mean",
+      "topic": "numpy_basics",
+      "slug": "vector_mean",
+      "title": "Mean of a Vector",
+      "difficulty": "easy",
+      "entry": "vector_mean",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `vector_mean(x)`.\n\nReturn the arithmetic mean (average) of the 1D array `x`. (numpy-100 motivates\nthis by creating a random vector of size 30 and finding its mean — here you\njust compute the mean of the given vector.) No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/vector_mean",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "a.mean() averages all elements (it's the sum divided by the count)."
+      ],
+      "contentHash": "2c8d4c215653272dac6f5313a6acb3a3e5a3cb1884232737a1542bf1f909c753"
+    },
+    {
+      "id": "numpy_basics/rgba_dtype",
+      "topic": "numpy_basics",
+      "slug": "rgba_dtype",
+      "title": "RGBA Color Dtype",
+      "difficulty": "easy",
+      "entry": "rgba_dtype",
+      "banned": {},
+      "statementMd": "Implement `rgba_dtype()`.\n\nReturn a custom NumPy structured `dtype` that describes a color as four\nunsigned bytes: fields named `\"r\"`, `\"g\"`, `\"b\"`, `\"a\"`, each an unsigned\n8-bit integer (`np.uint8`). The dtype should occupy 4 bytes in total.",
+      "bundlePath": "/content/problems/numpy_basics/rgba_dtype",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.dtype([(name, type), ...]) builds a structured dtype; np.uint8 is an unsigned byte."
+      ],
+      "contentHash": "0b92583592fdc870b56b5d6727005c66f9831cc7c273648bcc2d6a90bf15dc11"
+    },
+    {
+      "id": "numpy_basics/matrix_product",
+      "topic": "numpy_basics",
+      "slug": "matrix_product",
+      "title": "Matrix Product",
+      "difficulty": "easy",
+      "entry": "matrix_product",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `matrix_product(a, b)`.\n\nGiven a matrix `a` of shape `(m, k)` and a matrix `b` of shape `(k, n)`,\nreturn their matrix product `a @ b` (shape `(m, n)`). For example, a 5×3\nmatrix times a 3×2 matrix gives a 5×2 matrix. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/matrix_product",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "The @ operator (or np.dot) computes the real matrix product."
+      ],
+      "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
+    },
+    {
       "id": "numpy_basics/pairwise_distances",
       "topic": "numpy_basics",
       "slug": "pairwise_distances",

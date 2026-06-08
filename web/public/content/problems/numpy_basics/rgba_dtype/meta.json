@@ -1,0 +1,20 @@
+{
+  "id": "numpy_basics/rgba_dtype",
+  "topic": "numpy_basics",
+  "slug": "rgba_dtype",
+  "title": "RGBA Color Dtype",
+  "difficulty": "easy",
+  "entry": "rgba_dtype",
+  "banned": {},
+  "statementMd": "Implement `rgba_dtype()`.\n\nReturn a custom NumPy structured `dtype` that describes a color as four\nunsigned bytes: fields named `\"r\"`, `\"g\"`, `\"b\"`, `\"a\"`, each an unsigned\n8-bit integer (`np.uint8`). The dtype should occupy 4 bytes in total.",
+  "bundlePath": "/content/problems/numpy_basics/rgba_dtype",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.dtype([(name, type), ...]) builds a structured dtype; np.uint8 is an unsigned byte."
+  ],
+  "contentHash": "0b92583592fdc870b56b5d6727005c66f9831cc7c273648bcc2d6a90bf15dc11"
+}

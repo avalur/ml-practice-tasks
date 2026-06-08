@@ -18,6 +18,7 @@ import {
   type TestResult,
 } from "@/lib/runner";
 import { usePyodideRunner } from "@/hooks/usePyodideRunner";
+import { useTheme } from "@/components/ThemeProvider";
 import { useSession } from "next-auth/react";
 
 export function SolveWorkspace({
@@ -32,6 +33,7 @@ export function SolveWorkspace({
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [bundleError, setBundleError] = useState<string | null>(null);
   const runner = usePyodideRunner(meta.pyDeps);
+  const { theme } = useTheme();
   const { data: session } = useSession();
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const postedRef = useRef<RunResult | null>(null);
@@ -241,7 +243,7 @@ export function SolveWorkspace({
       <CodeMirror
         value={code}
         height="360px"
-        theme="dark"
+        theme={theme}
         extensions={[python(), editorPadding]}
         onChange={setCode}
       />

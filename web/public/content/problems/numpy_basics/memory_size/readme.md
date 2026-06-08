@@ -10,7 +10,6 @@ number of elements times the number of bytes per element. Compute it from
 
 ## Constraints
 
-- Forbidden modules: scipy, sklearn
 - Forbidden functions: nbytes
 
 ## How to run

@@ -5,7 +5,6 @@ META = {
     "entry": "reverse_vector",
     "order": 6,
     "banned": {
-        "modules": ["scipy", "sklearn"],
         "loops": True,
     },
     "hints": [

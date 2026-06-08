@@ -5,7 +5,6 @@ META = {
     "entry": "memory_size",
     "order": 2,
     "banned": {
-        "modules": ["scipy", "sklearn"],
         "names": ["nbytes"],
     },
     "hints": [

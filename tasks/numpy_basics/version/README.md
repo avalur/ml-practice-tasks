@@ -8,10 +8,6 @@ Return the installed NumPy version as a string — the value available as
 `np.__version__`. (For exploring, `np.show_config()` prints the full build
 configuration, but this function only needs to return the version string.)
 
-## Constraints
-
-- Forbidden modules: scipy, sklearn
-
 ## How to run
 
 ```bash

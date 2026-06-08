@@ -5,7 +5,6 @@ META = {
     "entry": "range_vector",
     "order": 5,
     "banned": {
-        "modules": ["scipy", "sklearn"],
         "loops": True,
     },
     "hints": [

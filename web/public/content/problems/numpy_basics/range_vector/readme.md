@@ -10,7 +10,6 @@ ranges from 10 to 49. No `for`/`while` loops.
 
 ## Constraints
 
-- Forbidden modules: scipy, sklearn
 - Explicit `for`/`while` loops are not allowed (vectorize it)
 
 ## How to run

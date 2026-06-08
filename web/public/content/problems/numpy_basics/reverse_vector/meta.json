@@ -6,10 +6,6 @@
   "difficulty": "easy",
   "entry": "reverse_vector",
   "banned": {
-    "modules": [
-      "scipy",
-      "sklearn"
-    ],
     "loops": true
   },
   "statementMd": "Implement `reverse_vector(x)`.\n\nGiven a 1D array `x`, return its elements in reverse order (last element\nfirst). Use slicing — no `for`/`while` loops.",
@@ -22,5 +18,5 @@
   "hints": [
     "A slice with a negative step walks the array backwards."
   ],
-  "contentHash": "5855b1d7f9912cb7b6e0dc14e599f47f14ba7452cab70b531c9d960d947e8212"
+  "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
 }

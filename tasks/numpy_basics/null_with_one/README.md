@@ -10,7 +10,6 @@ fifth value (index 4) is 1. No `for`/`while` loops.
 
 ## Constraints
 
-- Forbidden modules: scipy, sklearn
 - Explicit `for`/`while` loops are not allowed (vectorize it)
 
 ## How to run

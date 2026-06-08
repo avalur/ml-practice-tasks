@@ -6,10 +6,6 @@
   "difficulty": "easy",
   "entry": "range_vector",
   "banned": {
-    "modules": [
-      "scipy",
-      "sklearn"
-    ],
     "loops": true
   },
   "statementMd": "Implement `range_vector(lo, hi)`.\n\nReturn a 1D array of the consecutive integers from `lo` up to but not\nincluding `hi` (`lo, lo+1, ..., hi-1`). For example, `range_vector(10, 50)`\nranges from 10 to 49. No `for`/`while` loops.",
@@ -22,5 +18,5 @@
   "hints": [
     "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
   ],
-  "contentHash": "4f60d063fd06e849047326acb4e1470422f8159d29887f359c8c98afdb3adb2b"
+  "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
 }

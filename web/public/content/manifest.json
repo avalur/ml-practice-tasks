@@ -20,12 +20,7 @@
       "title": "NumPy Version",
       "difficulty": "easy",
       "entry": "numpy_version",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ]
-      },
+      "banned": {},
       "statementMd": "Implement `numpy_version()`.\n\nReturn the installed NumPy version as a string — the value available as\n`np.__version__`. (For exploring, `np.show_config()` prints the full build\nconfiguration, but this function only needs to return the version string.)",
       "bundlePath": "/content/problems/numpy_basics/version",
       "pyDeps": [
@@ -36,7 +31,7 @@
       "hints": [
         "NumPy exposes its version as np.__version__."
       ],
-      "contentHash": "f0a1e774b51ebc6ecd948ea39c0f17d0ac89539d4fa8927dc9b0cb7216e0f3cc"
+      "contentHash": "133119589343b2af8f86225293d9bb2d1c4dac5d555874167c1f94bccf52ad66"
     },
     {
       "id": "numpy_basics/memory_size",
@@ -46,10 +41,6 @@
       "difficulty": "easy",
       "entry": "memory_size",
       "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
         "names": [
           "nbytes"
         ]
@@ -64,7 +55,7 @@
       "hints": [
         "An array holds a.size elements, each a.itemsize bytes — multiply them."
       ],
-      "contentHash": "4507bff503a95aa649c8729059714bcf0739845ec70d189562e063224537a04a"
+      "contentHash": "0220ca090d051a58e3b7705868960ac71e8b90642ff431df74ffa347f7c552cf"
     },
     {
       "id": "numpy_basics/null_vector",
@@ -74,10 +65,6 @@
       "difficulty": "easy",
       "entry": "null_vector",
       "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
         "loops": true
       },
       "statementMd": "Implement `null_vector(n)`.\n\nReturn a 1D array of `n` zeros (dtype float). No `for`/`while` loops.",
@@ -90,7 +77,7 @@
       "hints": [
         "np.zeros(n) builds a length-n vector of zeros."
       ],
-      "contentHash": "c500083acfb1ef53c6e311aceb02fd4b9856aad0738845889182232f52961e8c"
+      "contentHash": "9c379cec6c50dd935eeb04a11b568d79256569b14c2a9838c579c43d6776ec8f"
     },
     {
       "id": "numpy_basics/null_with_one",
@@ -100,10 +87,6 @@
       "difficulty": "easy",
       "entry": "null_with_one",
       "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
         "loops": true
       },
       "statementMd": "Implement `null_with_one(n, i)`.\n\nReturn a length-`n` vector of zeros (dtype float) whose value at index `i`\nis `1`. For example, `null_with_one(10, 4)` is a size-10 null vector whose\nfifth value (index 4) is 1. No `for`/`while` loops.",
@@ -116,7 +99,7 @@
       "hints": [
         "Make a zero vector with np.zeros(n), then assign 1 to index i."
       ],
-      "contentHash": "e1e5fe1964fd858f3f044ad9b868df89b0839606f569b7c3af70ac80a01abf7f"
+      "contentHash": "9fe960f018a95d6dba38b1a30f73686242a863d2b835d59754ee5c9297efe222"
     },
     {
       "id": "numpy_basics/range_vector",
@@ -126,10 +109,6 @@
       "difficulty": "easy",
       "entry": "range_vector",
       "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
         "loops": true
       },
       "statementMd": "Implement `range_vector(lo, hi)`.\n\nReturn a 1D array of the consecutive integers from `lo` up to but not\nincluding `hi` (`lo, lo+1, ..., hi-1`). For example, `range_vector(10, 50)`\nranges from 10 to 49. No `for`/`while` loops.",
@@ -142,7 +121,7 @@
       "hints": [
         "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
       ],
-      "contentHash": "4f60d063fd06e849047326acb4e1470422f8159d29887f359c8c98afdb3adb2b"
+      "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
     },
     {
       "id": "numpy_basics/reverse_vector",
@@ -152,10 +131,6 @@
       "difficulty": "easy",
       "entry": "reverse_vector",
       "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
         "loops": true
       },
       "statementMd": "Implement `reverse_vector(x)`.\n\nGiven a 1D array `x`, return its elements in reverse order (last element\nfirst). Use slicing — no `for`/`while` loops.",
@@ -168,7 +143,7 @@
       "hints": [
         "A slice with a negative step walks the array backwards."
       ],
-      "contentHash": "5855b1d7f9912cb7b6e0dc14e599f47f14ba7452cab70b531c9d960d947e8212"
+      "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
     },
     {
       "id": "numpy_basics/pairwise_distances",

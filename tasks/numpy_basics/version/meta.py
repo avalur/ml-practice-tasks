@@ -5,7 +5,6 @@ META = {
     "entry": "numpy_version",
     "order": 1,
     "banned": {
-        "modules": ["scipy", "sklearn"],
     },
     "hints": [
         "NumPy exposes its version as np.__version__.",

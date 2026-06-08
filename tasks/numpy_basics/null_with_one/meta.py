@@ -5,7 +5,6 @@ META = {
     "entry": "null_with_one",
     "order": 4,
     "banned": {
-        "modules": ["scipy", "sklearn"],
         "loops": True,
     },
     "hints": [

@@ -6,10 +6,6 @@
   "difficulty": "easy",
   "entry": "null_vector",
   "banned": {
-    "modules": [
-      "scipy",
-      "sklearn"
-    ],
     "loops": true
   },
   "statementMd": "Implement `null_vector(n)`.\n\nReturn a 1D array of `n` zeros (dtype float). No `for`/`while` loops.",
@@ -22,5 +18,5 @@
   "hints": [
     "np.zeros(n) builds a length-n vector of zeros."
   ],
-  "contentHash": "c500083acfb1ef53c6e311aceb02fd4b9856aad0738845889182232f52961e8c"
+  "contentHash": "9c379cec6c50dd935eeb04a11b568d79256569b14c2a9838c579c43d6776ec8f"
 }

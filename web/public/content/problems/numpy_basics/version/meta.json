@@ -1,0 +1,25 @@
+{
+  "id": "numpy_basics/version",
+  "topic": "numpy_basics",
+  "slug": "version",
+  "title": "NumPy Version",
+  "difficulty": "easy",
+  "entry": "numpy_version",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ]
+  },
+  "statementMd": "Implement `numpy_version()`.\n\nReturn the installed NumPy version as a string — the value available as\n`np.__version__`. (For exploring, `np.show_config()` prints the full build\nconfiguration, but this function only needs to return the version string.)",
+  "bundlePath": "/content/problems/numpy_basics/version",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "NumPy exposes its version as np.__version__."
+  ],
+  "contentHash": "f0a1e774b51ebc6ecd948ea39c0f17d0ac89539d4fa8927dc9b0cb7216e0f3cc"
+}

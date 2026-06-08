@@ -1,0 +1,26 @@
+{
+  "id": "numpy_basics/null_vector",
+  "topic": "numpy_basics",
+  "slug": "null_vector",
+  "title": "Null Vector",
+  "difficulty": "easy",
+  "entry": "null_vector",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `null_vector(n)`.\n\nReturn a 1D array of `n` zeros (dtype float). No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/null_vector",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.zeros(n) builds a length-n vector of zeros."
+  ],
+  "contentHash": "c500083acfb1ef53c6e311aceb02fd4b9856aad0738845889182232f52961e8c"
+}

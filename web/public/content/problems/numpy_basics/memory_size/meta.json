@@ -1,0 +1,28 @@
+{
+  "id": "numpy_basics/memory_size",
+  "topic": "numpy_basics",
+  "slug": "memory_size",
+  "title": "Memory Size of an Array",
+  "difficulty": "easy",
+  "entry": "memory_size",
+  "banned": {
+    "modules": [
+      "scipy",
+      "sklearn"
+    ],
+    "names": [
+      "nbytes"
+    ]
+  },
+  "statementMd": "Implement `memory_size(a)`.\n\nReturn the total number of bytes the array `a` occupies in memory — the\nnumber of elements times the number of bytes per element. Compute it from\n`a.size` and `a.itemsize` (the `nbytes` shortcut is not allowed).",
+  "bundlePath": "/content/problems/numpy_basics/memory_size",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "An array holds a.size elements, each a.itemsize bytes — multiply them."
+  ],
+  "contentHash": "4507bff503a95aa649c8729059714bcf0739845ec70d189562e063224537a04a"
+}

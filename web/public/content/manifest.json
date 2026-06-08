@@ -210,6 +210,26 @@
       "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
     },
     {
+      "id": "numpy_basics/make_immutable",
+      "topic": "numpy_basics",
+      "slug": "make_immutable",
+      "title": "Read-Only Array",
+      "difficulty": "medium",
+      "entry": "make_immutable",
+      "banned": {},
+      "statementMd": "Implement `make_immutable(a)`.\n\nReturn the array `a` made **read-only**: its values stay the same, but any\nattempt to assign into the result (e.g. `result[0] = 1`) must raise. (NumPy\narrays expose a `flags.writeable` flag for exactly this.)",
+      "bundlePath": "/content/problems/numpy_basics/make_immutable",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Every array has a.flags.writeable — set it to False to freeze the array."
+      ],
+      "contentHash": "7482f217f652d2996ac8a834affd57f0504ece67f2aadc7bde31f12e007cb9dd"
+    },
+    {
       "id": "numpy_basics/pairwise_distances",
       "topic": "numpy_basics",
       "slug": "pairwise_distances",

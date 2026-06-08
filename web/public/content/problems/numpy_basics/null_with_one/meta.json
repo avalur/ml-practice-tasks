@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/null_with_one",
+  "topic": "numpy_basics",
+  "slug": "null_with_one",
+  "title": "Null Vector With a One",
+  "difficulty": "easy",
+  "entry": "null_with_one",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `null_with_one(n, i)`.\n\nReturn a length-`n` vector of zeros (dtype float) whose value at index `i`\nis `1`. For example, `null_with_one(10, 4)` is a size-10 null vector whose\nfifth value (index 4) is 1. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/null_with_one",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Make a zero vector with np.zeros(n), then assign 1 to index i."
+  ],
+  "contentHash": "9fe960f018a95d6dba38b1a30f73686242a863d2b835d59754ee5c9297efe222"
+}

@@ -105,6 +105,9 @@ def validate_meta(meta: dict, topic: str, slug: str) -> None:
         raise ValueError(f"{where} hints must be a list of strings")
     if not isinstance(meta.get("hidden", False), bool):
         raise ValueError(f"{where} hidden must be a bool")
+    order = meta.get("order", 100)
+    if not isinstance(order, int) or isinstance(order, bool) or order < 0:
+        raise ValueError(f"{where} order must be a non-negative int")
 
 
 @dataclass(frozen=True)
@@ -121,6 +124,7 @@ class ProblemBundle:
     py_deps: tuple[str, ...]
     web_runnable: bool
     hidden: bool
+    order: int
     hints: tuple[str, ...]
     reference_src: str
     stub_src: str
@@ -163,6 +167,7 @@ def iter_problems() -> list[ProblemBundle]:
                 py_deps=tuple(meta.get("py_deps", ["numpy"])),
                 web_runnable=bool(meta.get("web_runnable", True)),
                 hidden=bool(meta.get("hidden", False)),
+                order=int(meta.get("order", 100)),
                 hints=tuple(meta.get("hints", [])),
                 reference_src=reference_src,
                 stub_src=make_stub(reference_src),
@@ -171,4 +176,7 @@ def iter_problems() -> list[ProblemBundle]:
                 readme_md=render_readme(meta, topic, slug),
             )
         )
+    # Order within a topic by the optional `order` field (then slug); topics
+    # stay alphabetical. Drives catalog / sidebar / prev-next ordering.
+    bundles.sort(key=lambda b: (b.topic, b.order, b.slug))
     return bundles

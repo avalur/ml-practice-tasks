@@ -14,6 +14,222 @@
   ],
   "problems": [
     {
+      "id": "numpy_basics/version",
+      "topic": "numpy_basics",
+      "slug": "version",
+      "title": "NumPy Version",
+      "difficulty": "easy",
+      "entry": "numpy_version",
+      "banned": {},
+      "statementMd": "Implement `numpy_version()`.\n\nReturn the installed NumPy version as a string — the value available as\n`np.__version__`. (For exploring, `np.show_config()` prints the full build\nconfiguration, but this function only needs to return the version string.)",
+      "bundlePath": "/content/problems/numpy_basics/version",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "NumPy exposes its version as np.__version__."
+      ],
+      "contentHash": "133119589343b2af8f86225293d9bb2d1c4dac5d555874167c1f94bccf52ad66"
+    },
+    {
+      "id": "numpy_basics/memory_size",
+      "topic": "numpy_basics",
+      "slug": "memory_size",
+      "title": "Memory Size of an Array",
+      "difficulty": "easy",
+      "entry": "memory_size",
+      "banned": {
+        "names": [
+          "nbytes"
+        ]
+      },
+      "statementMd": "Implement `memory_size(a)`.\n\nReturn the total number of bytes the array `a` occupies in memory — the\nnumber of elements times the number of bytes per element. Compute it from\n`a.size` and `a.itemsize` (the `nbytes` shortcut is not allowed).",
+      "bundlePath": "/content/problems/numpy_basics/memory_size",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "An array holds a.size elements, each a.itemsize bytes — multiply them."
+      ],
+      "contentHash": "0220ca090d051a58e3b7705868960ac71e8b90642ff431df74ffa347f7c552cf"
+    },
+    {
+      "id": "numpy_basics/null_vector",
+      "topic": "numpy_basics",
+      "slug": "null_vector",
+      "title": "Null Vector",
+      "difficulty": "easy",
+      "entry": "null_vector",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `null_vector(n)`.\n\nReturn a 1D array of `n` zeros (dtype float). No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/null_vector",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.zeros(n) builds a length-n vector of zeros."
+      ],
+      "contentHash": "9c379cec6c50dd935eeb04a11b568d79256569b14c2a9838c579c43d6776ec8f"
+    },
+    {
+      "id": "numpy_basics/null_with_one",
+      "topic": "numpy_basics",
+      "slug": "null_with_one",
+      "title": "Null Vector With a One",
+      "difficulty": "easy",
+      "entry": "null_with_one",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `null_with_one(n, i)`.\n\nReturn a length-`n` vector of zeros (dtype float) whose value at index `i`\nis `1`. For example, `null_with_one(10, 4)` is a size-10 null vector whose\nfifth value (index 4) is 1. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/null_with_one",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Make a zero vector with np.zeros(n), then assign 1 to index i."
+      ],
+      "contentHash": "9fe960f018a95d6dba38b1a30f73686242a863d2b835d59754ee5c9297efe222"
+    },
+    {
+      "id": "numpy_basics/range_vector",
+      "topic": "numpy_basics",
+      "slug": "range_vector",
+      "title": "Range Vector",
+      "difficulty": "easy",
+      "entry": "range_vector",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `range_vector(lo, hi)`.\n\nReturn a 1D array of the consecutive integers from `lo` up to but not\nincluding `hi` (`lo, lo+1, ..., hi-1`). For example, `range_vector(10, 50)`\nranges from 10 to 49. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/range_vector",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
+      ],
+      "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
+    },
+    {
+      "id": "numpy_basics/reverse_vector",
+      "topic": "numpy_basics",
+      "slug": "reverse_vector",
+      "title": "Reverse a Vector",
+      "difficulty": "easy",
+      "entry": "reverse_vector",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `reverse_vector(x)`.\n\nGiven a 1D array `x`, return its elements in reverse order (last element\nfirst). Use slicing — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/reverse_vector",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "A slice with a negative step walks the array backwards."
+      ],
+      "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
+    },
+    {
+      "id": "numpy_basics/vector_mean",
+      "topic": "numpy_basics",
+      "slug": "vector_mean",
+      "title": "Mean of a Vector",
+      "difficulty": "easy",
+      "entry": "vector_mean",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `vector_mean(x)`.\n\nReturn the arithmetic mean (average) of the 1D array `x`. (numpy-100 motivates\nthis by creating a random vector of size 30 and finding its mean — here you\njust compute the mean of the given vector.) No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/vector_mean",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "a.mean() averages all elements (it's the sum divided by the count)."
+      ],
+      "contentHash": "2c8d4c215653272dac6f5313a6acb3a3e5a3cb1884232737a1542bf1f909c753"
+    },
+    {
+      "id": "numpy_basics/rgba_dtype",
+      "topic": "numpy_basics",
+      "slug": "rgba_dtype",
+      "title": "RGBA Color Dtype",
+      "difficulty": "easy",
+      "entry": "rgba_dtype",
+      "banned": {},
+      "statementMd": "Implement `rgba_dtype()`.\n\nReturn a custom NumPy structured `dtype` that describes a color as four\nunsigned bytes: fields named `\"r\"`, `\"g\"`, `\"b\"`, `\"a\"`, each an unsigned\n8-bit integer (`np.uint8`). The dtype should occupy 4 bytes in total.",
+      "bundlePath": "/content/problems/numpy_basics/rgba_dtype",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.dtype([(name, type), ...]) builds a structured dtype; np.uint8 is an unsigned byte."
+      ],
+      "contentHash": "0b92583592fdc870b56b5d6727005c66f9831cc7c273648bcc2d6a90bf15dc11"
+    },
+    {
+      "id": "numpy_basics/matrix_product",
+      "topic": "numpy_basics",
+      "slug": "matrix_product",
+      "title": "Matrix Product",
+      "difficulty": "easy",
+      "entry": "matrix_product",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `matrix_product(a, b)`.\n\nGiven a matrix `a` of shape `(m, k)` and a matrix `b` of shape `(k, n)`,\nreturn their matrix product `a @ b` (shape `(m, n)`). For example, a 5×3\nmatrix times a 3×2 matrix gives a 5×2 matrix. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/matrix_product",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "The @ operator (or np.dot) computes the real matrix product."
+      ],
+      "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
+    },
+    {
+      "id": "numpy_basics/make_immutable",
+      "topic": "numpy_basics",
+      "slug": "make_immutable",
+      "title": "Read-Only Array",
+      "difficulty": "medium",
+      "entry": "make_immutable",
+      "banned": {},
+      "statementMd": "Implement `make_immutable(a)`.\n\nReturn the array `a` made **read-only**: its values stay the same, but any\nattempt to assign into the result (e.g. `result[0] = 1`) must raise. (NumPy\narrays expose a `flags.writeable` flag for exactly this.)",
+      "bundlePath": "/content/problems/numpy_basics/make_immutable",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Every array has a.flags.writeable — set it to False to freeze the array."
+      ],
+      "contentHash": "7482f217f652d2996ac8a834affd57f0504ece67f2aadc7bde31f12e007cb9dd"
+    },
+    {
       "id": "numpy_basics/pairwise_distances",
       "topic": "numpy_basics",
       "slug": "pairwise_distances",
@@ -38,32 +254,6 @@
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
       ],
       "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
-    },
-    {
-      "id": "numpy_basics/reverse_vector",
-      "topic": "numpy_basics",
-      "slug": "reverse_vector",
-      "title": "Reverse a Vector",
-      "difficulty": "easy",
-      "entry": "reverse_vector",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `reverse_vector(x)`.\n\nGiven a 1D array `x`, return its elements in reverse order (last element\nfirst). Use slicing — no `for`/`while` loops.",
-      "bundlePath": "/content/problems/numpy_basics/reverse_vector",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hidden": false,
-      "hints": [
-        "A slice with a negative step walks the array backwards."
-      ],
-      "contentHash": "1ee080fdd6a1783bdfe0879b4bb1da479faf2f58fde47fa1950c8d3e0eabecb2"
     },
     {
       "id": "numpy_indexing/closest_value",

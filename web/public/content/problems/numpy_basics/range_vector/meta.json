@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/range_vector",
+  "topic": "numpy_basics",
+  "slug": "range_vector",
+  "title": "Range Vector",
+  "difficulty": "easy",
+  "entry": "range_vector",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `range_vector(lo, hi)`.\n\nReturn a 1D array of the consecutive integers from `lo` up to but not\nincluding `hi` (`lo, lo+1, ..., hi-1`). For example, `range_vector(10, 50)`\nranges from 10 to 49. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/range_vector",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
+  ],
+  "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
+}

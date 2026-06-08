@@ -12,6 +12,7 @@ import type { ProblemMeta } from "@/lib/problem";
 import {
   loadBundle,
   type Bundle,
+  type CodeResult,
   type RunResult,
   type RunnerStatus,
   type TestResult,
@@ -87,7 +88,8 @@ export function SolveWorkspace({
   // Persist each completed run (logged-in users only), once per result.
   useEffect(() => {
     const r = runner.result;
-    if (runner.status !== "done" || !r || postedRef.current === r) return;
+    if (runner.status !== "done" || runner.mode !== "test" || !r || postedRef.current === r)
+      return;
     postedRef.current = r;
     if (!session?.user) return;
     const allPass = r.total > 0 && r.passed === r.total;
@@ -128,7 +130,7 @@ export function SolveWorkspace({
         setSaveState("error");
         settle(false);
       });
-  }, [runner.status, runner.result, session, meta.id, code]);
+  }, [runner.status, runner.mode, runner.result, session, meta.id, code]);
 
   const busy = runner.status === "running" || runner.status === "loading";
 
@@ -139,6 +141,12 @@ export function SolveWorkspace({
       testPath: bundle.testPath,
       pyDeps: meta.pyDeps,
     });
+  };
+
+  // Scratchpad: run the editor code as-is and show whatever it prints.
+  const onRunCode = () => {
+    if (busy) return;
+    runner.runCode(code);
   };
 
   const onReset = () => {
@@ -176,15 +184,24 @@ export function SolveWorkspace({
         <button className="btn primary" onClick={onRun} disabled={busy || !bundle}>
           {runner.status === "loading"
             ? "Loading runtime…"
-            : runner.status === "running"
+            : runner.status === "running" && runner.mode === "test"
               ? "Running…"
               : "Run tests"}
+        </button>
+        <button
+          className="btn"
+          onClick={onRunCode}
+          disabled={busy}
+          title="Run your code and see its output"
+        >
+          {runner.status === "running" && runner.mode === "code" ? "Running…" : "Run"}
         </button>
         <button className="btn" onClick={onReset} disabled={busy}>
           Reset
         </button>
         <kbd className="hint">⌘/Ctrl + ↵</kbd>
         {runner.status === "done" &&
+          runner.mode === "test" &&
           (session?.user ? (
             <span className="muted">
               {saveState === "saving"
@@ -211,11 +228,19 @@ export function SolveWorkspace({
         onChange={setCode}
       />
 
-      <ResultsPanel
-        status={runner.status}
-        error={runner.error}
-        result={runner.result}
-      />
+      {runner.mode === "code" ? (
+        <CodeOutputPanel
+          status={runner.status}
+          error={runner.error}
+          result={runner.codeResult}
+        />
+      ) : (
+        <ResultsPanel
+          status={runner.status}
+          error={runner.error}
+          result={runner.result}
+        />
+      )}
     </div>
   );
 }
@@ -266,6 +291,53 @@ function ResultsPanel({
           <summary>Raw pytest output</summary>
           <pre className="code trace">{result.output}</pre>
         </details>
+      )}
+    </div>
+  );
+}
+
+function CodeOutputPanel({
+  status,
+  error,
+  result,
+}: {
+  status: RunnerStatus;
+  error: string | null;
+  result: CodeResult | null;
+}) {
+  if (status === "loading")
+    return (
+      <p className="results muted">
+        Loading the Python runtime (first run only)…
+      </p>
+    );
+  if (status === "running") return <p className="results muted">Running…</p>;
+  if (status === "timeout")
+    return (
+      <p className="results result-bad">
+        ⏱ Timed out after 15s — likely an infinite loop. The runtime was
+        restarted; fix the loop and run again.
+      </p>
+    );
+  if (status === "error")
+    return <p className="results result-bad">Runner error: {error}</p>;
+  if (status !== "done" || !result) return null;
+
+  const empty = !result.output && !result.error;
+  return (
+    <div className="results">
+      <p className="muted banner">
+        Output<span className="muted"> · {result.durationMs} ms</span>
+      </p>
+      {result.output && <pre className="code trace">{result.output}</pre>}
+      {result.error && (
+        <pre className="code trace result-bad">{result.error}</pre>
+      )}
+      {empty && (
+        <p className="muted">
+          No output — add <code>print(...)</code> or call your function to see
+          results.
+        </p>
       )}
     </div>
   );

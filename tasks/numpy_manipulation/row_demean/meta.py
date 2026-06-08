@@ -1,6 +1,6 @@
 META = {
     "title": "Subtract Each Row's Mean",
-    "topic": "numpy_broadcasting",
+    "topic": "numpy_manipulation",
     "difficulty": "medium",
     "entry": "row_demean",
     "banned": {

@@ -3,7 +3,7 @@
   "topic": "numpy_reductions",
   "slug": "sum_last_two",
   "title": "Sum Over the Last Two Axes",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "entry": "sum_last_two",
   "banned": {
     "modules": [
@@ -22,5 +22,5 @@
   "hints": [
     "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
   ],
-  "contentHash": "4f272e81d640e425ac5b3a8943aaf3c4b1d23bc2b471315f7e17fda792fc6c0b"
+  "contentHash": "027837eb0cb5a870c6a1c317c538c3d8cb50f9ba768e41595a9fe27eaf24b7e4"
 }

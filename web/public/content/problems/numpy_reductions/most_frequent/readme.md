@@ -1,6 +1,6 @@
 # Most Frequent Value
 
-**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `most_frequent(x)`.
 

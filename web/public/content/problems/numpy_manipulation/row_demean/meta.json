@@ -1,6 +1,6 @@
 {
-  "id": "numpy_broadcasting/row_demean",
-  "topic": "numpy_broadcasting",
+  "id": "numpy_manipulation/row_demean",
+  "topic": "numpy_manipulation",
   "slug": "row_demean",
   "title": "Subtract Each Row's Mean",
   "difficulty": "medium",
@@ -13,7 +13,7 @@
     "loops": true
   },
   "statementMd": "Implement `row_demean(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere the mean of each **row** has been subtracted from that row. Vectorize\nit with broadcasting — no `for`/`while` loops.",
-  "bundlePath": "/content/problems/numpy_broadcasting/row_demean",
+  "bundlePath": "/content/problems/numpy_manipulation/row_demean",
   "pyDeps": [
     "numpy"
   ],
@@ -22,5 +22,5 @@
   "hints": [
     "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
   ],
-  "contentHash": "b81aa461cdb6d6df82da9acb5f4519eef185aab4c3c6d91c03e839afd74a9b73"
+  "contentHash": "3cc8c1896ec53a995afe9051691f7941cefdfc0bbf91e3d567f651748821a6f7"
 }

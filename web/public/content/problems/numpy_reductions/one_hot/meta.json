@@ -3,7 +3,7 @@
   "topic": "numpy_reductions",
   "slug": "one_hot",
   "title": "One-Hot Encoding",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "entry": "one_hot",
   "banned": {
     "modules": [
@@ -22,5 +22,5 @@
   "hints": [
     "Index the rows with np.arange and the columns with the labels in a single assignment."
   ],
-  "contentHash": "23927688c6c409967ed3c6e78344428da6af6ef6c5e85bb456c52fa3d66e977f"
+  "contentHash": "ce9911cd58226bad72cd44bdd611ee85659d30da2b84932b03027051baf5253a"
 }

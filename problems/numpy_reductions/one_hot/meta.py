@@ -1,7 +1,7 @@
 META = {
     "title": "One-Hot Encoding",
     "topic": "numpy_reductions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "one_hot",
     "banned": {
         "modules": ["scipy", "sklearn"],

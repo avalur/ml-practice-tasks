@@ -1,6 +1,6 @@
 # Subtract Each Row's Mean
 
-**Topic:** `numpy_broadcasting` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_manipulation` &nbsp;|&nbsp; **Difficulty:** medium
 
 Implement `row_demean(X)`.
 
@@ -16,6 +16,6 @@ it with broadcasting — no `for`/`while` loops.
 ## How to run
 
 ```bash
-pytest tasks/numpy_broadcasting/row_demean
+pytest tasks/numpy_manipulation/row_demean
 ```
 Edit `submission.py` until every test passes.

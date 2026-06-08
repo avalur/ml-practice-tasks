@@ -1,6 +1,6 @@
 # One-Hot Encoding
 
-**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `one_hot(labels, k)`.
 

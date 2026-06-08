@@ -1,7 +1,6 @@
 {
   "topics": [
     "numpy_basics",
-    "numpy_broadcasting",
     "numpy_indexing",
     "numpy_linalg",
     "numpy_manipulation",
@@ -65,32 +64,6 @@
         "A slice with a negative step walks the array backwards."
       ],
       "contentHash": "1ee080fdd6a1783bdfe0879b4bb1da479faf2f58fde47fa1950c8d3e0eabecb2"
-    },
-    {
-      "id": "numpy_broadcasting/row_demean",
-      "topic": "numpy_broadcasting",
-      "slug": "row_demean",
-      "title": "Subtract Each Row's Mean",
-      "difficulty": "medium",
-      "entry": "row_demean",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `row_demean(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere the mean of each **row** has been subtracted from that row. Vectorize\nit with broadcasting — no `for`/`while` loops.",
-      "bundlePath": "/content/problems/numpy_broadcasting/row_demean",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hidden": false,
-      "hints": [
-        "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
-      ],
-      "contentHash": "b81aa461cdb6d6df82da9acb5f4519eef185aab4c3c6d91c03e839afd74a9b73"
     },
     {
       "id": "numpy_indexing/closest_value",
@@ -541,6 +514,32 @@
       "contentHash": "b61d50e268e1ea75850615938cd2bd5cf23ab74ce4645581d04ceaed47f70b6f"
     },
     {
+      "id": "numpy_manipulation/row_demean",
+      "topic": "numpy_manipulation",
+      "slug": "row_demean",
+      "title": "Subtract Each Row's Mean",
+      "difficulty": "medium",
+      "entry": "row_demean",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `row_demean(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return an array of the same shape\nwhere the mean of each **row** has been subtracted from that row. Vectorize\nit with broadcasting — no `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/row_demean",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
+      ],
+      "contentHash": "3cc8c1896ec53a995afe9051691f7941cefdfc0bbf91e3d567f651748821a6f7"
+    },
+    {
       "id": "numpy_manipulation/swap_rows",
       "topic": "numpy_manipulation",
       "slug": "swap_rows",
@@ -623,7 +622,7 @@
       "topic": "numpy_reductions",
       "slug": "most_frequent",
       "title": "Most Frequent Value",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "most_frequent",
       "banned": {
         "modules": [
@@ -642,7 +641,7 @@
       "hints": [
         "np.bincount counts occurrences of each value; argmax gives the most frequent."
       ],
-      "contentHash": "e3ae5b4b90f587275528eee57db6050eaff8a42939b1c8b93e675fa820dd3091"
+      "contentHash": "3dd641ea761d0bf804a563d62716ce3a32644b21a2d4218f2ec7561eca0d4e39"
     },
     {
       "id": "numpy_reductions/moving_average",
@@ -675,7 +674,7 @@
       "topic": "numpy_reductions",
       "slug": "one_hot",
       "title": "One-Hot Encoding",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "one_hot",
       "banned": {
         "modules": [
@@ -694,14 +693,14 @@
       "hints": [
         "Index the rows with np.arange and the columns with the labels in a single assignment."
       ],
-      "contentHash": "23927688c6c409967ed3c6e78344428da6af6ef6c5e85bb456c52fa3d66e977f"
+      "contentHash": "ce9911cd58226bad72cd44bdd611ee85659d30da2b84932b03027051baf5253a"
     },
     {
       "id": "numpy_reductions/sum_last_two",
       "topic": "numpy_reductions",
       "slug": "sum_last_two",
       "title": "Sum Over the Last Two Axes",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "sum_last_two",
       "banned": {
         "modules": [
@@ -720,7 +719,7 @@
       "hints": [
         "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
       ],
-      "contentHash": "4f272e81d640e425ac5b3a8943aaf3c4b1d23bc2b471315f7e17fda792fc6c0b"
+      "contentHash": "027837eb0cb5a870c6a1c317c538c3d8cb50f9ba768e41595a9fe27eaf24b7e4"
     },
     {
       "id": "numpy_warmup/normalize",

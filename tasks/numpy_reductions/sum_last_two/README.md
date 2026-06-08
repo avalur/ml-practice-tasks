@@ -1,6 +1,6 @@
 # Sum Over the Last Two Axes
 
-**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_reductions` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `sum_last_two(A)`.
 

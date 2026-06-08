@@ -1,7 +1,7 @@
 META = {
     "title": "Sum Over the Last Two Axes",
     "topic": "numpy_reductions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "sum_last_two",
     "banned": {
         "modules": ["scipy", "sklearn"],

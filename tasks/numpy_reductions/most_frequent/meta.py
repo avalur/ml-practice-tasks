@@ -1,7 +1,7 @@
 META = {
     "title": "Most Frequent Value",
     "topic": "numpy_reductions",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "most_frequent",
     "banned": {
         "modules": ["scipy", "sklearn"],

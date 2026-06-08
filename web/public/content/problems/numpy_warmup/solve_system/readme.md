@@ -1,6 +1,6 @@
 # Solve a Linear System
 
-**Topic:** `numpy_linalg` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_warmup` &nbsp;|&nbsp; **Difficulty:** medium
 
 Implement `solve_system(A, b)`.
 
@@ -16,6 +16,6 @@ length `n`, return the solution `x` of the linear system `A @ x = b`. No
 ## How to run
 
 ```bash
-pytest tasks/numpy_linalg/solve_system
+pytest tasks/numpy_warmup/solve_system
 ```
 Edit `submission.py` until every test passes.

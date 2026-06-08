@@ -279,7 +279,7 @@
       "topic": "numpy_linalg",
       "slug": "cauchy",
       "title": "Cauchy Matrix",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "cauchy",
       "banned": {
         "modules": [
@@ -298,7 +298,7 @@
       "hints": [
         "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
       ],
-      "contentHash": "8f58225f5cf4eca9fb0a5b758bc2abcd616bc3c19aa92848cbf9b4245de6141b"
+      "contentHash": "a665c0143c9bd43b049f20494ab4d95eb78b82bcf4f805d17d3db6627fbcde3f"
     },
     {
       "id": "numpy_linalg/diag_of_product",
@@ -377,32 +377,6 @@
         "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
       ],
       "contentHash": "3709a60bc1f1fe12ed30c3ec3e1388e287a5db6d37b157c00076595b79ea93b5"
-    },
-    {
-      "id": "numpy_linalg/solve_system",
-      "topic": "numpy_linalg",
-      "slug": "solve_system",
-      "title": "Solve a Linear System",
-      "difficulty": "medium",
-      "entry": "solve_system",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `solve_system(A, b)`.\n\nGiven a square, invertible matrix `A` of shape `(n, n)` and a vector `b` of\nlength `n`, return the solution `x` of the linear system `A @ x = b`. No\n`for`/`while` loops.",
-      "bundlePath": "/content/problems/numpy_linalg/solve_system",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hidden": false,
-      "hints": [
-        "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
-      ],
-      "contentHash": "bcd18ab82b8c2e1e08b39eabaebf0fbdab6f371a8cd91bc3bf161c76b733c43e"
     },
     {
       "id": "numpy_linalg/trace",
@@ -490,7 +464,7 @@
       "topic": "numpy_manipulation",
       "slug": "interleave_zeros",
       "title": "Interleave Zeros",
-      "difficulty": "medium",
+      "difficulty": "easy",
       "entry": "interleave_zeros",
       "banned": {
         "modules": [
@@ -509,7 +483,7 @@
       "hints": [
         "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
       ],
-      "contentHash": "87e88ae95cfcc61e947df93ce22597624019d51f2a1bcac0f9ef82e9c00b1f8b"
+      "contentHash": "2a9860110b4677083b8ca0192a8c40a6daf0527409c95680b7bccca0c62bf617"
     },
     {
       "id": "numpy_manipulation/pad_border",
@@ -617,32 +591,6 @@
         "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
       ],
       "contentHash": "5bcf8fc3a96be7663fe55f0be2a9f8e73b669b96698be0d65fd8ec507a401e16"
-    },
-    {
-      "id": "numpy_manipulation/unique_rows",
-      "topic": "numpy_manipulation",
-      "slug": "unique_rows",
-      "title": "Unique Rows",
-      "difficulty": "medium",
-      "entry": "unique_rows",
-      "banned": {
-        "modules": [
-          "scipy",
-          "sklearn"
-        ],
-        "loops": true
-      },
-      "statementMd": "Implement `unique_rows(X)`.\n\nGiven a 2D array `X`, return its distinct rows as a 2D array, sorted in\nascending (lexicographic) order — i.e. the result of treating each row as a\nunit. No `for`/`while` loops.",
-      "bundlePath": "/content/problems/numpy_manipulation/unique_rows",
-      "pyDeps": [
-        "numpy"
-      ],
-      "webRunnable": true,
-      "hidden": false,
-      "hints": [
-        "np.unique(X, axis=0) returns the distinct rows (sorted)."
-      ],
-      "contentHash": "a42c5815e8140a0da9a9396d40b51de61a61159d9944aab1ce9c8fa19f369992"
     },
     {
       "id": "numpy_reductions/accumulate_at",
@@ -825,6 +773,58 @@
         "argmax gives the index of the maximum; copy first so the input isn't mutated."
       ],
       "contentHash": "1ea6fc6859f319c3325867d152ca261dfae01cebb866d54f018bb8f7bd931f5e"
+    },
+    {
+      "id": "numpy_warmup/solve_system",
+      "topic": "numpy_warmup",
+      "slug": "solve_system",
+      "title": "Solve a Linear System",
+      "difficulty": "medium",
+      "entry": "solve_system",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `solve_system(A, b)`.\n\nGiven a square, invertible matrix `A` of shape `(n, n)` and a vector `b` of\nlength `n`, return the solution `x` of the linear system `A @ x = b`. No\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_warmup/solve_system",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": true,
+      "hints": [
+        "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
+      ],
+      "contentHash": "c692db2f195f8d7e604e1aa75061adff948c78bb63cf333701cb68a19a76ab41"
+    },
+    {
+      "id": "numpy_warmup/unique_rows",
+      "topic": "numpy_warmup",
+      "slug": "unique_rows",
+      "title": "Unique Rows",
+      "difficulty": "medium",
+      "entry": "unique_rows",
+      "banned": {
+        "modules": [
+          "scipy",
+          "sklearn"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `unique_rows(X)`.\n\nGiven a 2D array `X`, return its distinct rows as a 2D array, sorted in\nascending (lexicographic) order — i.e. the result of treating each row as a\nunit. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_warmup/unique_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": true,
+      "hints": [
+        "np.unique(X, axis=0) returns the distinct rows (sorted)."
+      ],
+      "contentHash": "3d4b1c6e4bfd9525eb631f431e85d79e8aa2bad7fa091d58fb96f15ca311ae61"
     }
   ]
 }

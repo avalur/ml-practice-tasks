@@ -1,6 +1,7 @@
 META = {
     "title": "Unique Rows",
-    "topic": "numpy_manipulation",
+    "topic": "numpy_warmup",
+    "hidden": True,
     "difficulty": "medium",
     "entry": "unique_rows",
     "banned": {

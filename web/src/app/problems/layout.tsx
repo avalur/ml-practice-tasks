@@ -1,6 +1,7 @@
 import { getManifest } from "@/lib/content";
 import { visibleProblems } from "@/lib/problem";
 import { ProblemsSidebar } from "@/components/ProblemsSidebar";
+import { ProblemsShell } from "@/components/ProblemsShell";
 
 export default async function ProblemsLayout({
   children,
@@ -15,9 +16,8 @@ export default async function ProblemsLayout({
     title: p.title,
   }));
   return (
-    <div className="problems-shell">
-      <ProblemsSidebar items={items} />
-      <div className="problems-main">{children}</div>
-    </div>
+    <ProblemsShell sidebar={<ProblemsSidebar items={items} />}>
+      {children}
+    </ProblemsShell>
   );
 }

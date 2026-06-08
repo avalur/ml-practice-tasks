@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { RunResult, RunnerStatus } from "@/lib/runner";
+import type { CodeResult, RunResult, RunnerStatus } from "@/lib/runner";
 
 const TIMEOUT_MS = 15000;
 
@@ -25,7 +25,9 @@ export function usePyodideRunner(pyDeps: string[]) {
   pyDepsRef.current = pyDeps;
 
   const [status, setStatus] = useState<RunnerStatus>("loading");
+  const [mode, setMode] = useState<"test" | "code" | null>(null);
   const [result, setResult] = useState<RunResult | null>(null);
+  const [codeResult, setCodeResult] = useState<CodeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const spawn = useCallback(() => {
@@ -38,6 +40,12 @@ export function usePyodideRunner(pyDeps: string[]) {
         if (msg.runId !== runIdRef.current) return; // stale run
         if (timerRef.current) clearTimeout(timerRef.current);
         setResult(msg.result as RunResult);
+        setError(null);
+        setStatus("done");
+      } else if (msg.type === "CODE_RESULT") {
+        if (msg.runId !== runIdRef.current) return; // stale run
+        if (timerRef.current) clearTimeout(timerRef.current);
+        setCodeResult(msg.result as CodeResult);
         setError(null);
         setStatus("done");
       } else if (msg.type === "ERROR") {
@@ -65,24 +73,49 @@ export function usePyodideRunner(pyDeps: string[]) {
     };
   }, [spawn]);
 
+  // Shared run setup: ensure a worker, bump the run id, set the busy state and
+  // arm the watchdog. Returns the new run id for the caller's postMessage.
+  const begin = useCallback(() => {
+    if (!workerRef.current) spawn();
+    const runId = ++runIdRef.current;
+    setStatus("running");
+    setError(null);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+      workerRef.current?.terminate();
+      workerRef.current = null;
+      setStatus("timeout");
+      spawn(); // fresh runtime for the next attempt
+    }, TIMEOUT_MS);
+    return runId;
+  }, [spawn]);
+
+  // Run the pytest suite.
   const run = useCallback(
     (payload: RunPayload) => {
-      if (!workerRef.current) spawn();
-      const runId = ++runIdRef.current;
-      setStatus("running");
+      const runId = begin();
+      setMode("test");
       setResult(null);
-      setError(null);
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        workerRef.current?.terminate();
-        workerRef.current = null;
-        setStatus("timeout");
-        spawn(); // fresh runtime for the next attempt
-      }, TIMEOUT_MS);
       workerRef.current!.postMessage({ type: "RUN", runId, ...payload });
     },
-    [spawn],
+    [begin],
   );
 
-  return { status, result, error, run };
+  // Run the editor code as a script and capture its output (scratchpad).
+  const runCode = useCallback(
+    (code: string) => {
+      const runId = begin();
+      setMode("code");
+      setCodeResult(null);
+      workerRef.current!.postMessage({
+        type: "RUN_CODE",
+        runId,
+        code,
+        pyDeps: pyDepsRef.current,
+      });
+    },
+    [begin],
+  );
+
+  return { status, mode, result, codeResult, error, run, runCode };
 }

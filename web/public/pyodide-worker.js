@@ -8,10 +8,12 @@
  *
  * Protocol (postMessage):
  *   in:  { type: "INIT", pyDeps }
- *        { type: "RUN", runId, files, testPath, pyDeps }
+ *        { type: "RUN", runId, files, testPath, pyDeps }   // run the pytest suite
+ *        { type: "RUN_CODE", runId, code, pyDeps }         // run editor code, capture output
  *   out: { type: "STATUS", stage }            // loading-pyodide | loading-packages
  *        { type: "READY" }
- *        { type: "RESULT", runId, result }
+ *        { type: "RESULT", runId, result }        // pytest results
+ *        { type: "CODE_RESULT", runId, result }   // { output, error, durationMs }
  *        { type: "ERROR", runId?, error }
  */
 
@@ -23,7 +25,7 @@ importScripts(`${BASE}pyodide.js`);
 
 // Python harness — defines _run_once(files, test_path) → structured results.
 const HARNESS = `
-import sys, os, io, json, importlib, pathlib, shutil, time, contextlib
+import sys, os, io, json, importlib, pathlib, shutil, time, contextlib, traceback
 
 def _purge_task_modules():
     for name in list(sys.modules):
@@ -85,6 +87,28 @@ def _run_once(files, test_path):
         "durationMs": dt,
         "output": buf.getvalue()[-3000:],
     }
+
+def _run_code(code):
+    # Scratchpad: run the editor content as a __main__ script, capturing
+    # stdout+stderr. A fresh globals dict each call so runs don't leak state.
+    os.chdir("/")
+    out = io.StringIO()
+    err_text = ""
+    g = {"__name__": "__main__", "__file__": "submission.py"}
+    t0 = time.time()
+    with contextlib.redirect_stdout(out), contextlib.redirect_stderr(out):
+        try:
+            exec(compile(code, "submission.py", "exec"), g)
+        except SystemExit:
+            pass
+        except BaseException:
+            err_text = traceback.format_exc()
+    dt = int((time.time() - t0) * 1000)
+    return {
+        "output": out.getvalue()[-20000:],
+        "error": err_text[-8000:],
+        "durationMs": dt,
+    }
 `;
 
 let pyodidePromise = null;
@@ -125,6 +149,15 @@ self.onmessage = async (event) => {
         "json.dumps(_run_once(json.loads(FILES_JSON), TEST_PATH))",
       );
       self.postMessage({ type: "RESULT", runId: msg.runId, result: JSON.parse(out) });
+    }
+    if (msg.type === "RUN_CODE") {
+      const pyodide = await ensurePyodide(msg.pyDeps);
+      await pyodide.loadPackage([...new Set(msg.pyDeps || ["numpy"])], {
+        messageCallback: () => {},
+      });
+      pyodide.globals.set("USER_CODE", msg.code);
+      const out = pyodide.runPython("json.dumps(_run_code(USER_CODE))");
+      self.postMessage({ type: "CODE_RESULT", runId: msg.runId, result: JSON.parse(out) });
     }
   } catch (err) {
     self.postMessage({

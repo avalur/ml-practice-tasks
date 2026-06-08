@@ -19,6 +19,14 @@ export type RunResult = {
   output: string;
 };
 
+// Result of the scratchpad "Run" button: execute the editor code as a script
+// and capture what it printed.
+export type CodeResult = {
+  output: string; // combined stdout + stderr
+  error: string; // traceback if an exception escaped
+  durationMs: number;
+};
+
 export type RunnerStatus =
   | "loading" // pyodide + packages downloading
   | "ready"

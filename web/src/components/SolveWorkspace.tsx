@@ -36,41 +36,59 @@ export function SolveWorkspace({
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const postedRef = useRef<RunResult | null>(null);
 
-  // Which submission to preload, from ?submission=… (read client-side so the
-  // problem page stays statically generated).
-  const [submissionId, setSubmissionId] = useState<string | null>(null);
+  // Resolve the editor's initial content once, with precedence:
+  //   ?submission=<id>  →  local draft (your in-progress edits here)  →
+  //   your last submission for this task  →  the starter stub.
+  const hydratedRef = useRef(false);
   useEffect(() => {
-    setSubmissionId(new URLSearchParams(window.location.search).get("submission"));
-  }, []);
-
-  // Restore the saved draft after mount — unless we're loading a submission.
-  useEffect(() => {
-    if (submissionId) return;
-    const saved = localStorage.getItem(storageKey);
-    if (saved != null) setCode(saved);
-  }, [storageKey, submissionId]);
-
-  // Load a specific submission's code into the editor (owner-only API).
-  useEffect(() => {
-    if (!submissionId) return;
     let alive = true;
-    fetch(`/api/submissions/${submissionId}`)
+    const finish = (value?: string) => {
+      if (!alive) return;
+      if (typeof value === "string") setCode(value);
+      hydratedRef.current = true; // enable the autosave below
+    };
+
+    const subId = new URLSearchParams(window.location.search).get("submission");
+    if (subId) {
+      // Explicit submission from the profile: load it, then drop the param so a
+      // refresh keeps later edits instead of reloading it.
+      fetch(`/api/submissions/${subId}`)
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (typeof d?.code === "string") {
+            finish(d.code);
+            window.history.replaceState(null, "", window.location.pathname);
+          } else finish();
+        })
+        .catch(() => finish());
+      return () => {
+        alive = false;
+      };
+    }
+
+    const draft = localStorage.getItem(storageKey);
+    if (draft != null && draft !== starter) {
+      finish(draft); // unsaved local edits win
+      return () => {
+        alive = false;
+      };
+    }
+
+    // No local edits → prefill from the user's last submission (the API returns
+    // null when logged out or never submitted), else keep the stub.
+    fetch(`/api/submissions/latest?problemId=${encodeURIComponent(meta.id)}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => {
-        if (alive && typeof d?.code === "string") {
-          setCode(d.code);
-          // Drop ?submission= so a refresh keeps edits instead of reloading it.
-          window.history.replaceState(null, "", window.location.pathname);
-        }
-      })
-      .catch(() => {});
+      .then((d) => finish(typeof d?.code === "string" ? d.code : undefined))
+      .catch(() => finish());
     return () => {
       alive = false;
     };
-  }, [submissionId]);
+  }, [storageKey, starter, meta.id]);
 
-  // Autosave.
+  // Persist edits locally so a reload keeps your work. Gated on hydration so the
+  // initial stub never overwrites a restored draft or last-submission code.
   useEffect(() => {
+    if (!hydratedRef.current) return;
     localStorage.setItem(storageKey, code);
   }, [storageKey, code]);
 

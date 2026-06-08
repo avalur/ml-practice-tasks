@@ -1,6 +1,6 @@
 # Unique Rows
 
-**Topic:** `numpy_manipulation` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_warmup` &nbsp;|&nbsp; **Difficulty:** medium
 
 Implement `unique_rows(X)`.
 
@@ -16,6 +16,6 @@ unit. No `for`/`while` loops.
 ## How to run
 
 ```bash
-pytest tasks/numpy_manipulation/unique_rows
+pytest tasks/numpy_warmup/unique_rows
 ```
 Edit `submission.py` until every test passes.

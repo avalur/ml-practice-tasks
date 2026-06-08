@@ -1,7 +1,7 @@
 META = {
     "title": "Cauchy Matrix",
     "topic": "numpy_linalg",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "cauchy",
     "banned": {
         "modules": ["scipy", "sklearn"],

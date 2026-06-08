@@ -1,7 +1,7 @@
 META = {
     "title": "Interleave Zeros",
     "topic": "numpy_manipulation",
-    "difficulty": "medium",
+    "difficulty": "easy",
     "entry": "interleave_zeros",
     "banned": {
         "modules": ["scipy", "sklearn"],

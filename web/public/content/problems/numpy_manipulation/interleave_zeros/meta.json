@@ -3,7 +3,7 @@
   "topic": "numpy_manipulation",
   "slug": "interleave_zeros",
   "title": "Interleave Zeros",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "entry": "interleave_zeros",
   "banned": {
     "modules": [
@@ -22,5 +22,5 @@
   "hints": [
     "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
   ],
-  "contentHash": "87e88ae95cfcc61e947df93ce22597624019d51f2a1bcac0f9ef82e9c00b1f8b"
+  "contentHash": "2a9860110b4677083b8ca0192a8c40a6daf0527409c95680b7bccca0c62bf617"
 }

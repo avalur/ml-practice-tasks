@@ -1,6 +1,7 @@
 META = {
     "title": "Solve a Linear System",
-    "topic": "numpy_linalg",
+    "topic": "numpy_warmup",
+    "hidden": True,
     "difficulty": "medium",
     "entry": "solve_system",
     "banned": {

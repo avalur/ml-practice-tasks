@@ -1,6 +1,6 @@
 {
-  "id": "numpy_linalg/solve_system",
-  "topic": "numpy_linalg",
+  "id": "numpy_warmup/solve_system",
+  "topic": "numpy_warmup",
   "slug": "solve_system",
   "title": "Solve a Linear System",
   "difficulty": "medium",
@@ -13,14 +13,14 @@
     "loops": true
   },
   "statementMd": "Implement `solve_system(A, b)`.\n\nGiven a square, invertible matrix `A` of shape `(n, n)` and a vector `b` of\nlength `n`, return the solution `x` of the linear system `A @ x = b`. No\n`for`/`while` loops.",
-  "bundlePath": "/content/problems/numpy_linalg/solve_system",
+  "bundlePath": "/content/problems/numpy_warmup/solve_system",
   "pyDeps": [
     "numpy"
   ],
   "webRunnable": true,
-  "hidden": false,
+  "hidden": true,
   "hints": [
     "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
   ],
-  "contentHash": "bcd18ab82b8c2e1e08b39eabaebf0fbdab6f371a8cd91bc3bf161c76b733c43e"
+  "contentHash": "c692db2f195f8d7e604e1aa75061adff948c78bb63cf333701cb68a19a76ab41"
 }

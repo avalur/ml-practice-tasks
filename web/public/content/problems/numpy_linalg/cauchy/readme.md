@@ -1,6 +1,6 @@
 # Cauchy Matrix
 
-**Topic:** `numpy_linalg` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_linalg` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `cauchy(x, y)`.
 

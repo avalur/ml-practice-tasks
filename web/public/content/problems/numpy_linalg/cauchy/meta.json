@@ -3,7 +3,7 @@
   "topic": "numpy_linalg",
   "slug": "cauchy",
   "title": "Cauchy Matrix",
-  "difficulty": "medium",
+  "difficulty": "easy",
   "entry": "cauchy",
   "banned": {
     "modules": [
@@ -22,5 +22,5 @@
   "hints": [
     "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
   ],
-  "contentHash": "8f58225f5cf4eca9fb0a5b758bc2abcd616bc3c19aa92848cbf9b4245de6141b"
+  "contentHash": "a665c0143c9bd43b049f20494ab4d95eb78b82bcf4f805d17d3db6627fbcde3f"
 }

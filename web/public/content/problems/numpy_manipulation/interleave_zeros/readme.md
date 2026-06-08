@@ -1,6 +1,6 @@
 # Interleave Zeros
 
-**Topic:** `numpy_manipulation` &nbsp;|&nbsp; **Difficulty:** medium
+**Topic:** `numpy_manipulation` &nbsp;|&nbsp; **Difficulty:** easy
 
 Implement `interleave_zeros(z, nz)`.
 

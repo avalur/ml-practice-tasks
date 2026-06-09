@@ -29,6 +29,10 @@ STUB = 'raise NotImplementedError("Your code here")'
 
 _DIFFICULTIES = {"easy", "medium", "hard"}
 
+# Display order of top-level task families (the part of ``topic`` before ``_``).
+# Smaller sorts first; families not listed fall after these, alphabetically.
+_FAMILY_ORDER = {"py": 0, "numpy": 1}
+
 
 def load_meta(path: Path) -> dict:
     spec = importlib.util.spec_from_file_location(f"meta_{path.parent.name}", path)
@@ -180,7 +184,14 @@ def iter_problems() -> list[ProblemBundle]:
                 readme_md=render_readme(meta, topic, slug),
             )
         )
-    # Order within a topic by the optional `order` field (then slug); topics
-    # stay alphabetical. Drives catalog / sidebar / prev-next ordering.
-    bundles.sort(key=lambda b: (b.topic, b.order, b.slug))
+    # Order by family (py before numpy, see _FAMILY_ORDER), then topic, then the
+    # optional `order` field, then slug. Drives catalog / sidebar / prev-next.
+    bundles.sort(
+        key=lambda b: (
+            _FAMILY_ORDER.get(b.topic.split("_")[0], 50),
+            b.topic,
+            b.order,
+            b.slug,
+        )
+    )
     return bundles

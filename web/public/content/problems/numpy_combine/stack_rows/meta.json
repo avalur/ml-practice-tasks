@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/stack_rows",
+  "topic": "numpy_combine",
+  "slug": "stack_rows",
+  "title": "Stack Arrays as Rows",
+  "difficulty": "easy",
+  "entry": "stack_rows",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `stack_rows(arrays)`.\n\nGiven a list of `k` equal-length 1D arrays, return a 2D array of shape\n`(k, n)` whose row `i` is `arrays[i]`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/stack_rows",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.vstack(arrays) (or np.stack(arrays, axis=0)) stacks 1D arrays into the rows of a 2D array."
+  ],
+  "contentHash": "abe7b924f4d34ed28170f3855f7c837e17e8868ae3241e3d92d59c4e16969073"
+}

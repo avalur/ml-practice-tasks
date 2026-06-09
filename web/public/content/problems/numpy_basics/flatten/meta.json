@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/flatten",
+  "topic": "numpy_basics",
+  "slug": "flatten",
+  "title": "Flatten an Array",
+  "difficulty": "easy",
+  "entry": "flatten",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `flatten(X)`.\n\nGiven an array `X` of any shape, return a 1D array containing all of its\nelements in row-major (C) order — the first row, then the second, and so on.\nNo `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/flatten",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "x.ravel() (or x.flatten(), or x.reshape(-1)) returns all elements in row-major order."
+  ],
+  "contentHash": "d9a5f7651541af51793c4d4f97b46616481246dde0041930ecec1a96bc3d0e17"
+}

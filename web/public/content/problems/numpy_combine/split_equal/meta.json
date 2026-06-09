@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/split_equal",
+  "topic": "numpy_combine",
+  "slug": "split_equal",
+  "title": "Split into Equal Parts",
+  "difficulty": "easy",
+  "entry": "split_equal",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `split_equal(x, n)`.\n\nGiven a 1D array `x` whose length is divisible by `n`, split it into `n`\nequal-length contiguous parts and return them as a list of `n` arrays. For\nexample `split_equal([1, 2, 3, 4, 5, 6], 3)` → `[[1, 2], [3, 4], [5, 6]]`.\nNo `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/split_equal",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.split(x, n) divides x into n equal-length sub-arrays (it returns a list)."
+  ],
+  "contentHash": "2ed42308dbf6349501a1eb03e97e0bb07e748cc47b5e0ba997698fe54488be1a"
+}

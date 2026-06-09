@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/to_column",
+  "topic": "numpy_basics",
+  "slug": "to_column",
+  "title": "Column Vector",
+  "difficulty": "easy",
+  "entry": "to_column",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `to_column(x)`.\n\nGiven a 1D array `x` of length `n`, return it as a 2D **column vector** of\nshape `(n, 1)`. Remember that `x.T` leaves a 1D array unchanged — you need to\nadd a new axis (e.g. `reshape(-1, 1)` or `x[:, None]`). No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/to_column",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Transposing a 1D array does nothing; add an axis instead: x.reshape(-1, 1) or x[:, None]."
+  ],
+  "contentHash": "b24a2c8e013bbd92a209475ec51d6f9d3775ef0f6416cee3936b8b867177b23f"
+}

@@ -71,6 +71,10 @@ def render_readme(meta: dict, topic: str, slug: str) -> str:
         constraints.append(f"- Forbidden functions: {', '.join(banned['names'])}")
     if banned.get("loops"):
         constraints.append("- Explicit `for`/`while` loops are not allowed (vectorize it)")
+    if banned.get("operators"):
+        constraints.append(f"- Forbidden operators: {', '.join(banned['operators'])}")
+    if banned.get("slicing"):
+        constraints.append("- Slicing `seq[a:b]` is not allowed (plain indexing `seq[i]` is fine)")
     if constraints:
         parts.append("## Constraints\n\n" + "\n".join(constraints))
     parts.append(

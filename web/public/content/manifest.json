@@ -6,7 +6,8 @@
     "numpy_linalg",
     "numpy_manipulation",
     "numpy_reductions",
-    "numpy_warmup"
+    "numpy_warmup",
+    "py_basics"
   ],
   "difficulties": [
     "easy",
@@ -1235,6 +1236,162 @@
         "np.unique(X, axis=0) returns the distinct rows (sorted)."
       ],
       "contentHash": "3d4b1c6e4bfd9525eb631f431e85d79e8aa2bad7fa091d58fb96f15ca311ae61"
+    },
+    {
+      "id": "py_basics/bin_basic",
+      "topic": "py_basics",
+      "slug": "bin_basic",
+      "title": "Binary Search",
+      "difficulty": "easy",
+      "entry": "find_value",
+      "banned": {
+        "modules": [
+          "bisect"
+        ],
+        "operators": [
+          "in",
+          "not in"
+        ]
+      },
+      "statementMd": "Implement `find_value(nums, value)`.\n\n`nums` is a list (or `range`) of integers sorted in non-decreasing order; it may\nbe empty. Return `True` if `value` is present, otherwise `False`. Use **binary\nsearch** — O(log n) time, O(1) extra space.\n\nThe `in` operator and the `bisect` module are not allowed: write the search\nyourself. (One test runs on a huge range where a linear scan would time out.)",
+      "bundlePath": "/content/problems/py_basics/bin_basic",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
+        "Two returns: True inside the loop on a hit, False after the loop ends."
+      ],
+      "contentHash": "ce82f8c48f5e2e44c0befc61b7c691ad153f9e3dd540d4c1ad15b45543c45ca4"
+    },
+    {
+      "id": "py_basics/fizz_buzz",
+      "topic": "py_basics",
+      "slug": "fizz_buzz",
+      "title": "Fizz Buzz",
+      "difficulty": "easy",
+      "entry": "get_fizz_buzz",
+      "banned": {},
+      "statementMd": "Implement `get_fizz_buzz(n)`.\n\nReturn a list of length `n`. Position `i` (0-based) describes the number\n`i + 1`: `\"FizzBuzz\"` if it is divisible by 15, `\"Fizz\"` if divisible by 3,\n`\"Buzz\"` if divisible by 5, otherwise the number itself. For example\n`get_fizz_buzz(5) == [1, 2, \"Fizz\", 4, \"Buzz\"]`.",
+      "bundlePath": "/content/problems/py_basics/fizz_buzz",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Loop the numbers 1..n; check divisibility by 15 first, then 3, then 5, else keep the number."
+      ],
+      "contentHash": "0db5bdaef43927b86b10919157036065c817c613d9e062ff32d4ee76f689b04d"
+    },
+    {
+      "id": "py_basics/middle_value_of_triple",
+      "topic": "py_basics",
+      "slug": "middle_value_of_triple",
+      "title": "Middle of Three",
+      "difficulty": "easy",
+      "entry": "get_middle_value",
+      "banned": {
+        "names": [
+          "sorted"
+        ]
+      },
+      "statementMd": "Implement `get_middle_value(a, b, c)`.\n\nReturn the middle (median) of three integers — the one that is neither the\nsmallest nor the largest. `sorted` is **not** allowed; use arithmetic with\n`min`/`max` instead. For example `get_middle_value(3, 1, 2) == 2`.",
+      "bundlePath": "/content/problems/py_basics/middle_value_of_triple",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "The three values minus the smallest and the largest leaves the middle one."
+      ],
+      "contentHash": "0e3f225dd2fdf34e8311ef015c93e2e10305a4d96c7ecb891f328f7ede147f2b"
+    },
+    {
+      "id": "py_basics/filter_list_by_list",
+      "topic": "py_basics",
+      "slug": "filter_list_by_list",
+      "title": "Filter Sorted List by List",
+      "difficulty": "easy",
+      "entry": "filter_list_by_list",
+      "banned": {
+        "names": [
+          "set"
+        ]
+      },
+      "statementMd": "Implement `filter_list_by_list(lst_a, lst_b)`.\n\nBoth inputs are sorted in non-decreasing order. Return a **new** list with the\nelements of `lst_a` that do **not** appear in `lst_b`, preserving order and\nduplicates; leave the inputs unchanged. For example\n`filter_list_by_list([2, 3], [1, 2]) == [3]`.\n\n`set` is not allowed — use the fact that both lists are sorted and walk them\nwith two pointers in O(len(a) + len(b)).",
+      "bundlePath": "/content/problems/py_basics/filter_list_by_list",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Both lists are sorted: walk them with two pointers, advancing the second past values smaller than the current element.",
+        "Drop the element when the two pointers meet on equal values; otherwise keep it."
+      ],
+      "contentHash": "27a24a2c44c90d86f61a5a634988860d68b051ba8999dede3151319a1a30545d"
+    },
+    {
+      "id": "py_basics/merge_iterative",
+      "topic": "py_basics",
+      "slug": "merge_iterative",
+      "title": "Merge Two Sorted Lists",
+      "difficulty": "easy",
+      "entry": "merge_iterative",
+      "banned": {
+        "names": [
+          "sorted"
+        ],
+        "slicing": true
+      },
+      "statementMd": "Implement `merge_iterative(lst_a, lst_b)`.\n\nBoth inputs are sorted in non-decreasing order. Return one merged sorted list —\nthe classic merge step of merge sort, done **by hand**. Leave the inputs\nunchanged. For example `merge_iterative([1, 3], [2, 4]) == [1, 2, 3, 4]`.\n\n`sorted` and slicing (`seq[a:b]`) are not allowed — use two pointers,\nO(len(a) + len(b)).",
+      "bundlePath": "/content/problems/py_basics/merge_iterative",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Two pointers i, j: append the smaller of lst_a[i] / lst_b[j], advance that pointer.",
+        "When one list is exhausted, drain the other with a plain loop (no slicing)."
+      ],
+      "contentHash": "dc0e703513cc1ec0b707cd8ac9d096e9aa92276c5b214ff68a06a271f1d5ff78"
+    },
+    {
+      "id": "py_basics/reverse_iterative",
+      "topic": "py_basics",
+      "slug": "reverse_iterative",
+      "title": "Reverse a List by Hand",
+      "difficulty": "easy",
+      "entry": "reverse_iterative",
+      "banned": {
+        "names": [
+          "reversed"
+        ],
+        "slicing": true
+      },
+      "statementMd": "Implement `reverse_iterative(lst)`.\n\nReturn a **new** list with the elements of `lst` in reverse order; leave the\ninput unchanged. For example `reverse_iterative([1, 2, 3]) == [3, 2, 1]`.\n\nUse **iteration only**: the `reversed` builtin and slicing (`lst[::-1]`) are not\nallowed.",
+      "bundlePath": "/content/problems/py_basics/reverse_iterative",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Iterate indices from len(lst)-1 down to 0 with range(len(lst)-1, -1, -1) and append."
+      ],
+      "contentHash": "3ec1c99257a8fab9514ba6c738f0c06a426aa6889eb7d05234751a740da1ee87"
+    },
+    {
+      "id": "py_basics/common_type",
+      "topic": "py_basics",
+      "slug": "common_type",
+      "title": "Common Type",
+      "difficulty": "medium",
+      "entry": "get_common_type",
+      "banned": {},
+      "statementMd": "Implement `get_common_type(type1, type2)`.\n\nGiven two of the types `bool, int, float, complex, list, range, tuple, str`,\nreturn the most specific type that **both** values can be converted to, so that\n`result(value1)` and `result(value2)` both succeed and make sense.\n\nRules (two ladders of increasing generality):\n- numbers: `bool` → `int` → `float` → `complex`\n- sequences: `range` → `tuple` → `list`\n\nWithin one ladder, return the more general of the two. Mixing a number with a\nsequence — or anything with `str` — returns `str`. Note `range` is never a\ncommon type (you can't build a `range` from arbitrary elements), so two ranges\nshare `tuple`. The result must be the same regardless of argument order.",
+      "bundlePath": "/content/problems/py_basics/common_type",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Two ladders of increasing generality: numbers bool→int→float→complex, sequences range→tuple→list. Within a ladder, pick the more general.",
+        "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
+      ],
+      "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
     }
   ]
 }

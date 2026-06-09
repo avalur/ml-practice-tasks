@@ -1,0 +1,19 @@
+{
+  "id": "py_basics/common_type",
+  "topic": "py_basics",
+  "slug": "common_type",
+  "title": "Common Type",
+  "difficulty": "medium",
+  "entry": "get_common_type",
+  "banned": {},
+  "statementMd": "Implement `get_common_type(type1, type2)`.\n\nGiven two of the types `bool, int, float, complex, list, range, tuple, str`,\nreturn the most specific type that **both** values can be converted to, so that\n`result(value1)` and `result(value2)` both succeed and make sense.\n\nRules (two ladders of increasing generality):\n- numbers: `bool` → `int` → `float` → `complex`\n- sequences: `range` → `tuple` → `list`\n\nWithin one ladder, return the more general of the two. Mixing a number with a\nsequence — or anything with `str` — returns `str`. Note `range` is never a\ncommon type (you can't build a `range` from arbitrary elements), so two ranges\nshare `tuple`. The result must be the same regardless of argument order.",
+  "bundlePath": "/content/problems/py_basics/common_type",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Two ladders of increasing generality: numbers bool→int→float→complex, sequences range→tuple→list. Within a ladder, pick the more general.",
+    "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
+  ],
+  "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
+}

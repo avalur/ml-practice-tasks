@@ -1,0 +1,45 @@
+import pytest
+
+from tools.checks import assert_clean
+
+BIG = 10**15
+
+# (nums, value, expected) — small cases checked against the `in` oracle too.
+CASES = [
+    ([], 2, False),
+    ([1], 2, False),
+    ([1, 3, 5], 0, False),
+    ([1, 3, 5], 2, False),
+    ([1, 3, 5], 6, False),
+    ([1, 3, 5], 1, True),
+    ([1, 3, 5], 3, True),
+    ([1, 3, 5], 5, True),
+    ([1, 3, 5, 7], 4, False),
+    ([1, 3, 5, 7], 7, True),
+    ([1, 5, 5, 5, 9], 5, True),
+    ([1, 5, 5, 5, 9], 7, False),
+]
+
+
+@pytest.mark.parametrize("nums, value, expected", CASES)
+def test_small(impl, nums, value, expected):
+    original = list(nums)
+    got = impl.find_value(nums, value)
+    assert got == expected
+    # Independent oracle: membership is allowed in trusted test code.
+    assert got == (value in nums)
+    assert nums == original, "You shouldn't change the input"
+
+
+@pytest.mark.parametrize(
+    "value, expected",
+    [(BIG - 2, True), (0, True), (BIG, False), (-1, False),
+     (BIG // 2, True), (BIG // 2 + 1, False)],
+)
+def test_big_range_needs_log_n(impl, value, expected):
+    # 5*10^14 evens — only a logarithmic search returns in time.
+    assert impl.find_value(range(0, BIG, 2), value) == expected
+
+
+def test_no_banned_constructs(impl_source, banned):
+    assert_clean(impl_source, banned)

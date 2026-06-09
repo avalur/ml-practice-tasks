@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/stack_columns",
+  "topic": "numpy_combine",
+  "slug": "stack_columns",
+  "title": "Stack Arrays as Columns",
+  "difficulty": "easy",
+  "entry": "stack_columns",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `stack_columns(arrays)`.\n\nGiven a list of `k` equal-length 1D arrays, return a 2D array of shape\n`(n, k)` whose column `j` is `arrays[j]` — i.e. assemble the arrays as the\ncolumns of a matrix (a design / feature matrix). No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/stack_columns",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.column_stack(arrays) places each 1D array as a column of the result."
+  ],
+  "contentHash": "24da08120f07388ccd28261ea334737ce8da2bf1edca192e27a295e87296ad40"
+}

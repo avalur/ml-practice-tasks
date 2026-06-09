@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/concat_arrays",
+  "topic": "numpy_combine",
+  "slug": "concat_arrays",
+  "title": "Concatenate Arrays",
+  "difficulty": "easy",
+  "entry": "concat_arrays",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `concat_arrays(arrays)`.\n\nGiven a list of 1D arrays, return a single 1D array that is their end-to-end\nconcatenation, preserving order. For example `[[1, 2], [3], [4, 5]]` →\n`[1, 2, 3, 4, 5]`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/concat_arrays",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.concatenate(arrays) joins a sequence of arrays along an existing axis."
+  ],
+  "contentHash": "fc2c3ed0be4702079dadc8e97360d1d850700e1a2c7f6b974f3c77c475ec7512"
+}

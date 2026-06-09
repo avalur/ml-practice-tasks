@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/transpose_2d",
+  "topic": "numpy_basics",
+  "slug": "transpose_2d",
+  "title": "Transpose a Matrix",
+  "difficulty": "easy",
+  "entry": "transpose_2d",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `transpose_2d(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return its transpose of shape\n`(n, m)`: the element at position `(j, i)` of the result equals `X[i, j]`.\nNo `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/transpose_2d",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "X.T (or np.transpose(X)) swaps the two axes of a 2D array."
+  ],
+  "contentHash": "9a9420ae0b4ee77d30e51088293d7af7f4cad5b0b63e81b0ad771f043de68bf4"
+}

@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/repeat_each",
+  "topic": "numpy_combine",
+  "slug": "repeat_each",
+  "title": "Repeat Each Element",
+  "difficulty": "easy",
+  "entry": "repeat_each",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `repeat_each(x, k)`.\n\nGiven a 1D array `x` and an integer `k`, return a 1D array in which each\nelement of `x` is repeated `k` times consecutively. For example\n`repeat_each([1, 2, 3], 2)` → `[1, 1, 2, 2, 3, 3]` (not `[1, 2, 3, 1, 2, 3]`).\nNo `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/repeat_each",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.repeat(x, k) repeats each element k times; contrast with np.tile, which repeats the whole array."
+  ],
+  "contentHash": "1f5271d1b671658931174d68b176abe70118a8a7bddf875e297848583d46cae0"
+}

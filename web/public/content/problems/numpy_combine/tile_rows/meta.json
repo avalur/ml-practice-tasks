@@ -1,0 +1,22 @@
+{
+  "id": "numpy_combine/tile_rows",
+  "topic": "numpy_combine",
+  "slug": "tile_rows",
+  "title": "Tile a Row",
+  "difficulty": "easy",
+  "entry": "tile_rows",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `tile_rows(x, r)`.\n\nGiven a 1D array `x` of length `n` and an integer `r`, return a 2D array of\nshape `(r, n)` in which every one of the `r` rows is a copy of `x`. No\n`for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_combine/tile_rows",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "np.tile(x, (r, 1)) repeats the whole array x to make r identical rows."
+  ],
+  "contentHash": "b53b68fa18e99da8d2ac7984fd672e874f16692cdb1b032d8cb040e5bc00ccce"
+}

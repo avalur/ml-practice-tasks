@@ -1,0 +1,22 @@
+{
+  "id": "numpy_basics/to_matrix",
+  "topic": "numpy_basics",
+  "slug": "to_matrix",
+  "title": "Reshape to a Matrix",
+  "difficulty": "easy",
+  "entry": "to_matrix",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `to_matrix(x, rows)`.\n\nGiven a 1D array `x` whose length is divisible by `rows`, reshape it into a\n2D array with `rows` rows (row-major / C order). Let NumPy infer the number\nof columns by passing `-1` for that dimension. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_basics/to_matrix",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Pass -1 for the unknown dimension: x.reshape(rows, -1) lets NumPy compute the columns."
+  ],
+  "contentHash": "a55d26c1e86fb89ee5cb9ddf645e50a6aec7f8b58c57d6608e1e8b6100f3124f"
+}

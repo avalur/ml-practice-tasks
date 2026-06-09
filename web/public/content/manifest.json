@@ -1,6 +1,7 @@
 {
   "topics": [
     "numpy_basics",
+    "numpy_combine",
     "numpy_indexing",
     "numpy_linalg",
     "numpy_manipulation",
@@ -230,6 +231,94 @@
       "contentHash": "7482f217f652d2996ac8a834affd57f0504ece67f2aadc7bde31f12e007cb9dd"
     },
     {
+      "id": "numpy_basics/to_matrix",
+      "topic": "numpy_basics",
+      "slug": "to_matrix",
+      "title": "Reshape to a Matrix",
+      "difficulty": "easy",
+      "entry": "to_matrix",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `to_matrix(x, rows)`.\n\nGiven a 1D array `x` whose length is divisible by `rows`, reshape it into a\n2D array with `rows` rows (row-major / C order). Let NumPy infer the number\nof columns by passing `-1` for that dimension. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/to_matrix",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Pass -1 for the unknown dimension: x.reshape(rows, -1) lets NumPy compute the columns."
+      ],
+      "contentHash": "a55d26c1e86fb89ee5cb9ddf645e50a6aec7f8b58c57d6608e1e8b6100f3124f"
+    },
+    {
+      "id": "numpy_basics/flatten",
+      "topic": "numpy_basics",
+      "slug": "flatten",
+      "title": "Flatten an Array",
+      "difficulty": "easy",
+      "entry": "flatten",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `flatten(X)`.\n\nGiven an array `X` of any shape, return a 1D array containing all of its\nelements in row-major (C) order — the first row, then the second, and so on.\nNo `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/flatten",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "x.ravel() (or x.flatten(), or x.reshape(-1)) returns all elements in row-major order."
+      ],
+      "contentHash": "d9a5f7651541af51793c4d4f97b46616481246dde0041930ecec1a96bc3d0e17"
+    },
+    {
+      "id": "numpy_basics/transpose_2d",
+      "topic": "numpy_basics",
+      "slug": "transpose_2d",
+      "title": "Transpose a Matrix",
+      "difficulty": "easy",
+      "entry": "transpose_2d",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `transpose_2d(X)`.\n\nGiven a 2D array `X` of shape `(m, n)`, return its transpose of shape\n`(n, m)`: the element at position `(j, i)` of the result equals `X[i, j]`.\nNo `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/transpose_2d",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "X.T (or np.transpose(X)) swaps the two axes of a 2D array."
+      ],
+      "contentHash": "9a9420ae0b4ee77d30e51088293d7af7f4cad5b0b63e81b0ad771f043de68bf4"
+    },
+    {
+      "id": "numpy_basics/to_column",
+      "topic": "numpy_basics",
+      "slug": "to_column",
+      "title": "Column Vector",
+      "difficulty": "easy",
+      "entry": "to_column",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `to_column(x)`.\n\nGiven a 1D array `x` of length `n`, return it as a 2D **column vector** of\nshape `(n, 1)`. Remember that `x.T` leaves a 1D array unchanged — you need to\nadd a new axis (e.g. `reshape(-1, 1)` or `x[:, None]`). No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_basics/to_column",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Transposing a 1D array does nothing; add an axis instead: x.reshape(-1, 1) or x[:, None]."
+      ],
+      "contentHash": "b24a2c8e013bbd92a209475ec51d6f9d3775ef0f6416cee3936b8b867177b23f"
+    },
+    {
       "id": "numpy_basics/pairwise_distances",
       "topic": "numpy_basics",
       "slug": "pairwise_distances",
@@ -254,6 +343,138 @@
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
       ],
       "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
+    },
+    {
+      "id": "numpy_combine/concat_arrays",
+      "topic": "numpy_combine",
+      "slug": "concat_arrays",
+      "title": "Concatenate Arrays",
+      "difficulty": "easy",
+      "entry": "concat_arrays",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `concat_arrays(arrays)`.\n\nGiven a list of 1D arrays, return a single 1D array that is their end-to-end\nconcatenation, preserving order. For example `[[1, 2], [3], [4, 5]]` →\n`[1, 2, 3, 4, 5]`. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/concat_arrays",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.concatenate(arrays) joins a sequence of arrays along an existing axis."
+      ],
+      "contentHash": "fc2c3ed0be4702079dadc8e97360d1d850700e1a2c7f6b974f3c77c475ec7512"
+    },
+    {
+      "id": "numpy_combine/stack_rows",
+      "topic": "numpy_combine",
+      "slug": "stack_rows",
+      "title": "Stack Arrays as Rows",
+      "difficulty": "easy",
+      "entry": "stack_rows",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `stack_rows(arrays)`.\n\nGiven a list of `k` equal-length 1D arrays, return a 2D array of shape\n`(k, n)` whose row `i` is `arrays[i]`. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/stack_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.vstack(arrays) (or np.stack(arrays, axis=0)) stacks 1D arrays into the rows of a 2D array."
+      ],
+      "contentHash": "abe7b924f4d34ed28170f3855f7c837e17e8868ae3241e3d92d59c4e16969073"
+    },
+    {
+      "id": "numpy_combine/stack_columns",
+      "topic": "numpy_combine",
+      "slug": "stack_columns",
+      "title": "Stack Arrays as Columns",
+      "difficulty": "easy",
+      "entry": "stack_columns",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `stack_columns(arrays)`.\n\nGiven a list of `k` equal-length 1D arrays, return a 2D array of shape\n`(n, k)` whose column `j` is `arrays[j]` — i.e. assemble the arrays as the\ncolumns of a matrix (a design / feature matrix). No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/stack_columns",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.column_stack(arrays) places each 1D array as a column of the result."
+      ],
+      "contentHash": "24da08120f07388ccd28261ea334737ce8da2bf1edca192e27a295e87296ad40"
+    },
+    {
+      "id": "numpy_combine/split_equal",
+      "topic": "numpy_combine",
+      "slug": "split_equal",
+      "title": "Split into Equal Parts",
+      "difficulty": "easy",
+      "entry": "split_equal",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `split_equal(x, n)`.\n\nGiven a 1D array `x` whose length is divisible by `n`, split it into `n`\nequal-length contiguous parts and return them as a list of `n` arrays. For\nexample `split_equal([1, 2, 3, 4, 5, 6], 3)` → `[[1, 2], [3, 4], [5, 6]]`.\nNo `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/split_equal",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.split(x, n) divides x into n equal-length sub-arrays (it returns a list)."
+      ],
+      "contentHash": "2ed42308dbf6349501a1eb03e97e0bb07e748cc47b5e0ba997698fe54488be1a"
+    },
+    {
+      "id": "numpy_combine/tile_rows",
+      "topic": "numpy_combine",
+      "slug": "tile_rows",
+      "title": "Tile a Row",
+      "difficulty": "easy",
+      "entry": "tile_rows",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `tile_rows(x, r)`.\n\nGiven a 1D array `x` of length `n` and an integer `r`, return a 2D array of\nshape `(r, n)` in which every one of the `r` rows is a copy of `x`. No\n`for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/tile_rows",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.tile(x, (r, 1)) repeats the whole array x to make r identical rows."
+      ],
+      "contentHash": "b53b68fa18e99da8d2ac7984fd672e874f16692cdb1b032d8cb040e5bc00ccce"
+    },
+    {
+      "id": "numpy_combine/repeat_each",
+      "topic": "numpy_combine",
+      "slug": "repeat_each",
+      "title": "Repeat Each Element",
+      "difficulty": "easy",
+      "entry": "repeat_each",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `repeat_each(x, k)`.\n\nGiven a 1D array `x` and an integer `k`, return a 1D array in which each\nelement of `x` is repeated `k` times consecutively. For example\n`repeat_each([1, 2, 3], 2)` → `[1, 1, 2, 2, 3, 3]` (not `[1, 2, 3, 1, 2, 3]`).\nNo `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_combine/repeat_each",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.repeat(x, k) repeats each element k times; contrast with np.tile, which repeats the whole array."
+      ],
+      "contentHash": "1f5271d1b671658931174d68b176abe70118a8a7bddf875e297848583d46cae0"
     },
     {
       "id": "numpy_indexing/closest_value",

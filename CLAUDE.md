@@ -11,6 +11,19 @@ at https://avalur.github.io/mlcourse. Author/owner: Alexander Avdiushenko
 (`avalur`). He chats in Russian but **all repo artifacts are in English**, and
 he likes to brainstorm design tradeoffs before I build.
 
+There are now **two task families** (the sidebar groups by the `topic` prefix
+before `_`):
+- **`numpy_*`** — the original ML/numpy track.
+- **`py_*`** — Python fundamentals (binary search, comprehensions, decorators,
+  generators, OOP), **re-authored** (our own solutions, English statements,
+  independent oracles) from the manytask course
+  `gitlab.manytask.org/python/public-2025-fall` — credit it; never copy verbatim.
+  Pure-Python tasks set `py_deps: []` in `meta.py` so Pyodide skips numpy, and
+  use stdlib `random` (fixed seed) in tests rather than the numpy `rng_for`
+  fixture. Where the source bundles several functions with *different*
+  per-function bans (our `banned` is file-level), distill to the single by-hand
+  variant.
+
 ## Architecture (don't break these invariants)
 
 - **Source of truth = `problems/<topic>/<slug>/`.** Never hand-edit `tasks/`.
@@ -20,16 +33,20 @@ he likes to brainstorm design tradeoffs before I build.
     kept verbatim, so put the full problem context in the docstring.
   - `test.py` — pytest. Runs against BOTH trees via the `impl` fixture, so it
     must not assume which file backs the implementation.
-  - `meta.py` — a `META` dict: `title`, `topic`, `difficulty`
-    (easy/medium/hard), `entry`, `statement`, and `banned`.
+  - `meta.py` — a `META` dict: required `title`, `topic`, `difficulty`
+    (easy/medium/hard), `entry`, `statement`; optional `banned`, `hints`,
+    `order` (within-topic sort, default 100), `py_deps` (default `["numpy"]`;
+    `[]` for pure-Python), `hidden`.
 - **`tasks/<topic>/<slug>/` is generated** by `generate.py` (submission stub +
   copied test.py/meta.py + rendered README.md). Regenerate after any edit.
 - **Constraints are enforced statically** by `tools/checks.py` via `ast`.
   `banned` keys: `modules` (import roots, e.g. `scipy`, `sklearn`), `names`
-  (identifiers/attrs, e.g. `cdist`, `norm`), `loops` (truthy → no `for`/`while`).
-  The `assert_clean(impl_source, banned)` check only inspects the student's
-  source — test code is trusted, so loops in a brute-force reference oracle are
-  fine.
+  (identifiers/attrs, e.g. `cdist`, `norm` — also covers builtins like
+  `sum`/`set`/`sorted`/`reversed`), `loops` (truthy → no `for`/`while`),
+  `operators` (subset of `{"in", "not in"}` — membership), `slicing` (truthy →
+  no `seq[a:b]`; plain indexing `seq[i]` is still fine). The
+  `assert_clean(impl_source, banned)` check only inspects the student's source —
+  test code is trusted, so loops/banned builtins in a reference oracle are fine.
 
 ## Fixtures available in test.py (from `conftest.py`)
 

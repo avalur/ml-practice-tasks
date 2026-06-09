@@ -29,6 +29,10 @@ STUB = 'raise NotImplementedError("Your code here")'
 
 _DIFFICULTIES = {"easy", "medium", "hard"}
 
+# Display order of top-level task families (the part of ``topic`` before ``_``).
+# Smaller sorts first; families not listed fall after these, alphabetically.
+_FAMILY_ORDER = {"py": 0, "numpy": 1}
+
 
 def load_meta(path: Path) -> dict:
     spec = importlib.util.spec_from_file_location(f"meta_{path.parent.name}", path)
@@ -71,6 +75,10 @@ def render_readme(meta: dict, topic: str, slug: str) -> str:
         constraints.append(f"- Forbidden functions: {', '.join(banned['names'])}")
     if banned.get("loops"):
         constraints.append("- Explicit `for`/`while` loops are not allowed (vectorize it)")
+    if banned.get("operators"):
+        constraints.append(f"- Forbidden operators: {', '.join(banned['operators'])}")
+    if banned.get("slicing"):
+        constraints.append("- Slicing `seq[a:b]` is not allowed (plain indexing `seq[i]` is fine)")
     if constraints:
         parts.append("## Constraints\n\n" + "\n".join(constraints))
     parts.append(
@@ -176,7 +184,14 @@ def iter_problems() -> list[ProblemBundle]:
                 readme_md=render_readme(meta, topic, slug),
             )
         )
-    # Order within a topic by the optional `order` field (then slug); topics
-    # stay alphabetical. Drives catalog / sidebar / prev-next ordering.
-    bundles.sort(key=lambda b: (b.topic, b.order, b.slug))
+    # Order by family (py before numpy, see _FAMILY_ORDER), then topic, then the
+    # optional `order` field, then slug. Drives catalog / sidebar / prev-next.
+    bundles.sort(
+        key=lambda b: (
+            _FAMILY_ORDER.get(b.topic.split("_")[0], 50),
+            b.topic,
+            b.order,
+            b.slug,
+        )
+    )
     return bundles

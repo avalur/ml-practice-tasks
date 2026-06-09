@@ -1,0 +1,23 @@
+{
+  "id": "py_basics/reverse_iterative",
+  "topic": "py_basics",
+  "slug": "reverse_iterative",
+  "title": "Reverse a List by Hand",
+  "difficulty": "easy",
+  "entry": "reverse_iterative",
+  "banned": {
+    "names": [
+      "reversed"
+    ],
+    "slicing": true
+  },
+  "statementMd": "Implement `reverse_iterative(lst)`.\n\nReturn a **new** list with the elements of `lst` in reverse order; leave the\ninput unchanged. For example `reverse_iterative([1, 2, 3]) == [3, 2, 1]`.\n\nUse **iteration only**: the `reversed` builtin and slicing (`lst[::-1]`) are not\nallowed.",
+  "bundlePath": "/content/problems/py_basics/reverse_iterative",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Iterate indices from len(lst)-1 down to 0 with range(len(lst)-1, -1, -1) and append."
+  ],
+  "contentHash": "3ec1c99257a8fab9514ba6c738f0c06a426aa6889eb7d05234751a740da1ee87"
+}

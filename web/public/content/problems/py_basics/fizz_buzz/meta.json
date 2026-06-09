@@ -1,0 +1,18 @@
+{
+  "id": "py_basics/fizz_buzz",
+  "topic": "py_basics",
+  "slug": "fizz_buzz",
+  "title": "Fizz Buzz",
+  "difficulty": "easy",
+  "entry": "get_fizz_buzz",
+  "banned": {},
+  "statementMd": "Implement `get_fizz_buzz(n)`.\n\nReturn a list of length `n`. Position `i` (0-based) describes the number\n`i + 1`: `\"FizzBuzz\"` if it is divisible by 15, `\"Fizz\"` if divisible by 3,\n`\"Buzz\"` if divisible by 5, otherwise the number itself. For example\n`get_fizz_buzz(5) == [1, 2, \"Fizz\", 4, \"Buzz\"]`.",
+  "bundlePath": "/content/problems/py_basics/fizz_buzz",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Loop the numbers 1..n; check divisibility by 15 first, then 3, then 5, else keep the number."
+  ],
+  "contentHash": "0db5bdaef43927b86b10919157036065c817c613d9e062ff32d4ee76f689b04d"
+}

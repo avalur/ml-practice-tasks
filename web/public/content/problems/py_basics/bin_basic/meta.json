@@ -1,0 +1,27 @@
+{
+  "id": "py_basics/bin_basic",
+  "topic": "py_basics",
+  "slug": "bin_basic",
+  "title": "Binary Search",
+  "difficulty": "easy",
+  "entry": "find_value",
+  "banned": {
+    "modules": [
+      "bisect"
+    ],
+    "operators": [
+      "in",
+      "not in"
+    ]
+  },
+  "statementMd": "Implement `find_value(nums, value)`.\n\n`nums` is a list (or `range`) of integers sorted in non-decreasing order; it may\nbe empty. Return `True` if `value` is present, otherwise `False`. Use **binary\nsearch** — O(log n) time, O(1) extra space.\n\nThe `in` operator and the `bisect` module are not allowed: write the search\nyourself. (One test runs on a huge range where a linear scan would time out.)",
+  "bundlePath": "/content/problems/py_basics/bin_basic",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
+    "Two returns: True inside the loop on a hit, False after the loop ends."
+  ],
+  "contentHash": "ce82f8c48f5e2e44c0befc61b7c691ad153f9e3dd540d4c1ad15b45543c45ca4"
+}

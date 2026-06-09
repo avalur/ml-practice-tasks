@@ -7,7 +7,8 @@
     "numpy_manipulation",
     "numpy_reductions",
     "numpy_warmup",
-    "py_basics"
+    "py_basics",
+    "py_strings"
   ],
   "difficulties": [
     "easy",
@@ -170,6 +171,89 @@
         "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
       ],
       "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
+    },
+    {
+      "id": "py_strings/caesar_cipher",
+      "topic": "py_strings",
+      "slug": "caesar_cipher",
+      "title": "Caesar Cipher",
+      "difficulty": "easy",
+      "entry": "caesar_encrypt",
+      "banned": {},
+      "statementMd": "Implement `caesar_encrypt(message, n)`.\n\nShift every English letter `n` places along the alphabet, wrapping around and\npreserving case; leave non-letters unchanged. For example\n`caesar_encrypt(\"XYZ\", 5) == \"CDE\"`. The shift may be negative or larger than\n26 (`n` and `n % 26` behave the same), so a shift of 0, 26, or -26 returns the\ntext unchanged.",
+      "bundlePath": "/content/problems/py_strings/caesar_cipher",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Map each letter to 0..25 with ord(ch) - ord('a'), add the shift mod 26, map back with chr.",
+        "Handle upper- and lower-case separately; pass other characters through unchanged."
+      ],
+      "contentHash": "ca6f68cb565a1c37006496bc7da13bd463258d82e2c8b2c643db29a8e3db308a"
+    },
+    {
+      "id": "py_strings/count_util",
+      "topic": "py_strings",
+      "slug": "count_util",
+      "title": "Count Utility (wc)",
+      "difficulty": "easy",
+      "entry": "count_util",
+      "banned": {},
+      "statementMd": "Implement `count_util(text, flags=None)` — a tiny `wc`-like counter.\n\n`flags` is a command-line-style string selecting which counts to return:\n`-m` → `\"chars\"` (number of characters), `-l` → `\"lines\"` (number of newline\ncharacters), `-L` → `\"longest_line\"` (length of the longest line), `-w` →\n`\"words\"` (whitespace-separated words). Flags may be combined (`\"-lm\"` or\n`\"-l -m\"`). An empty string or `None` means all four. Return a dict containing\nonly the selected keys.",
+      "bundlePath": "/content/problems/py_strings/count_util",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Pull the flag letters out of the flags string (ignore '-' and spaces); empty/None means all four.",
+        "chars = len(text), lines = text.count('\\n'), words = len(text.split()), longest_line = max line length."
+      ],
+      "contentHash": "b1d9b07625bf3430d93857d8ea840e45e42a2bf01c079dfb1f3ba384fd1a06e2"
+    },
+    {
+      "id": "py_strings/normalize_path",
+      "topic": "py_strings",
+      "slug": "normalize_path",
+      "title": "Normalize a Path",
+      "difficulty": "medium",
+      "entry": "normalize_path",
+      "banned": {
+        "modules": [
+          "pathlib"
+        ],
+        "names": [
+          "normpath"
+        ]
+      },
+      "statementMd": "Implement `normalize_path(path)` — like `os.path.normpath`, but you write it.\n\nCollapse repeated slashes, drop `.` components, and resolve `..` against the\npreceding component. A leading `..` survives in a relative path; `..` at the\nroot of an absolute path is dropped. The empty path and `\".\"` normalize to\n`\".\"`; the root stays `\"/\"`. For example `normalize_path(\"/a/b/../c\") == \"/a/c\"`\nand `normalize_path(\"a/..///../b\") == \"../b\"`.\n\n`pathlib` and `os.path.normpath` are not allowed. Do it in a single\nO(len(path)) pass — some tests use very long paths.",
+      "bundlePath": "/content/problems/py_strings/normalize_path",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Split on '/'. Skip '' and '.' components; on '..' pop the stack (unless it's empty / its top is '..').",
+        "Track whether the path is absolute (leading '/'); rejoin with '/'. Empty relative result is '.'."
+      ],
+      "contentHash": "659935f9d87b11e300b9f1b76f0b30b0cf19e2f511048cd280cfc582dfd18cbc"
+    },
+    {
+      "id": "py_strings/git_log",
+      "topic": "py_strings",
+      "slug": "git_log",
+      "title": "Reformat a Git Log",
+      "difficulty": "easy",
+      "entry": "reformat_git_log",
+      "banned": {},
+      "statementMd": "Implement `reformat_git_log(inp, out)`.\n\nRead a git log from the text stream `inp` and write a reformatted version to the\ntext stream `out` (return nothing). Each input line is tab-separated:\n`<sha-1>\\t<date>\\t<author>\\t<email>\\t<message>`. Each output line is the\nfirst 7 characters of the sha, then enough dots so the line is exactly 80\ncharacters wide, then the message — e.g.\n`0cd8619....................................................Update PEP 512 (#107)`.",
+      "bundlePath": "/content/problems/py_strings/git_log",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Iterate the input stream line by line; split each line on tabs — field 0 is the sha, the last field is the message.",
+        "Write sha[:7], then dots filling up to width 80, then the message and a newline."
+      ],
+      "contentHash": "7ffe6a3781f86bd8c00e48115e1050a37b8b5cdc60c579508a2e243f07d4da37"
     },
     {
       "id": "numpy_basics/version",

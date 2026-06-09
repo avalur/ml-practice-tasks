@@ -1,0 +1,26 @@
+{
+  "id": "py_strings/normalize_path",
+  "topic": "py_strings",
+  "slug": "normalize_path",
+  "title": "Normalize a Path",
+  "difficulty": "medium",
+  "entry": "normalize_path",
+  "banned": {
+    "modules": [
+      "pathlib"
+    ],
+    "names": [
+      "normpath"
+    ]
+  },
+  "statementMd": "Implement `normalize_path(path)` — like `os.path.normpath`, but you write it.\n\nCollapse repeated slashes, drop `.` components, and resolve `..` against the\npreceding component. A leading `..` survives in a relative path; `..` at the\nroot of an absolute path is dropped. The empty path and `\".\"` normalize to\n`\".\"`; the root stays `\"/\"`. For example `normalize_path(\"/a/b/../c\") == \"/a/c\"`\nand `normalize_path(\"a/..///../b\") == \"../b\"`.\n\n`pathlib` and `os.path.normpath` are not allowed. Do it in a single\nO(len(path)) pass — some tests use very long paths.",
+  "bundlePath": "/content/problems/py_strings/normalize_path",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Split on '/'. Skip '' and '.' components; on '..' pop the stack (unless it's empty / its top is '..').",
+    "Track whether the path is absolute (leading '/'); rejoin with '/'. Empty relative result is '.'."
+  ],
+  "contentHash": "659935f9d87b11e300b9f1b76f0b30b0cf19e2f511048cd280cfc582dfd18cbc"
+}

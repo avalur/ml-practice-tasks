@@ -1,0 +1,19 @@
+{
+  "id": "py_strings/count_util",
+  "topic": "py_strings",
+  "slug": "count_util",
+  "title": "Count Utility (wc)",
+  "difficulty": "easy",
+  "entry": "count_util",
+  "banned": {},
+  "statementMd": "Implement `count_util(text, flags=None)` — a tiny `wc`-like counter.\n\n`flags` is a command-line-style string selecting which counts to return:\n`-m` → `\"chars\"` (number of characters), `-l` → `\"lines\"` (number of newline\ncharacters), `-L` → `\"longest_line\"` (length of the longest line), `-w` →\n`\"words\"` (whitespace-separated words). Flags may be combined (`\"-lm\"` or\n`\"-l -m\"`). An empty string or `None` means all four. Return a dict containing\nonly the selected keys.",
+  "bundlePath": "/content/problems/py_strings/count_util",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Pull the flag letters out of the flags string (ignore '-' and spaces); empty/None means all four.",
+    "chars = len(text), lines = text.count('\\n'), words = len(text.split()), longest_line = max line length."
+  ],
+  "contentHash": "b1d9b07625bf3430d93857d8ea840e45e42a2bf01c079dfb1f3ba384fd1a06e2"
+}

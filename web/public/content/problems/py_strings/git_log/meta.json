@@ -1,0 +1,19 @@
+{
+  "id": "py_strings/git_log",
+  "topic": "py_strings",
+  "slug": "git_log",
+  "title": "Reformat a Git Log",
+  "difficulty": "easy",
+  "entry": "reformat_git_log",
+  "banned": {},
+  "statementMd": "Implement `reformat_git_log(inp, out)`.\n\nRead a git log from the text stream `inp` and write a reformatted version to the\ntext stream `out` (return nothing). Each input line is tab-separated:\n`<sha-1>\\t<date>\\t<author>\\t<email>\\t<message>`. Each output line is the\nfirst 7 characters of the sha, then enough dots so the line is exactly 80\ncharacters wide, then the message — e.g.\n`0cd8619....................................................Update PEP 512 (#107)`.",
+  "bundlePath": "/content/problems/py_strings/git_log",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Iterate the input stream line by line; split each line on tabs — field 0 is the sha, the last field is the message.",
+    "Write sha[:7], then dots filling up to width 80, then the message and a newline."
+  ],
+  "contentHash": "7ffe6a3781f86bd8c00e48115e1050a37b8b5cdc60c579508a2e243f07d4da37"
+}

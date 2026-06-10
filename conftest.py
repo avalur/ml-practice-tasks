@@ -13,7 +13,6 @@ from __future__ import annotations
 import importlib.util
 from pathlib import Path
 
-import numpy as np
 import pytest
 
 _IMPL_NAMES = ("submission.py", "reference.py")
@@ -61,5 +60,12 @@ def banned(_impl_dir) -> dict:
 
 @pytest.fixture
 def rng_for():
-    """Factory for a seeded NumPy generator, so tests are deterministic."""
+    """Factory for a seeded NumPy generator, so tests are deterministic.
+
+    numpy is imported lazily (not at module top) so this conftest also loads for
+    pure-Python ``py_deps: []`` tasks, where numpy isn't present in the browser
+    Pyodide runtime. Only tasks that actually use this fixture need numpy.
+    """
+    import numpy as np
+
     return lambda seed=0: np.random.default_rng(seed)

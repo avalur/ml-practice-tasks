@@ -1,0 +1,18 @@
+{
+  "id": "py_datastructures/min_to_drop",
+  "topic": "py_datastructures",
+  "slug": "min_to_drop",
+  "title": "Minimum Drops to Equal",
+  "difficulty": "easy",
+  "entry": "get_min_to_drop",
+  "banned": {},
+  "statementMd": "Implement `get_min_to_drop(seq)`.\n\nReturn the minimum number of elements to remove so that all remaining elements\nare equal. That equals `len(seq)` minus the count of the most frequent element\n(an empty sequence needs 0). For example `get_min_to_drop([1, 2, 3, 1]) == 2`\n(drop the 2 and the 3, keep the two 1s).",
+  "bundlePath": "/content/problems/py_datastructures/min_to_drop",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Count occurrences of each value; the answer is len(seq) minus the largest count."
+  ],
+  "contentHash": "4b8c671bf2d97cfa7b5c08ebcfcc9cc67387e170d8181ba8e5b2b13bc0fb68b2"
+}

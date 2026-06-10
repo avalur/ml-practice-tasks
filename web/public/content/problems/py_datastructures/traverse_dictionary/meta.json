@@ -1,0 +1,19 @@
+{
+  "id": "py_datastructures/traverse_dictionary",
+  "topic": "py_datastructures",
+  "slug": "traverse_dictionary",
+  "title": "Flatten a Nested Dictionary",
+  "difficulty": "medium",
+  "entry": "traverse_dictionary_immutable",
+  "banned": {},
+  "statementMd": "Implement three flatteners of an arbitrarily nested dict whose leaves are ints:\nturn it into `(dotted_key, value)` pairs, e.g.\n`{\"a\": {\"b\": 1}}` → `[(\"a.b\", 1)]`. Key order in the result doesn't matter.\n\n- `traverse_dictionary_immutable(dct, prefix=\"\")` — recursion that **returns** a\n  new list.\n- `traverse_dictionary_mutable(dct, result, prefix=\"\")` — recursion that\n  **appends** to the given `result` list (returns `None`).\n- `traverse_dictionary_iterative(dct)` — **no recursion**: use an explicit stack\n  so it survives very deep nesting (100000 levels).\n\nDon't modify the input dict.",
+  "bundlePath": "/content/problems/py_datastructures/traverse_dictionary",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "At each level join the path with '.'; recurse into dict values, otherwise emit (full_key, value).",
+    "For the iterative version keep an explicit stack of (prefix, subdict) so deep nesting can't overflow the recursion limit."
+  ],
+  "contentHash": "964a63fd1e0345679d8795287301a203d26afd263eb47fd7aa76e9a8c4becfc7"
+}

@@ -1,0 +1,18 @@
+{
+  "id": "py_datastructures/reverse_dict",
+  "topic": "py_datastructures",
+  "slug": "reverse_dict",
+  "title": "Invert a Dictionary",
+  "difficulty": "easy",
+  "entry": "revert",
+  "banned": {},
+  "statementMd": "Implement `revert(dct)`.\n\nInvert a `{key: value}` mapping into `{value: [keys...]}`: each value becomes a\nkey whose list holds every original key that mapped to it. Don't modify the\ninput. For example `revert({\"a\": \"1\", \"b\": \"2\", \"c\": \"1\"})` →\n`{\"1\": [\"a\", \"c\"], \"2\": [\"b\"]}` (key order within a list doesn't matter). Do it\nin O(n) — a single pass, not O(n^2).",
+  "bundlePath": "/content/problems/py_datastructures/reverse_dict",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Walk the items once; for each (key, value) append key to the list at out[value] (dict.setdefault keeps it one pass)."
+  ],
+  "contentHash": "ea3e9175e5b0977cfa1c9779b1145b671043465dbcd389c7f2a4849a79b6a535"
+}

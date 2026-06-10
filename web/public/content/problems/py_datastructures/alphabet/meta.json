@@ -1,0 +1,23 @@
+{
+  "id": "py_datastructures/alphabet",
+  "topic": "py_datastructures",
+  "slug": "alphabet",
+  "title": "Alien Alphabet (Topological Sort)",
+  "difficulty": "hard",
+  "entry": "get_alphabet",
+  "banned": {
+    "modules": [
+      "graphlib"
+    ]
+  },
+  "statementMd": "Recover an alphabet from a list of words sorted in an unknown order (the\n\"alien dictionary\" problem). Implement two functions; `get_alphabet` (given) ties\nthem together.\n\n- `build_graph(words)` → `{letter: set of letters that come strictly after it}`.\n  Every letter that appears is a key. For each adjacent pair of words, the first\n  position where they differ yields one constraint: the earlier word's letter\n  comes before the later word's letter.\n- `extract_alphabet(graph)` → a list of all letters in one order consistent with\n  every constraint (a topological sort).\n\n`graphlib` is not allowed — implement the sort yourself. Inputs must not change.",
+  "bundlePath": "/content/problems/py_datastructures/alphabet",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "build_graph: every letter is a node; for each adjacent word pair, the first differing position gives one edge (earlier letter -> later letter).",
+    "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
+  ],
+  "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
+}

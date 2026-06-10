@@ -2,7 +2,9 @@ import pytest
 
 from tools.checks import assert_clean
 
-BIG = 10**15
+# range(0, STOP, 2) has 10**9 elements — huge enough that a linear scan blows the
+# watchdog, but < 2**31 so len() fits the 32-bit size type of the WASM/Pyodide build.
+STOP = 2 * 10**9
 
 # (nums, value, expected) — small cases checked against the `in` oracle too.
 CASES = [
@@ -33,12 +35,12 @@ def test_small(impl, nums, value, expected):
 
 @pytest.mark.parametrize(
     "value, expected",
-    [(BIG - 2, True), (0, True), (BIG, False), (-1, False),
-     (BIG // 2, True), (BIG // 2 + 1, False)],
+    [(STOP - 2, True), (0, True), (STOP, False), (-1, False),
+     (STOP // 2, True), (STOP // 2 + 1, False)],
 )
 def test_big_range_needs_log_n(impl, value, expected):
-    # 5*10^14 evens — only a logarithmic search returns in time.
-    assert impl.find_value(range(0, BIG, 2), value) == expected
+    # A billion evens — only a logarithmic search returns before the watchdog.
+    assert impl.find_value(range(0, STOP, 2), value) == expected
 
 
 def test_no_banned_constructs(impl_source, banned):

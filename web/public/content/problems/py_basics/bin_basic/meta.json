@@ -23,5 +23,5 @@
     "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
     "Two returns: True inside the loop on a hit, False after the loop ends."
   ],
-  "contentHash": "ce82f8c48f5e2e44c0befc61b7c691ad153f9e3dd540d4c1ad15b45543c45ca4"
+  "contentHash": "12f713242b741ac6c401cbe02e424d35300b6bb65844c3e4646f6268a33036e3"
 }

@@ -2,7 +2,9 @@ import pytest
 
 from tools.checks import assert_clean
 
-BIG = 10**15
+# The largest range below has length 2*BIG; keep it < 2**31 so len() fits the
+# 32-bit size type of the WASM/Pyodide runtime (still big enough to force O(log)).
+BIG = 10**8
 
 
 def _median(a, b):
@@ -45,7 +47,7 @@ BIG_CASES = [
 
 @pytest.mark.parametrize("a, b, expected", BIG_CASES)
 def test_big_ranges_need_log_time(impl, a, b, expected):
-    # ~10**15 elements: only an O(log) partition search returns in time.
+    # hundreds of millions of elements: only an O(log) partition search finishes.
     got = impl.find_median(a, b)
     assert isinstance(got, float)
     assert got == expected

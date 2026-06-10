@@ -1,0 +1,21 @@
+{
+  "id": "pandas_basics/series_ops",
+  "topic": "pandas_basics",
+  "slug": "series_ops",
+  "title": "Series Mean and ArgMax",
+  "difficulty": "easy",
+  "entry": "series_mean_and_argmax",
+  "banned": {},
+  "statementMd": "Implement `series_mean_and_argmax(data)`.\n\n`data` is a non-empty dict `{label: numeric_value}`.\n\nReturn a tuple `(mean, label_of_max)`:\n- `mean` — arithmetic mean of all values as a Python `float`.\n- `label_of_max` — the label (key) whose value is the largest.\n  When multiple values tie, return the label that appears **first** in `data`.\n\n```python\nseries_mean_and_argmax({\"a\": 1, \"b\": 3, \"c\": 2})  # → (2.0, 'b')\n```",
+  "bundlePath": "/content/problems/pandas_basics/series_ops",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Create a Series with pd.Series(data), then call .mean() and .idxmax() on it.",
+    "pd.Series preserves insertion order, so .idxmax() returns the label of the first maximum when there are ties."
+  ],
+  "contentHash": "1aed1eb2645c540c9d7bf722deb2969529446037a86dcd48104025c297eb4d38"
+}

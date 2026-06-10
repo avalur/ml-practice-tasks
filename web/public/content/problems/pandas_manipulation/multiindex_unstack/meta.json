@@ -1,0 +1,27 @@
+{
+  "id": "pandas_manipulation/multiindex_unstack",
+  "topic": "pandas_manipulation",
+  "slug": "multiindex_unstack",
+  "title": "MultiIndex: set_index and unstack",
+  "difficulty": "medium",
+  "entry": "build_multiindex",
+  "banned": {
+    "names": [
+      "pivot",
+      "pivot_table"
+    ]
+  },
+  "statementMd": "Implement two reshaping functions.\n\n**`build_multiindex(df, index_cols)`**\nSet `index_cols` as a hierarchical MultiIndex and return the reindexed DataFrame.\n\n**`unstack_level(df, level)`**\nUnstack `level` of the MultiIndex, pivoting that index level into column labels.\n\n`pivot` and `pivot_table` are not allowed — use `set_index` + `unstack`.\n\n```python\ndf = pd.DataFrame({\n    \"region\":[\"EU\",\"EU\",\"US\",\"US\"], \"q\":[\"Q1\",\"Q2\",\"Q1\",\"Q2\"], \"rev\":[10,20,30,40]\n})\nmi = build_multiindex(df, [\"region\",\"q\"])\nunstack_level(mi, \"q\")\n#         rev\n# q        Q1  Q2\n# region\n# EU       10  20\n# US       30  40\n```",
+  "bundlePath": "/content/problems/pandas_manipulation/multiindex_unstack",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "df.set_index(['col1','col2']) turns two columns into a two-level MultiIndex.",
+    "df.unstack(level=name) pivots one level of the index into columns, turning long format into wide.",
+    "After unstacking, column names become a MultiIndex tuple (original_col, unstacked_value)."
+  ],
+  "contentHash": "baa2fdef5928307e175680fe926f0ea726f21c7c085fe0e1c58c7906045ccfc3"
+}

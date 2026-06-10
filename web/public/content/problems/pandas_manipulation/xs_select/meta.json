@@ -1,0 +1,22 @@
+{
+  "id": "pandas_manipulation/xs_select",
+  "topic": "pandas_manipulation",
+  "slug": "xs_select",
+  "title": "MultiIndex Selection: xs() and swaplevel()",
+  "difficulty": "medium",
+  "entry": "xs_by_level",
+  "banned": {},
+  "statementMd": "Given a DataFrame with a **2-level column MultiIndex** `(metric, year)`,\nimplement two selection functions.\n\n**`xs_by_level(df, key, level)`**\nReturn the cross-section where the MultiIndex `level` equals `key`,\nusing `df.xs(key, axis=1, level=level)`.\n\n**`swaplevel_select(df, key)`**\nSwap the two column levels with `swaplevel(axis=1)` and then index by `key`\nto select all columns whose **original** level-1 value equals `key`.\n\nBoth functions must return the same result when called with the same `key`.\n\n```python\n# df.columns is MultiIndex: (metric, year) e.g. (\"Sales\",2022), (\"Offers\",2022)\nxs_by_level(df, 2022, level=\"year\")\n# Returns DataFrame with columns [\"Sales\",\"Offers\"] (the 2022 slice)\n```",
+  "bundlePath": "/content/problems/pandas_manipulation/xs_select",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "df.xs(key, axis=1, level='year') returns all columns where the 'year' level equals key.",
+    "df.swaplevel(axis=1) swaps the two column-MultiIndex levels; then df[key] selects by the new level 0.",
+    "Both approaches return a DataFrame with a flat (non-multi) column index."
+  ],
+  "contentHash": "1ad88015120480512bde87996f0c08fa4e15a56bebea90085bfa3c019d4f6f00"
+}

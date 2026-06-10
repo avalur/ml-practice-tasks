@@ -1,0 +1,22 @@
+{
+  "id": "pandas_manipulation/merge_join",
+  "topic": "pandas_manipulation",
+  "slug": "merge_join",
+  "title": "Inner Merge of Two DataFrames",
+  "difficulty": "easy",
+  "entry": "inner_merge",
+  "banned": {},
+  "statementMd": "Implement `inner_merge(left, right, key)`.\n\nReturn the **inner merge** of `left` and `right` on `key`:\nonly rows whose `key` value appears in **both** DataFrames are kept.\nUse `pd.merge()`.\n\n```python\norders = pd.DataFrame({\"id\":[1,2,3], \"item\":[\"a\",\"b\",\"c\"]})\nprices = pd.DataFrame({\"id\":[1,3],   \"price\":[10,30]})\ninner_merge(orders, prices, \"id\")\n#    id item  price\n# 0   1    a     10\n# 1   3    c     30\n```",
+  "bundlePath": "/content/problems/pandas_manipulation/merge_join",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "pd.merge(left, right, on=key, how='inner') performs an SQL-style inner join.",
+    "Rows whose key value has no match in the other DataFrame are dropped.",
+    "When one side has multiple rows with the same key, every combination is included (Cartesian product within that key)."
+  ],
+  "contentHash": "ce2742ebe1ce7b760365b5f7503cb10992c1f642a05b681418631530c9c7406b"
+}

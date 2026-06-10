@@ -1,0 +1,21 @@
+{
+  "id": "pandas_exploration/sort_rows",
+  "topic": "pandas_exploration",
+  "slug": "sort_rows",
+  "title": "Multi-Column Sort",
+  "difficulty": "easy",
+  "entry": "sort_by_surname_age",
+  "banned": {},
+  "statementMd": "Implement `sort_by_surname_age(df)`.\n\n`df` has columns `'name'`, `'surname'`, `'age'`. Sort by two keys:\n1. **`surname`** — descending (Z → A)\n2. **`age`** — ascending (younger first) among rows sharing the same surname\n\nKeep the original index; do not reset it.\n\n```python\n# surname \"Smith\" > \"Brown\", so Smiths come first\n# among Smiths: Carol (age 20) before Alice (age 30)\nsort_by_surname_age(df)\n# Carol  Smith 20\n# Alice  Smith 30\n# Bob    Brown 25\n```",
+  "bundlePath": "/content/problems/pandas_exploration/sort_rows",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "df.sort_values(by=[...], ascending=[...]) accepts a list of column names and a matching list of booleans.",
+    "ascending=[False, True] means first column descending, second column ascending."
+  ],
+  "contentHash": "aa24314d6932ae146dc84f17f06b0d08f44a8aa734a7d96fedb9cd778dc73504"
+}

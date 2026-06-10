@@ -1,0 +1,23 @@
+{
+  "id": "py_functional/lru_cache",
+  "topic": "py_functional",
+  "slug": "lru_cache",
+  "title": "LRU Cache Decorator",
+  "difficulty": "medium",
+  "entry": "cache",
+  "banned": {
+    "names": [
+      "lru_cache"
+    ]
+  },
+  "statementMd": "Implement `cache(max_size)` — a decorator factory that memoizes a function,\nkeeping results for at most the `max_size` **most-recently-used** argument\ntuples (an LRU cache). On overflow, evict the least-recently-used entry; a cache\nhit refreshes that entry's recency. Preserve the wrapped function's metadata\n(`functools.wraps`). Assume positional, hashable arguments.\n\n`functools.lru_cache` is not allowed — build it yourself (e.g. with an\n`OrderedDict`).",
+  "bundlePath": "/content/problems/py_functional/lru_cache",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Keep an OrderedDict of args -> result. On a hit, move_to_end to mark it most-recently used.",
+    "On a miss, store the result; if the size exceeds max_size, popitem(last=False) to drop the least-recently-used entry."
+  ],
+  "contentHash": "001020396edc7dc78413db24a470c24c4ce28894c91e3e37ef2298c913c23f54"
+}

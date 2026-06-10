@@ -1,0 +1,19 @@
+{
+  "id": "py_functional/context_manager",
+  "topic": "py_functional",
+  "slug": "context_manager",
+  "title": "Context Managers",
+  "difficulty": "medium",
+  "entry": "supresser",
+  "banned": {},
+  "statementMd": "Implement three context managers (with `@contextlib.contextmanager`):\n\n- `supresser(*types_)` — suppress exceptions whose type is listed (the block\n  exits normally); other exceptions propagate.\n- `retyper(type_from, type_to)` — catch `type_from` and re-raise it as\n  `type_to`, preserving the exception's `args`.\n- `dumper(stream=None)` — on any exception, write its message to `stream`\n  (default `sys.stderr`), then re-raise.",
+  "bundlePath": "/content/problems/py_functional/context_manager",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Use @contextlib.contextmanager: put `yield` inside a try/except so the with-body runs at the yield.",
+    "supresser swallows listed types; retyper raises type_to(*e.args) from the caught error; dumper prints then re-raises."
+  ],
+  "contentHash": "8d1e7a20f5c457ff22ab4a7aae2c824f15e2b76d52bd238e37913f4b703ecf28"
+}

@@ -1,0 +1,19 @@
+{
+  "id": "py_functional/flat_it",
+  "topic": "py_functional",
+  "slug": "flat_it",
+  "title": "Flatten It (generator)",
+  "difficulty": "medium",
+  "entry": "flat_it",
+  "banned": {},
+  "statementMd": "Implement `flat_it(sequence)` as a **generator** that lazily flattens an\niterable with an arbitrary level of nesting into a flat stream of leaves, in\norder. For example `list(flat_it((1, (2, 3), [4, [5, 6], 7]))) == [1, 2, 3, 4,\n5, 6, 7]`.\n\nStrings are iterable, so a multi-character string flattens into its characters\n(`\"ab\"` → `\"a\", \"b\"`); stop recursing at a single character so iterating a\n1-char string terminates. Non-iterables are yielded as-is. Use `yield` (the\nresult must be a generator).",
+  "bundlePath": "/content/problems/py_functional/flat_it",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Iterate the sequence; if an item is iterable, `yield from flat_it(item)`, else `yield item`.",
+    "Treat strings carefully: a string is iterable, so stop recursing once you reach a single character."
+  ],
+  "contentHash": "5ce4bd80e9c1a1a4485bd37a5689a55d49f0d7e4829356d3d3245292fd1cb4a8"
+}

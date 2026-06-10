@@ -9,6 +9,7 @@
     "numpy_warmup",
     "py_basics",
     "py_datastructures",
+    "py_functional",
     "py_strings"
   ],
   "difficulties": [
@@ -274,6 +275,105 @@
         "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
       ],
       "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
+    },
+    {
+      "id": "py_functional/warm_up",
+      "topic": "py_functional",
+      "slug": "warm_up",
+      "title": "Iterator Warm-up",
+      "difficulty": "easy",
+      "entry": "transpose",
+      "banned": {},
+      "statementMd": "Four small iterator/collection utilities:\n\n- `transpose(matrix)` — transpose a rectangular matrix (rows ↔ columns).\n- `uniq(sequence)` — a **generator** yielding elements in order, dropping later\n  duplicates (keep the first occurrence).\n- `dict_merge(*dicts)` — merge flat dicts; on a key collision the later dict wins.\n- `product(lhs, rhs)` — the scalar (dot) product of two equal-length int lists.",
+      "bundlePath": "/content/problems/py_functional/warm_up",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "transpose: zip(*matrix) pairs up the columns. uniq: yield items not seen before (it must be a generator).",
+        "dict_merge: update a result dict in order (later wins). product: sum of a*b over zip(lhs, rhs)."
+      ],
+      "contentHash": "5cbdeee539957c8df23e10fc20eced7873f4604e30a9e6997bebe9c101a951c6"
+    },
+    {
+      "id": "py_functional/flat_it",
+      "topic": "py_functional",
+      "slug": "flat_it",
+      "title": "Flatten It (generator)",
+      "difficulty": "medium",
+      "entry": "flat_it",
+      "banned": {},
+      "statementMd": "Implement `flat_it(sequence)` as a **generator** that lazily flattens an\niterable with an arbitrary level of nesting into a flat stream of leaves, in\norder. For example `list(flat_it((1, (2, 3), [4, [5, 6], 7]))) == [1, 2, 3, 4,\n5, 6, 7]`.\n\nStrings are iterable, so a multi-character string flattens into its characters\n(`\"ab\"` → `\"a\", \"b\"`); stop recursing at a single character so iterating a\n1-char string terminates. Non-iterables are yielded as-is. Use `yield` (the\nresult must be a generator).",
+      "bundlePath": "/content/problems/py_functional/flat_it",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Iterate the sequence; if an item is iterable, `yield from flat_it(item)`, else `yield item`.",
+        "Treat strings carefully: a string is iterable, so stop recursing once you reach a single character."
+      ],
+      "contentHash": "5ce4bd80e9c1a1a4485bd37a5689a55d49f0d7e4829356d3d3245292fd1cb4a8"
+    },
+    {
+      "id": "py_functional/context_manager",
+      "topic": "py_functional",
+      "slug": "context_manager",
+      "title": "Context Managers",
+      "difficulty": "medium",
+      "entry": "supresser",
+      "banned": {},
+      "statementMd": "Implement three context managers (with `@contextlib.contextmanager`):\n\n- `supresser(*types_)` — suppress exceptions whose type is listed (the block\n  exits normally); other exceptions propagate.\n- `retyper(type_from, type_to)` — catch `type_from` and re-raise it as\n  `type_to`, preserving the exception's `args`.\n- `dumper(stream=None)` — on any exception, write its message to `stream`\n  (default `sys.stderr`), then re-raise.",
+      "bundlePath": "/content/problems/py_functional/context_manager",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Use @contextlib.contextmanager: put `yield` inside a try/except so the with-body runs at the yield.",
+        "supresser swallows listed types; retyper raises type_to(*e.args) from the caught error; dumper prints then re-raises."
+      ],
+      "contentHash": "8d1e7a20f5c457ff22ab4a7aae2c824f15e2b76d52bd238e37913f4b703ecf28"
+    },
+    {
+      "id": "py_functional/profiler",
+      "topic": "py_functional",
+      "slug": "profiler",
+      "title": "Profiler Decorator",
+      "difficulty": "medium",
+      "entry": "profiler",
+      "banned": {},
+      "statementMd": "Implement `profiler(func)` — a decorator that records, as attributes on the\nwrapped function:\n\n- `calls` — the number of invocations during the most recent **top-level** call\n  (recursive calls count; the counter resets when a new outermost call begins),\n- `last_time_taken` — wall-clock seconds the most recent top-level call took.\n\nPreserve the original function's metadata (`__name__`, `__doc__`, ...) with\n`functools.wraps`.",
+      "bundlePath": "/content/problems/py_functional/profiler",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Track recursion depth on the wrapper; reset `calls` to 0 only when entering at depth 0 (a new top-level call).",
+        "Record `last_time_taken` when the depth returns to 0; use functools.wraps to keep the function's metadata."
+      ],
+      "contentHash": "dc2f539ae1ac5b16db0bde6ac403b430f583dab82133f343357fdc8f9ca9cd86"
+    },
+    {
+      "id": "py_functional/lru_cache",
+      "topic": "py_functional",
+      "slug": "lru_cache",
+      "title": "LRU Cache Decorator",
+      "difficulty": "medium",
+      "entry": "cache",
+      "banned": {
+        "names": [
+          "lru_cache"
+        ]
+      },
+      "statementMd": "Implement `cache(max_size)` — a decorator factory that memoizes a function,\nkeeping results for at most the `max_size` **most-recently-used** argument\ntuples (an LRU cache). On overflow, evict the least-recently-used entry; a cache\nhit refreshes that entry's recency. Preserve the wrapped function's metadata\n(`functools.wraps`). Assume positional, hashable arguments.\n\n`functools.lru_cache` is not allowed — build it yourself (e.g. with an\n`OrderedDict`).",
+      "bundlePath": "/content/problems/py_functional/lru_cache",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Keep an OrderedDict of args -> result. On a hit, move_to_end to mark it most-recently used.",
+        "On a miss, store the result; if the size exceeds max_size, popitem(last=False) to drop the least-recently-used entry."
+      ],
+      "contentHash": "001020396edc7dc78413db24a470c24c4ce28894c91e3e37ef2298c913c23f54"
     },
     {
       "id": "py_strings/caesar_cipher",

@@ -19,5 +19,5 @@
     "astype(float) converts the whole column — strings like '5.7' become 5.7.",
     "Always work on a copy (df.copy()) to avoid mutating the caller's data."
   ],
-  "contentHash": "c532728ff8d002a1f3595d7766dd8621c127c069a9c7975a6bea4e82d345141a"
+  "contentHash": "a0cef44839c206d00d0d6907da7efc3307186beb01aee9399ff015bac729051d"
 }

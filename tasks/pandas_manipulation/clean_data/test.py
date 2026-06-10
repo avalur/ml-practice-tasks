@@ -60,7 +60,8 @@ def test_cast_col_height(impl):
 def test_cast_no_mutation(impl):
     df = pd.DataFrame({"v": ["1", "2"]})
     impl.cast_col(df, "v", int)
-    assert df["v"].dtype == object
+    # original column must still hold strings, not ints
+    assert df["v"].iloc[0] == "1"
 
 
 def test_no_banned_constructs(impl_source, banned):

@@ -1,0 +1,19 @@
+{
+  "id": "py_functional/profiler",
+  "topic": "py_functional",
+  "slug": "profiler",
+  "title": "Profiler Decorator",
+  "difficulty": "medium",
+  "entry": "profiler",
+  "banned": {},
+  "statementMd": "Implement `profiler(func)` — a decorator that records, as attributes on the\nwrapped function:\n\n- `calls` — the number of invocations during the most recent **top-level** call\n  (recursive calls count; the counter resets when a new outermost call begins),\n- `last_time_taken` — wall-clock seconds the most recent top-level call took.\n\nPreserve the original function's metadata (`__name__`, `__doc__`, ...) with\n`functools.wraps`.",
+  "bundlePath": "/content/problems/py_functional/profiler",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Track recursion depth on the wrapper; reset `calls` to 0 only when entering at depth 0 (a new top-level call).",
+    "Record `last_time_taken` when the depth returns to 0; use functools.wraps to keep the function's metadata."
+  ],
+  "contentHash": "dc2f539ae1ac5b16db0bde6ac403b430f583dab82133f343357fdc8f9ca9cd86"
+}

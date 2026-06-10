@@ -1,0 +1,19 @@
+{
+  "id": "py_functional/warm_up",
+  "topic": "py_functional",
+  "slug": "warm_up",
+  "title": "Iterator Warm-up",
+  "difficulty": "easy",
+  "entry": "transpose",
+  "banned": {},
+  "statementMd": "Four small iterator/collection utilities:\n\n- `transpose(matrix)` — transpose a rectangular matrix (rows ↔ columns).\n- `uniq(sequence)` — a **generator** yielding elements in order, dropping later\n  duplicates (keep the first occurrence).\n- `dict_merge(*dicts)` — merge flat dicts; on a key collision the later dict wins.\n- `product(lhs, rhs)` — the scalar (dot) product of two equal-length int lists.",
+  "bundlePath": "/content/problems/py_functional/warm_up",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "transpose: zip(*matrix) pairs up the columns. uniq: yield items not seen before (it must be a generator).",
+    "dict_merge: update a result dict in order (later wins). product: sum of a*b over zip(lhs, rhs)."
+  ],
+  "contentHash": "5cbdeee539957c8df23e10fc20eced7873f4604e30a9e6997bebe9c101a951c6"
+}

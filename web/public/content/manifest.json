@@ -8,6 +8,7 @@
     "numpy_reductions",
     "numpy_warmup",
     "py_basics",
+    "py_classes",
     "py_datastructures",
     "py_functional",
     "py_strings"
@@ -173,6 +174,44 @@
         "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
       ],
       "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
+    },
+    {
+      "id": "py_classes/range",
+      "topic": "py_classes",
+      "slug": "range",
+      "title": "Custom Range",
+      "difficulty": "medium",
+      "entry": "Range",
+      "banned": {},
+      "statementMd": "Implement a `Range` class (plus its `RangeIterator`) that mimics the built-in\n`range`: an immutable arithmetic sequence.\n\n`Range(stop)`, `Range(start, stop)`, or `Range(start, stop, step)` — `start`\ndefaults to 0, `step` to 1, and `step == 0` raises `ValueError`. Support\niteration (re-iterable), `len`, indexing with negative indices (`IndexError`\nwhen out of range), membership (`in`) in **O(1)**, and a `range`-style `repr`\n(`str(Range(10)) == \"range(0, 10)\"`).",
+      "bundlePath": "/content/problems/py_classes/range",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Store start/stop/step and precompute the length; __getitem__ returns start + index*step (map negative indices via len + index).",
+        "Make __contains__ O(1) arithmetic (in-bounds and (key-start) % step == 0); return a fresh iterator from __iter__ so it's re-iterable."
+      ],
+      "contentHash": "3ee3bf7e08377e03dda18d31f2db25b913bd7c0a0db254fa4f3e70950982eb3b"
+    },
+    {
+      "id": "py_classes/list_twist",
+      "topic": "py_classes",
+      "slug": "list_twist",
+      "title": "List Twist",
+      "difficulty": "medium",
+      "entry": "ListTwist",
+      "banned": {},
+      "statementMd": "Implement `ListTwist`, a `collections.UserList` subclass with extra **virtual**\nattributes — exposed only through `__getattr__` / `__setattr__` (do **not**\ndeclare them as properties or methods):\n\n- `reversed` / `R` — the list reversed (a new plain list).\n- `first` / `F` — get or set the first element.\n- `last` / `L` — get or set the last element.\n- `size` / `S` — get or set the length: shrinking truncates, growing pads with\n  `None`.\n\nThe shortcuts must always reflect the current contents (after append, pop,\nslicing, etc.).",
+      "bundlePath": "/content/problems/py_classes/list_twist",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Subclass collections.UserList and intercept the shortcut names in __getattr__ (read) and __setattr__ (write).",
+        "In __setattr__, route real attributes (like 'data') to super().__setattr__; for 'size', truncate or pad self.data with None."
+      ],
+      "contentHash": "8c7421f2479987b28e8fd7638b3fa1a2579864e9322328d1096a86f9ae230a04"
     },
     {
       "id": "py_datastructures/reverse_dict",

@@ -31,7 +31,7 @@ _DIFFICULTIES = {"easy", "medium", "hard"}
 
 # Display order of top-level task families (the part of ``topic`` before ``_``).
 # Smaller sorts first; families not listed fall after these, alphabetically.
-_FAMILY_ORDER = {"py": 0, "numpy": 1}
+_FAMILY_ORDER = {"py": 0, "numpy": 1, "pandas": 2}
 
 
 def load_meta(path: Path) -> dict:

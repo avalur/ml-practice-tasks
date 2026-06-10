@@ -1,0 +1,26 @@
+{
+  "id": "pandas_exploration/filter_rows",
+  "topic": "pandas_exploration",
+  "slug": "filter_rows",
+  "title": "Filter Rows with Boolean Indexing",
+  "difficulty": "easy",
+  "entry": "filter_rows",
+  "banned": {
+    "names": [
+      "query"
+    ]
+  },
+  "statementMd": "Implement `filter_rows(df, max_age, name_starts, excl_surname)`.\n\n`df` has columns `'name'`, `'surname'`, `'age'`. Return only the rows where\n**all three** conditions hold:\n\n1. `age <= max_age`\n2. `name` starts with one of the prefixes in `name_starts`\n3. `surname != excl_surname`\n\nUse **boolean indexing** — `.query()` is not allowed.\nKeep the original index labels (no reset).\n\n```python\nfilter_rows(df, max_age=60, name_starts=(\"A\",\"D\"), excl_surname=\"Brown\")\n```",
+  "bundlePath": "/content/problems/pandas_exploration/filter_rows",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Build a boolean mask for each condition separately, then combine with & (AND) and ~ (NOT).",
+    "df['name'].str.startswith(tuple_of_prefixes) returns True for names beginning with any of those prefixes.",
+    "df[mask] returns only the rows where mask is True."
+  ],
+  "contentHash": "ab3c815b35344bcffa425dc7ab857a6a402ccefbf17be64b429f9fe4dead6540"
+}

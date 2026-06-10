@@ -1,0 +1,26 @@
+{
+  "id": "pandas_exploration/groupby_agg",
+  "topic": "pandas_exploration",
+  "slug": "groupby_agg",
+  "title": "GroupBy Aggregation: Sum and Mean",
+  "difficulty": "medium",
+  "entry": "total_per_group",
+  "banned": {
+    "names": [
+      "apply"
+    ]
+  },
+  "statementMd": "Implement two aggregation functions.\n\n**`total_per_group(df, group_col, value_col)`**\nReturn the **sum** of `value_col` for each group in `group_col` as a `pd.Series`.\n\n**`mean_per_group(df, group_col, value_col)`**\nReturn the **mean** of `value_col` for each group in `group_col` as a `pd.Series`.\n\n`.apply()` is not allowed — use `groupby().sum()` / `groupby().mean()` directly.\n\n```python\ndf = pd.DataFrame({\n    \"city\": [\"London\",\"London\",\"NY\",\"NY\",\"Tokyo\"],\n    \"sales\": [7000, 2000, 7000, 5000, 5000],\n})\ntotal_per_group(df, \"city\", \"sales\")\n# city\n# London    9000\n# NY       12000\n# Tokyo     5000\n# Name: sales, dtype: int64\n```",
+  "bundlePath": "/content/problems/pandas_exploration/groupby_agg",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "df.groupby(col)[value_col] selects the value column within each group.",
+    "Chain .sum() or .mean() directly on the GroupBy object — no need for .apply().",
+    "The result is a Series indexed by the group values."
+  ],
+  "contentHash": "e5447748ac56c1aac5e204024d059a1217e57105edd9925c788f8e0e0d086b1a"
+}

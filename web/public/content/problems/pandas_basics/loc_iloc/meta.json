@@ -1,0 +1,22 @@
+{
+  "id": "pandas_basics/loc_iloc",
+  "topic": "pandas_basics",
+  "slug": "loc_iloc",
+  "title": "Label vs Position Indexing: .loc and .iloc",
+  "difficulty": "easy",
+  "entry": "loc_select",
+  "banned": {},
+  "statementMd": "Implement two selection functions.\n\n**`loc_select(df, row_labels, col_labels)`**\nReturn the sub-DataFrame obtained by selecting `row_labels` and `col_labels`\nusing label-based indexing (`.loc[]`).\n\n**`iloc_select(df, row_positions, col_positions)`**\nReturn the sub-DataFrame obtained by selecting `row_positions` and\n`col_positions` using integer-position indexing (`.iloc[]`).\n\n```python\ndf = pd.DataFrame({\"A\":[1,2,3],\"B\":[4,5,6],\"C\":[7,8,9]}, index=[\"r1\",\"r2\",\"r3\"])\nloc_select(df, [\"r1\",\"r3\"], [\"A\",\"C\"])\n#    A  C\n# r1 1  7\n# r3 3  9\n\niloc_select(df, [0, 2], [0, 2])\n#    A  C\n# r1 1  7\n# r3 3  9\n```",
+  "bundlePath": "/content/problems/pandas_basics/loc_iloc",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "df.loc[row_labels, col_labels] selects by label — the index values and column names you see.",
+    "df.iloc[row_positions, col_positions] selects by integer position (0-based), regardless of the index.",
+    "Both accept Python lists, so df.loc[['r1','r3'], ['A','C']] returns a 2×2 DataFrame."
+  ],
+  "contentHash": "a2ba0f3b21aec06d26976d81642976c156fe9808659384987c7783884b0d8fd7"
+}

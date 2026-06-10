@@ -1,0 +1,21 @@
+{
+  "id": "pandas_basics/df_columns",
+  "topic": "pandas_basics",
+  "slug": "df_columns",
+  "title": "DataFrame Creation and Columns",
+  "difficulty": "easy",
+  "entry": "make_dataframe",
+  "banned": {},
+  "statementMd": "Implement two functions.\n\n**`make_dataframe(columns)`**\n`columns` is a dict `{column_name: [v1, v2, ...]}`. Create and return a\n`pd.DataFrame` from it. Column order must match the dict's insertion order.\n\n**`add_product_column(df, col_a, col_b, result)`**\nReturn a **copy** of `df` with a new column `result = df[col_a] * df[col_b]`.\nThe original DataFrame must not be modified.\n\n```python\ndf = make_dataframe({\"price\": [10, 20], \"qty\": [3, 5]})\ndf2 = add_product_column(df, \"price\", \"qty\", \"total\")\n# df2[\"total\"] == [30, 100]; df unchanged\n```",
+  "bundlePath": "/content/problems/pandas_basics/df_columns",
+  "pyDeps": [
+    "pandas"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "pd.DataFrame(dict) creates a DataFrame where each key becomes a column and the list becomes its values.",
+    "To add a column without mutating the input, call df.copy() first, then assign: df[result] = df[a] * df[b]."
+  ],
+  "contentHash": "fdd4dd15fe5f6a36dc535751febdf9b419b382dcef3bbc9d9ae69367bc2daad7"
+}

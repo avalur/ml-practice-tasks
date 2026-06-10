@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Analytics } from "@vercel/analytics/next";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/Providers";
 import { AuthStatus } from "@/components/AuthStatus";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -41,6 +43,8 @@ export default function RootLayout({
           </header>
           <main className="container">{children}</main>
         </Providers>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

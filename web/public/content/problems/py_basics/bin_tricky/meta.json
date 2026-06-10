@@ -1,0 +1,27 @@
+{
+  "id": "py_basics/bin_tricky",
+  "topic": "py_basics",
+  "slug": "bin_tricky",
+  "title": "Median of Two Sorted Sequences",
+  "difficulty": "hard",
+  "entry": "find_median",
+  "banned": {
+    "names": [
+      "sorted"
+    ],
+    "operators": [
+      "in",
+      "not in"
+    ]
+  },
+  "statementMd": "Implement `find_median(nums1, nums2)`.\n\nBoth inputs are sorted in non-decreasing order (at least one is non-empty).\nReturn their combined median as a `float`: the middle value if the total length\nis odd, otherwise the average of the two middle values.\n\nRun in **O(log(min(m, n)))** — a binary search over the partition, not a merge\n(some tests use sequences of length ~10**15, where scanning would never finish).\n`sorted` and the `in` operator are not allowed.",
+  "bundlePath": "/content/problems/py_basics/bin_tricky",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Binary-search the partition of the SHORTER sequence: pick i from it and j = (m+n+1)//2 - i from the other so the left part has half the elements.",
+    "The partition is correct when a[i-1] <= b[j] and b[j-1] <= a[i] (use ±infinity at the edges); then the median comes from the boundary values."
+  ],
+  "contentHash": "137f8291c59ccf9da4da40681d4d2f69d546ecd38c3ef0d055463d4c2f038bcd"
+}

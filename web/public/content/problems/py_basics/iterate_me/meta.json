@@ -1,0 +1,21 @@
+{
+  "id": "py_basics/iterate_me",
+  "topic": "py_basics",
+  "slug": "iterate_me",
+  "title": "Iterate Me",
+  "difficulty": "easy",
+  "entry": "get_squares",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "A warm-up of nine small list functions — solve each **without** a `for`/`while`\nloop (use comprehensions, slicing, and builtins):\n\n- `get_squares(elements)` — the squares.\n- `get_indices_from_one(elements)` — `[1, 2, ..., len]`.\n- `get_max_element_index(elements)` — index of the max (None if empty).\n- `get_every_second_element(elements)` — every second element from index 1.\n- `get_first_three_index(elements)` / `get_last_three_index(elements)` — index of\n  the first / last `3` (None if absent).\n- `get_sum(elements)` — the sum.\n- `get_min_max(elements, default)` — `(min, max)`, or `(default, default)` if empty.\n- `get_by_index(elements, i, boundary)` — `elements[i]` if it exceeds `boundary`,\n  else None.",
+  "bundlePath": "/content/problems/py_basics/iterate_me",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "No explicit loops — reach for comprehensions, slicing, and builtins (range, len, sum, min, max, list.index).",
+    "get_last_three_index: search the reversed list and convert the index; get_by_index reads nicely with a walrus (:=)."
+  ],
+  "contentHash": "ad09281e41dbc68d795e88ed24846daccc3cb7e735b7ca3b5ff4c6628c810441"
+}

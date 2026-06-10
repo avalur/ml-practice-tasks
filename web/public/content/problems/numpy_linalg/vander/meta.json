@@ -1,0 +1,25 @@
+{
+  "id": "numpy_linalg/vander",
+  "topic": "numpy_linalg",
+  "slug": "vander",
+  "title": "Vandermonde Matrix",
+  "difficulty": "easy",
+  "entry": "vander",
+  "banned": {
+    "names": [
+      "vander"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `vander(array)`.\n\nBuild the Vandermonde matrix with **increasing** powers: the element at row `i`,\ncolumn `j` is `array[i] ** j`. A length-`n` vector gives an `n × n` matrix, e.g.\n`[1, 2, 3]` → `[[1, 1, 1], [1, 2, 4], [1, 3, 9]]`.\n\n`np.vander` is not allowed — construct it with broadcasting. No `for`/`while`\nloops.",
+  "bundlePath": "/content/problems/numpy_linalg/vander",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Broadcast: array[:, None] raises each element to the powers np.arange(len(array)), giving increasing columns."
+  ],
+  "contentHash": "e11edda549ce9d5c725e1b30d6536ee3949fb3992017e07e1c666ac73cef5872"
+}

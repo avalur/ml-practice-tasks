@@ -1,0 +1,22 @@
+{
+  "id": "numpy_manipulation/replace_nans",
+  "topic": "numpy_manipulation",
+  "slug": "replace_nans",
+  "title": "Replace NaNs With the Mean",
+  "difficulty": "easy",
+  "entry": "replace_nans",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `replace_nans(matrix)`.\n\nReturn a copy of `matrix` with every `NaN` replaced by the mean of all non-`NaN`\nvalues. If every value is `NaN` (or the matrix is empty), return zeros of the\nsame shape. Leave the input unchanged. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_manipulation/replace_nans",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Build a boolean mask with np.isnan; if it's all True, fill zeros, else assign matrix[~mask].mean() at the masked positions."
+  ],
+  "contentHash": "8e9178b5528af9d1092f9841eb2162b4bd018988c30579e5928d9cdbf62b042c"
+}

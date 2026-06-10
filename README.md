@@ -51,5 +51,5 @@ NumPy tasks are adapted from [100 numpy exercises](https://github.com/rougier/nu
 by Nicolas P. Rougier (MIT License).
 
 Python-fundamentals tasks (the `py_*` track) are re-authored — our own solutions,
-statements, and tests — inspired by the JetBrains/manytask
+statements, and tests — inspired by the Yandex Data School
 [Python course](https://gitlab.manytask.org/python/public-2025-fall).

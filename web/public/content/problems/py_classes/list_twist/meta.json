@@ -1,0 +1,19 @@
+{
+  "id": "py_classes/list_twist",
+  "topic": "py_classes",
+  "slug": "list_twist",
+  "title": "List Twist",
+  "difficulty": "medium",
+  "entry": "ListTwist",
+  "banned": {},
+  "statementMd": "Implement `ListTwist`, a `collections.UserList` subclass with extra **virtual**\nattributes — exposed only through `__getattr__` / `__setattr__` (do **not**\ndeclare them as properties or methods):\n\n- `reversed` / `R` — the list reversed (a new plain list).\n- `first` / `F` — get or set the first element.\n- `last` / `L` — get or set the last element.\n- `size` / `S` — get or set the length: shrinking truncates, growing pads with\n  `None`.\n\nThe shortcuts must always reflect the current contents (after append, pop,\nslicing, etc.).",
+  "bundlePath": "/content/problems/py_classes/list_twist",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Subclass collections.UserList and intercept the shortcut names in __getattr__ (read) and __setattr__ (write).",
+    "In __setattr__, route real attributes (like 'data') to super().__setattr__; for 'size', truncate or pad self.data with None."
+  ],
+  "contentHash": "8c7421f2479987b28e8fd7638b3fa1a2579864e9322328d1096a86f9ae230a04"
+}

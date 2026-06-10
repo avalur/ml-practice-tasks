@@ -1,0 +1,19 @@
+{
+  "id": "py_classes/range",
+  "topic": "py_classes",
+  "slug": "range",
+  "title": "Custom Range",
+  "difficulty": "medium",
+  "entry": "Range",
+  "banned": {},
+  "statementMd": "Implement a `Range` class (plus its `RangeIterator`) that mimics the built-in\n`range`: an immutable arithmetic sequence.\n\n`Range(stop)`, `Range(start, stop)`, or `Range(start, stop, step)` — `start`\ndefaults to 0, `step` to 1, and `step == 0` raises `ValueError`. Support\niteration (re-iterable), `len`, indexing with negative indices (`IndexError`\nwhen out of range), membership (`in`) in **O(1)**, and a `range`-style `repr`\n(`str(Range(10)) == \"range(0, 10)\"`).",
+  "bundlePath": "/content/problems/py_classes/range",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Store start/stop/step and precompute the length; __getitem__ returns start + index*step (map negative indices via len + index).",
+    "Make __contains__ O(1) arithmetic (in-bounds and (key-start) % step == 0); return a fresh iterator from __iter__ so it's re-iterable."
+  ],
+  "contentHash": "3ee3bf7e08377e03dda18d31f2db25b913bd7c0a0db254fa4f3e70950982eb3b"
+}

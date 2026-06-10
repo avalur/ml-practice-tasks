@@ -1064,6 +1064,28 @@
       "contentHash": "b9ab057c1a9f30d1b47b8849fb278f2f77cdbc8e7cb42f206770da1ac1d570a1"
     },
     {
+      "id": "numpy_indexing/nearest_value",
+      "topic": "numpy_indexing",
+      "slug": "nearest_value",
+      "title": "Nearest Value in a Matrix",
+      "difficulty": "easy",
+      "entry": "nearest_value",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `nearest_value(matrix, value)`.\n\nReturn the element of `matrix` (any shape) closest to `value` — the one\nminimizing `|element - value|` — as a float. If the matrix is empty, return\n`None`. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_indexing/nearest_value",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Flatten the matrix, then np.abs(flat - value).argmin() gives the index of the closest element."
+      ],
+      "contentHash": "19666dedf9f8feb9ed1fa25f4f5f60930bb3b357345aae271456d786b89e2337"
+    },
+    {
       "id": "numpy_indexing/nonzero_indices",
       "topic": "numpy_indexing",
       "slug": "nonzero_indices",
@@ -1220,6 +1242,28 @@
       "contentHash": "cf54317944216636d0cf798d9ca5662b6306c4a0ec58fc9b22788ffa1a7c0c2e"
     },
     {
+      "id": "numpy_linalg/nonzero_product",
+      "topic": "numpy_linalg",
+      "slug": "nonzero_product",
+      "title": "Product of Nonzero Diagonal",
+      "difficulty": "easy",
+      "entry": "nonzero_product",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `nonzero_product(matrix)`.\n\nReturn the product of the **nonzero** elements on the main diagonal of a 2D\narray. If every diagonal element is zero (or there is no diagonal), return\n`None`. For example the diagonal of `[[1,0,1],[2,0,2],[3,0,3],[4,4,4]]` is\n`[1, 0, 3]`, so the answer is `1 * 3 = 3`. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_linalg/nonzero_product",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "np.diag(matrix) extracts the main diagonal; keep the entries that are != 0 with a boolean mask, then np.prod them."
+      ],
+      "contentHash": "baeb7be752384b46a48bc5f0b936150aec13002bb00a51f711ca511384e84a4f"
+    },
+    {
       "id": "numpy_linalg/normalize_rows",
       "topic": "numpy_linalg",
       "slug": "normalize_rows",
@@ -1273,6 +1317,53 @@
         "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
       ],
       "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
+    },
+    {
+      "id": "numpy_linalg/vander",
+      "topic": "numpy_linalg",
+      "slug": "vander",
+      "title": "Vandermonde Matrix",
+      "difficulty": "easy",
+      "entry": "vander",
+      "banned": {
+        "names": [
+          "vander"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `vander(array)`.\n\nBuild the Vandermonde matrix with **increasing** powers: the element at row `i`,\ncolumn `j` is `array[i] ** j`. A length-`n` vector gives an `n × n` matrix, e.g.\n`[1, 2, 3]` → `[[1, 1, 1], [1, 2, 4], [1, 3, 9]]`.\n\n`np.vander` is not allowed — construct it with broadcasting. No `for`/`while`\nloops.",
+      "bundlePath": "/content/problems/numpy_linalg/vander",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Broadcast: array[:, None] raises each element to the powers np.arange(len(array)), giving increasing columns."
+      ],
+      "contentHash": "e11edda549ce9d5c725e1b30d6536ee3949fb3992017e07e1c666ac73cef5872"
+    },
+    {
+      "id": "numpy_manipulation/add_zeros",
+      "topic": "numpy_manipulation",
+      "slug": "add_zeros",
+      "title": "Interleave Zeros Between Elements",
+      "difficulty": "easy",
+      "entry": "add_zeros",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `add_zeros(x)`.\n\nGiven a 1D integer array `x`, return a new array with a single zero inserted\nbetween each pair of adjacent elements: `[1, 2, 3]` → `[1, 0, 2, 0, 3]`. An\narray with fewer than two elements is returned unchanged. No `for`/`while`\nloops — use a strided assignment.",
+      "bundlePath": "/content/problems/numpy_manipulation/add_zeros",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Allocate a zero array of length 2*len(x)-1, then write x into every other slot with a strided assignment out[::2] = x."
+      ],
+      "contentHash": "57b9c7a5b300a610a7d7fe9a6dd90bd59c9cced92872566082945efe52f0916a"
     },
     {
       "id": "numpy_manipulation/block_sum",
@@ -1406,6 +1497,28 @@
         "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
       ],
       "contentHash": "b61d50e268e1ea75850615938cd2bd5cf23ab74ce4645581d04ceaed47f70b6f"
+    },
+    {
+      "id": "numpy_manipulation/replace_nans",
+      "topic": "numpy_manipulation",
+      "slug": "replace_nans",
+      "title": "Replace NaNs With the Mean",
+      "difficulty": "easy",
+      "entry": "replace_nans",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "Implement `replace_nans(matrix)`.\n\nReturn a copy of `matrix` with every `NaN` replaced by the mean of all non-`NaN`\nvalues. If every value is `NaN` (or the matrix is empty), return zeros of the\nsame shape. Leave the input unchanged. No `for`/`while` loops.",
+      "bundlePath": "/content/problems/numpy_manipulation/replace_nans",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Build a boolean mask with np.isnan; if it's all True, fill zeros, else assign matrix[~mask].mean() at the masked positions."
+      ],
+      "contentHash": "8e9178b5528af9d1092f9841eb2162b4bd018988c30579e5928d9cdbf62b042c"
     },
     {
       "id": "numpy_manipulation/row_demean",

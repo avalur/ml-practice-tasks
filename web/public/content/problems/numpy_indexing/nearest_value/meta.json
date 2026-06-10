@@ -1,0 +1,22 @@
+{
+  "id": "numpy_indexing/nearest_value",
+  "topic": "numpy_indexing",
+  "slug": "nearest_value",
+  "title": "Nearest Value in a Matrix",
+  "difficulty": "easy",
+  "entry": "nearest_value",
+  "banned": {
+    "loops": true
+  },
+  "statementMd": "Implement `nearest_value(matrix, value)`.\n\nReturn the element of `matrix` (any shape) closest to `value` — the one\nminimizing `|element - value|` — as a float. If the matrix is empty, return\n`None`. No `for`/`while` loops.",
+  "bundlePath": "/content/problems/numpy_indexing/nearest_value",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Flatten the matrix, then np.abs(flat - value).argmin() gives the index of the closest element."
+  ],
+  "contentHash": "19666dedf9f8feb9ed1fa25f4f5f60930bb3b357345aae271456d786b89e2337"
+}

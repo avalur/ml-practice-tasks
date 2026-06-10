@@ -9,8 +9,9 @@ def find_median(nums1: Sequence[int], nums2: Sequence[int]) -> float:
     it is even.
 
     Run in O(log(min(m, n))) — a binary search over the partition, **not** a
-    merge. (Some tests use sequences of length ~10**15, where an O(m+n) scan
-    would never finish.) ``sorted`` and the ``in`` operator are off-limits.
+    merge. (Some tests use sequences of hundreds of millions of elements, where
+    an O(m+n) scan would never finish.) ``sorted`` and the ``in`` operator are
+    off-limits.
 
     :param nums1: first sorted sequence
     :param nums2: second sorted sequence

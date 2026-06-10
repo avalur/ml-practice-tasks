@@ -176,6 +176,54 @@
       "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
     },
     {
+      "id": "py_basics/iterate_me",
+      "topic": "py_basics",
+      "slug": "iterate_me",
+      "title": "Iterate Me",
+      "difficulty": "easy",
+      "entry": "get_squares",
+      "banned": {
+        "loops": true
+      },
+      "statementMd": "A warm-up of nine small list functions — solve each **without** a `for`/`while`\nloop (use comprehensions, slicing, and builtins):\n\n- `get_squares(elements)` — the squares.\n- `get_indices_from_one(elements)` — `[1, 2, ..., len]`.\n- `get_max_element_index(elements)` — index of the max (None if empty).\n- `get_every_second_element(elements)` — every second element from index 1.\n- `get_first_three_index(elements)` / `get_last_three_index(elements)` — index of\n  the first / last `3` (None if absent).\n- `get_sum(elements)` — the sum.\n- `get_min_max(elements, default)` — `(min, max)`, or `(default, default)` if empty.\n- `get_by_index(elements, i, boundary)` — `elements[i]` if it exceeds `boundary`,\n  else None.",
+      "bundlePath": "/content/problems/py_basics/iterate_me",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "No explicit loops — reach for comprehensions, slicing, and builtins (range, len, sum, min, max, list.index).",
+        "get_last_three_index: search the reversed list and convert the index; get_by_index reads nicely with a walrus (:=)."
+      ],
+      "contentHash": "ad09281e41dbc68d795e88ed24846daccc3cb7e735b7ca3b5ff4c6628c810441"
+    },
+    {
+      "id": "py_basics/bin_tricky",
+      "topic": "py_basics",
+      "slug": "bin_tricky",
+      "title": "Median of Two Sorted Sequences",
+      "difficulty": "hard",
+      "entry": "find_median",
+      "banned": {
+        "names": [
+          "sorted"
+        ],
+        "operators": [
+          "in",
+          "not in"
+        ]
+      },
+      "statementMd": "Implement `find_median(nums1, nums2)`.\n\nBoth inputs are sorted in non-decreasing order (at least one is non-empty).\nReturn their combined median as a `float`: the middle value if the total length\nis odd, otherwise the average of the two middle values.\n\nRun in **O(log(min(m, n)))** — a binary search over the partition, not a merge\n(some tests use sequences of length ~10**15, where scanning would never finish).\n`sorted` and the `in` operator are not allowed.",
+      "bundlePath": "/content/problems/py_basics/bin_tricky",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Binary-search the partition of the SHORTER sequence: pick i from it and j = (m+n+1)//2 - i from the other so the left part has half the elements.",
+        "The partition is correct when a[i-1] <= b[j] and b[j-1] <= a[i] (use ±infinity at the edges); then the median comes from the boundary values."
+      ],
+      "contentHash": "137f8291c59ccf9da4da40681d4d2f69d546ecd38c3ef0d055463d4c2f038bcd"
+    },
+    {
       "id": "py_classes/range",
       "topic": "py_classes",
       "slug": "range",
@@ -314,6 +362,31 @@
         "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
       ],
       "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
+    },
+    {
+      "id": "py_datastructures/comprehensions",
+      "topic": "py_datastructures",
+      "slug": "comprehensions",
+      "title": "Comprehensions Over Records",
+      "difficulty": "medium",
+      "entry": "get_unique_page_ids",
+      "banned": {
+        "loops": true,
+        "names": [
+          "map",
+          "filter"
+        ]
+      },
+      "statementMd": "Ten little extractors over a hit-log: each record is a dict with `EventID`,\n`EventTime`, `UserID`, `PageID`, `RegionID` (may be `None`), `DeviceType`.\nWrite **each as a single comprehension** — no `for`/`while` loops and no\n`map`/`filter`:\n\n- `get_unique_page_ids` — set of all `PageID`s.\n- `get_unique_page_ids_visited_after_ts(records, ts)` — `PageID`s with\n  `EventTime > ts`.\n- `get_unique_user_ids_visited_page_after_ts(records, ts, page_id)` — `UserID`s\n  that hit `page_id` after `ts`.\n- `get_events_by_device_type(records, device_type)` — records with that device\n  (order preserved).\n- `get_region_ids_with_none_replaces_by_default(records)` — each `RegionID`,\n  with `None` → `DEFAULT_REGION_ID` (100500).\n- `get_region_id_if_not_none(records)` — the non-`None` `RegionID`s.\n- `get_keys_where_value_is_not_none(r)` — keys of a record with a non-`None` value.\n- `get_record_with_none_if_key_not_in_keys(r, keys)` — same record, values whose\n  key isn't in `keys` set to `None`.\n- `get_record_with_key_in_keys(r, keys)` — the record restricted to `keys`.\n- `get_keys_if_key_in_keys(r, keys)` — the record's keys that are in `keys`.",
+      "bundlePath": "/content/problems/py_datastructures/comprehensions",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Each function is one list/set/dict comprehension over the records — e.g. {r['PageID'] for r in records}.",
+        "Add an `if` clause to filter; use a conditional expression (a if cond else b) for the default-value cases."
+      ],
+      "contentHash": "466e31e045e89ab67ae6e02e9bfe16db9a68b14df3b408c3653556e2026d4185"
     },
     {
       "id": "py_functional/warm_up",

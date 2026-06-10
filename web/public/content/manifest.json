@@ -8,6 +8,7 @@
     "numpy_reductions",
     "numpy_warmup",
     "py_basics",
+    "py_datastructures",
     "py_strings"
   ],
   "difficulties": [
@@ -171,6 +172,108 @@
         "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
       ],
       "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
+    },
+    {
+      "id": "py_datastructures/reverse_dict",
+      "topic": "py_datastructures",
+      "slug": "reverse_dict",
+      "title": "Invert a Dictionary",
+      "difficulty": "easy",
+      "entry": "revert",
+      "banned": {},
+      "statementMd": "Implement `revert(dct)`.\n\nInvert a `{key: value}` mapping into `{value: [keys...]}`: each value becomes a\nkey whose list holds every original key that mapped to it. Don't modify the\ninput. For example `revert({\"a\": \"1\", \"b\": \"2\", \"c\": \"1\"})` →\n`{\"1\": [\"a\", \"c\"], \"2\": [\"b\"]}` (key order within a list doesn't matter). Do it\nin O(n) — a single pass, not O(n^2).",
+      "bundlePath": "/content/problems/py_datastructures/reverse_dict",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Walk the items once; for each (key, value) append key to the list at out[value] (dict.setdefault keeps it one pass)."
+      ],
+      "contentHash": "ea3e9175e5b0977cfa1c9779b1145b671043465dbcd389c7f2a4849a79b6a535"
+    },
+    {
+      "id": "py_datastructures/min_to_drop",
+      "topic": "py_datastructures",
+      "slug": "min_to_drop",
+      "title": "Minimum Drops to Equal",
+      "difficulty": "easy",
+      "entry": "get_min_to_drop",
+      "banned": {},
+      "statementMd": "Implement `get_min_to_drop(seq)`.\n\nReturn the minimum number of elements to remove so that all remaining elements\nare equal. That equals `len(seq)` minus the count of the most frequent element\n(an empty sequence needs 0). For example `get_min_to_drop([1, 2, 3, 1]) == 2`\n(drop the 2 and the 3, keep the two 1s).",
+      "bundlePath": "/content/problems/py_datastructures/min_to_drop",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Count occurrences of each value; the answer is len(seq) minus the largest count."
+      ],
+      "contentHash": "4b8c671bf2d97cfa7b5c08ebcfcc9cc67387e170d8181ba8e5b2b13bc0fb68b2"
+    },
+    {
+      "id": "py_datastructures/traverse_dictionary",
+      "topic": "py_datastructures",
+      "slug": "traverse_dictionary",
+      "title": "Flatten a Nested Dictionary",
+      "difficulty": "medium",
+      "entry": "traverse_dictionary_immutable",
+      "banned": {},
+      "statementMd": "Implement three flatteners of an arbitrarily nested dict whose leaves are ints:\nturn it into `(dotted_key, value)` pairs, e.g.\n`{\"a\": {\"b\": 1}}` → `[(\"a.b\", 1)]`. Key order in the result doesn't matter.\n\n- `traverse_dictionary_immutable(dct, prefix=\"\")` — recursion that **returns** a\n  new list.\n- `traverse_dictionary_mutable(dct, result, prefix=\"\")` — recursion that\n  **appends** to the given `result` list (returns `None`).\n- `traverse_dictionary_iterative(dct)` — **no recursion**: use an explicit stack\n  so it survives very deep nesting (100000 levels).\n\nDon't modify the input dict.",
+      "bundlePath": "/content/problems/py_datastructures/traverse_dictionary",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "At each level join the path with '.'; recurse into dict values, otherwise emit (full_key, value).",
+        "For the iterative version keep an explicit stack of (prefix, subdict) so deep nesting can't overflow the recursion limit."
+      ],
+      "contentHash": "964a63fd1e0345679d8795287301a203d26afd263eb47fd7aa76e9a8c4becfc7"
+    },
+    {
+      "id": "py_datastructures/merge_kway",
+      "topic": "py_datastructures",
+      "slug": "merge_kway",
+      "title": "K-Way Merge (Heap)",
+      "difficulty": "medium",
+      "entry": "merge",
+      "banned": {
+        "names": [
+          "sorted"
+        ],
+        "slicing": true
+      },
+      "statementMd": "Implement `merge(lists)`.\n\nMerge `k` lists — each already sorted in non-decreasing order — into one sorted\nlist, using a **heap** (`heapq`) for an O(N log k) merge. Don't concatenate and\n`sorted`, and don't slice. Leave the inputs unchanged. For example\n`merge([[1, 4, 7], [2, 3, 8], [0, 5, 9]]) == [0, 1, 2, 3, 4, 5, 7, 8, 9]`.",
+      "bundlePath": "/content/problems/py_datastructures/merge_kway",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Push the first element of each non-empty list onto a heap as (value, list_index, elem_index).",
+        "Pop the smallest, emit it, and push the next element from that same list. Repeat until the heap is empty."
+      ],
+      "contentHash": "9afa893f9f1e519979952885554e51ed3ee5363790b35e3e74c9bf531d63cce0"
+    },
+    {
+      "id": "py_datastructures/alphabet",
+      "topic": "py_datastructures",
+      "slug": "alphabet",
+      "title": "Alien Alphabet (Topological Sort)",
+      "difficulty": "hard",
+      "entry": "get_alphabet",
+      "banned": {
+        "modules": [
+          "graphlib"
+        ]
+      },
+      "statementMd": "Recover an alphabet from a list of words sorted in an unknown order (the\n\"alien dictionary\" problem). Implement two functions; `get_alphabet` (given) ties\nthem together.\n\n- `build_graph(words)` → `{letter: set of letters that come strictly after it}`.\n  Every letter that appears is a key. For each adjacent pair of words, the first\n  position where they differ yields one constraint: the earlier word's letter\n  comes before the later word's letter.\n- `extract_alphabet(graph)` → a list of all letters in one order consistent with\n  every constraint (a topological sort).\n\n`graphlib` is not allowed — implement the sort yourself. Inputs must not change.",
+      "bundlePath": "/content/problems/py_datastructures/alphabet",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "build_graph: every letter is a node; for each adjacent word pair, the first differing position gives one edge (earlier letter -> later letter).",
+        "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
+      ],
+      "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
     },
     {
       "id": "py_strings/caesar_cipher",

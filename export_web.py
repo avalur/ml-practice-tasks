@@ -8,7 +8,8 @@ to the repo (so the Vercel build runs no Python); CI runs
 Per ``web_runnable`` problem we emit exactly what the in-browser Pyodide runner
 needs to run pytest, plus a ``meta.json`` the Next.js app reads directly and a
 top-level ``manifest.json`` listing every problem. The reference solution is
-never exported.
+exported as ``reference.py`` (solution markers stripped) so the UI can show it
+after a student passes all tests.
 
 Run ``python export_web.py`` to (re)build, or ``--check`` to verify (exit 1 on
 drift, including stray files left by removed problems).
@@ -21,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-from content_pipeline import ROOT, ProblemBundle, iter_problems
+from content_pipeline import ROOT, ProblemBundle, iter_problems, strip_markers
 
 WEB_CONTENT = ROOT / "web" / "public" / "content"
 
@@ -70,6 +71,7 @@ def build() -> dict[Path, str]:
     for b in bundles:
         d = WEB_CONTENT / "problems" / b.topic / b.slug
         files[d / "submission.py"] = b.stub_src
+        files[d / "reference.py"] = strip_markers(b.reference_src)
         files[d / "test.py"] = b.test_src
         files[d / "meta.py"] = b.meta_src
         files[d / "readme.md"] = b.readme_md

@@ -10,6 +10,7 @@ const editorPadding = EditorView.theme({
 });
 import type { ProblemMeta } from "@/lib/problem";
 import {
+  fetchReferenceSolution,
   loadBundle,
   type Bundle,
   type CodeResult,
@@ -24,9 +25,11 @@ import { useSession } from "next-auth/react";
 export function SolveWorkspace({
   meta,
   starter,
+  onSolve,
 }: {
   meta: ProblemMeta;
   starter: string;
+  onSolve?: () => void;
 }) {
   const storageKey = `mlp:code:${meta.id}`;
   const [code, setCode] = useState(starter);
@@ -37,6 +40,12 @@ export function SolveWorkspace({
   const { data: session } = useSession();
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const postedRef = useRef<RunResult | null>(null);
+
+  // Reference solution tab state
+  const [allPassed, setAllPassed] = useState(false);
+  const [showRef, setShowRef] = useState(false);
+  const [refCode, setRefCode] = useState<string | null>(null);
+  const [refLoading, setRefLoading] = useState(false);
 
   // Resolve the editor's initial content once, with precedence:
   //   ?submission=<id>  →  local draft (your in-progress edits here)  →
@@ -113,6 +122,10 @@ export function SolveWorkspace({
     postedRef.current = r;
     if (!session?.user) return;
     const allPass = r.total > 0 && r.passed === r.total;
+    if (allPass) {
+      setAllPassed(true);
+      onSolve?.();
+    }
     // On a win, ask the sidebar to pulse this task's bullet while we persist —
     // it stays pulsing until the save settles and the green ✓ is set.
     if (allPass) {
@@ -154,10 +167,13 @@ export function SolveWorkspace({
 
   const busy = runner.status === "running" || runner.status === "loading";
 
+  // The code currently visible in the editor (user's or reference).
+  const activeCode = showRef && refCode !== null ? refCode : code;
+
   const onRun = () => {
     if (busy || !bundle) return;
     runner.run({
-      files: { ...bundle.files, [bundle.submissionPath]: code },
+      files: { ...bundle.files, [bundle.submissionPath]: activeCode },
       testPath: bundle.testPath,
       pyDeps: meta.pyDeps,
     });
@@ -166,7 +182,22 @@ export function SolveWorkspace({
   // Scratchpad: run the editor code as-is and show whatever it prints.
   const onRunCode = () => {
     if (busy) return;
-    runner.runCode(code);
+    runner.runCode(activeCode);
+  };
+
+  const handleShowRef = async () => {
+    if (!showRef && refCode === null) {
+      setRefLoading(true);
+      try {
+        const src = await fetchReferenceSolution(meta.bundlePath);
+        setRefCode(src);
+      } catch {
+        // silently ignore — button stays disabled if fetch fails
+      } finally {
+        setRefLoading(false);
+      }
+    }
+    setShowRef((v) => !v);
   };
 
   const onReset = () => {
@@ -240,12 +271,30 @@ export function SolveWorkspace({
         )}
       </div>
 
+      {allPassed && (
+        <div className="solution-tabs">
+          <button
+            className={`solution-tab${!showRef ? " active" : ""}`}
+            onClick={() => setShowRef(false)}
+          >
+            Your solution
+          </button>
+          <button
+            className={`solution-tab${showRef ? " active" : ""}`}
+            onClick={handleShowRef}
+            disabled={refLoading}
+          >
+            {refLoading ? "Loading…" : "Reference solution"}
+          </button>
+        </div>
+      )}
+
       <CodeMirror
-        value={code}
+        value={activeCode}
         height="360px"
         theme={theme}
         extensions={[python(), editorPadding]}
-        onChange={setCode}
+        onChange={showRef ? (v) => setRefCode(v) : setCode}
       />
 
       {runner.mode === "code" ? (

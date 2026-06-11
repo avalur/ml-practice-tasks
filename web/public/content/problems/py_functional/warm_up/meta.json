@@ -15,5 +15,11 @@
     "transpose: zip(*matrix) pairs up the columns. uniq: yield items not seen before (it must be a generator).",
     "dict_merge: update a result dict in order (later wins). product: sum of a*b over zip(lhs, rhs)."
   ],
-  "contentHash": "5cbdeee539957c8df23e10fc20eced7873f4604e30a9e6997bebe9c101a951c6"
+  "prereqs": [],
+  "next": [
+    "py_functional/flat_it",
+    "py_functional/context_manager",
+    "py_functional/lru_cache"
+  ],
+  "contentHash": "f35c81ea99e4c89528c2d3f7d67fbe721e2c3c1cf0f95d69dd90416492429719"
 }

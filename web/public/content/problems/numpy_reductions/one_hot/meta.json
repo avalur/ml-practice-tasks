@@ -22,5 +22,7 @@
   "hints": [
     "Index the rows with np.arange and the columns with the labels in a single assignment."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ce9911cd58226bad72cd44bdd611ee85659d30da2b84932b03027051baf5253a"
 }

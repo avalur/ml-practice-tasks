@@ -22,5 +22,7 @@
   "hints": [
     "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "b61d50e268e1ea75850615938cd2bd5cf23ab74ce4645581d04ceaed47f70b6f"
 }

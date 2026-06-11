@@ -9,6 +9,7 @@ META = {
         "loops": True,
         "names": ["map", "filter"],
     },
+    "prereqs": ["py_basics/filter_list_by_list", "py_basics/iterate_me"],
     "hints": [
         "Each function is one list/set/dict comprehension over the records — e.g. {r['PageID'] for r in records}.",
         "Add an `if` clause to filter; use a conditional expression (a if cond else b) for the default-value cases.",

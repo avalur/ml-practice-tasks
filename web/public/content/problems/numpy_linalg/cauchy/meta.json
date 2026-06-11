@@ -22,5 +22,7 @@
   "hints": [
     "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "a665c0143c9bd43b049f20494ab4d95eb78b82bcf4f805d17d3db6627fbcde3f"
 }

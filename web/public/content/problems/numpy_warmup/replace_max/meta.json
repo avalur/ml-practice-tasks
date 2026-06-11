@@ -22,5 +22,7 @@
   "hints": [
     "argmax gives the index of the maximum; copy first so the input isn't mutated."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "1ea6fc6859f319c3325867d152ca261dfae01cebb866d54f018bb8f7bd931f5e"
 }

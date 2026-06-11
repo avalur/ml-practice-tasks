@@ -6,6 +6,7 @@ META = {
     "order": 1,
     "py_deps": [],
     "banned": {},
+    "next": ["py_classes/list_twist"],
     "hints": [
         "Store start/stop/step and precompute the length; __getitem__ returns start + index*step (map negative indices via len + index).",
         "Make __contains__ O(1) arithmetic (in-bounds and (key-start) % step == 0); return a fresh iterator from __iter__ so it's re-iterable.",

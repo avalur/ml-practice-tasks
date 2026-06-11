@@ -22,5 +22,10 @@
   "hints": [
     "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
   ],
-  "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
+  "prereqs": [
+    "numpy_basics/to_matrix",
+    "numpy_linalg/normalize_rows"
+  ],
+  "next": [],
+  "contentHash": "e6e3d88a5bb9562a2925acaa8e0b3fec1c2ba5f5dda018f9aa6e9c41e54508dc"
 }

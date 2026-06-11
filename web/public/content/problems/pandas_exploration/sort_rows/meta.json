@@ -17,5 +17,7 @@
     "df.sort_values(by=[...], ascending=[...]) accepts a list of column names and a matching list of booleans.",
     "ascending=[False, True] means first column descending, second column ascending."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "aa24314d6932ae146dc84f17f06b0d08f44a8aa734a7d96fedb9cd778dc73504"
 }

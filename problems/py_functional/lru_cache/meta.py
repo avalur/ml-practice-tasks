@@ -8,6 +8,7 @@ META = {
     "banned": {
         "names": ["lru_cache"],
     },
+    "prereqs": ["py_functional/warm_up"],
     "hints": [
         "Keep an OrderedDict of args -> result. On a hit, move_to_end to mark it most-recently used.",
         "On a miss, store the result; if the size exceeds max_size, popitem(last=False) to drop the least-recently-used entry.",

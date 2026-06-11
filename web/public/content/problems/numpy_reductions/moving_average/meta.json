@@ -22,5 +22,7 @@
   "hints": [
     "np.cumsum gives prefix sums; a window sum is the difference of two of them."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "318a48eb7bc3deacf5e72155e79bb110ec62586ffa093a475e0f1e711b27adf8"
 }

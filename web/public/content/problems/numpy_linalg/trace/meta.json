@@ -25,5 +25,7 @@
   "hints": [
     "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
 }

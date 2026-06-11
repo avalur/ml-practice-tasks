@@ -10,6 +10,7 @@ META = {
         "names": ["index"],
         "operators": ["in", "not in"],
     },
+    "next": ["py_basics/bin_tricky"],
     "hints": [
         "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
         "Two returns: True inside the loop on a hit, False after the loop ends.",

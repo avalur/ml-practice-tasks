@@ -18,5 +18,7 @@
   "hints": [
     "A slice with a negative step walks the array backwards."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
 }

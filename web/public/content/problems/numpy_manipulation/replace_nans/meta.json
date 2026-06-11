@@ -18,5 +18,7 @@
   "hints": [
     "Build a boolean mask with np.isnan; if it's all True, fill zeros, else assign matrix[~mask].mean() at the masked positions."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "8e9178b5528af9d1092f9841eb2162b4bd018988c30579e5928d9cdbf62b042c"
 }

@@ -18,5 +18,7 @@
     "df.iloc[row_positions, col_positions] selects by integer position (0-based), regardless of the index.",
     "Both accept Python lists, so df.loc[['r1','r3'], ['A','C']] returns a 2×2 DataFrame."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "a2ba0f3b21aec06d26976d81642976c156fe9808659384987c7783884b0d8fd7"
 }

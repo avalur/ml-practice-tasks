@@ -15,5 +15,9 @@
     "Store start/stop/step and precompute the length; __getitem__ returns start + index*step (map negative indices via len + index).",
     "Make __contains__ O(1) arithmetic (in-bounds and (key-start) % step == 0); return a fresh iterator from __iter__ so it's re-iterable."
   ],
-  "contentHash": "3ee3bf7e08377e03dda18d31f2db25b913bd7c0a0db254fa4f3e70950982eb3b"
+  "prereqs": [],
+  "next": [
+    "py_classes/list_twist"
+  ],
+  "contentHash": "19bb7a917d57d193617c854489319fa60a0fd853a6aec4eb476f868887cf0af7"
 }

@@ -18,5 +18,7 @@
   "hints": [
     "The three values minus the smallest and the largest leaves the middle one."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "0e3f225dd2fdf34e8311ef015c93e2e10305a4d96c7ecb891f328f7ede147f2b"
 }

@@ -18,5 +18,7 @@
   "hints": [
     "X.T (or np.transpose(X)) swaps the two axes of a 2D array."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "9a9420ae0b4ee77d30e51088293d7af7f4cad5b0b63e81b0ad771f043de68bf4"
 }

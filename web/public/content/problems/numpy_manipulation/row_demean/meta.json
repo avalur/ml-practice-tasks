@@ -22,5 +22,7 @@
   "hints": [
     "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "3cc8c1896ec53a995afe9051691f7941cefdfc0bbf91e3d567f651748821a6f7"
 }

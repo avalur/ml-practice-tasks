@@ -20,5 +20,9 @@
     "Two pointers i, j: append the smaller of lst_a[i] / lst_b[j], advance that pointer.",
     "When one list is exhausted, drain the other with a plain loop (no slicing)."
   ],
-  "contentHash": "dc0e703513cc1ec0b707cd8ac9d096e9aa92276c5b214ff68a06a271f1d5ff78"
+  "prereqs": [],
+  "next": [
+    "py_datastructures/merge_kway"
+  ],
+  "contentHash": "ac9f24da2917b67c2f7aeba828d5399da8506729d6fc26359e4e25953dfa50a7"
 }

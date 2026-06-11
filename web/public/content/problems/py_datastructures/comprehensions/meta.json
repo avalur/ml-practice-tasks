@@ -21,5 +21,10 @@
     "Each function is one list/set/dict comprehension over the records — e.g. {r['PageID'] for r in records}.",
     "Add an `if` clause to filter; use a conditional expression (a if cond else b) for the default-value cases."
   ],
-  "contentHash": "466e31e045e89ab67ae6e02e9bfe16db9a68b14df3b408c3653556e2026d4185"
+  "prereqs": [
+    "py_basics/filter_list_by_list",
+    "py_basics/iterate_me"
+  ],
+  "next": [],
+  "contentHash": "02cbc2ffd2dbabab1ab970e34f9dee5089f6da46a884543645af728c3562124d"
 }

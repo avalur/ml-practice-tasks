@@ -19,5 +19,9 @@
     "Both lists are sorted: walk them with two pointers, advancing the second past values smaller than the current element.",
     "Drop the element when the two pointers meet on equal values; otherwise keep it."
   ],
-  "contentHash": "27a24a2c44c90d86f61a5a634988860d68b051ba8999dede3151319a1a30545d"
+  "prereqs": [],
+  "next": [
+    "py_datastructures/comprehensions"
+  ],
+  "contentHash": "9830bd67e4e6c4a81b5b2422e3d06ed08373403f613d74d690b2a80075775ebc"
 }

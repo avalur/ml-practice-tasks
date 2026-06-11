@@ -17,5 +17,7 @@
     "Create a Series with pd.Series(data), then call .mean() and .idxmax() on it.",
     "pd.Series preserves insertion order, so .idxmax() returns the label of the first maximum when there are ties."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "1aed1eb2645c540c9d7bf722deb2969529446037a86dcd48104025c297eb4d38"
 }

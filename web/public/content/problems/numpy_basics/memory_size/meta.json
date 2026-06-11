@@ -20,5 +20,7 @@
   "hints": [
     "An array holds a.size elements, each a.itemsize bytes — multiply them."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "0220ca090d051a58e3b7705868960ac71e8b90642ff431df74ffa347f7c552cf"
 }

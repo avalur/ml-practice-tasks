@@ -15,5 +15,9 @@
     "Track recursion depth on the wrapper; reset `calls` to 0 only when entering at depth 0 (a new top-level call).",
     "Record `last_time_taken` when the depth returns to 0; use functools.wraps to keep the function's metadata."
   ],
-  "contentHash": "dc2f539ae1ac5b16db0bde6ac403b430f583dab82133f343357fdc8f9ca9cd86"
+  "prereqs": [
+    "py_functional/warm_up"
+  ],
+  "next": [],
+  "contentHash": "b7392773f45df6902f958b340d4a390fd01320658a5db3d1c4585be0e9bbc879"
 }

@@ -19,5 +19,9 @@
     "build_graph: every letter is a node; for each adjacent word pair, the first differing position gives one edge (earlier letter -> later letter).",
     "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
   ],
-  "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
+  "prereqs": [
+    "py_datastructures/traverse_dictionary"
+  ],
+  "next": [],
+  "contentHash": "6f58cc3fd4d518abd5aef8d75df79477432ce3d021ebbc522569621ed55a2e66"
 }

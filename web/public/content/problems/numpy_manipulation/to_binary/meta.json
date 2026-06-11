@@ -22,5 +22,7 @@
   "hints": [
     "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "5bcf8fc3a96be7663fe55f0be2a9f8e73b669b96698be0d65fd8ec507a401e16"
 }

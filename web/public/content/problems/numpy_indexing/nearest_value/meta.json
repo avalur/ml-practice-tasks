@@ -18,5 +18,7 @@
   "hints": [
     "Flatten the matrix, then np.abs(flat - value).argmin() gives the index of the closest element."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "19666dedf9f8feb9ed1fa25f4f5f60930bb3b357345aae271456d786b89e2337"
 }

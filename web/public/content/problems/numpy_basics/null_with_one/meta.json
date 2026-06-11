@@ -18,5 +18,7 @@
   "hints": [
     "Make a zero vector with np.zeros(n), then assign 1 to index i."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "9fe960f018a95d6dba38b1a30f73686242a863d2b835d59754ee5c9297efe222"
 }

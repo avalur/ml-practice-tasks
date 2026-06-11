@@ -18,5 +18,7 @@
   "hints": [
     "Pass -1 for the unknown dimension: x.reshape(rows, -1) lets NumPy compute the columns."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "a55d26c1e86fb89ee5cb9ddf645e50a6aec7f8b58c57d6608e1e8b6100f3124f"
 }

@@ -18,5 +18,7 @@
   "hints": [
     "Allocate a zero array of length 2*len(x)-1, then write x into every other slot with a strided assignment out[::2] = x."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "57b9c7a5b300a610a7d7fe9a6dd90bd59c9cced92872566082945efe52f0916a"
 }

@@ -14,5 +14,7 @@
   "hints": [
     "Count occurrences of each value; the answer is len(seq) minus the largest count."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "4b8c671bf2d97cfa7b5c08ebcfcc9cc67387e170d8181ba8e5b2b13bc0fb68b2"
 }

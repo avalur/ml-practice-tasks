@@ -22,5 +22,7 @@
   "hints": [
     "Build a boolean mask (x > lo) & (x < hi) and flip the sign of those entries in a copy."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "c6ae1ac25d29169420655665b19b81c51885d6d20b182569fb6f64b4f26f5073"
 }

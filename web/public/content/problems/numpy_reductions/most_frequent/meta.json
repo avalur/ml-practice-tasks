@@ -22,5 +22,7 @@
   "hints": [
     "np.bincount counts occurrences of each value; argmax gives the most frequent."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "3dd641ea761d0bf804a563d62716ce3a32644b21a2d4218f2ec7561eca0d4e39"
 }

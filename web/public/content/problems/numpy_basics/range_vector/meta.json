@@ -18,5 +18,7 @@
   "hints": [
     "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
 }

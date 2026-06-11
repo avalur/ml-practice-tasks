@@ -39,7 +39,12 @@ export default async function ProblemPage({
 
   // Linear prev/next in catalog order (visible problems only — a hidden task
   // viewed directly gets no neighbours).
-  const order = visibleProblems(await getManifest());
+  const manifest = await getManifest();
+  const byId = Object.fromEntries(manifest.problems.map((p) => [p.id, p]));
+  const prereqProblems = problem.prereqs.map((id) => byId[id]).filter(Boolean);
+  const nextProblems = problem.next.map((id) => byId[id]).filter(Boolean);
+
+  const order = visibleProblems(manifest);
   const idx = order.findIndex((p) => p.topic === topic && p.slug === slug);
   const prev = idx > 0 ? order[idx - 1] : null;
   const next = idx >= 0 && idx < order.length - 1 ? order[idx + 1] : null;
@@ -75,7 +80,12 @@ export default async function ProblemPage({
         Edit <code>{problem.entry}</code> and run the real pytest suite in your
         browser — no install required. Your code is saved locally.
       </p>
-      <ProblemPageClient problem={problem} starter={starter} />
+      <ProblemPageClient
+        problem={problem}
+        starter={starter}
+        prereqProblems={prereqProblems}
+        nextProblems={nextProblems}
+      />
 
       <nav className="prevnext">
         {prev ? (

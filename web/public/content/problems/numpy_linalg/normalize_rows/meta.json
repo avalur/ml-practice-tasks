@@ -22,5 +22,7 @@
   "hints": [
     "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "3709a60bc1f1fe12ed30c3ec3e1388e287a5db6d37b157c00076595b79ea93b5"
 }

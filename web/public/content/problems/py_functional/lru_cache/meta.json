@@ -19,5 +19,9 @@
     "Keep an OrderedDict of args -> result. On a hit, move_to_end to mark it most-recently used.",
     "On a miss, store the result; if the size exceeds max_size, popitem(last=False) to drop the least-recently-used entry."
   ],
-  "contentHash": "001020396edc7dc78413db24a470c24c4ce28894c91e3e37ef2298c913c23f54"
+  "prereqs": [
+    "py_functional/warm_up"
+  ],
+  "next": [],
+  "contentHash": "4f88f6e797f0c636f0cf1fed77e8b21623e29e6d2e2eeb9eeb7b088795276ffe"
 }

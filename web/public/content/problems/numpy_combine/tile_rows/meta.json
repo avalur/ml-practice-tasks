@@ -18,5 +18,7 @@
   "hints": [
     "np.tile(x, (r, 1)) repeats the whole array x to make r identical rows."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "b53b68fa18e99da8d2ac7984fd672e874f16692cdb1b032d8cb040e5bc00ccce"
 }

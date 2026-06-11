@@ -22,5 +22,7 @@
     "df['name'].str.startswith(tuple_of_prefixes) returns True for names beginning with any of those prefixes.",
     "df[mask] returns only the rows where mask is True."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ab3c815b35344bcffa425dc7ab857a6a402ccefbf17be64b429f9fe4dead6540"
 }

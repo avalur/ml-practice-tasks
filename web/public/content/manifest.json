@@ -50,7 +50,11 @@
         "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
         "Two returns: True inside the loop on a hit, False after the loop ends."
       ],
-      "contentHash": "ace73a1917841a665dde81496ff8322e9528e4c1bad9bcc5fa00aacb4cdd8686"
+      "prereqs": [],
+      "next": [
+        "py_basics/bin_tricky"
+      ],
+      "contentHash": "451058ff56b55979d95bedbc4a2c3083ab5227bdc11a2bc00c2ec8ddb23c2322"
     },
     {
       "id": "py_basics/fizz_buzz",
@@ -68,7 +72,11 @@
       "hints": [
         "Loop the numbers 1..n; check divisibility by 15 first, then 3, then 5, else keep the number."
       ],
-      "contentHash": "0db5bdaef43927b86b10919157036065c817c613d9e062ff32d4ee76f689b04d"
+      "prereqs": [],
+      "next": [
+        "py_basics/iterate_me"
+      ],
+      "contentHash": "88ea251a96da2cb59691427d41798e9d5110db2e5505b638b1fab8369c949e3a"
     },
     {
       "id": "py_basics/middle_value_of_triple",
@@ -90,6 +98,8 @@
       "hints": [
         "The three values minus the smallest and the largest leaves the middle one."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "0e3f225dd2fdf34e8311ef015c93e2e10305a4d96c7ecb891f328f7ede147f2b"
     },
     {
@@ -113,7 +123,11 @@
         "Both lists are sorted: walk them with two pointers, advancing the second past values smaller than the current element.",
         "Drop the element when the two pointers meet on equal values; otherwise keep it."
       ],
-      "contentHash": "27a24a2c44c90d86f61a5a634988860d68b051ba8999dede3151319a1a30545d"
+      "prereqs": [],
+      "next": [
+        "py_datastructures/comprehensions"
+      ],
+      "contentHash": "9830bd67e4e6c4a81b5b2422e3d06ed08373403f613d74d690b2a80075775ebc"
     },
     {
       "id": "py_basics/merge_iterative",
@@ -137,7 +151,11 @@
         "Two pointers i, j: append the smaller of lst_a[i] / lst_b[j], advance that pointer.",
         "When one list is exhausted, drain the other with a plain loop (no slicing)."
       ],
-      "contentHash": "dc0e703513cc1ec0b707cd8ac9d096e9aa92276c5b214ff68a06a271f1d5ff78"
+      "prereqs": [],
+      "next": [
+        "py_datastructures/merge_kway"
+      ],
+      "contentHash": "ac9f24da2917b67c2f7aeba828d5399da8506729d6fc26359e4e25953dfa50a7"
     },
     {
       "id": "py_basics/reverse_iterative",
@@ -160,6 +178,8 @@
       "hints": [
         "Iterate indices from len(lst)-1 down to 0 with range(len(lst)-1, -1, -1) and append."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3ec1c99257a8fab9514ba6c738f0c06a426aa6889eb7d05234751a740da1ee87"
     },
     {
@@ -179,6 +199,8 @@
         "Two ladders of increasing generality: numbers bool→int→float→complex, sequences range→tuple→list. Within a ladder, pick the more general.",
         "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
     },
     {
@@ -200,7 +222,13 @@
         "No explicit loops — reach for comprehensions, slicing, and builtins (range, len, sum, min, max, list.index).",
         "get_last_three_index: search the reversed list and convert the index; get_by_index reads nicely with a walrus (:=)."
       ],
-      "contentHash": "ad09281e41dbc68d795e88ed24846daccc3cb7e735b7ca3b5ff4c6628c810441"
+      "prereqs": [
+        "py_basics/fizz_buzz"
+      ],
+      "next": [
+        "py_functional/flat_it"
+      ],
+      "contentHash": "27d766efb1579e7f8104290717f3081ccd5af0dcac85741013e327639be8c82b"
     },
     {
       "id": "py_basics/bin_tricky",
@@ -228,7 +256,11 @@
         "Binary-search the partition of the SHORTER sequence: pick i from it and j = (m+n+1)//2 - i from the other so the left part has half the elements.",
         "The partition is correct when a[i-1] <= b[j] and b[j-1] <= a[i] (use ±infinity at the edges); then the median comes from the boundary values."
       ],
-      "contentHash": "edc06f80fe52939c3636b455e4750674f339a6bb9ac86114490b618ca520f4d6"
+      "prereqs": [
+        "py_basics/bin_basic"
+      ],
+      "next": [],
+      "contentHash": "b2136dcd8cfa9c3e7355a7f746d1691865b8a392132881f8bc6680f7fbe747f0"
     },
     {
       "id": "py_classes/range",
@@ -247,7 +279,11 @@
         "Store start/stop/step and precompute the length; __getitem__ returns start + index*step (map negative indices via len + index).",
         "Make __contains__ O(1) arithmetic (in-bounds and (key-start) % step == 0); return a fresh iterator from __iter__ so it's re-iterable."
       ],
-      "contentHash": "3ee3bf7e08377e03dda18d31f2db25b913bd7c0a0db254fa4f3e70950982eb3b"
+      "prereqs": [],
+      "next": [
+        "py_classes/list_twist"
+      ],
+      "contentHash": "19bb7a917d57d193617c854489319fa60a0fd853a6aec4eb476f868887cf0af7"
     },
     {
       "id": "py_classes/list_twist",
@@ -266,7 +302,11 @@
         "Subclass collections.UserList and intercept the shortcut names in __getattr__ (read) and __setattr__ (write).",
         "In __setattr__, route real attributes (like 'data') to super().__setattr__; for 'size', truncate or pad self.data with None."
       ],
-      "contentHash": "8c7421f2479987b28e8fd7638b3fa1a2579864e9322328d1096a86f9ae230a04"
+      "prereqs": [
+        "py_classes/range"
+      ],
+      "next": [],
+      "contentHash": "4986e1f9834b02f754bce97139a00361b188ed716a03fec4c89faea60d4760cb"
     },
     {
       "id": "py_datastructures/reverse_dict",
@@ -284,6 +324,8 @@
       "hints": [
         "Walk the items once; for each (key, value) append key to the list at out[value] (dict.setdefault keeps it one pass)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ea3e9175e5b0977cfa1c9779b1145b671043465dbcd389c7f2a4849a79b6a535"
     },
     {
@@ -302,6 +344,8 @@
       "hints": [
         "Count occurrences of each value; the answer is len(seq) minus the largest count."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "4b8c671bf2d97cfa7b5c08ebcfcc9cc67387e170d8181ba8e5b2b13bc0fb68b2"
     },
     {
@@ -321,7 +365,11 @@
         "At each level join the path with '.'; recurse into dict values, otherwise emit (full_key, value).",
         "For the iterative version keep an explicit stack of (prefix, subdict) so deep nesting can't overflow the recursion limit."
       ],
-      "contentHash": "964a63fd1e0345679d8795287301a203d26afd263eb47fd7aa76e9a8c4becfc7"
+      "prereqs": [],
+      "next": [
+        "py_datastructures/alphabet"
+      ],
+      "contentHash": "4a1d74c2c3ce5c857ff75e0198a7ea162bdb677b73e6d31180b2df1da0a2046e"
     },
     {
       "id": "py_datastructures/merge_kway",
@@ -345,7 +393,11 @@
         "Push the first element of each non-empty list onto a heap as (value, list_index, elem_index).",
         "Pop the smallest, emit it, and push the next element from that same list. Repeat until the heap is empty."
       ],
-      "contentHash": "9afa893f9f1e519979952885554e51ed3ee5363790b35e3e74c9bf531d63cce0"
+      "prereqs": [
+        "py_basics/merge_iterative"
+      ],
+      "next": [],
+      "contentHash": "7f4f16642743d76729a406ed3d7c1fc575507cb9c8b3b16348fb5798027cd83d"
     },
     {
       "id": "py_datastructures/alphabet",
@@ -368,7 +420,11 @@
         "build_graph: every letter is a node; for each adjacent word pair, the first differing position gives one edge (earlier letter -> later letter).",
         "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges."
       ],
-      "contentHash": "4db56302851f2c767711d978ccd088b9f9c424c4d33d47c469426fd8107aba4c"
+      "prereqs": [
+        "py_datastructures/traverse_dictionary"
+      ],
+      "next": [],
+      "contentHash": "6f58cc3fd4d518abd5aef8d75df79477432ce3d021ebbc522569621ed55a2e66"
     },
     {
       "id": "py_datastructures/comprehensions",
@@ -393,7 +449,12 @@
         "Each function is one list/set/dict comprehension over the records — e.g. {r['PageID'] for r in records}.",
         "Add an `if` clause to filter; use a conditional expression (a if cond else b) for the default-value cases."
       ],
-      "contentHash": "466e31e045e89ab67ae6e02e9bfe16db9a68b14df3b408c3653556e2026d4185"
+      "prereqs": [
+        "py_basics/filter_list_by_list",
+        "py_basics/iterate_me"
+      ],
+      "next": [],
+      "contentHash": "02cbc2ffd2dbabab1ab970e34f9dee5089f6da46a884543645af728c3562124d"
     },
     {
       "id": "py_functional/warm_up",
@@ -412,7 +473,13 @@
         "transpose: zip(*matrix) pairs up the columns. uniq: yield items not seen before (it must be a generator).",
         "dict_merge: update a result dict in order (later wins). product: sum of a*b over zip(lhs, rhs)."
       ],
-      "contentHash": "5cbdeee539957c8df23e10fc20eced7873f4604e30a9e6997bebe9c101a951c6"
+      "prereqs": [],
+      "next": [
+        "py_functional/flat_it",
+        "py_functional/context_manager",
+        "py_functional/lru_cache"
+      ],
+      "contentHash": "f35c81ea99e4c89528c2d3f7d67fbe721e2c3c1cf0f95d69dd90416492429719"
     },
     {
       "id": "py_functional/flat_it",
@@ -431,7 +498,12 @@
         "Iterate the sequence; if an item is iterable, `yield from flat_it(item)`, else `yield item`.",
         "Treat strings carefully: a string is iterable, so stop recursing once you reach a single character."
       ],
-      "contentHash": "5ce4bd80e9c1a1a4485bd37a5689a55d49f0d7e4829356d3d3245292fd1cb4a8"
+      "prereqs": [
+        "py_functional/warm_up",
+        "py_basics/iterate_me"
+      ],
+      "next": [],
+      "contentHash": "c21116153e4100d567d6dc05633ded37abfbf4af29c1b470538e595567233f44"
     },
     {
       "id": "py_functional/context_manager",
@@ -450,7 +522,11 @@
         "Use @contextlib.contextmanager: put `yield` inside a try/except so the with-body runs at the yield.",
         "supresser swallows listed types; retyper raises type_to(*e.args) from the caught error; dumper prints then re-raises."
       ],
-      "contentHash": "8d1e7a20f5c457ff22ab4a7aae2c824f15e2b76d52bd238e37913f4b703ecf28"
+      "prereqs": [
+        "py_functional/warm_up"
+      ],
+      "next": [],
+      "contentHash": "ef422e3c68bc5d2787f3a8f3c5b3338e40f53980e1d2e743c6a23daf2f054b25"
     },
     {
       "id": "py_functional/profiler",
@@ -469,7 +545,11 @@
         "Track recursion depth on the wrapper; reset `calls` to 0 only when entering at depth 0 (a new top-level call).",
         "Record `last_time_taken` when the depth returns to 0; use functools.wraps to keep the function's metadata."
       ],
-      "contentHash": "dc2f539ae1ac5b16db0bde6ac403b430f583dab82133f343357fdc8f9ca9cd86"
+      "prereqs": [
+        "py_functional/warm_up"
+      ],
+      "next": [],
+      "contentHash": "b7392773f45df6902f958b340d4a390fd01320658a5db3d1c4585be0e9bbc879"
     },
     {
       "id": "py_functional/lru_cache",
@@ -492,7 +572,11 @@
         "Keep an OrderedDict of args -> result. On a hit, move_to_end to mark it most-recently used.",
         "On a miss, store the result; if the size exceeds max_size, popitem(last=False) to drop the least-recently-used entry."
       ],
-      "contentHash": "001020396edc7dc78413db24a470c24c4ce28894c91e3e37ef2298c913c23f54"
+      "prereqs": [
+        "py_functional/warm_up"
+      ],
+      "next": [],
+      "contentHash": "4f88f6e797f0c636f0cf1fed77e8b21623e29e6d2e2eeb9eeb7b088795276ffe"
     },
     {
       "id": "py_strings/caesar_cipher",
@@ -511,6 +595,8 @@
         "Map each letter to 0..25 with ord(ch) - ord('a'), add the shift mod 26, map back with chr.",
         "Handle upper- and lower-case separately; pass other characters through unchanged."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ca6f68cb565a1c37006496bc7da13bd463258d82e2c8b2c643db29a8e3db308a"
     },
     {
@@ -530,6 +616,8 @@
         "Pull the flag letters out of the flags string (ignore '-' and spaces); empty/None means all four.",
         "chars = len(text), lines = text.count('\\n'), words = len(text.split()), longest_line = max line length."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "b1d9b07625bf3430d93857d8ea840e45e42a2bf01c079dfb1f3ba384fd1a06e2"
     },
     {
@@ -556,6 +644,8 @@
         "Split on '/'. Skip '' and '.' components; on '..' pop the stack (unless it's empty / its top is '..').",
         "Track whether the path is absolute (leading '/'); rejoin with '/'. Empty relative result is '.'."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "659935f9d87b11e300b9f1b76f0b30b0cf19e2f511048cd280cfc582dfd18cbc"
     },
     {
@@ -575,6 +665,8 @@
         "Iterate the input stream line by line; split each line on tabs — field 0 is the sha, the last field is the message.",
         "Write sha[:7], then dots filling up to width 80, then the message and a newline."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "7ffe6a3781f86bd8c00e48115e1050a37b8b5cdc60c579508a2e243f07d4da37"
     },
     {
@@ -595,6 +687,8 @@
       "hints": [
         "NumPy exposes its version as np.__version__."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "133119589343b2af8f86225293d9bb2d1c4dac5d555874167c1f94bccf52ad66"
     },
     {
@@ -619,6 +713,8 @@
       "hints": [
         "An array holds a.size elements, each a.itemsize bytes — multiply them."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "0220ca090d051a58e3b7705868960ac71e8b90642ff431df74ffa347f7c552cf"
     },
     {
@@ -641,6 +737,8 @@
       "hints": [
         "np.zeros(n) builds a length-n vector of zeros."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "9c379cec6c50dd935eeb04a11b568d79256569b14c2a9838c579c43d6776ec8f"
     },
     {
@@ -663,6 +761,8 @@
       "hints": [
         "Make a zero vector with np.zeros(n), then assign 1 to index i."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "9fe960f018a95d6dba38b1a30f73686242a863d2b835d59754ee5c9297efe222"
     },
     {
@@ -685,6 +785,8 @@
       "hints": [
         "np.arange(lo, hi) yields lo, lo+1, ..., hi-1."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "994f30ad0de2bd960eea3388a85926cae363bece5474197409c4c54d99db56d3"
     },
     {
@@ -707,6 +809,8 @@
       "hints": [
         "A slice with a negative step walks the array backwards."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "e7f700d926914f9792e372d80054eebe625f12d614c0231ef8a915836943777c"
     },
     {
@@ -729,6 +833,8 @@
       "hints": [
         "a.mean() averages all elements (it's the sum divided by the count)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "2c8d4c215653272dac6f5313a6acb3a3e5a3cb1884232737a1542bf1f909c753"
     },
     {
@@ -749,6 +855,8 @@
       "hints": [
         "np.dtype([(name, type), ...]) builds a structured dtype; np.uint8 is an unsigned byte."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "0b92583592fdc870b56b5d6727005c66f9831cc7c273648bcc2d6a90bf15dc11"
     },
     {
@@ -771,6 +879,8 @@
       "hints": [
         "The @ operator (or np.dot) computes the real matrix product."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
     },
     {
@@ -791,6 +901,8 @@
       "hints": [
         "Every array has a.flags.writeable — set it to False to freeze the array."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "7482f217f652d2996ac8a834affd57f0504ece67f2aadc7bde31f12e007cb9dd"
     },
     {
@@ -813,6 +925,8 @@
       "hints": [
         "Pass -1 for the unknown dimension: x.reshape(rows, -1) lets NumPy compute the columns."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "a55d26c1e86fb89ee5cb9ddf645e50a6aec7f8b58c57d6608e1e8b6100f3124f"
     },
     {
@@ -835,6 +949,8 @@
       "hints": [
         "x.ravel() (or x.flatten(), or x.reshape(-1)) returns all elements in row-major order."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "d9a5f7651541af51793c4d4f97b46616481246dde0041930ecec1a96bc3d0e17"
     },
     {
@@ -857,6 +973,8 @@
       "hints": [
         "X.T (or np.transpose(X)) swaps the two axes of a 2D array."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "9a9420ae0b4ee77d30e51088293d7af7f4cad5b0b63e81b0ad771f043de68bf4"
     },
     {
@@ -879,6 +997,8 @@
       "hints": [
         "Transposing a 1D array does nothing; add an axis instead: x.reshape(-1, 1) or x[:, None]."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "b24a2c8e013bbd92a209475ec51d6f9d3775ef0f6416cee3936b8b867177b23f"
     },
     {
@@ -905,7 +1025,12 @@
       "hints": [
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array)."
       ],
-      "contentHash": "ebbf7441241a6a45c823a31bb4169b4dff45ba0b824bc17dad66f973a94bce00"
+      "prereqs": [
+        "numpy_basics/to_matrix",
+        "numpy_linalg/normalize_rows"
+      ],
+      "next": [],
+      "contentHash": "e6e3d88a5bb9562a2925acaa8e0b3fec1c2ba5f5dda018f9aa6e9c41e54508dc"
     },
     {
       "id": "numpy_combine/concat_arrays",
@@ -927,6 +1052,8 @@
       "hints": [
         "np.concatenate(arrays) joins a sequence of arrays along an existing axis."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "fc2c3ed0be4702079dadc8e97360d1d850700e1a2c7f6b974f3c77c475ec7512"
     },
     {
@@ -949,6 +1076,8 @@
       "hints": [
         "np.vstack(arrays) (or np.stack(arrays, axis=0)) stacks 1D arrays into the rows of a 2D array."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "abe7b924f4d34ed28170f3855f7c837e17e8868ae3241e3d92d59c4e16969073"
     },
     {
@@ -971,6 +1100,8 @@
       "hints": [
         "np.column_stack(arrays) places each 1D array as a column of the result."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "24da08120f07388ccd28261ea334737ce8da2bf1edca192e27a295e87296ad40"
     },
     {
@@ -993,6 +1124,8 @@
       "hints": [
         "np.split(x, n) divides x into n equal-length sub-arrays (it returns a list)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "2ed42308dbf6349501a1eb03e97e0bb07e748cc47b5e0ba997698fe54488be1a"
     },
     {
@@ -1015,6 +1148,8 @@
       "hints": [
         "np.tile(x, (r, 1)) repeats the whole array x to make r identical rows."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "b53b68fa18e99da8d2ac7984fd672e874f16692cdb1b032d8cb040e5bc00ccce"
     },
     {
@@ -1037,6 +1172,8 @@
       "hints": [
         "np.repeat(x, k) repeats each element k times; contrast with np.tile, which repeats the whole array."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "1f5271d1b671658931174d68b176abe70118a8a7bddf875e297848583d46cae0"
     },
     {
@@ -1063,6 +1200,8 @@
       "hints": [
         "a.argmin() gives the index of the min element."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "2d7b3a39811f6007739aa5eee5f0808f1988b79622ae4c5998ff7de008afa593"
     },
     {
@@ -1089,6 +1228,8 @@
       "hints": [
         "np.intersect1d(a, b) returns the sorted, unique values common to both."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "f8dee86b3288cefcd1844a030f58f6d2b82d11fbe60db973c0f13442c6f30db0"
     },
     {
@@ -1115,6 +1256,8 @@
       "hints": [
         "Build a boolean mask (x > lo) & (x < hi) and flip the sign of those entries in a copy."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "c6ae1ac25d29169420655665b19b81c51885d6d20b182569fb6f64b4f26f5073"
     },
     {
@@ -1141,6 +1284,8 @@
       "hints": [
         "np.argpartition puts the n largest in front (unordered); take them, then sort descending."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "b9ab057c1a9f30d1b47b8849fb278f2f77cdbc8e7cb42f206770da1ac1d570a1"
     },
     {
@@ -1163,6 +1308,8 @@
       "hints": [
         "Flatten the matrix, then np.abs(flat - value).argmin() gives the index of the closest element."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "19666dedf9f8feb9ed1fa25f4f5f60930bb3b357345aae271456d786b89e2337"
     },
     {
@@ -1189,6 +1336,8 @@
       "hints": [
         "np.nonzero(x) returns the indices of the non-zero entries (take [0] for 1D)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "d9f590238d7813118328df302da5b9dfd01e1f397478ea1b1c8829c5fb7dd4b0"
     },
     {
@@ -1215,6 +1364,8 @@
       "hints": [
         "A row is constant iff its max equals its min — compare per-row max and min, then mask rows."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "9fd39506c3c85fb98ea516bc8dedbbab971f7356c54312cea0866a63cc21788f"
     },
     {
@@ -1241,6 +1392,8 @@
       "hints": [
         "argsort the chosen column to get a row order, then index the rows with it."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "aeaa00b8d46f59506277fa4b8010b3645f27696e02aa2341b02bb6578a44f3ae"
     },
     {
@@ -1267,6 +1420,8 @@
       "hints": [
         "np.subtract.outer(x, y) builds the (len(x), len(y)) difference matrix; take its reciprocal."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "a665c0143c9bd43b049f20494ab4d95eb78b82bcf4f805d17d3db6627fbcde3f"
     },
     {
@@ -1293,6 +1448,8 @@
       "hints": [
         "Entry i of diag(A@B) is row i of A dotted with column i of B — np.einsum('ij,ji->i', A, B) does it without building the full product."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "5d55ac1b849857d7d075d4df8055f2dd711df6ba0eebddd40f6e079fa8312894"
     },
     {
@@ -1319,6 +1476,8 @@
       "hints": [
         "The Gram matrix of rows is X @ X.T."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "cf54317944216636d0cf798d9ca5662b6306c4a0ec58fc9b22788ffa1a7c0c2e"
     },
     {
@@ -1341,6 +1500,8 @@
       "hints": [
         "np.diag(matrix) extracts the main diagonal; keep the entries that are != 0 with a boolean mask, then np.prod them."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "baeb7be752384b46a48bc5f0b936150aec13002bb00a51f711ca511384e84a4f"
     },
     {
@@ -1367,6 +1528,8 @@
       "hints": [
         "np.linalg.norm(X, axis=1, keepdims=True) gives per-row L2 norms to divide by."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3709a60bc1f1fe12ed30c3ec3e1388e287a5db6d37b157c00076595b79ea93b5"
     },
     {
@@ -1396,6 +1559,8 @@
       "hints": [
         "np.diag pulls out the diagonal; sum it. (np.einsum('ii->', X) also works.)"
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ed5cd74f09b72248095f29ccf55fbb679d81ee68c1aede7b1fa90c4bfad4a657"
     },
     {
@@ -1421,6 +1586,8 @@
       "hints": [
         "Broadcast: array[:, None] raises each element to the powers np.arange(len(array)), giving increasing columns."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "e11edda549ce9d5c725e1b30d6536ee3949fb3992017e07e1c666ac73cef5872"
     },
     {
@@ -1443,6 +1610,8 @@
       "hints": [
         "Allocate a zero array of length 2*len(x)-1, then write x into every other slot with a strided assignment out[::2] = x."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "57b9c7a5b300a610a7d7fe9a6dd90bd59c9cced92872566082945efe52f0916a"
     },
     {
@@ -1469,6 +1638,8 @@
       "hints": [
         "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "170dafb60014af021e4dd5a17957fc09c807d642f12c426c5468608e335b7cc9"
     },
     {
@@ -1495,6 +1666,8 @@
       "hints": [
         "Start from zeros and set alternating slices to 1: Z[1::2, ::2] and Z[::2, 1::2]."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "e739f2091b8d3253bec0ed67a0edd2ea87472c3fe1addbf9cc076303ac25ab66"
     },
     {
@@ -1521,6 +1694,8 @@
       "hints": [
         "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "2a9860110b4677083b8ca0192a8c40a6daf0527409c95680b7bccca0c62bf617"
     },
     {
@@ -1550,6 +1725,8 @@
       "hints": [
         "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "8362197177dfe8a0fa58bad9c95fb3c99db82682d0d4da08a111a8f789466f67"
     },
     {
@@ -1576,6 +1753,8 @@
       "hints": [
         "np.repeat(np.arange(len(counts)), counts) repeats each index by its count."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "b61d50e268e1ea75850615938cd2bd5cf23ab74ce4645581d04ceaed47f70b6f"
     },
     {
@@ -1598,6 +1777,8 @@
       "hints": [
         "Build a boolean mask with np.isnan; if it's all True, fill zeros, else assign matrix[~mask].mean() at the masked positions."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "8e9178b5528af9d1092f9841eb2162b4bd018988c30579e5928d9cdbf62b042c"
     },
     {
@@ -1624,6 +1805,8 @@
       "hints": [
         "Reduce along axis=1 with keepdims=True so the per-row means broadcast back."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3cc8c1896ec53a995afe9051691f7941cefdfc0bbf91e3d567f651748821a6f7"
     },
     {
@@ -1650,6 +1833,8 @@
       "hints": [
         "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "efef053ed3e8d814b2fcaf0752ec705574244708f5f8ebbf1514d4c6c38d88c6"
     },
     {
@@ -1676,6 +1861,8 @@
       "hints": [
         "Build the bit masks 2**(bits-1) … 2**0, then test each value against them with broadcasting."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "5bcf8fc3a96be7663fe55f0be2a9f8e73b669b96698be0d65fd8ec507a401e16"
     },
     {
@@ -1702,6 +1889,8 @@
       "hints": [
         "np.bincount(idx, weights=values, minlength=n) sums values into bins by index."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "e4b1bf6dd97cdaec7255117b0fc10e1131f52d4bff6ae05f2979d9cb6434d4c7"
     },
     {
@@ -1728,6 +1917,8 @@
       "hints": [
         "np.bincount counts occurrences of each value; argmax gives the most frequent."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3dd641ea761d0bf804a563d62716ce3a32644b21a2d4218f2ec7561eca0d4e39"
     },
     {
@@ -1754,6 +1945,8 @@
       "hints": [
         "np.cumsum gives prefix sums; a window sum is the difference of two of them."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "318a48eb7bc3deacf5e72155e79bb110ec62586ffa093a475e0f1e711b27adf8"
     },
     {
@@ -1780,6 +1973,8 @@
       "hints": [
         "Index the rows with np.arange and the columns with the labels in a single assignment."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ce9911cd58226bad72cd44bdd611ee85659d30da2b84932b03027051baf5253a"
     },
     {
@@ -1806,6 +2001,8 @@
       "hints": [
         "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "027837eb0cb5a870c6a1c317c538c3d8cb50f9ba768e41595a9fe27eaf24b7e4"
     },
     {
@@ -1832,6 +2029,8 @@
       "hints": [
         "Compute the mean and std over the whole array, then broadcast them back."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "46324e6e2a0db35ce796887008e31454c5063bd95b86de56f153dfcc231f5214"
     },
     {
@@ -1858,6 +2057,8 @@
       "hints": [
         "argmax gives the index of the maximum; copy first so the input isn't mutated."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "1ea6fc6859f319c3325867d152ca261dfae01cebb866d54f018bb8f7bd931f5e"
     },
     {
@@ -1884,6 +2085,8 @@
       "hints": [
         "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "c692db2f195f8d7e604e1aa75061adff948c78bb63cf333701cb68a19a76ab41"
     },
     {
@@ -1910,6 +2113,8 @@
       "hints": [
         "np.unique(X, axis=0) returns the distinct rows (sorted)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "3d4b1c6e4bfd9525eb631f431e85d79e8aa2bad7fa091d58fb96f15ca311ae61"
     },
     {
@@ -1931,6 +2136,8 @@
         "Create a Series with pd.Series(data), then call .mean() and .idxmax() on it.",
         "pd.Series preserves insertion order, so .idxmax() returns the label of the first maximum when there are ties."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "1aed1eb2645c540c9d7bf722deb2969529446037a86dcd48104025c297eb4d38"
     },
     {
@@ -1952,6 +2159,8 @@
         "pd.DataFrame(dict) creates a DataFrame where each key becomes a column and the list becomes its values.",
         "To add a column without mutating the input, call df.copy() first, then assign: df[result] = df[a] * df[b]."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "fdd4dd15fe5f6a36dc535751febdf9b419b382dcef3bbc9d9ae69367bc2daad7"
     },
     {
@@ -1974,6 +2183,8 @@
         "df.iloc[row_positions, col_positions] selects by integer position (0-based), regardless of the index.",
         "Both accept Python lists, so df.loc[['r1','r3'], ['A','C']] returns a 2×2 DataFrame."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "a2ba0f3b21aec06d26976d81642976c156fe9808659384987c7783884b0d8fd7"
     },
     {
@@ -2000,6 +2211,8 @@
         "df['name'].str.startswith(tuple_of_prefixes) returns True for names beginning with any of those prefixes.",
         "df[mask] returns only the rows where mask is True."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ab3c815b35344bcffa425dc7ab857a6a402ccefbf17be64b429f9fe4dead6540"
     },
     {
@@ -2021,6 +2234,8 @@
         "df.sort_values(by=[...], ascending=[...]) accepts a list of column names and a matching list of booleans.",
         "ascending=[False, True] means first column descending, second column ascending."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "aa24314d6932ae146dc84f17f06b0d08f44a8aa734a7d96fedb9cd778dc73504"
     },
     {
@@ -2047,7 +2262,12 @@
         "Chain .sum() or .mean() directly on the GroupBy object — no need for .apply().",
         "The result is a Series indexed by the group values."
       ],
-      "contentHash": "e5447748ac56c1aac5e204024d059a1217e57105edd9925c788f8e0e0d086b1a"
+      "prereqs": [
+        "pandas_exploration/filter_rows",
+        "pandas_exploration/sort_rows"
+      ],
+      "next": [],
+      "contentHash": "8c2bda9eb522e8c380f1c50ef3493c4f15f4e979ec6c919c6add29cb78424d6a"
     },
     {
       "id": "pandas_manipulation/merge_join",
@@ -2069,6 +2289,8 @@
         "Rows whose key value has no match in the other DataFrame are dropped.",
         "When one side has multiple rows with the same key, every combination is included (Cartesian product within that key)."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "ce2742ebe1ce7b760365b5f7503cb10992c1f642a05b681418631530c9c7406b"
     },
     {
@@ -2092,6 +2314,8 @@
         "astype(float) converts the whole column — strings like '5.7' become 5.7.",
         "Always work on a copy (df.copy()) to avoid mutating the caller's data."
       ],
+      "prereqs": [],
+      "next": [],
       "contentHash": "a0cef44839c206d00d0d6907da7efc3307186beb01aee9399ff015bac729051d"
     },
     {
@@ -2119,7 +2343,13 @@
         "df.unstack(level=name) pivots one level of the index into columns, turning long format into wide.",
         "After unstacking, column names become a MultiIndex tuple (original_col, unstacked_value)."
       ],
-      "contentHash": "baa2fdef5928307e175680fe926f0ea726f21c7c085fe0e1c58c7906045ccfc3"
+      "prereqs": [
+        "pandas_manipulation/clean_data"
+      ],
+      "next": [
+        "pandas_manipulation/xs_select"
+      ],
+      "contentHash": "fb27441841b49cde50b0f2e2c68e415b60c528b7437b014c3e393e2aec84927c"
     },
     {
       "id": "pandas_manipulation/xs_select",
@@ -2141,7 +2371,11 @@
         "df.swaplevel(axis=1) swaps the two column-MultiIndex levels; then df[key] selects by the new level 0.",
         "Both approaches return a DataFrame with a flat (non-multi) column index."
       ],
-      "contentHash": "1ad88015120480512bde87996f0c08fa4e15a56bebea90085bfa3c019d4f6f00"
+      "prereqs": [
+        "pandas_manipulation/multiindex_unstack"
+      ],
+      "next": [],
+      "contentHash": "acf6222e814cbe17ea45a43eace9942f2f63d01d96063f0d8799371f04414bdf"
     }
   ]
 }

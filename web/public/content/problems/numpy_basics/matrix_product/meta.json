@@ -18,5 +18,7 @@
   "hints": [
     "The @ operator (or np.dot) computes the real matrix product."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "be6316bc12dec3f7bec9d5e7ebb8b0f532addcc94a8d9f43f0c92ac91bf6a2ca"
 }

@@ -22,5 +22,7 @@
   "hints": [
     "Reshape (n, n) to (n//b, b, n//b, b) and sum axes 1 and 3."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "170dafb60014af021e4dd5a17957fc09c807d642f12c426c5468608e335b7cc9"
 }

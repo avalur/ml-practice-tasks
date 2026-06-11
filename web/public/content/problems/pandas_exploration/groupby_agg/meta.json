@@ -22,5 +22,10 @@
     "Chain .sum() or .mean() directly on the GroupBy object — no need for .apply().",
     "The result is a Series indexed by the group values."
   ],
-  "contentHash": "e5447748ac56c1aac5e204024d059a1217e57105edd9925c788f8e0e0d086b1a"
+  "prereqs": [
+    "pandas_exploration/filter_rows",
+    "pandas_exploration/sort_rows"
+  ],
+  "next": [],
+  "contentHash": "8c2bda9eb522e8c380f1c50ef3493c4f15f4e979ec6c919c6add29cb78424d6a"
 }

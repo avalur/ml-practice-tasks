@@ -6,6 +6,7 @@ META = {
     "order": 2,
     "py_deps": [],
     "banned": {},
+    "next": ["py_basics/iterate_me"],
     "hints": [
         "Loop the numbers 1..n; check divisibility by 15 first, then 3, then 5, else keep the number.",
     ],

@@ -364,6 +364,78 @@ pre.code {
   padding: 0;
 }
 
+/* Editor + "What's next?" side panel */
+.editor-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+.editor-col {
+  flex: 1;
+  min-width: 0;
+}
+.next-tasks-panel {
+  width: 210px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-top: 2px;
+}
+.next-tasks-panel h3 {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 0 0 0.15rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.next-task-card {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.75rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--fg);
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+.next-task-card:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+.next-task-card .badge {
+  flex-shrink: 0;
+}
+
+/* Prereqs ("Stuck? Try these first") */
+.prereqs {
+  margin: 1.25rem 0;
+}
+.prereq-card {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 1rem;
+  margin: 0.4rem 0;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  text-decoration: none;
+  color: var(--fg);
+}
+.prereq-card:hover {
+  border-color: var(--accent);
+  text-decoration: none;
+}
+@media (max-width: 640px) {
+  .editor-row { flex-direction: column; }
+  .next-tasks-panel { width: 100%; }
+}
+
 /* Solution tabs (shown after passing all tests) */
 .solution-tabs {
   display: flex;

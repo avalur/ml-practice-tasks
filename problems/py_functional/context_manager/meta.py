@@ -6,6 +6,7 @@ META = {
     "order": 3,
     "py_deps": [],
     "banned": {},
+    "prereqs": ["py_functional/warm_up"],
     "hints": [
         "Use @contextlib.contextmanager: put `yield` inside a try/except so the with-body runs at the yield.",
         "supresser swallows listed types; retyper raises type_to(*e.args) from the caught error; dumper prints then re-raises.",

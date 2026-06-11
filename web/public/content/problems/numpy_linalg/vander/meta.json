@@ -21,5 +21,7 @@
   "hints": [
     "Broadcast: array[:, None] raises each element to the powers np.arange(len(array)), giving increasing columns."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "e11edda549ce9d5c725e1b30d6536ee3949fb3992017e07e1c666ac73cef5872"
 }

@@ -52,6 +52,8 @@ def manifest_entry(b: ProblemBundle) -> dict:
         "webRunnable": b.web_runnable,
         "hidden": b.hidden,
         "hints": list(b.hints),
+        "prereqs": list(b.prereqs),
+        "next": list(b.next_tasks),
         "contentHash": b.content_hash,
     }
 

@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { ProblemMeta } from "@/lib/problem";
 import { SolveWorkspace } from "@/components/SolveWorkspace";
 
@@ -11,17 +10,11 @@ export function ProblemPageClient({
   problem: ProblemMeta;
   starter: string;
 }) {
-  const [solved, setSolved] = useState(false);
-
   return (
     <>
-      <SolveWorkspace
-        meta={problem}
-        starter={starter}
-        onSolve={() => setSolved(true)}
-      />
+      <SolveWorkspace meta={problem} starter={starter} />
 
-      {!solved && problem.hints.length > 0 && (
+      {problem.hints.length > 0 && (
         <div className="hints">
           <h2>Hints</h2>
           {problem.hints.map((hint, i) => (

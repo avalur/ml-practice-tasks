@@ -274,32 +274,47 @@ export function SolveWorkspace({
         )}
       </div>
 
+      {allPassed && (
+        <div className="solution-tabs">
+          <button
+            className={`solution-tab${!showRef ? " active" : ""}`}
+            onClick={() => setShowRef(false)}
+          >
+            Your solution
+          </button>
+          <button
+            className={`solution-tab${showRef ? " active" : ""}`}
+            onClick={handleShowRef}
+            disabled={refLoading}
+          >
+            {refLoading ? "Loading…" : "Reference solution"}
+          </button>
+        </div>
+      )}
+
+      <CodeMirror
+        value={activeCode}
+        height="360px"
+        theme={theme}
+        extensions={[python(), editorPadding]}
+        onChange={showRef ? (v) => setRefCode(v) : setCode}
+      />
+
       <div className={allPassed && nextTasks.length > 0 ? "editor-row" : ""}>
-        <div className="editor-col">
-          {allPassed && (
-            <div className="solution-tabs">
-              <button
-                className={`solution-tab${!showRef ? " active" : ""}`}
-                onClick={() => setShowRef(false)}
-              >
-                Your solution
-              </button>
-              <button
-                className={`solution-tab${showRef ? " active" : ""}`}
-                onClick={handleShowRef}
-                disabled={refLoading}
-              >
-                {refLoading ? "Loading…" : "Reference solution"}
-              </button>
-            </div>
+        <div className={allPassed && nextTasks.length > 0 ? "editor-col" : ""}>
+          {runner.mode === "code" ? (
+            <CodeOutputPanel
+              status={runner.status}
+              error={runner.error}
+              result={runner.codeResult}
+            />
+          ) : (
+            <ResultsPanel
+              status={runner.status}
+              error={runner.error}
+              result={runner.result}
+            />
           )}
-          <CodeMirror
-            value={activeCode}
-            height="360px"
-            theme={theme}
-            extensions={[python(), editorPadding]}
-            onChange={showRef ? (v) => setRefCode(v) : setCode}
-          />
         </div>
 
         {allPassed && nextTasks.length > 0 && (
@@ -318,20 +333,6 @@ export function SolveWorkspace({
           </div>
         )}
       </div>
-
-      {runner.mode === "code" ? (
-        <CodeOutputPanel
-          status={runner.status}
-          error={runner.error}
-          result={runner.codeResult}
-        />
-      ) : (
-        <ResultsPanel
-          status={runner.status}
-          error={runner.error}
-          result={runner.result}
-        />
-      )}
     </div>
   );
 }

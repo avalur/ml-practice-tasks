@@ -22,5 +22,7 @@
   "hints": [
     "Entry i of diag(A@B) is row i of A dotted with column i of B — np.einsum('ij,ji->i', A, B) does it without building the full product."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "5d55ac1b849857d7d075d4df8055f2dd711df6ba0eebddd40f6e079fa8312894"
 }

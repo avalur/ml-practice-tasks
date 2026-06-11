@@ -6,6 +6,7 @@ META = {
     "order": 3,
     "py_deps": ["pandas"],
     "banned": {"names": ["apply"]},
+    "prereqs": ["pandas_exploration/filter_rows", "pandas_exploration/sort_rows"],
     "hints": [
         "df.groupby(col)[value_col] selects the value column within each group.",
         "Chain .sum() or .mean() directly on the GroupBy object — no need for .apply().",

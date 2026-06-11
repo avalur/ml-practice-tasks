@@ -16,5 +16,7 @@
   "hints": [
     "np.dtype([(name, type), ...]) builds a structured dtype; np.uint8 is an unsigned byte."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "0b92583592fdc870b56b5d6727005c66f9831cc7c273648bcc2d6a90bf15dc11"
 }

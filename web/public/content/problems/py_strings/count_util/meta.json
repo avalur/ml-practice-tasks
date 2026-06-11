@@ -15,5 +15,7 @@
     "Pull the flag letters out of the flags string (ignore '-' and spaces); empty/None means all four.",
     "chars = len(text), lines = text.count('\\n'), words = len(text.split()), longest_line = max line length."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "b1d9b07625bf3430d93857d8ea840e45e42a2bf01c079dfb1f3ba384fd1a06e2"
 }

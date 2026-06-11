@@ -9,6 +9,7 @@ META = {
         "names": ["sorted"],
         "slicing": True,
     },
+    "next": ["py_datastructures/merge_kway"],
     "hints": [
         "Two pointers i, j: append the smaller of lst_a[i] / lst_b[j], advance that pointer.",
         "When one list is exhausted, drain the other with a plain loop (no slicing).",

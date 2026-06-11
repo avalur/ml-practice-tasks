@@ -18,5 +18,7 @@
   "hints": [
     "np.split(x, n) divides x into n equal-length sub-arrays (it returns a list)."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "2ed42308dbf6349501a1eb03e97e0bb07e748cc47b5e0ba997698fe54488be1a"
 }

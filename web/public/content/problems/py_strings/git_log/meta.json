@@ -15,5 +15,7 @@
     "Iterate the input stream line by line; split each line on tabs — field 0 is the sha, the last field is the message.",
     "Write sha[:7], then dots filling up to width 80, then the message and a newline."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "7ffe6a3781f86bd8c00e48115e1050a37b8b5cdc60c579508a2e243f07d4da37"
 }

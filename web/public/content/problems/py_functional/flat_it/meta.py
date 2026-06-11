@@ -6,6 +6,7 @@ META = {
     "order": 2,
     "py_deps": [],
     "banned": {},
+    "prereqs": ["py_functional/warm_up", "py_basics/iterate_me"],
     "hints": [
         "Iterate the sequence; if an item is iterable, `yield from flat_it(item)`, else `yield item`.",
         "Treat strings carefully: a string is iterable, so stop recursing once you reach a single character.",

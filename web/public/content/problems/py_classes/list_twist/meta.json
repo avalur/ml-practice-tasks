@@ -15,5 +15,9 @@
     "Subclass collections.UserList and intercept the shortcut names in __getattr__ (read) and __setattr__ (write).",
     "In __setattr__, route real attributes (like 'data') to super().__setattr__; for 'size', truncate or pad self.data with None."
   ],
-  "contentHash": "8c7421f2479987b28e8fd7638b3fa1a2579864e9322328d1096a86f9ae230a04"
+  "prereqs": [
+    "py_classes/range"
+  ],
+  "next": [],
+  "contentHash": "4986e1f9834b02f754bce97139a00361b188ed716a03fec4c89faea60d4760cb"
 }

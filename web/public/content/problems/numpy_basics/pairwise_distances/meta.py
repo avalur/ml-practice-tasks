@@ -7,6 +7,7 @@ META = {
         "modules": ["scipy", "sklearn"],
         "loops": True,
     },
+    "prereqs": ["numpy_basics/to_matrix", "numpy_linalg/normalize_rows"],
     "hints": [
         "Think about 2D shape of the final result and how to get it from two input vectors (1D array).",
     ],

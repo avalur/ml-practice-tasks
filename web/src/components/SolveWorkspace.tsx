@@ -8,6 +8,7 @@ import { python } from "@codemirror/lang-python";
 const editorPadding = EditorView.theme({
   ".cm-content": { paddingRight: "1.25rem" },
 });
+import Link from "next/link";
 import type { ProblemMeta } from "@/lib/problem";
 import {
   fetchReferenceSolution,
@@ -26,10 +27,12 @@ export function SolveWorkspace({
   meta,
   starter,
   onSolve,
+  nextTasks = [],
 }: {
   meta: ProblemMeta;
   starter: string;
   onSolve?: () => void;
+  nextTasks?: ProblemMeta[];
 }) {
   const storageKey = `mlp:code:${meta.id}`;
   const [code, setCode] = useState(starter);
@@ -271,31 +274,50 @@ export function SolveWorkspace({
         )}
       </div>
 
-      {allPassed && (
-        <div className="solution-tabs">
-          <button
-            className={`solution-tab${!showRef ? " active" : ""}`}
-            onClick={() => setShowRef(false)}
-          >
-            Your solution
-          </button>
-          <button
-            className={`solution-tab${showRef ? " active" : ""}`}
-            onClick={handleShowRef}
-            disabled={refLoading}
-          >
-            {refLoading ? "Loading…" : "Reference solution"}
-          </button>
+      <div className={allPassed && nextTasks.length > 0 ? "editor-row" : ""}>
+        <div className="editor-col">
+          {allPassed && (
+            <div className="solution-tabs">
+              <button
+                className={`solution-tab${!showRef ? " active" : ""}`}
+                onClick={() => setShowRef(false)}
+              >
+                Your solution
+              </button>
+              <button
+                className={`solution-tab${showRef ? " active" : ""}`}
+                onClick={handleShowRef}
+                disabled={refLoading}
+              >
+                {refLoading ? "Loading…" : "Reference solution"}
+              </button>
+            </div>
+          )}
+          <CodeMirror
+            value={activeCode}
+            height="360px"
+            theme={theme}
+            extensions={[python(), editorPadding]}
+            onChange={showRef ? (v) => setRefCode(v) : setCode}
+          />
         </div>
-      )}
 
-      <CodeMirror
-        value={activeCode}
-        height="360px"
-        theme={theme}
-        extensions={[python(), editorPadding]}
-        onChange={showRef ? (v) => setRefCode(v) : setCode}
-      />
+        {allPassed && nextTasks.length > 0 && (
+          <div className="next-tasks-panel">
+            <h3>What&apos;s next?</h3>
+            {nextTasks.map((t) => (
+              <Link
+                key={t.id}
+                href={`/problems/${t.topic}/${t.slug}`}
+                className="next-task-card"
+              >
+                <span className={`badge ${t.difficulty}`}>{t.difficulty}</span>
+                <span>{t.title}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
 
       {runner.mode === "code" ? (
         <CodeOutputPanel

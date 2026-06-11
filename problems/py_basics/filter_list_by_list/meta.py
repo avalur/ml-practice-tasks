@@ -8,6 +8,7 @@ META = {
     "banned": {
         "names": ["set"],
     },
+    "next": ["py_datastructures/comprehensions"],
     "hints": [
         "Both lists are sorted: walk them with two pointers, advancing the second past values smaller than the current element.",
         "Drop the element when the two pointers meet on equal values; otherwise keep it.",

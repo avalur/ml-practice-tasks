@@ -18,5 +18,7 @@
   "hints": [
     "np.concatenate(arrays) joins a sequence of arrays along an existing axis."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "fc2c3ed0be4702079dadc8e97360d1d850700e1a2c7f6b974f3c77c475ec7512"
 }

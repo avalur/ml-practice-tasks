@@ -18,5 +18,7 @@
     "Rows whose key value has no match in the other DataFrame are dropped.",
     "When one side has multiple rows with the same key, every combination is included (Cartesian product within that key)."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ce2742ebe1ce7b760365b5f7503cb10992c1f642a05b681418631530c9c7406b"
 }

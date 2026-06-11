@@ -15,5 +15,9 @@
     "Use @contextlib.contextmanager: put `yield` inside a try/except so the with-body runs at the yield.",
     "supresser swallows listed types; retyper raises type_to(*e.args) from the caught error; dumper prints then re-raises."
   ],
-  "contentHash": "8d1e7a20f5c457ff22ab4a7aae2c824f15e2b76d52bd238e37913f4b703ecf28"
+  "prereqs": [
+    "py_functional/warm_up"
+  ],
+  "next": [],
+  "contentHash": "ef422e3c68bc5d2787f3a8f3c5b3338e40f53980e1d2e743c6a23daf2f054b25"
 }

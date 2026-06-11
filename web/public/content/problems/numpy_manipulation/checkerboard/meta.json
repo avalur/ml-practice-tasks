@@ -22,5 +22,7 @@
   "hints": [
     "Start from zeros and set alternating slices to 1: Z[1::2, ::2] and Z[::2, 1::2]."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "e739f2091b8d3253bec0ed67a0edd2ea87472c3fe1addbf9cc076303ac25ab66"
 }

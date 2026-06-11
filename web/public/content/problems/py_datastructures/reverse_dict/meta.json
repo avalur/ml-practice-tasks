@@ -14,5 +14,7 @@
   "hints": [
     "Walk the items once; for each (key, value) append key to the list at out[value] (dict.setdefault keeps it one pass)."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ea3e9175e5b0977cfa1c9779b1145b671043465dbcd389c7f2a4849a79b6a535"
 }

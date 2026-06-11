@@ -18,5 +18,7 @@
   "hints": [
     "np.zeros(n) builds a length-n vector of zeros."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "9c379cec6c50dd935eeb04a11b568d79256569b14c2a9838c579c43d6776ec8f"
 }

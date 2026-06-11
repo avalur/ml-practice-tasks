@@ -8,6 +8,8 @@ META = {
     "banned": {
         "loops": True,
     },
+    "prereqs": ["py_basics/fizz_buzz"],
+    "next": ["py_functional/flat_it"],
     "hints": [
         "No explicit loops — reach for comprehensions, slicing, and builtins (range, len, sum, min, max, list.index).",
         "get_last_three_index: search the reversed list and convert the index; get_by_index reads nicely with a walrus (:=).",

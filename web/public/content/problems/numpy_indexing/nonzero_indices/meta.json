@@ -22,5 +22,7 @@
   "hints": [
     "np.nonzero(x) returns the indices of the non-zero entries (take [0] for 1D)."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "d9f590238d7813118328df302da5b9dfd01e1f397478ea1b1c8829c5fb7dd4b0"
 }

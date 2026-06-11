@@ -17,5 +17,11 @@
     "No explicit loops — reach for comprehensions, slicing, and builtins (range, len, sum, min, max, list.index).",
     "get_last_three_index: search the reversed list and convert the index; get_by_index reads nicely with a walrus (:=)."
   ],
-  "contentHash": "ad09281e41dbc68d795e88ed24846daccc3cb7e735b7ca3b5ff4c6628c810441"
+  "prereqs": [
+    "py_basics/fizz_buzz"
+  ],
+  "next": [
+    "py_functional/flat_it"
+  ],
+  "contentHash": "27d766efb1579e7f8104290717f3081ccd5af0dcac85741013e327639be8c82b"
 }

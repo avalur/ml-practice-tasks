@@ -15,5 +15,9 @@
     "At each level join the path with '.'; recurse into dict values, otherwise emit (full_key, value).",
     "For the iterative version keep an explicit stack of (prefix, subdict) so deep nesting can't overflow the recursion limit."
   ],
-  "contentHash": "964a63fd1e0345679d8795287301a203d26afd263eb47fd7aa76e9a8c4becfc7"
+  "prereqs": [],
+  "next": [
+    "py_datastructures/alphabet"
+  ],
+  "contentHash": "4a1d74c2c3ce5c857ff75e0198a7ea162bdb677b73e6d31180b2df1da0a2046e"
 }

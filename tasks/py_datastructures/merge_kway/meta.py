@@ -9,6 +9,7 @@ META = {
         "names": ["sorted"],
         "slicing": True,
     },
+    "prereqs": ["py_basics/merge_iterative"],
     "hints": [
         "Push the first element of each non-empty list onto a heap as (value, list_index, elem_index).",
         "Pop the smallest, emit it, and push the next element from that same list. Repeat until the heap is empty.",

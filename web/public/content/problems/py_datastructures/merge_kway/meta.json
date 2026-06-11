@@ -20,5 +20,9 @@
     "Push the first element of each non-empty list onto a heap as (value, list_index, elem_index).",
     "Pop the smallest, emit it, and push the next element from that same list. Repeat until the heap is empty."
   ],
-  "contentHash": "9afa893f9f1e519979952885554e51ed3ee5363790b35e3e74c9bf531d63cce0"
+  "prereqs": [
+    "py_basics/merge_iterative"
+  ],
+  "next": [],
+  "contentHash": "7f4f16642743d76729a406ed3d7c1fc575507cb9c8b3b16348fb5798027cd83d"
 }

@@ -14,5 +14,9 @@
   "hints": [
     "Loop the numbers 1..n; check divisibility by 15 first, then 3, then 5, else keep the number."
   ],
-  "contentHash": "0db5bdaef43927b86b10919157036065c817c613d9e062ff32d4ee76f689b04d"
+  "prereqs": [],
+  "next": [
+    "py_basics/iterate_me"
+  ],
+  "contentHash": "88ea251a96da2cb59691427d41798e9d5110db2e5505b638b1fab8369c949e3a"
 }

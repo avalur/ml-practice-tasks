@@ -26,6 +26,8 @@ export type ProblemMeta = {
    *  direct URL) but filtered out of the catalog, sidebar and prev/next nav. */
   hidden?: boolean;
   hints: string[];
+  prereqs: string[];
+  next: string[];
   contentHash: string;
 };
 

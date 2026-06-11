@@ -23,5 +23,11 @@
     "df.unstack(level=name) pivots one level of the index into columns, turning long format into wide.",
     "After unstacking, column names become a MultiIndex tuple (original_col, unstacked_value)."
   ],
-  "contentHash": "baa2fdef5928307e175680fe926f0ea726f21c7c085fe0e1c58c7906045ccfc3"
+  "prereqs": [
+    "pandas_manipulation/clean_data"
+  ],
+  "next": [
+    "pandas_manipulation/xs_select"
+  ],
+  "contentHash": "fb27441841b49cde50b0f2e2c68e415b60c528b7437b014c3e393e2aec84927c"
 }

@@ -25,5 +25,7 @@
   "hints": [
     "Allocate a zeros array two larger in each dimension, then drop X into the middle with slicing."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "8362197177dfe8a0fa58bad9c95fb3c99db82682d0d4da08a111a8f789466f67"
 }

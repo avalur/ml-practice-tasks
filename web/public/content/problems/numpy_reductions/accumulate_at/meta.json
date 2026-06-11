@@ -22,5 +22,7 @@
   "hints": [
     "np.bincount(idx, weights=values, minlength=n) sums values into bins by index."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "e4b1bf6dd97cdaec7255117b0fc10e1131f52d4bff6ae05f2979d9cb6434d4c7"
 }

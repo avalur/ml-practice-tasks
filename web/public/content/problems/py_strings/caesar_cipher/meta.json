@@ -15,5 +15,7 @@
     "Map each letter to 0..25 with ord(ch) - ord('a'), add the shift mod 26, map back with chr.",
     "Handle upper- and lower-case separately; pass other characters through unchanged."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "ca6f68cb565a1c37006496bc7da13bd463258d82e2c8b2c643db29a8e3db308a"
 }

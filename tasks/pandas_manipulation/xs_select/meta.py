@@ -6,6 +6,7 @@ META = {
     "order": 4,
     "py_deps": ["pandas"],
     "banned": {},
+    "prereqs": ["pandas_manipulation/multiindex_unstack"],
     "hints": [
         "df.xs(key, axis=1, level='year') returns all columns where the 'year' level equals key.",
         "df.swaplevel(axis=1) swaps the two column-MultiIndex levels; then df[key] selects by the new level 0.",

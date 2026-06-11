@@ -22,5 +22,7 @@
   "hints": [
     "np.linalg.solve(A, b) returns the x satisfying A @ x == b (don't invert A explicitly)."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "c692db2f195f8d7e604e1aa75061adff948c78bb63cf333701cb68a19a76ab41"
 }

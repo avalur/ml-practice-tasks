@@ -8,6 +8,7 @@ META = {
     "banned": {
         "modules": ["graphlib"],
     },
+    "prereqs": ["py_datastructures/traverse_dictionary"],
     "hints": [
         "build_graph: every letter is a node; for each adjacent word pair, the first differing position gives one edge (earlier letter -> later letter).",
         "extract_alphabet: topological sort (Kahn's algorithm) — repeatedly take a node with no remaining incoming edges.",

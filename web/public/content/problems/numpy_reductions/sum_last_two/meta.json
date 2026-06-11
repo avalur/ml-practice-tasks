@@ -22,5 +22,7 @@
   "hints": [
     "Pass a tuple of axes to sum: A.sum(axis=(-2, -1))."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "027837eb0cb5a870c6a1c317c538c3d8cb50f9ba768e41595a9fe27eaf24b7e4"
 }

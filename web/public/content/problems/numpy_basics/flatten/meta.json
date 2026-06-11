@@ -18,5 +18,7 @@
   "hints": [
     "x.ravel() (or x.flatten(), or x.reshape(-1)) returns all elements in row-major order."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "d9a5f7651541af51793c4d4f97b46616481246dde0041930ecec1a96bc3d0e17"
 }

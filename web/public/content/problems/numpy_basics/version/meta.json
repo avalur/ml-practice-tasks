@@ -16,5 +16,7 @@
   "hints": [
     "NumPy exposes its version as np.__version__."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "133119589343b2af8f86225293d9bb2d1c4dac5d555874167c1f94bccf52ad66"
 }

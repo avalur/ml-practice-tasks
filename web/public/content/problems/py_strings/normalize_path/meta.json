@@ -22,5 +22,7 @@
     "Split on '/'. Skip '' and '.' components; on '..' pop the stack (unless it's empty / its top is '..').",
     "Track whether the path is absolute (leading '/'); rejoin with '/'. Empty relative result is '.'."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "659935f9d87b11e300b9f1b76f0b30b0cf19e2f511048cd280cfc582dfd18cbc"
 }

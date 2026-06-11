@@ -18,5 +18,7 @@
   "hints": [
     "np.diag(matrix) extracts the main diagonal; keep the entries that are != 0 with a boolean mask, then np.prod them."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "baeb7be752384b46a48bc5f0b936150aec13002bb00a51f711ca511384e84a4f"
 }

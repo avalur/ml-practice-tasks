@@ -22,5 +22,7 @@
   "hints": [
     "Fancy-index the two rows and assign them back in swapped order: out[[i, j]] = out[[j, i]]."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "efef053ed3e8d814b2fcaf0752ec705574244708f5f8ebbf1514d4c6c38d88c6"
 }

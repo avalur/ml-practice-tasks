@@ -22,5 +22,7 @@
   "hints": [
     "A row is constant iff its max equals its min — compare per-row max and min, then mask rows."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "9fd39506c3c85fb98ea516bc8dedbbab971f7356c54312cea0866a63cc21788f"
 }

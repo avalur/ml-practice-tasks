@@ -18,5 +18,7 @@
   "hints": [
     "np.repeat(x, k) repeats each element k times; contrast with np.tile, which repeats the whole array."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "1f5271d1b671658931174d68b176abe70118a8a7bddf875e297848583d46cae0"
 }

@@ -19,5 +19,7 @@
   "hints": [
     "Iterate indices from len(lst)-1 down to 0 with range(len(lst)-1, -1, -1) and append."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "3ec1c99257a8fab9514ba6c738f0c06a426aa6889eb7d05234751a740da1ee87"
 }

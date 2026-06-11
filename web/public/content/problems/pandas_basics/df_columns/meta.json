@@ -17,5 +17,7 @@
     "pd.DataFrame(dict) creates a DataFrame where each key becomes a column and the list becomes its values.",
     "To add a column without mutating the input, call df.copy() first, then assign: df[result] = df[a] * df[b]."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "fdd4dd15fe5f6a36dc535751febdf9b419b382dcef3bbc9d9ae69367bc2daad7"
 }

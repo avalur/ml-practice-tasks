@@ -22,5 +22,7 @@
   "hints": [
     "The Gram matrix of rows is X @ X.T."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "cf54317944216636d0cf798d9ca5662b6306c4a0ec58fc9b22788ffa1a7c0c2e"
 }

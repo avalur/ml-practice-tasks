@@ -16,5 +16,7 @@
   "hints": [
     "Every array has a.flags.writeable — set it to False to freeze the array."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "7482f217f652d2996ac8a834affd57f0504ece67f2aadc7bde31f12e007cb9dd"
 }

@@ -26,5 +26,9 @@
     "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
     "Two returns: True inside the loop on a hit, False after the loop ends."
   ],
-  "contentHash": "ace73a1917841a665dde81496ff8322e9528e4c1bad9bcc5fa00aacb4cdd8686"
+  "prereqs": [],
+  "next": [
+    "py_basics/bin_tricky"
+  ],
+  "contentHash": "451058ff56b55979d95bedbc4a2c3083ab5227bdc11a2bc00c2ec8ddb23c2322"
 }

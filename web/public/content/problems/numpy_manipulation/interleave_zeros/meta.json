@@ -22,5 +22,7 @@
   "hints": [
     "Allocate the spaced-out array of zeros, then assign z into every (nz+1)-th slot: out[::nz+1] = z."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "2a9860110b4677083b8ca0192a8c40a6daf0527409c95680b7bccca0c62bf617"
 }

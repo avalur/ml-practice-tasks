@@ -120,6 +120,10 @@ def validate_meta(meta: dict, topic: str, slug: str) -> None:
         raise ValueError(f"{where} hints must be a list of strings")
     if not isinstance(meta.get("hidden", False), bool):
         raise ValueError(f"{where} hidden must be a bool")
+    for key in ("prereqs", "next"):
+        val = meta.get(key, [])
+        if not isinstance(val, (list, tuple)) or not all(isinstance(v, str) and v for v in val):
+            raise ValueError(f"{where} {key} must be a list of non-empty strings")
     order = meta.get("order", 100)
     if not isinstance(order, int) or isinstance(order, bool) or order < 0:
         raise ValueError(f"{where} order must be a non-negative int")
@@ -141,6 +145,8 @@ class ProblemBundle:
     hidden: bool
     order: int
     hints: tuple[str, ...]
+    prereqs: tuple[str, ...]
+    next_tasks: tuple[str, ...]
     reference_src: str
     stub_src: str
     test_src: str
@@ -184,6 +190,8 @@ def iter_problems() -> list[ProblemBundle]:
                 hidden=bool(meta.get("hidden", False)),
                 order=int(meta.get("order", 100)),
                 hints=tuple(meta.get("hints", [])),
+                prereqs=tuple(meta.get("prereqs", [])),
+                next_tasks=tuple(meta.get("next", [])),
                 reference_src=reference_src,
                 stub_src=make_stub(reference_src),
                 test_src=(problem_dir / "test.py").read_text(),

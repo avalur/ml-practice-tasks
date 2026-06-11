@@ -9,6 +9,7 @@ META = {
         "names": ["sorted", "index"],
         "operators": ["in", "not in"],
     },
+    "prereqs": ["py_basics/bin_basic"],
     "hints": [
         "Binary-search the partition of the SHORTER sequence: pick i from it and j = (m+n+1)//2 - i from the other so the left part has half the elements.",
         "The partition is correct when a[i-1] <= b[j] and b[j-1] <= a[i] (use ±infinity at the edges); then the median comes from the boundary values.",

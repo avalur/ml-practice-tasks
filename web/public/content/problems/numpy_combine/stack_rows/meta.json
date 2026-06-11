@@ -18,5 +18,7 @@
   "hints": [
     "np.vstack(arrays) (or np.stack(arrays, axis=0)) stacks 1D arrays into the rows of a 2D array."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "abe7b924f4d34ed28170f3855f7c837e17e8868ae3241e3d92d59c4e16969073"
 }

@@ -18,5 +18,7 @@
   "hints": [
     "Transposing a 1D array does nothing; add an axis instead: x.reshape(-1, 1) or x[:, None]."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "b24a2c8e013bbd92a209475ec51d6f9d3775ef0f6416cee3936b8b867177b23f"
 }

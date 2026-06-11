@@ -6,6 +6,7 @@ META = {
     "order": 2,
     "py_deps": [],
     "banned": {},
+    "prereqs": ["py_classes/range"],
     "hints": [
         "Subclass collections.UserList and intercept the shortcut names in __getattr__ (read) and __setattr__ (write).",
         "In __setattr__, route real attributes (like 'data') to super().__setattr__; for 'size', truncate or pad self.data with None.",

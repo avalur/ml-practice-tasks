@@ -22,5 +22,7 @@
   "hints": [
     "a.argmin() gives the index of the min element."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "2d7b3a39811f6007739aa5eee5f0808f1988b79622ae4c5998ff7de008afa593"
 }

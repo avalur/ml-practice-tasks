@@ -15,5 +15,7 @@
     "Two ladders of increasing generality: numbers bool→int→float→complex, sequences range→tuple→list. Within a ladder, pick the more general.",
     "A number mixed with a sequence (or anything mixed with str) has no shared container — fall back to str. Two ranges share tuple, since you can't build a range from arbitrary elements."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
 }

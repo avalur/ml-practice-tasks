@@ -22,5 +22,7 @@
   "hints": [
     "np.intersect1d(a, b) returns the sorted, unique values common to both."
   ],
+  "prereqs": [],
+  "next": [],
   "contentHash": "f8dee86b3288cefcd1844a030f58f6d2b82d11fbe60db973c0f13442c6f30db0"
 }

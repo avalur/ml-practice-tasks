@@ -24,5 +24,9 @@
     "Binary-search the partition of the SHORTER sequence: pick i from it and j = (m+n+1)//2 - i from the other so the left part has half the elements.",
     "The partition is correct when a[i-1] <= b[j] and b[j-1] <= a[i] (use ±infinity at the edges); then the median comes from the boundary values."
   ],
-  "contentHash": "edc06f80fe52939c3636b455e4750674f339a6bb9ac86114490b618ca520f4d6"
+  "prereqs": [
+    "py_basics/bin_basic"
+  ],
+  "next": [],
+  "contentHash": "b2136dcd8cfa9c3e7355a7f746d1691865b8a392132881f8bc6680f7fbe747f0"
 }

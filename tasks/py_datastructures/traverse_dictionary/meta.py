@@ -6,6 +6,7 @@ META = {
     "order": 3,
     "py_deps": [],
     "banned": {},
+    "next": ["py_datastructures/alphabet"],
     "hints": [
         "At each level join the path with '.'; recurse into dict values, otherwise emit (full_key, value).",
         "For the iterative version keep an explicit stack of (prefix, subdict) so deep nesting can't overflow the recursion limit.",

@@ -6,6 +6,8 @@ META = {
     "order": 3,
     "py_deps": ["pandas"],
     "banned": {"names": ["pivot", "pivot_table"]},
+    "prereqs": ["pandas_manipulation/clean_data"],
+    "next": ["pandas_manipulation/xs_select"],
     "hints": [
         "df.set_index(['col1','col2']) turns two columns into a two-level MultiIndex.",
         "df.unstack(level=name) pivots one level of the index into columns, turning long format into wide.",

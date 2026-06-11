@@ -9,12 +9,15 @@
     "modules": [
       "bisect"
     ],
+    "names": [
+      "index"
+    ],
     "operators": [
       "in",
       "not in"
     ]
   },
-  "statementMd": "Implement `find_value(nums, value)`.\n\n`nums` is a list (or `range`) of integers sorted in non-decreasing order; it may\nbe empty. Return `True` if `value` is present, otherwise `False`. Use **binary\nsearch** — O(log n) time, O(1) extra space.\n\nThe `in` operator and the `bisect` module are not allowed: write the search\nyourself. (One test runs on a huge range where a linear scan would time out.)",
+  "statementMd": "Implement `find_value(nums, value)`.\n\n`nums` is a list (or `range`) of integers sorted in non-decreasing order; it may\nbe empty. Return `True` if `value` is present, otherwise `False`. Use **binary\nsearch** — O(log n) time, O(1) extra space.\n\nThe `in` operator, the `bisect` module, and `.index()` are not allowed: write\nthe search yourself. (One test runs on a huge range where a linear scan would\ntime out.)",
   "bundlePath": "/content/problems/py_basics/bin_basic",
   "pyDeps": [],
   "webRunnable": true,
@@ -23,5 +26,5 @@
     "Keep a [lo, hi] window of indices; compare nums[mid] to value and halve the window each step.",
     "Two returns: True inside the loop on a hit, False after the loop ends."
   ],
-  "contentHash": "12f713242b741ac6c401cbe02e424d35300b6bb65844c3e4646f6268a33036e3"
+  "contentHash": "ace73a1917841a665dde81496ff8322e9528e4c1bad9bcc5fa00aacb4cdd8686"
 }

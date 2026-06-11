@@ -10,11 +10,11 @@ is odd, otherwise the average of the two middle values.
 
 Run in **O(log(min(m, n)))** — a binary search over the partition, not a merge
 (some tests use sequences of hundreds of millions of elements, where scanning
-would never finish). `sorted` and the `in` operator are not allowed.
+would never finish). `sorted`, `.index()`, and the `in` operator are not allowed.
 
 ## Constraints
 
-- Forbidden functions: sorted
+- Forbidden functions: sorted, index
 - Forbidden operators: in, not in
 
 ## How to run

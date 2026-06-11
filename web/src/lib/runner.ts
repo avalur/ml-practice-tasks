@@ -50,6 +50,13 @@ export type Bundle = {
   testPath: string; // taskDir + "/test.py"
 };
 
+/** Fetch the reference solution for a problem (available after passing). */
+export async function fetchReferenceSolution(bundlePath: string): Promise<string> {
+  const res = await fetch(`${bundlePath}/reference.py`);
+  if (!res.ok) throw new Error(`reference.py not found (${res.status})`);
+  return res.text();
+}
+
 /** Fetch the static harness + problem files for a problem (everything but the
  *  student's submission). Throws if any file is missing. */
 export async function loadBundle(meta: ProblemMeta): Promise<Bundle> {

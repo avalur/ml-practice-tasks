@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { marked } from "marked";
 import { getManifest, getProblem, getStarterCode } from "@/lib/content";
 import { constraintSummary, visibleProblems } from "@/lib/problem";
-import { SolveWorkspace } from "@/components/SolveWorkspace";
+import { ProblemPageClient } from "@/components/ProblemPageClient";
 
 type Params = { topic: string; slug: string };
 
@@ -75,19 +75,7 @@ export default async function ProblemPage({
         Edit <code>{problem.entry}</code> and run the real pytest suite in your
         browser — no install required. Your code is saved locally.
       </p>
-      <SolveWorkspace meta={problem} starter={starter} />
-
-      {problem.hints.length > 0 && (
-        <div className="hints">
-          <h2>Hints</h2>
-          {problem.hints.map((hint, i) => (
-            <details key={i} className="hint-box">
-              <summary>Hint {i + 1}</summary>
-              <p>{hint}</p>
-            </details>
-          ))}
-        </div>
-      )}
+      <ProblemPageClient problem={problem} starter={starter} />
 
       <nav className="prevnext">
         {prev ? (

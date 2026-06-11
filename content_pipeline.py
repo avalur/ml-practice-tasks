@@ -61,6 +61,13 @@ def make_stub(reference_src: str) -> str:
     return "\n".join(out).rstrip() + "\n"
 
 
+def strip_markers(src: str) -> str:
+    """Remove the # --- solution: begin/end --- comment lines, keep everything else."""
+    return "\n".join(
+        l for l in src.splitlines() if l.strip() not in (BEGIN, END)
+    ).rstrip() + "\n"
+
+
 def render_readme(meta: dict, topic: str, slug: str) -> str:
     banned = meta.get("banned") or {}
     parts = [

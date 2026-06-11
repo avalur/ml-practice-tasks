@@ -364,6 +364,37 @@ pre.code {
   padding: 0;
 }
 
+/* Solution tabs (shown after passing all tests) */
+.solution-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: -1px;
+}
+.solution-tab {
+  padding: 0.35rem 0.9rem;
+  font-size: 0.85rem;
+  background: none;
+  border: 1px solid transparent;
+  border-bottom: none;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  transition: color 0.15s;
+}
+.solution-tab.active {
+  color: var(--fg);
+  border-color: var(--border);
+  background: var(--surface);
+}
+.solution-tab:hover:not(.active):not(:disabled) {
+  color: var(--fg);
+}
+.solution-tab:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 /* Hints */
 .hints {
   margin: 1.25rem 0;

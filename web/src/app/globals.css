@@ -493,8 +493,91 @@ pre.code {
   overflow: auto;
 }
 
+/* Profile page — two-column layout */
+.profile-layout {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+.profile-sidebar {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.25rem;
+}
+.profile-avatar {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 0.6rem;
+}
+.profile-name { font-weight: 600; margin: 0 0 0.15rem; }
+.profile-email { font-size: 0.82rem; margin: 0 0 0.5rem; }
+.profile-stats { font-size: 0.88rem; margin: 0 0 0.25rem; }
+.profile-nav {
+  display: flex; flex-direction: column; gap: 0.15rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+.profile-nav-link {
+  display: flex; align-items: center; gap: 0.55rem;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: var(--muted);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+.profile-nav-link:hover:not(.disabled) {
+  color: var(--fg);
+  background: var(--panel-2);
+  text-decoration: none;
+}
+.profile-nav-link.active {
+  color: var(--fg);
+  background: var(--panel-2);
+  font-weight: 600;
+}
+.profile-nav-link.disabled {
+  pointer-events: none;
+  opacity: 0.4;
+}
+.soon-badge {
+  margin-left: auto;
+  font-size: 0.65rem;
+  padding: 0.1rem 0.4rem;
+  border-radius: 999px;
+  border: 1px solid var(--muted);
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Favorite (star) button */
+.fav-btn {
+  font-size: 1rem;
+  padding: 0.15rem 0.4rem;
+  line-height: 1;
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--muted);
+}
+.fav-btn:hover:not(:disabled) {
+  color: var(--accent);
+}
+.fav-btn.active {
+  color: var(--accent);
+}
+
 /* Responsive */
 @media (max-width: 640px) {
+  .profile-layout { grid-template-columns: 1fr; }
   .container {
     padding: 1.25rem 1rem;
   }

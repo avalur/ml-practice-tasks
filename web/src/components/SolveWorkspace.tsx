@@ -2,7 +2,26 @@
 
 import { useEffect, useRef, useState } from "react";
 import CodeMirror, { EditorView } from "@uiw/react-codemirror";
+import { keymap } from "@codemirror/view";
 import { python } from "@codemirror/lang-python";
+
+// On Enter: preserve the current line's leading whitespace exactly.
+// Overrides the Python language mode's "smart" dedent which drops 2 spaces.
+const preserveIndentOnEnter = keymap.of([{
+  key: "Enter",
+  run(view) {
+    const sel = view.state.selection.main;
+    const line = view.state.doc.lineAt(sel.from);
+    const indent = line.text.match(/^\s*/)?.[0] ?? "";
+    const insert = "\n" + indent;
+    view.dispatch({
+      changes: { from: sel.from, to: sel.to, insert },
+      selection: { anchor: sel.from + insert.length },
+      scrollIntoView: true,
+    });
+    return true;
+  },
+}]);
 
 // Breathing room so code/comments don't butt against the editor's right edge.
 const editorPadding = EditorView.theme({
@@ -296,7 +315,7 @@ export function SolveWorkspace({
         value={activeCode}
         height="360px"
         theme={theme}
-        extensions={[python(), editorPadding]}
+        extensions={[python(), editorPadding, preserveIndentOnEnter]}
         onChange={showRef ? (v) => setRefCode(v) : setCode}
       />
 

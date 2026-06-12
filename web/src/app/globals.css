@@ -801,3 +801,117 @@ pre.code {
     display: none;
   }
 }
+
+/* ── Brain Teasers ─────────────────────────────────────────────────────────── */
+
+.bt-page { max-width: 680px; }
+
+.bt-rules {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1.1rem;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.92rem;
+}
+.bt-rules ul { margin: 0.4rem 0 0 1.2rem; padding: 0; }
+.bt-rules li { margin: 0.25rem 0; }
+
+.bt-puzzle {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  transition: border-color 0.3s, background 0.3s;
+}
+.bt-puzzle.correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 8%, var(--panel));
+}
+
+.bt-puzzle-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+.bt-puzzle-num {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.bt-status-ok {
+  font-weight: 700;
+  color: var(--easy);
+  font-size: 1rem;
+}
+.bt-clear-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 0.2rem 0.65rem;
+  cursor: pointer;
+}
+.bt-clear-btn:hover { border-color: var(--accent); color: var(--fg); }
+
+/* Equation drop zone */
+.bt-equation {
+  min-height: 72px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.bt-placeholder { color: var(--muted); font-size: 0.88rem; }
+
+/* Tile */
+.bt-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s;
+}
+.bt-tile:hover:not(.used):not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.bt-tile.bt-op  { color: var(--accent); }
+.bt-tile.bt-eq  { color: var(--medium); }
+.bt-tile.bt-paren { color: var(--muted); border-style: dashed; font-size: 1.3rem; }
+.bt-tile.used   { opacity: 0.22; cursor: default; }
+.bt-tile.placed { background: var(--panel); border-color: var(--accent); cursor: grab; }
+.bt-tile.placed:active { cursor: grabbing; }
+
+/* Tile pool */
+.bt-pool { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
+.bt-pool-section { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.bt-pool-sep {
+  width: 1px; height: 54px;
+  background: var(--border);
+  margin: 0 0.35rem;
+}
+.bt-paren-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  align-self: center;
+  white-space: nowrap;
+}

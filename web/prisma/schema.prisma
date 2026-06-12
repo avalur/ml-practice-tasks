@@ -25,6 +25,7 @@ model User {
   sessions      Session[]
   submissions   Submission[]
   progress      UserProblemProgress[]
+  favorites     Favorite[]
   createdAt     DateTime  @default(now())
 }
 
@@ -77,6 +78,7 @@ model Problem {
 
   submissions Submission[]
   progress    UserProblemProgress[]
+  favorites   Favorite[]
 
   @@unique([topic, slug])
 }
@@ -101,6 +103,18 @@ model Submission {
 
   @@index([userId, problemId])
   @@index([createdAt])
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String
+  createdAt DateTime @default(now())
+
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
 }
 
 model UserProblemProgress {

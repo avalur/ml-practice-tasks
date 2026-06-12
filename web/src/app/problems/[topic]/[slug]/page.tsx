@@ -4,6 +4,7 @@ import { marked } from "marked";
 import { getManifest, getProblem, getStarterCode } from "@/lib/content";
 import { constraintSummary, visibleProblems } from "@/lib/problem";
 import { ProblemPageClient } from "@/components/ProblemPageClient";
+import { FavoriteButton } from "@/components/FavoriteButton";
 
 type Params = { topic: string; slug: string };
 
@@ -57,6 +58,7 @@ export default async function ProblemPage({
           {problem.difficulty}
         </span>
         <span className="topic-tag">{problem.topic}</span>
+        <FavoriteButton problemId={problem.id} />
       </div>
 
       <div

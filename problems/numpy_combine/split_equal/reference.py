@@ -14,5 +14,5 @@ def split_equal(x: np.ndarray, n: int) -> list:
     :return: list of ``n`` contiguous sub-arrays
     """
     # --- solution: begin ---
-    return list(np.split(x, n))
+    return np.split(x, n)
     # --- solution: end ---

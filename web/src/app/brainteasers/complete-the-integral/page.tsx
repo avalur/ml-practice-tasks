@@ -1,204 +1,155 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
-// Numbers 1–14 available, two rows of 5.
-// Numbers {2,3,7,8,9,10,11,12,13,14} from the image have no integer solution.
-// Using {2,3,4,5,6,7,8,10,12,14} which has 4 solutions:
-//   (2,4,6)  (4,6,10)  (5,7,12)  (6,8,14)
+// Two rows of 5. The image numbers {2,3,7,8,9,10,11,12,13,14} have no integer
+// solution for ∫ₐᵇ x dx = (b²−a²)/2 = c, so we use {2,3,4,5,6,7,8,10,12,14}
+// which has four solutions: (2,4,6) (4,6,10) (5,7,12) (6,8,14).
 const ROW1 = [2, 3, 4, 5, 6];
 const ROW2 = [7, 8, 10, 12, 14];
-const ALL_NUMBERS = [...ROW1, ...ROW2];
 
 type Slot = "lower" | "upper" | "result";
 type Slots = Record<Slot, number | null>;
 
-function isCorrect(slots: Slots): boolean {
-  const { lower: a, upper: b, result: c } = slots;
+function isCorrect(s: Slots): boolean {
+  const { lower: a, upper: b, result: c } = s;
   if (a === null || b === null || c === null) return false;
   return b * b - a * a === 2 * c;
 }
 
-function Tex({ src, display = false }: { src: string; display?: boolean }) {
+function Tex({ src }: { src: string }) {
   return (
     <span
       dangerouslySetInnerHTML={{
-        __html: katex.renderToString(src, {
-          displayMode: display,
-          throwOnError: false,
-        }),
+        __html: katex.renderToString(src, { throwOnError: false }),
       }}
     />
   );
 }
 
-function TokenCircle({
-  value,
-  used,
-  dragging,
-  onClick,
-  onDragStart,
-}: {
-  value: number;
-  used: boolean;
-  dragging: boolean;
-  onClick: () => void;
-  onDragStart: () => void;
-}) {
-  return (
-    <button
-      className={`it-token${used ? " it-token--used" : ""}${dragging ? " it-token--dragging" : ""}`}
-      draggable={!used}
-      onClick={!used ? onClick : undefined}
-      onDragStart={!used ? onDragStart : undefined}
-      disabled={used}
-      title={used ? "Already placed" : `Place ${value}`}
-    >
-      {value}
-    </button>
-  );
-}
-
-function SlotCircle({
-  value,
-  label,
-  active,
-  correct,
-  onDrop,
-  onDragOver,
-  onClick,
-}: {
-  value: number | null;
-  label: string;
-  active: boolean;
-  correct: boolean;
-  onDrop: () => void;
-  onDragOver: (e: React.DragEvent) => void;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      className={`it-slot${value !== null ? " it-slot--filled" : ""}${active ? " it-slot--active" : ""}${correct ? " it-slot--correct" : ""}`}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-      onClick={onClick}
-      aria-label={label}
-      title={value !== null ? `${label} = ${value} — click to remove` : `${label} — drag a number here`}
-    >
-      {value !== null ? value : ""}
-    </button>
-  );
-}
+type DragState = { n: number; x: number; y: number; moved: boolean };
 
 export default function CompleteTheIntegralPage() {
   const [slots, setSlots] = useState<Slots>({ lower: null, upper: null, result: null });
-  const [dragNum, setDragNum] = useState<number | null>(null);
   const [activeSlot, setActiveSlot] = useState<Slot>("lower");
+  const [drag, setDrag] = useState<DragState | null>(null);
+
+  // Ref mirrors `drag` so pointer handlers read the current value synchronously.
+  const dragRef = useRef<DragState | null>(null);
+  dragRef.current = drag;
 
   const used = useMemo(
     () => new Set(Object.values(slots).filter((v): v is number => v !== null)),
     [slots],
   );
-
   const solved = useMemo(() => isCorrect(slots), [slots]);
+  const filled = Object.values(slots).filter((v) => v !== null).length;
 
-  const placeInSlot = (slot: Slot, n: number) => {
+  function place(slot: Slot, n: number) {
     setSlots((prev) => {
-      const old = prev[slot];
-      const next = { ...prev, [slot]: n };
-      // If the dragged number was already in another slot, clear it
-      if (old !== null && old !== n) {
-        // return old to pool automatically (just clear it)
+      const next = { ...prev };
+      // remove n from any slot it's already in (allows moving between slots)
+      for (const s of Object.keys(next) as Slot[]) {
+        if (next[s] === n) next[s] = null;
       }
+      next[slot] = n;
       return next;
     });
-    // Auto-advance active slot
     const order: Slot[] = ["lower", "upper", "result"];
     const nextEmpty = order.find((s) => s !== slot && slots[s] === null);
     if (nextEmpty) setActiveSlot(nextEmpty);
-  };
+  }
 
-  const clickToken = (n: number) => {
-    if (used.has(n)) return;
-    placeInSlot(activeSlot, n);
-  };
-
-  const clearSlot = (slot: Slot) => {
+  function clearSlot(slot: Slot) {
     setSlots((prev) => ({ ...prev, [slot]: null }));
     setActiveSlot(slot);
-  };
+  }
 
-  const handleDrop = (slot: Slot) => {
-    if (dragNum === null) return;
-    // If number was in another slot, clear that slot
-    const fromSlot = (Object.entries(slots) as [Slot, number | null][]).find(
-      ([, v]) => v === dragNum,
-    )?.[0];
-    setSlots((prev) => {
-      const next = { ...prev };
-      if (fromSlot) next[fromSlot] = null;
-      next[slot] = dragNum;
-      return next;
-    });
-    setDragNum(null);
-  };
-
-  const clearAll = () => {
+  function clearAll() {
     setSlots({ lower: null, upper: null, result: null });
     setActiveSlot("lower");
-    setDragNum(null);
-  };
+    setDrag(null);
+  }
 
-  const filledCount = Object.values(slots).filter((v) => v !== null).length;
+  // ── Pointer-based drag (reliable across all browsers, unlike HTML5 DnD) ──
+  function onTokenPointerDown(n: number, e: React.PointerEvent<HTMLButtonElement>) {
+    if (used.has(n)) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDrag({ n, x: e.clientX, y: e.clientY, moved: false });
+  }
+
+  function onTokenPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    if (!d) return;
+    const moved = d.moved || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6;
+    setDrag({ ...d, x: e.clientX, y: e.clientY, moved });
+  }
+
+  function onTokenPointerUp(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    setDrag(null);
+    if (!d) return;
+
+    if (!d.moved) {
+      // A tap (no real movement) → place into the active slot.
+      place(activeSlot, d.n);
+      return;
+    }
+    // A drag → find the slot under the release point.
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const slotEl = el?.closest<HTMLElement>("[data-slot]");
+    if (slotEl?.dataset.slot) {
+      place(slotEl.dataset.slot as Slot, d.n);
+    }
+    // else: dropped outside any slot → number stays in the pool
+  }
 
   return (
-    <article className="bt-page">
+    <article className="bt-page" style={{ userSelect: "none" }}>
       <h1>Complete the Integral</h1>
       <p className="muted" style={{ marginTop: "0.25rem" }}>
-        Drag or click <strong>3 numbers</strong> into the integral.
-        Multiple solutions exist.
+        Drag or click <strong>3 numbers</strong> into the integral. Multiple
+        solutions exist.
       </p>
 
       <div className="bt-rules" style={{ marginBottom: "1.5rem" }}>
-        <Tex
-          src="\displaystyle \int_a^b x\,dx \;=\; \frac{b^2 - a^2}{2} \;=\; c"
-          display={false}
-        />
+        <Tex src="\displaystyle \int_a^b x\,dx \;=\; \frac{b^2 - a^2}{2} \;=\; c" />
         <br />
         <span className="muted" style={{ fontSize: "0.88rem" }}>
-          Choose <Tex src="a" /> (lower bound), <Tex src="b" /> (upper bound), and{" "}
-          <Tex src="c" /> (result) so the equation holds.
+          Choose <Tex src="a" /> (lower bound), <Tex src="b" /> (upper bound),
+          and <Tex src="c" /> (result) so the equation holds.
         </span>
       </div>
 
       {/* ── Interactive formula ── */}
       <div className={`it-formula-wrap${solved ? " it-correct" : ""}`}>
         <div className="it-formula">
-
           {/* ∫ with upper/lower slots */}
           <div className="it-int-group">
             <SlotCircle
+              slot="upper"
               value={slots.upper}
-              label="b (upper bound)"
               active={activeSlot === "upper" && !solved}
               correct={solved}
-              onDrop={() => handleDrop("upper")}
-              onDragOver={(e) => e.preventDefault()}
-              onClick={() => slots.upper !== null ? clearSlot("upper") : setActiveSlot("upper")}
+              dragging={drag?.moved ?? false}
+              onClick={() =>
+                slots.upper !== null ? clearSlot("upper") : setActiveSlot("upper")
+              }
             />
             <span className="it-int-sign">∫</span>
             <div style={{ marginTop: "0.6rem" }}>
-            <SlotCircle
-              value={slots.lower}
-              label="a (lower bound)"
-              active={activeSlot === "lower" && !solved}
-              correct={solved}
-              onDrop={() => handleDrop("lower")}
-              onDragOver={(e) => e.preventDefault()}
-              onClick={() => slots.lower !== null ? clearSlot("lower") : setActiveSlot("lower")}
-            />
+              <SlotCircle
+                slot="lower"
+                value={slots.lower}
+                active={activeSlot === "lower" && !solved}
+                correct={solved}
+                dragging={drag?.moved ?? false}
+                onClick={() =>
+                  slots.lower !== null ? clearSlot("lower") : setActiveSlot("lower")
+                }
+              />
             </div>
           </div>
 
@@ -206,16 +157,19 @@ export default function CompleteTheIntegralPage() {
             <Tex src="x\,dx" />
           </span>
 
-          <span className="it-eq"><Tex src="=" /></span>
+          <span className="it-eq">
+            <Tex src="=" />
+          </span>
 
           <SlotCircle
+            slot="result"
             value={slots.result}
-            label="c (result)"
             active={activeSlot === "result" && !solved}
             correct={solved}
-            onDrop={() => handleDrop("result")}
-            onDragOver={(e) => e.preventDefault()}
-            onClick={() => slots.result !== null ? clearSlot("result") : setActiveSlot("result")}
+            dragging={drag?.moved ?? false}
+            onClick={() =>
+              slots.result !== null ? clearSlot("result") : setActiveSlot("result")
+            }
           />
         </div>
 
@@ -228,46 +182,44 @@ export default function CompleteTheIntegralPage() {
           </div>
         )}
 
-        {!solved && filledCount === 3 && (
+        {!solved && filled === 3 && (
           <p className="muted" style={{ marginTop: "0.75rem", fontSize: "0.88rem" }}>
             Not equal — try a different combination.
           </p>
         )}
       </div>
 
-      {!solved && filledCount > 0 && (
+      {!solved && filled > 0 && (
         <div style={{ marginTop: "0.5rem" }}>
-          <button className="bt-clear-btn" onClick={clearAll}>Clear</button>
+          <button className="bt-clear-btn" onClick={clearAll}>
+            Clear
+          </button>
         </div>
       )}
 
       {/* ── Number pool — two rows of 5 ── */}
       {!solved && (
         <div className="it-pool">
-          <div className="it-pool-row">
-            {ROW1.map((n) => (
-              <TokenCircle
-                key={n}
-                value={n}
-                used={used.has(n)}
-                dragging={dragNum === n}
-                onClick={() => clickToken(n)}
-                onDragStart={() => setDragNum(n)}
-              />
-            ))}
-          </div>
-          <div className="it-pool-row">
-            {ROW2.map((n) => (
-              <TokenCircle
-                key={n}
-                value={n}
-                used={used.has(n)}
-                dragging={dragNum === n}
-                onClick={() => clickToken(n)}
-                onDragStart={() => setDragNum(n)}
-              />
-            ))}
-          </div>
+          {[ROW1, ROW2].map((row, ri) => (
+            <div key={ri} className="it-pool-row">
+              {row.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={`it-token${used.has(n) ? " it-token--used" : ""}${
+                    drag?.n === n && drag.moved ? " it-token--dragging" : ""
+                  }`}
+                  disabled={used.has(n)}
+                  style={{ touchAction: "none" }}
+                  onPointerDown={(e) => onTokenPointerDown(n, e)}
+                  onPointerMove={onTokenPointerMove}
+                  onPointerUp={onTokenPointerUp}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
+          ))}
         </div>
       )}
 
@@ -276,6 +228,59 @@ export default function CompleteTheIntegralPage() {
           Try another solution
         </button>
       )}
+
+      {/* Floating ghost that follows the cursor while dragging */}
+      {drag?.moved && (
+        <div
+          className="it-token it-token--ghost"
+          style={{
+            position: "fixed",
+            left: drag.x,
+            top: drag.y,
+            transform: "translate(-50%, -50%) scale(1.1)",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        >
+          {drag.n}
+        </div>
+      )}
     </article>
+  );
+}
+
+// ── Slot — data-slot is used by elementFromPoint to detect the drop target ──
+
+function SlotCircle({
+  slot,
+  value,
+  active,
+  correct,
+  dragging,
+  onClick,
+}: {
+  slot: Slot;
+  value: number | null;
+  active: boolean;
+  correct: boolean;
+  dragging: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      data-slot={slot}
+      className={`it-slot${value !== null ? " it-slot--filled" : ""}${
+        active ? " it-slot--active" : ""
+      }${correct ? " it-slot--correct" : ""}${dragging ? " it-slot--target" : ""}`}
+      onClick={onClick}
+      title={
+        value !== null
+          ? `= ${value} — click to remove`
+          : "drag a number here, or click then pick a number"
+      }
+    >
+      {value !== null ? value : ""}
+    </button>
   );
 }

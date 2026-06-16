@@ -982,6 +982,14 @@ pre.code {
 .it-slot--filled { border-style: solid; border-color: var(--accent); background: var(--panel-2); }
 .it-slot--filled:hover { border-color: var(--hard); transform: scale(0.96); }
 .it-slot--correct { border-color: var(--easy); background: color-mix(in srgb, var(--easy) 15%, var(--panel)); }
+/* While a token is being dragged, every empty slot pulses to invite a drop. */
+.it-slot--target:not(.it-slot--filled) {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+/* Ghost token following the cursor mid-drag. */
+.it-token--ghost { opacity: 0.9; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
 
 .it-body { font-size: 1.4rem; }
 .it-eq   { font-size: 1.5rem; }

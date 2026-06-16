@@ -85,6 +85,15 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
 
   // Group problems into a family → subfolder → files tree (numpy_basics →
   // numpy / basics).
+  // Extract the subtopic of the currently active problem so we auto-expand it.
+  const currentSubtopic = useMemo(() => {
+    const m = pathname.match(/^\/problems\/(\w+(?:_\w+)*)/);
+    if (!m) return null;
+    const [, topic] = m;
+    const [family, ...rest] = topic.split("_");
+    return rest.join("_") || family;
+  }, [pathname]);
+
   const tree = useMemo(() => {
     const fam: Record<string, Record<string, Item[]>> = {};
     for (const it of items) {
@@ -133,11 +142,11 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
 
       <nav className="tree">
         {Object.entries(tree).map(([family, subs]) => (
-          <Folder key={family} label={family} defaultOpen>
+          <Folder key={family} label={family} defaultOpen activeTopic={null}>
             {Object.entries(subs).map(([sub, probs]) => {
               const s = probs.filter((p) => solved.has(p.id)).length;
               return (
-                <Folder key={sub} label={sub} count={`${s}/${probs.length}`} defaultOpen>
+                <Folder key={sub} label={sub} count={`${s}/${probs.length}`} activeTopic={currentSubtopic}>
                   {probs.map((p) => {
                     const href = `/problems/${p.topic}/${p.slug}`;
                     const active = pathname === href;
@@ -168,14 +177,16 @@ function Folder({
   label,
   count,
   defaultOpen,
+  activeTopic,
   children,
 }: {
   label: string;
   count?: string;
   defaultOpen?: boolean;
+  activeTopic: string | null;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(!!defaultOpen);
+  const [open, setOpen] = useState(!!defaultOpen || activeTopic === label);
   return (
     <div className="folder">
       <button className="folder-head" onClick={() => setOpen((o) => !o)}>

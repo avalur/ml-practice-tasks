@@ -35,7 +35,7 @@ export default function RootLayout({
             <nav className="nav-links">
               <Link href="/problems">Problems</Link>
               <Link href="/notebooks">Notebooks</Link>
-              <Link href="/brainteasers">Brain Teasers</Link>
+              <Link href="/brainteasers">Brainteasers</Link>
               <Link href="/profile">Profile</Link>
             </nav>
             <div className="header-right">

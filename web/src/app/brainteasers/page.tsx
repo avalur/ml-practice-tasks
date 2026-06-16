@@ -14,6 +14,13 @@ const TEASERS = [
     difficulty: "medium",
     count: 3,
   },
+  {
+    slug: "complete-the-integral",
+    title: "Complete the Integral",
+    description: "Place three numbers into the integral formula so that the equation holds: ∫ₐᵇ x dx = c.",
+    difficulty: "medium",
+    count: 1,
+  },
 ];
 
 export default function BrainTeasersPage() {

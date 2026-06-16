@@ -915,3 +915,130 @@ pre.code {
   align-self: center;
   white-space: nowrap;
 }
+
+/* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
+
+.notebook-frame-wrapper {
+  /* Full viewport height minus the site header (~56px) and break container padding */
+  height: calc(100vh - 56px);
+  margin: -1.5rem -2rem -2rem;
+}
+.notebook-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
+/* ── Integral puzzle ──────────────────────────────────────────────────────── */
+
+.integral-display {
+  margin: 1.5rem 0 0.75rem;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+.integral-display.correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 8%, var(--panel));
+}
+
+.integral-expr {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Integral sign + bounds stacked vertically */
+.integral-sign-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+}
+.integral-sym {
+  font-size: 4rem;
+  line-height: 0.85;
+  font-family: serif;
+  color: var(--fg);
+  margin: 0 -0.25rem;
+}
+
+/* Slot circle */
+.integral-slot {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: 2.5px dashed var(--border);
+  background: var(--bg);
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-family: monospace;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  color: var(--fg);
+}
+.integral-slot.filled {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--panel-2);
+}
+.integral-slot.filled:hover {
+  border-color: var(--hard);
+  transform: scale(0.96);
+}
+.integral-slot.correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 15%, var(--panel));
+}
+
+.integral-body {
+  font-size: 1.6rem;
+  font-style: italic;
+  font-family: serif;
+  color: var(--fg);
+}
+.integral-eq {
+  font-size: 1.8rem;
+  font-weight: 300;
+  color: var(--fg);
+}
+
+.integral-success {
+  margin-top: 1rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--easy);
+}
+.integral-hint {
+  margin-top: 0.75rem;
+  font-size: 0.88rem;
+}
+
+/* Active slot selector row */
+.integral-slot-select {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-top: 0.75rem;
+}
+.integral-slot-btn {
+  padding: 0.35rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.integral-slot-btn:hover { border-color: var(--accent); color: var(--fg); }
+.integral-slot-btn.active { border-color: var(--accent); color: var(--fg); font-weight: 600; }
+.integral-slot-btn.has-value { color: var(--fg); }

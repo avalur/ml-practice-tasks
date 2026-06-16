@@ -930,6 +930,127 @@ pre.code {
   display: block;
 }
 
+/* ── Integral puzzle (it-*) ──────────────────────────────────────────────── */
+
+.it-formula-wrap {
+  margin: 1.25rem 0 0.75rem;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+.it-formula-wrap.it-correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 8%, var(--panel));
+}
+
+.it-formula {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Integral sign + stacked bounds */
+.it-int-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.it-int-sign {
+  font-size: 4.5rem;
+  line-height: 0.8;
+  font-family: serif;
+  color: var(--fg);
+}
+
+/* Slot circle */
+.it-slot {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2.5px dashed var(--muted);
+  background: var(--bg);
+  font-size: 1.4rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  color: var(--fg);
+}
+.it-slot--active { border-color: var(--accent); border-style: solid; }
+.it-slot--filled { border-style: solid; border-color: var(--accent); background: var(--panel-2); }
+.it-slot--filled:hover { border-color: var(--hard); transform: scale(0.96); }
+.it-slot--correct { border-color: var(--easy); background: color-mix(in srgb, var(--easy) 15%, var(--panel)); }
+
+.it-body { font-size: 1.4rem; }
+.it-eq   { font-size: 1.5rem; }
+
+.it-success {
+  margin-top: 1rem;
+  font-weight: 700; font-size: 1rem;
+  color: var(--easy);
+}
+
+/* Active slot selector */
+.it-slot-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+  margin-top: 0.75rem;
+}
+.it-slot-btn {
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.25rem;
+}
+.it-slot-btn:hover { border-color: var(--accent); color: var(--fg); }
+.it-slot-btn.active { border-color: var(--accent); color: var(--fg); font-weight: 600; }
+.it-slot-val { color: var(--muted); }
+
+/* Number pool */
+.it-pool { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1.5rem; }
+.it-pool-row { display: flex; gap: 0.55rem; }
+
+/* Draggable token circle */
+.it-token {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  font-size: 1.3rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s, box-shadow 0.12s;
+}
+.it-token:hover:not(.it-token--used) {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.it-token:active:not(.it-token--used) { cursor: grabbing; transform: scale(0.95); }
+.it-token--used { opacity: 0.2; cursor: default; }
+.it-token--dragging { opacity: 0.4; }
+
+
+/* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
+
+.notebook-frame-wrapper {
+  /* Full viewport height minus the site header (~56px) and break container padding */
+  height: calc(100vh - 56px);
+  margin: -1.5rem -2rem -2rem;
+}
+.notebook-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}
+
 /* ── Integral puzzle ──────────────────────────────────────────────────────── */
 
 .integral-display {

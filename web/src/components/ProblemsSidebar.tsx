@@ -85,13 +85,11 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
 
   // Group problems into a family → subfolder → files tree (numpy_basics →
   // numpy / basics).
-  // Extract the subtopic of the currently active problem so we auto-expand it.
-  const currentSubtopic = useMemo(() => {
+  // Full topic of the currently active problem (e.g. "py_basics"), used to
+  // auto-expand the correct family and subtopic folders.
+  const currentTopic = useMemo(() => {
     const m = pathname.match(/^\/problems\/(\w+(?:_\w+)*)/);
-    if (!m) return null;
-    const [, topic] = m;
-    const [family, ...rest] = topic.split("_");
-    return rest.join("_") || family;
+    return m ? m[1] : null; // e.g. "py_basics", "numpy_linalg"
   }, [pathname]);
 
   const tree = useMemo(() => {
@@ -142,11 +140,17 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
 
       <nav className="tree">
         {Object.entries(tree).map(([family, subs]) => (
-          <Folder key={family} label={family} defaultOpen activeTopic={null}>
+          <Folder
+              key={family}
+              label={family}
+              defaultOpen
+              isActive={currentTopic?.startsWith(family + "_") || currentTopic === family}
+            >
             {Object.entries(subs).map(([sub, probs]) => {
               const s = probs.filter((p) => solved.has(p.id)).length;
+              const fullTopic = family + "_" + sub;
               return (
-                <Folder key={sub} label={sub} count={`${s}/${probs.length}`} activeTopic={currentSubtopic}>
+                <Folder key={sub} label={sub} count={`${s}/${probs.length}`} isActive={currentTopic === fullTopic}>
                   {probs.map((p) => {
                     const href = `/problems/${p.topic}/${p.slug}`;
                     const active = pathname === href;
@@ -177,16 +181,22 @@ function Folder({
   label,
   count,
   defaultOpen,
-  activeTopic,
+  isActive,
   children,
 }: {
   label: string;
   count?: string;
   defaultOpen?: boolean;
-  activeTopic: string | null;
+  isActive?: boolean;
   children: React.ReactNode;
 }) {
-  const [open, setOpen] = useState(!!defaultOpen || activeTopic === label);
+  const [open, setOpen] = useState(!!defaultOpen || !!isActive);
+
+  // Auto-open when the active route enters this folder (client-side navigation).
+  useEffect(() => {
+    if (isActive) setOpen(true);
+  }, [isActive]);
+
   return (
     <div className="folder">
       <button className="folder-head" onClick={() => setOpen((o) => !o)}>

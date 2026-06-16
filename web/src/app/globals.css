@@ -930,115 +930,116 @@ pre.code {
   display: block;
 }
 
-/* ── Integral puzzle ──────────────────────────────────────────────────────── */
+/* ── Integral puzzle (it-*) ──────────────────────────────────────────────── */
 
-.integral-display {
-  margin: 1.5rem 0 0.75rem;
+.it-formula-wrap {
+  margin: 1.25rem 0 0.75rem;
   background: var(--panel);
   border: 2px solid var(--border);
   border-radius: 12px;
   padding: 1.5rem 2rem;
   transition: border-color 0.3s, background 0.3s;
 }
-.integral-display.correct {
+.it-formula-wrap.it-correct {
   border-color: var(--easy);
   background: color-mix(in srgb, var(--easy) 8%, var(--panel));
 }
 
-.integral-expr {
+.it-formula {
   display: flex;
   align-items: center;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-/* Integral sign + bounds stacked vertically */
-.integral-sign-wrap {
+/* Integral sign + stacked bounds */
+.it-int-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
-.integral-sym {
-  font-size: 4rem;
-  line-height: 0.85;
+.it-int-sign {
+  font-size: 4.5rem;
+  line-height: 0.8;
   font-family: serif;
   color: var(--fg);
-  margin: 0 -0.25rem;
 }
 
 /* Slot circle */
-.integral-slot {
-  width: 60px;
-  height: 60px;
+.it-slot {
+  width: 60px; height: 60px;
   border-radius: 50%;
-  border: 2.5px dashed var(--border);
+  border: 2.5px dashed var(--muted);
   background: var(--bg);
-  font-size: 1.4rem;
-  font-weight: 700;
-  font-family: monospace;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-size: 1.4rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
   cursor: pointer;
   transition: border-color 0.15s, background 0.15s, transform 0.1s;
   color: var(--fg);
 }
-.integral-slot.filled {
-  border-style: solid;
+.it-slot--active { border-color: var(--accent); border-style: solid; }
+.it-slot--filled { border-style: solid; border-color: var(--accent); background: var(--panel-2); }
+.it-slot--filled:hover { border-color: var(--hard); transform: scale(0.96); }
+.it-slot--correct { border-color: var(--easy); background: color-mix(in srgb, var(--easy) 15%, var(--panel)); }
+/* While a token is being dragged, every empty slot pulses to invite a drop. */
+.it-slot--target:not(.it-slot--filled) {
   border-color: var(--accent);
-  background: var(--panel-2);
+  border-style: solid;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
 }
-.integral-slot.filled:hover {
-  border-color: var(--hard);
-  transform: scale(0.96);
-}
-.integral-slot.correct {
-  border-color: var(--easy);
-  background: color-mix(in srgb, var(--easy) 15%, var(--panel));
-}
+/* Ghost token following the cursor mid-drag. */
+.it-token--ghost { opacity: 0.9; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
 
-.integral-body {
-  font-size: 1.6rem;
-  font-style: italic;
-  font-family: serif;
-  color: var(--fg);
-}
-.integral-eq {
-  font-size: 1.8rem;
-  font-weight: 300;
-  color: var(--fg);
-}
+.it-body { font-size: 1.4rem; }
+.it-eq   { font-size: 1.5rem; }
 
-.integral-success {
+.it-success {
   margin-top: 1rem;
-  font-weight: 700;
-  font-size: 1rem;
+  font-weight: 700; font-size: 1rem;
   color: var(--easy);
 }
-.integral-hint {
-  margin-top: 0.75rem;
-  font-size: 0.88rem;
-}
 
-/* Active slot selector row */
-.integral-slot-select {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  align-items: center;
+/* Active slot selector */
+.it-slot-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
   margin-top: 0.75rem;
 }
-.integral-slot-btn {
-  padding: 0.35rem 0.85rem;
+.it-slot-btn {
+  padding: 0.3rem 0.8rem;
   border-radius: 6px;
   border: 1px solid var(--border);
   background: var(--panel);
   color: var(--muted);
   font-size: 0.88rem;
   cursor: pointer;
-  transition: border-color 0.12s, color 0.12s;
+  display: inline-flex; align-items: center; gap: 0.25rem;
 }
-.integral-slot-btn:hover { border-color: var(--accent); color: var(--fg); }
-.integral-slot-btn.active { border-color: var(--accent); color: var(--fg); font-weight: 600; }
-.integral-slot-btn.has-value { color: var(--fg); }
+.it-slot-btn:hover { border-color: var(--accent); color: var(--fg); }
+.it-slot-btn.active { border-color: var(--accent); color: var(--fg); font-weight: 600; }
+.it-slot-val { color: var(--muted); }
+
+/* Number pool */
+.it-pool { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1.5rem; }
+.it-pool-row { display: flex; gap: 0.55rem; }
+
+/* Draggable token circle */
+.it-token {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  font-size: 1.3rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s, box-shadow 0.12s;
+}
+.it-token:hover:not(.it-token--used) {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.it-token:active:not(.it-token--used) { cursor: grabbing; transform: scale(0.95); }
+.it-token--used { opacity: 0.2; cursor: default; }
+.it-token--dragging { opacity: 0.4; }

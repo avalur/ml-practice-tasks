@@ -1,201 +1,286 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
+import katex from "katex";
+import "katex/dist/katex.min.css";
 
-// Numbers 1–14 available. Solutions: ∫ₐᵇ x dx = (b²−a²)/2 = c
-// Valid: (2,4,6) (3,5,8) (4,6,10) (5,7,12) (6,8,14) (1,3,4) (1,5,12) etc.
-const ALL_NUMBERS = Array.from({ length: 14 }, (_, i) => i + 1);
+// Two rows of 5. The image numbers {2,3,7,8,9,10,11,12,13,14} have no integer
+// solution for ∫ₐᵇ x dx = (b²−a²)/2 = c, so we use {2,3,4,5,6,7,8,10,12,14}
+// which has four solutions: (2,4,6) (4,6,10) (5,7,12) (6,8,14).
+const ROW1 = [2, 3, 4, 5, 6];
+const ROW2 = [7, 8, 10, 12, 14];
 
 type Slot = "lower" | "upper" | "result";
+type Slots = Record<Slot, number | null>;
 
-function check(lower: number | null, upper: number | null, result: number | null): boolean {
-  if (lower === null || upper === null || result === null) return false;
-  // ∫ₐᵇ x dx = (b²−a²)/2
-  return (upper * upper - lower * lower) / 2 === result;
+function isCorrect(s: Slots): boolean {
+  const { lower: a, upper: b, result: c } = s;
+  if (a === null || b === null || c === null) return false;
+  return b * b - a * a === 2 * c;
 }
 
-function SlotCircle({
-  value,
-  label,
-  onClick,
-  correct,
-}: {
-  value: number | null;
-  label: string;
-  onClick: () => void;
-  correct: boolean;
-}) {
+function Tex({ src }: { src: string }) {
   return (
-    <button
-      className={`integral-slot${value !== null ? " filled" : ""}${correct ? " correct" : ""}`}
-      onClick={onClick}
-      title={value !== null ? `Click to return ${value} to pool` : `${label} — click a number to place here`}
-      aria-label={label}
-    >
-      {value !== null ? value : ""}
-    </button>
+    <span
+      dangerouslySetInnerHTML={{
+        __html: katex.renderToString(src, { throwOnError: false }),
+      }}
+    />
   );
 }
 
+type DragState = { n: number; x: number; y: number; moved: boolean };
+
 export default function CompleteTheIntegralPage() {
-  const [slots, setSlots] = useState<Record<Slot, number | null>>({
-    lower: null,
-    upper: null,
-    result: null,
-  });
+  const [slots, setSlots] = useState<Slots>({ lower: null, upper: null, result: null });
   const [activeSlot, setActiveSlot] = useState<Slot>("lower");
+  const [drag, setDrag] = useState<DragState | null>(null);
+
+  // Ref mirrors `drag` so pointer handlers read the current value synchronously.
+  const dragRef = useRef<DragState | null>(null);
+  dragRef.current = drag;
 
   const used = useMemo(
     () => new Set(Object.values(slots).filter((v): v is number => v !== null)),
     [slots],
   );
+  const solved = useMemo(() => isCorrect(slots), [slots]);
+  const filled = Object.values(slots).filter((v) => v !== null).length;
 
-  const solved = useMemo(
-    () => check(slots.lower, slots.upper, slots.result),
-    [slots],
-  );
-
-  const placeNumber = (n: number) => {
-    if (used.has(n)) return;
-    setSlots((prev) => ({ ...prev, [activeSlot]: n }));
-    // Auto-advance to next empty slot
-    const order: Slot[] = ["lower", "upper", "result"];
-    const nextEmpty = order.find(
-      (s) => s !== activeSlot && slots[s] === null && s !== activeSlot,
-    );
-    // Find first empty slot after placing
-    setActiveSlot((prev) => {
-      const next = order.find((s) => {
-        const updated = { ...slots, [prev]: n };
-        return updated[s] === null && s !== prev;
-      });
-      return next ?? prev;
+  function place(slot: Slot, n: number) {
+    setSlots((prev) => {
+      const next = { ...prev };
+      // remove n from any slot it's already in (allows moving between slots)
+      for (const s of Object.keys(next) as Slot[]) {
+        if (next[s] === n) next[s] = null;
+      }
+      next[slot] = n;
+      return next;
     });
-  };
+    const order: Slot[] = ["lower", "upper", "result"];
+    const nextEmpty = order.find((s) => s !== slot && slots[s] === null);
+    if (nextEmpty) setActiveSlot(nextEmpty);
+  }
 
-  const clearSlot = (slot: Slot) => {
+  function clearSlot(slot: Slot) {
     setSlots((prev) => ({ ...prev, [slot]: null }));
     setActiveSlot(slot);
-  };
+  }
 
-  const clearAll = () => {
+  function clearAll() {
     setSlots({ lower: null, upper: null, result: null });
     setActiveSlot("lower");
-  };
+    setDrag(null);
+  }
 
-  const slotOrder: Slot[] = ["lower", "upper", "result"];
-  const filledCount = slotOrder.filter((s) => slots[s] !== null).length;
+  // ── Pointer-based drag (reliable across all browsers, unlike HTML5 DnD) ──
+  function onTokenPointerDown(n: number, e: React.PointerEvent<HTMLButtonElement>) {
+    if (used.has(n)) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    setDrag({ n, x: e.clientX, y: e.clientY, moved: false });
+  }
+
+  function onTokenPointerMove(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    if (!d) return;
+    const moved = d.moved || Math.hypot(e.clientX - d.x, e.clientY - d.y) > 6;
+    setDrag({ ...d, x: e.clientX, y: e.clientY, moved });
+  }
+
+  function onTokenPointerUp(e: React.PointerEvent<HTMLButtonElement>) {
+    const d = dragRef.current;
+    setDrag(null);
+    if (!d) return;
+
+    if (!d.moved) {
+      // A tap (no real movement) → place into the active slot.
+      place(activeSlot, d.n);
+      return;
+    }
+    // A drag → find the slot under the release point.
+    const el = document.elementFromPoint(e.clientX, e.clientY);
+    const slotEl = el?.closest<HTMLElement>("[data-slot]");
+    if (slotEl?.dataset.slot) {
+      place(slotEl.dataset.slot as Slot, d.n);
+    }
+    // else: dropped outside any slot → number stays in the pool
+  }
 
   return (
-    <article className="bt-page">
+    <article className="bt-page" style={{ userSelect: "none" }}>
       <h1>Complete the Integral</h1>
       <p className="muted" style={{ marginTop: "0.25rem" }}>
-        Place <strong>3 numbers</strong> into the integral so the equation holds.
-        Multiple solutions exist.
+        Drag or click <strong>3 numbers</strong> into the integral. Multiple
+        solutions exist.
       </p>
 
-      <div className="bt-rules">
-        <strong>Formula:</strong> &nbsp;
-        ∫<sub>a</sub><sup>b</sup> x dx &nbsp;=&nbsp;
-        <sup>b² − a²</sup>⁄<sub>2</sub>
-        &nbsp;= c
+      <div className="bt-rules" style={{ marginBottom: "1.5rem" }}>
+        <Tex src="\displaystyle \int_a^b x\,dx \;=\; \frac{b^2 - a^2}{2} \;=\; c" />
         <br />
-        <strong>Rules:</strong> Choose a (lower bound), b (upper bound), and c (result).
-        All three must be different numbers from the pool.
+        <span className="muted" style={{ fontSize: "0.88rem" }}>
+          Choose <Tex src="a" /> (lower bound), <Tex src="b" /> (upper bound),
+          and <Tex src="c" /> (result) so the equation holds.
+        </span>
       </div>
 
-      {/* ── Integral display ── */}
-      <div className={`integral-display${solved ? " correct" : ""}`}>
-        <div className="integral-expr">
-
-          {/* Integral sign with bounds */}
-          <div className="integral-sign-wrap">
+      {/* ── Interactive formula ── */}
+      <div className={`it-formula-wrap${solved ? " it-correct" : ""}`}>
+        <div className="it-formula">
+          {/* ∫ with upper/lower slots */}
+          <div className="it-int-group">
             <SlotCircle
+              slot="upper"
               value={slots.upper}
-              label="upper bound b"
-              onClick={() => slots.upper !== null ? clearSlot("upper") : setActiveSlot("upper")}
+              active={activeSlot === "upper" && !solved}
               correct={solved}
+              dragging={drag?.moved ?? false}
+              onClick={() =>
+                slots.upper !== null ? clearSlot("upper") : setActiveSlot("upper")
+              }
             />
-            <span className="integral-sym">∫</span>
-            <SlotCircle
-              value={slots.lower}
-              label="lower bound a"
-              onClick={() => slots.lower !== null ? clearSlot("lower") : setActiveSlot("lower")}
-              correct={solved}
-            />
+            <span className="it-int-sign">∫</span>
+            <div style={{ marginTop: "0.6rem" }}>
+              <SlotCircle
+                slot="lower"
+                value={slots.lower}
+                active={activeSlot === "lower" && !solved}
+                correct={solved}
+                dragging={drag?.moved ?? false}
+                onClick={() =>
+                  slots.lower !== null ? clearSlot("lower") : setActiveSlot("lower")
+                }
+              />
+            </div>
           </div>
 
-          {/* x dx */}
-          <span className="integral-body">x dx</span>
+          <span className="it-body">
+            <Tex src="x\,dx" />
+          </span>
 
-          {/* = */}
-          <span className="integral-eq">=</span>
+          <span className="it-eq">
+            <Tex src="=" />
+          </span>
 
-          {/* Result */}
           <SlotCircle
+            slot="result"
             value={slots.result}
-            label="result c"
-            onClick={() => slots.result !== null ? clearSlot("result") : setActiveSlot("result")}
+            active={activeSlot === "result" && !solved}
             correct={solved}
+            dragging={drag?.moved ?? false}
+            onClick={() =>
+              slots.result !== null ? clearSlot("result") : setActiveSlot("result")
+            }
           />
         </div>
 
         {solved && (
-          <div className="integral-success">
-            🎉 Correct! &nbsp;
-            ∫<sub>{slots.lower}</sub><sup>{slots.upper}</sup> x dx = ({slots.upper}² − {slots.lower}²) / 2 = {slots.result}
+          <div className="it-success">
+            🎉&nbsp;
+            <Tex
+              src={`\\int_{${slots.lower}}^{${slots.upper}} x\\,dx = \\frac{${slots.upper}^2 - ${slots.lower}^2}{2} = ${slots.result}`}
+            />
           </div>
         )}
 
-        {!solved && filledCount > 0 && (
-          <div className="integral-hint muted">
-            Active slot: <strong>{activeSlot === "lower" ? "a (lower)" : activeSlot === "upper" ? "b (upper)" : "c (result)"}</strong>
-            {filledCount === 3 && " — not equal, try a different combination"}
-          </div>
+        {!solved && filled === 3 && (
+          <p className="muted" style={{ marginTop: "0.75rem", fontSize: "0.88rem" }}>
+            Not equal — try a different combination.
+          </p>
         )}
       </div>
 
-      {/* Active slot selector */}
-      {!solved && (
-        <div className="integral-slot-select">
-          {(["lower", "upper", "result"] as Slot[]).map((s) => (
-            <button
-              key={s}
-              className={`integral-slot-btn${activeSlot === s ? " active" : ""}${slots[s] !== null ? " has-value" : ""}`}
-              onClick={() => { if (slots[s] !== null) clearSlot(s); else setActiveSlot(s); }}
-            >
-              {s === "lower" ? "a (lower)" : s === "upper" ? "b (upper)" : "c (result)"}
-              {slots[s] !== null && <span> = {slots[s]} ✕</span>}
-            </button>
-          ))}
-          {filledCount > 0 && (
-            <button className="bt-clear-btn" onClick={clearAll}>Clear all</button>
-          )}
+      {!solved && filled > 0 && (
+        <div style={{ marginTop: "0.5rem" }}>
+          <button className="bt-clear-btn" onClick={clearAll}>
+            Clear
+          </button>
         </div>
       )}
 
-      {/* Number pool */}
+      {/* ── Number pool — two rows of 5 ── */}
       {!solved && (
-        <div className="bt-pool" style={{ marginTop: "1.5rem" }}>
-          {ALL_NUMBERS.map((n) => (
-            <button
-              key={n}
-              className={`bt-tile bt-digit${used.has(n) ? " used" : ""}`}
-              onClick={() => placeNumber(n)}
-              disabled={used.has(n)}
-              title={used.has(n) ? "Already placed" : `Place ${n}`}
-            >
-              {n}
-            </button>
+        <div className="it-pool">
+          {[ROW1, ROW2].map((row, ri) => (
+            <div key={ri} className="it-pool-row">
+              {row.map((n) => (
+                <button
+                  key={n}
+                  type="button"
+                  className={`it-token${used.has(n) ? " it-token--used" : ""}${
+                    drag?.n === n && drag.moved ? " it-token--dragging" : ""
+                  }`}
+                  disabled={used.has(n)}
+                  style={{ touchAction: "none" }}
+                  onPointerDown={(e) => onTokenPointerDown(n, e)}
+                  onPointerMove={onTokenPointerMove}
+                  onPointerUp={onTokenPointerUp}
+                >
+                  {n}
+                </button>
+              ))}
+            </div>
           ))}
         </div>
       )}
 
       {solved && (
-        <div style={{ marginTop: "1.5rem" }}>
-          <button className="btn" onClick={clearAll}>Try another solution</button>
+        <button className="btn" style={{ marginTop: "1.5rem" }} onClick={clearAll}>
+          Try another solution
+        </button>
+      )}
+
+      {/* Floating ghost that follows the cursor while dragging */}
+      {drag?.moved && (
+        <div
+          className="it-token it-token--ghost"
+          style={{
+            position: "fixed",
+            left: drag.x,
+            top: drag.y,
+            transform: "translate(-50%, -50%) scale(1.1)",
+            pointerEvents: "none",
+            zIndex: 9999,
+          }}
+        >
+          {drag.n}
         </div>
       )}
     </article>
+  );
+}
+
+// ── Slot — data-slot is used by elementFromPoint to detect the drop target ──
+
+function SlotCircle({
+  slot,
+  value,
+  active,
+  correct,
+  dragging,
+  onClick,
+}: {
+  slot: Slot;
+  value: number | null;
+  active: boolean;
+  correct: boolean;
+  dragging: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      data-slot={slot}
+      className={`it-slot${value !== null ? " it-slot--filled" : ""}${
+        active ? " it-slot--active" : ""
+      }${correct ? " it-slot--correct" : ""}${dragging ? " it-slot--target" : ""}`}
+      onClick={onClick}
+      title={
+        value !== null
+          ? `= ${value} — click to remove`
+          : "drag a number here, or click then pick a number"
+      }
+    >
+      {value !== null ? value : ""}
+    </button>
   );
 }

@@ -26,7 +26,7 @@ OUT_BASE  = ROOT / "web" / "public" / "notebooks"
 SHARED    = OUT_BASE / "_shared"
 
 ASSETS_MARKER = "./assets/"
-SHARED_ASSETS = "/notebooks/_shared/assets/"
+SHARED_ASSETS = "/notebooks/_shared/"
 
 
 def export_one_raw(src: Path, out_dir: Path) -> None:

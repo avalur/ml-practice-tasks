@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef } from "react";
 import katex from "katex";
 import "katex/dist/katex.min.css";
 
@@ -95,6 +95,7 @@ function SlotCircle({
 export default function CompleteTheIntegralPage() {
   const [slots, setSlots] = useState<Slots>({ lower: null, upper: null, result: null });
   const [dragNum, setDragNum] = useState<number | null>(null);
+  const dragRef = useRef<number | null>(null); // ref avoids stale-closure in onDrop
   const [activeSlot, setActiveSlot] = useState<Slot>("lower");
 
   const used = useMemo(
@@ -131,17 +132,18 @@ export default function CompleteTheIntegralPage() {
   };
 
   const handleDrop = (slot: Slot) => {
-    if (dragNum === null) return;
-    // If number was in another slot, clear that slot
-    const fromSlot = (Object.entries(slots) as [Slot, number | null][]).find(
-      ([, v]) => v === dragNum,
-    )?.[0];
+    const n = dragRef.current; // use ref — always current, no stale closure
+    if (n === null) return;
     setSlots((prev) => {
       const next = { ...prev };
-      if (fromSlot) next[fromSlot] = null;
-      next[slot] = dragNum;
+      // if this number was already in another slot, clear that slot first
+      for (const [s, v] of Object.entries(prev) as [Slot, number | null][]) {
+        if (v === n) next[s] = null;
+      }
+      next[slot] = n;
       return next;
     });
+    dragRef.current = null;
     setDragNum(null);
   };
 
@@ -174,7 +176,10 @@ export default function CompleteTheIntegralPage() {
       </div>
 
       {/* ── Interactive formula ── */}
-      <div className={`it-formula-wrap${solved ? " it-correct" : ""}`}>
+      <div
+        className={`it-formula-wrap${solved ? " it-correct" : ""}`}
+        onDragOver={(e) => e.preventDefault()}
+      >
         <div className="it-formula">
 
           {/* ∫ with upper/lower slots */}
@@ -253,7 +258,7 @@ export default function CompleteTheIntegralPage() {
                 used={used.has(n)}
                 dragging={dragNum === n}
                 onClick={() => clickToken(n)}
-                onDragStart={() => setDragNum(n)}
+                onDragStart={() => { dragRef.current = n; setDragNum(n); }}
               />
             ))}
           </div>
@@ -265,7 +270,7 @@ export default function CompleteTheIntegralPage() {
                 used={used.has(n)}
                 dragging={dragNum === n}
                 onClick={() => clickToken(n)}
-                onDragStart={() => setDragNum(n)}
+                onDragStart={() => { dragRef.current = n; setDragNum(n); }}
               />
             ))}
           </div>

@@ -189,6 +189,7 @@ export default function CompleteTheIntegralPage() {
               onClick={() => slots.upper !== null ? clearSlot("upper") : setActiveSlot("upper")}
             />
             <span className="it-int-sign">∫</span>
+            <div style={{ marginTop: "0.6rem" }}>
             <SlotCircle
               value={slots.lower}
               label="a (lower bound)"
@@ -198,6 +199,7 @@ export default function CompleteTheIntegralPage() {
               onDragOver={(e) => e.preventDefault()}
               onClick={() => slots.lower !== null ? clearSlot("lower") : setActiveSlot("lower")}
             />
+            </div>
           </div>
 
           <span className="it-body">
@@ -233,33 +235,10 @@ export default function CompleteTheIntegralPage() {
         )}
       </div>
 
-      {/* ── Active slot indicator ── */}
-      {!solved && (
-        <div className="it-slot-bar">
-          {(["lower", "upper", "result"] as Slot[]).map((s) => (
-            <button
-              key={s}
-              className={`it-slot-btn${activeSlot === s ? " active" : ""}`}
-              onClick={() => {
-                if (slots[s] !== null) clearSlot(s);
-                else setActiveSlot(s);
-              }}
-            >
-              {s === "lower" ? (
-                <><Tex src="a" /> lower</>
-              ) : s === "upper" ? (
-                <><Tex src="b" /> upper</>
-              ) : (
-                <><Tex src="c" /> result</>
-              )}
-              {slots[s] !== null && (
-                <span className="it-slot-val"> = {slots[s]} ✕</span>
-              )}
-            </button>
-          ))}
-          {filledCount > 0 && (
-            <button className="bt-clear-btn" onClick={clearAll}>Clear</button>
-          )}
+      {/* Clear button — only show when something placed, without the slot-bar labels */}
+      {!solved && filledCount > 0 && (
+        <div style={{ marginTop: "0.5rem" }}>
+          <button className="bt-clear-btn" onClick={clearAll}>Clear</button>
         </div>
       )}
 

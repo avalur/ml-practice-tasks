@@ -1,0 +1,30 @@
+{
+  "sections": [
+    {
+      "slug": "gradient_descent",
+      "title": "Gradient Descent",
+      "description": "Implement gradient descent variants for linear regression — full batch, stochastic, momentum, and Adagrad.",
+      "order": 1,
+      "notebooks": [
+        { "slug": "intro",            "title": "Introduction & Loss Function", "difficulty": "easy"   },
+        { "slug": "linear_regression","title": "Linear Regression",           "difficulty": "easy"   },
+        { "slug": "full_gd",          "title": "Full Gradient Descent",       "difficulty": "easy"   },
+        { "slug": "stochastic_gd",    "title": "Stochastic Gradient Descent", "difficulty": "medium" },
+        { "slug": "momentum",         "title": "Momentum",                    "difficulty": "medium" },
+        { "slug": "adagrad",          "title": "Adagrad",                     "difficulty": "medium" },
+        { "slug": "regularization",   "title": "L2 Regularization",           "difficulty": "medium" }
+      ]
+    },
+    {
+      "slug": "simple_neural_network",
+      "title": "Simple Neural Network",
+      "description": "Build a two-layer fully connected neural network from scratch using NumPy only.",
+      "order": 2,
+      "notebooks": [
+        { "slug": "intro",           "title": "Architecture Overview",  "difficulty": "medium" },
+        { "slug": "forward",         "title": "Forward Pass",           "difficulty": "medium" },
+        { "slug": "backpropagation", "title": "Backpropagation",        "difficulty": "hard"   }
+      ]
+    }
+  ]
+}

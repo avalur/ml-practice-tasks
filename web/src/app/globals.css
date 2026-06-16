@@ -915,3 +915,17 @@ pre.code {
   align-self: center;
   white-space: nowrap;
 }
+
+/* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
+
+.notebook-frame-wrapper {
+  /* Full viewport height minus the site header (~56px) and break container padding */
+  height: calc(100vh - 56px);
+  margin: -1.5rem -2rem -2rem;
+}
+.notebook-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+  display: block;
+}

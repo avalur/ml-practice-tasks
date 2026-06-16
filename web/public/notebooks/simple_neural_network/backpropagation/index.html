@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="/notebooks/_shared/assets/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="/notebooks/_shared/assets/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="/notebooks/_shared/assets/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/assets/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/assets/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/assets/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/assets/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/assets/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>backpropagation</title>
+    <script type="module" crossorigin src="/notebooks/_shared/assets/index-awsLWRjZ.js"></script>
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/preload-helper-BPPi7vOr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/jsx-runtime-BqBOg78p.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useEventListener-DvoEXWke.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/defaultLocale-BLUna9fQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/precisionRound-Cl9k9ZmS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/defaultLocale-DzliDDTm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/vega-loader.browser-C8wT63Va.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/utils-DCL4n9wx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/badge-j3NGjqhR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/button-BbCh-29a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/fullscreen-eipL3i3Y.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/menu-items-DcP01QzW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-BdyjRhEt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/createLucideIcon-D5guW7EU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/check-BH35Ndha.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/x-C-6liIBr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/select-DZcFyKFQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/tooltip-DTV9tlSr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/use-toast-IPAtJGea.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/utils-CvI-39U6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/Deferred-CP7vq682.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/uuid-e9lSomwA.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/DeferredRequestRegistry-CNldVcrP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/constants-DMpttj8Q.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/session-0B5NBztP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/config-ClMcu_sV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/requests-DIwGYs0l.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useLifecycle-DieWOfXE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useNonce-DfoVjkkH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useTheme-CI2eq4XN.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/arrays-DYDL-3-i.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/strings-wdPMRf6Z.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/once-DRroIaBz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/capabilities-A_KhFcGV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/createReducer-CI9qeK_X.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/paths-D5zczhUD.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-BrR4M-k3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-HlsDto3K.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-CHcznzB-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-B1U1kGCR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-ChF5Ln9c.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-CpTFpfm_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-CBSMxaO_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-CPczQFlJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dist-C9ZB41s2.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/stex-BGrE-q7N.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/toDate-B5A0DFEz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/purify.es-B9KxLTTS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/cjs-BRGiG41H.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/database-zap-kIkTfzTX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/main-B0OX4z33.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/cells-BsaJrRWi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/ErrorBoundary-DyYDV0HI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/kbd-CTUAEnEx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useInstallPackage-DUF4IRRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/alert-dialog-BqFLkbUc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dialog-DzC_QCtT.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useDebounce-7xZwVnnu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/numbers-C3BAdHZE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/SSRProvider-CkFAAHXw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/context-QkTujrKn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useNumberFormatter-ByUv-u9o.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/usePress-DQ_tAz5W.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/input-C3Hrdlqq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/ImperativeModal-B3Th7k4R.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/cell-link-B1pHtGWp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/multi-map-CUuNtzHt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/alert-yTS3WpF4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/chevron-right-CG5QYXYk.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dropdown-menu-CR7cnzLX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/links-D1JoyKTt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useRunCells-BiCBGyeW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/copy-LK56fFow.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/copy-BwrPA9zQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/copy-icon-OjtDb4gO.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/RenderHTML-ChwPJgPd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/datasource-DjDpJnbt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/state-D-2KaAHK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/package-Tv6ztuzw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/sparkles-lWUAsPhp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/MarimoErrorOutput-B0h5OVW9.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/spinner-Bhir8k53.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/html-to-image-BWL3Ct4n.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/focus-q38vUCl-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useAsyncData-bgszE9F0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/LazyAnyLanguageCodeMirror-BEvXb3VX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/micromark-factory-space-BygYYKhs.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/chunk-5FQGJX7Z-D9iBG0F7.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/markdown-renderer-CU5Lbyax.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/command-KARR7KMq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/field-zLmMOSA4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/popover-Bz_0Vkyf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/errors-vr57w7Ul.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/download-DT8gf0PL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/table-BGPSHfig.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useIframeCapabilities-CcI1zSdn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/error-banner-LdWZDbqd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/formats-b7Sf6DAK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/en-US-Cb8rIK52.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/isValid-CklTTytn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/dates-CTxr0EqQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/maps-n3GaPJwv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/extends-BiFDv3jB.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/emotion-is-prop-valid.esm-C59xfSYt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useDateFormatter-ICIDGgHf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/react-icons.esm-BNzu6e7h.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/RSPContexts-CdN1NyAt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/table-6NxtGaCm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/ellipsis-KAhMaCIV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/external-link-BTNxSavU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/message-circle-CWm2KnSx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/plus-BgB18UzY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/trash-2-rVklqqFF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/react-resizable-panels.browser.esm-CV8-hvjx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/JsonOutput-BJaeXQim.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/chart-no-axes-column-nqk474t8.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/square-function-uY_yJr5g.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/spec-CPQR_o92.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/ellipsis-vertical-CkwWkOQL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/refresh-cw-DHwG4Mac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/tree-actions-BM_EJr3E.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/components-BzBUxUz0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/column-preview-BPismotx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/icons-Ol38nIbL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/radio-group-DlVSuZ_1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/floating-outline-BN9sAcQ0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/objectWithoutPropertiesLoose-DfWeGRFv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/esm-CqWdmSnV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/readonly-python-code-D3_kHsDx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/file-headphone-BrQspHac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/file-BrdxGLRX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/image-DQHXdEQn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/file-icons-BiMOJy0r.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/switch-BiU_sAcn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/events-CPoJAfgx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/globals-7JnRMGd4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/share-DMwTZOTH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/blob-Bgnx1kuY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/_baseSet-CxV9N1bc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/state-BTTshiKq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/label-xHqFtfdz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/textarea-DwltG8V6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/refresh-ccw-C-n2VFP5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/form-BtBTvVVd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/renderShortcut-CcFk3m01.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useBoolean-Bp18o6XG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/useDeepCompareMemoize-zUHU--0D.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/types-W8WWuumF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/semaphore-FlZezxaf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/fileToBase64-DZfwJMrG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/pathUtils-CJjndqMI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/prop-types-DaaA-ptl.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/es-DGgq-Wes.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/hasIn-DiS_ryrS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/flatten-Dl4V1ub3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/pick-DqWUNly1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/code-xml-CZN6vNxu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/house-mGK3v0Mm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/square-B5xWCt0a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/triangle-alert-D2p96PEF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/assets/bundle.esm-DjhGJy4I.js">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/assets/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/assets/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/assets/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/assets/index-BIw7BKLH.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "import marimo\n\n__generated_with = \"0.23.9\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n    import numpy as np\n\n    return mo, np\n\n\n@app.cell\ndef _(mo):\n    mo.md(r\"\"\"\n    # Backpropagation\n\n    Implement the **backpropagation** algorithm for the two-layer network.\n\n    ## Loss (MSE)\n\n    $$\\mathcal{L} = \\frac{1}{2}(\\hat y - y)^2$$\n\n    ## Gradients (chain rule)\n\n    Let $\\hat y = \\sigma(z_o)$ and $a_h = \\sigma(z_h)$:\n\n    | Gradient | Formula |\n    |---|---|\n    | $\\partial\\mathcal{L}/\\partial z_o$ | $(\\hat y - y)\\cdot\\sigma'(\\hat y)$ |\n    | $\\partial\\mathcal{L}/\\partial W_o$ | $a_h^\\top \\cdot \\delta_o$ |\n    | $\\partial\\mathcal{L}/\\partial b_o$ | $\\sum \\delta_o$ |\n    | $\\delta_h$ | $(\\delta_o W_o^\\top)\\cdot\\sigma'(a_h)$ |\n    | $\\partial\\mathcal{L}/\\partial W_h$ | $X^\\top \\cdot \\delta_h$ |\n    | $\\partial\\mathcal{L}/\\partial b_h$ | $\\sum \\delta_h$ |\n\n    where $\\sigma'(a) = a(1-a)$ (derivative at the **output** of sigmoid, not input).\n\n    **Update rule:** $\\theta \\leftarrow \\theta - \\text{lr} \\cdot \\nabla_\\theta$\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(np):\n    def sigmoid(x):\n        return 1 / (1 + np.exp(-x))\n\n    def sigmoid_derivative(a):\n        \"\"\"Derivative at sigmoid output: a*(1\u2212a)\"\"\"\n        return a * (1 - a)\n\n    class NeuralNetworkBase:\n        def __init__(self, input_size=2, hidden_size=2, output_size=1, seed=0):\n            rng = np.random.default_rng(seed)\n            self.hidden_weights   = rng.standard_normal((input_size, hidden_size))\n            self.hidden_bias      = np.zeros(hidden_size)\n            self.output_weights   = rng.standard_normal((hidden_size, output_size))\n            self.output_bias      = np.zeros(output_size)\n            self.hidden_outputs   = None\n            self.predicted_outputs = None\n\n        def forward(self, inputs):\n            self.hidden_outputs    = sigmoid(inputs @ self.hidden_weights + self.hidden_bias)\n            self.predicted_outputs = sigmoid(self.hidden_outputs @ self.output_weights + self.output_bias)\n            return self.predicted_outputs\n\n    return (NeuralNetworkBase,)\n\n\n@app.cell\ndef _(NeuralNetworkBase, np):\n    # \u2500\u2500 Your implementation \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n\n    class Backpropagation(NeuralNetworkBase):\n        def train(self, inputs: np.ndarray, targets: np.ndarray,\n                  epochs: int, lr: float) -\u003E np.ndarray:\n            \"\"\"\n            Train the network for `epochs` epochs.\n            After each forward pass, compute gradients via backprop and\n            update all weights and biases.\n            Return the final predicted outputs.\n            \"\"\"\n            raise NotImplementedError(\"Implement Backpropagation.train\")\n\n    # \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    return (Backpropagation,)\n\n\n@app.cell\ndef _(Backpropagation, mo, np):\n    # XOR dataset\n    inputs  = np.array([[0,0],[0,1],[1,0],[1,1]], dtype=float)\n    targets = np.array([[0],[1],[1],[0]], dtype=float)\n\n    try:\n        model = Backpropagation(2, 2, 1, seed=0)\n        preds = model.train(inputs, targets, epochs=10_000, lr=0.5)\n\n        assert preds.shape == (4, 1), f\"output shape: expected (4, 1), got {preds.shape}\"\n\n        mse = float(np.mean((preds - targets) ** 2))\n        assert mse \u003C 0.05, \\\n            f\"MSE {mse:.4f} too high \u2014 did backprop converge? (XOR needs ~10 000 epochs)\"\n\n        classified = (preds \u003E 0.5).astype(int)\n        correct = int(np.sum(classified == targets))\n        assert correct == 4, f\"only {correct}/4 correct \u2014 check weight updates\"\n\n        mo.callout(mo.md(\n            f\"\u2705 Backprop correct! {correct}/4 XOR samples classified right, \"\n            f\"MSE = {mse:.5f}\\n\\n\"\n            f\"Predictions: {preds.ravel().round(3)}\"\n        ), kind=\"success\")\n    except NotImplementedError as e:\n        mo.callout(mo.md(f\"\u270f\ufe0f {e}\"), kind=\"neutral\")\n    except Exception as e:\n        mo.callout(mo.md(f\"\u274c {e}\"), kind=\"danger\")\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">import%20marimo%0A%0A__generated_with%20%3D%20%220.23.9%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20numpy%20as%20np%0A%0A%20%20%20%20return%20mo%2C%20np%0A%0A%0A%40app.cell%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Backpropagation%0A%0A%20%20%20%20Implement%20the%20**backpropagation**%20algorithm%20for%20the%20two-layer%20network.%0A%0A%20%20%20%20%23%23%20Loss%20(MSE)%0A%0A%20%20%20%20%24%24%5Cmathcal%7BL%7D%20%3D%20%5Cfrac%7B1%7D%7B2%7D(%5Chat%20y%20-%20y)%5E2%24%24%0A%0A%20%20%20%20%23%23%20Gradients%20(chain%20rule)%0A%0A%20%20%20%20Let%20%24%5Chat%20y%20%3D%20%5Csigma(z_o)%24%20and%20%24a_h%20%3D%20%5Csigma(z_h)%24%3A%0A%0A%20%20%20%20%7C%20Gradient%20%7C%20Formula%20%7C%0A%20%20%20%20%7C---%7C---%7C%0A%20%20%20%20%7C%20%24%5Cpartial%5Cmathcal%7BL%7D%2F%5Cpartial%20z_o%24%20%7C%20%24(%5Chat%20y%20-%20y)%5Ccdot%5Csigma'(%5Chat%20y)%24%20%7C%0A%20%20%20%20%7C%20%24%5Cpartial%5Cmathcal%7BL%7D%2F%5Cpartial%20W_o%24%20%7C%20%24a_h%5E%5Ctop%20%5Ccdot%20%5Cdelta_o%24%20%7C%0A%20%20%20%20%7C%20%24%5Cpartial%5Cmathcal%7BL%7D%2F%5Cpartial%20b_o%24%20%7C%20%24%5Csum%20%5Cdelta_o%24%20%7C%0A%20%20%20%20%7C%20%24%5Cdelta_h%24%20%7C%20%24(%5Cdelta_o%20W_o%5E%5Ctop)%5Ccdot%5Csigma'(a_h)%24%20%7C%0A%20%20%20%20%7C%20%24%5Cpartial%5Cmathcal%7BL%7D%2F%5Cpartial%20W_h%24%20%7C%20%24X%5E%5Ctop%20%5Ccdot%20%5Cdelta_h%24%20%7C%0A%20%20%20%20%7C%20%24%5Cpartial%5Cmathcal%7BL%7D%2F%5Cpartial%20b_h%24%20%7C%20%24%5Csum%20%5Cdelta_h%24%20%7C%0A%0A%20%20%20%20where%20%24%5Csigma'(a)%20%3D%20a(1-a)%24%20(derivative%20at%20the%20**output**%20of%20sigmoid%2C%20not%20input).%0A%0A%20%20%20%20**Update%20rule%3A**%20%24%5Ctheta%20%5Cleftarrow%20%5Ctheta%20-%20%5Ctext%7Blr%7D%20%5Ccdot%20%5Cnabla_%5Ctheta%24%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(np)%3A%0A%20%20%20%20def%20sigmoid(x)%3A%0A%20%20%20%20%20%20%20%20return%201%20%2F%20(1%20%2B%20np.exp(-x))%0A%0A%20%20%20%20def%20sigmoid_derivative(a)%3A%0A%20%20%20%20%20%20%20%20%22%22%22Derivative%20at%20sigmoid%20output%3A%20a*(1%E2%88%92a)%22%22%22%0A%20%20%20%20%20%20%20%20return%20a%20*%20(1%20-%20a)%0A%0A%20%20%20%20class%20NeuralNetworkBase%3A%0A%20%20%20%20%20%20%20%20def%20__init__(self%2C%20input_size%3D2%2C%20hidden_size%3D2%2C%20output_size%3D1%2C%20seed%3D0)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20rng%20%3D%20np.random.default_rng(seed)%0A%20%20%20%20%20%20%20%20%20%20%20%20self.hidden_weights%20%20%20%3D%20rng.standard_normal((input_size%2C%20hidden_size))%0A%20%20%20%20%20%20%20%20%20%20%20%20self.hidden_bias%20%20%20%20%20%20%3D%20np.zeros(hidden_size)%0A%20%20%20%20%20%20%20%20%20%20%20%20self.output_weights%20%20%20%3D%20rng.standard_normal((hidden_size%2C%20output_size))%0A%20%20%20%20%20%20%20%20%20%20%20%20self.output_bias%20%20%20%20%20%20%3D%20np.zeros(output_size)%0A%20%20%20%20%20%20%20%20%20%20%20%20self.hidden_outputs%20%20%20%3D%20None%0A%20%20%20%20%20%20%20%20%20%20%20%20self.predicted_outputs%20%3D%20None%0A%0A%20%20%20%20%20%20%20%20def%20forward(self%2C%20inputs)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20self.hidden_outputs%20%20%20%20%3D%20sigmoid(inputs%20%40%20self.hidden_weights%20%2B%20self.hidden_bias)%0A%20%20%20%20%20%20%20%20%20%20%20%20self.predicted_outputs%20%3D%20sigmoid(self.hidden_outputs%20%40%20self.output_weights%20%2B%20self.output_bias)%0A%20%20%20%20%20%20%20%20%20%20%20%20return%20self.predicted_outputs%0A%0A%20%20%20%20return%20(NeuralNetworkBase%2C)%0A%0A%0A%40app.cell%0Adef%20_(NeuralNetworkBase%2C%20np)%3A%0A%20%20%20%20%23%20%E2%94%80%E2%94%80%20Your%20implementation%20%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0A%0A%20%20%20%20class%20Backpropagation(NeuralNetworkBase)%3A%0A%20%20%20%20%20%20%20%20def%20train(self%2C%20inputs%3A%20np.ndarray%2C%20targets%3A%20np.ndarray%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20epochs%3A%20int%2C%20lr%3A%20float)%20-%3E%20np.ndarray%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20%20%20%20%20Train%20the%20network%20for%20%60epochs%60%20epochs.%0A%20%20%20%20%20%20%20%20%20%20%20%20After%20each%20forward%20pass%2C%20compute%20gradients%20via%20backprop%20and%0A%20%20%20%20%20%20%20%20%20%20%20%20update%20all%20weights%20and%20biases.%0A%20%20%20%20%20%20%20%20%20%20%20%20Return%20the%20final%20predicted%20outputs.%0A%20%20%20%20%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20Backpropagation.train%22)%0A%0A%20%20%20%20%23%20%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0A%20%20%20%20return%20(Backpropagation%2C)%0A%0A%0A%40app.cell%0Adef%20_(Backpropagation%2C%20mo%2C%20np)%3A%0A%20%20%20%20%23%20XOR%20dataset%0A%20%20%20%20inputs%20%20%3D%20np.array(%5B%5B0%2C0%5D%2C%5B0%2C1%5D%2C%5B1%2C0%5D%2C%5B1%2C1%5D%5D%2C%20dtype%3Dfloat)%0A%20%20%20%20targets%20%3D%20np.array(%5B%5B0%5D%2C%5B1%5D%2C%5B1%5D%2C%5B0%5D%5D%2C%20dtype%3Dfloat)%0A%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20model%20%3D%20Backpropagation(2%2C%202%2C%201%2C%20seed%3D0)%0A%20%20%20%20%20%20%20%20preds%20%3D%20model.train(inputs%2C%20targets%2C%20epochs%3D10_000%2C%20lr%3D0.5)%0A%0A%20%20%20%20%20%20%20%20assert%20preds.shape%20%3D%3D%20(4%2C%201)%2C%20f%22output%20shape%3A%20expected%20(4%2C%201)%2C%20got%20%7Bpreds.shape%7D%22%0A%0A%20%20%20%20%20%20%20%20mse%20%3D%20float(np.mean((preds%20-%20targets)%20**%202))%0A%20%20%20%20%20%20%20%20assert%20mse%20%3C%200.05%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22MSE%20%7Bmse%3A.4f%7D%20too%20high%20%E2%80%94%20did%20backprop%20converge%3F%20(XOR%20needs%20~10%20000%20epochs)%22%0A%0A%20%20%20%20%20%20%20%20classified%20%3D%20(preds%20%3E%200.5).astype(int)%0A%20%20%20%20%20%20%20%20correct%20%3D%20int(np.sum(classified%20%3D%3D%20targets))%0A%20%20%20%20%20%20%20%20assert%20correct%20%3D%3D%204%2C%20f%22only%20%7Bcorrect%7D%2F4%20correct%20%E2%80%94%20check%20weight%20updates%22%0A%0A%20%20%20%20%20%20%20%20mo.callout(mo.md(%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22%E2%9C%85%20Backprop%20correct!%20%7Bcorrect%7D%2F4%20XOR%20samples%20classified%20right%2C%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22MSE%20%3D%20%7Bmse%3A.5f%7D%5Cn%5Cn%22%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22Predictions%3A%20%7Bpreds.ravel().round(3)%7D%22%0A%20%20%20%20%20%20%20%20)%2C%20kind%3D%22success%22)%0A%20%20%20%20except%20NotImplementedError%20as%20e%3A%0A%20%20%20%20%20%20%20%20mo.callout(mo.md(f%22%E2%9C%8F%EF%B8%8F%20%7Be%7D%22)%2C%20kind%3D%22neutral%22)%0A%20%20%20%20except%20Exception%20as%20e%3A%0A%20%20%20%20%20%20%20%20mo.callout(mo.md(f%22%E2%9D%8C%20%7Be%7D%22)%2C%20kind%3D%22danger%22)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code></head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "edit",
+            "version": "0.23.9",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

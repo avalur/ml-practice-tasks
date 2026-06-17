@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re as _re
 import shutil
 import subprocess
 import sys
@@ -25,8 +26,67 @@ NOTEBOOKS = ROOT / "notebooks"
 OUT_BASE  = ROOT / "web" / "public" / "notebooks"
 SHARED    = OUT_BASE / "_shared"
 
-ASSETS_MARKER = "./assets/"
-SHARED_ASSETS = "/notebooks/_shared/"
+ASSETS_MARKER     = "./assets/"
+SHARED_ASSETS     = "/notebooks/_shared/"
+
+# Patterns that indicate a cell body contains actual code (not just markdown)
+_CODE_PATTERNS = [
+    r"\bclass\s+",           # class definitions
+    r"def\s+\w+\s*\(",      # nested function defs
+    r"^import\s",            # imports (at start of line)
+    r"^from\s",              # from imports
+    r"\bassert\b",           # assertions
+    r"\braise\s",            # raise statements
+    r"\bfor\b|\bwhile\b",   # loops
+    r"\bif\s+[^=]",         # conditionals (not ==)
+    r"\btry\b|\bexcept\b",  # try/except
+    r"(?<!\\)lambda\s*",     # lambdas (not \\lambda in LaTeX)
+    r"=\s*[\[\(\{]",        # list/dict/tuple literals
+    r"np\.random|torch\.|tf\.",  # ML library usage
+]
+
+
+def _is_markdown_cell_body(body: str) -> bool:
+    """Return True if cell body contains only mo.md() and return."""
+    lines = body.splitlines()
+    first_content = next((l.strip() for l in lines if l.strip()), None)
+    if not first_content or not first_content.startswith("mo.md"):
+        return False
+    for l in lines:
+        s = l.strip()
+        if not s or s.startswith("return"):
+            continue
+        if any(_re.search(p, s) for p in _CODE_PATTERNS):
+            return False
+    return True
+
+
+def _patch_source_hide_markdown(src_text: str) -> str:
+    """Return source text with hide_code=True on all markdown-only cells."""
+    # Split on @app.cell decorators (capturing group keeps them in parts list)
+    deco_re = _re.compile(r'(@app\.cell(?:\([^)]*\))?)')
+    parts = deco_re.split(src_text)
+    # parts[0] = preamble; parts[1,3,5,...] = decorators; parts[2,4,6,...] = text after
+
+    result = [parts[0]]
+    i = 1
+    while i < len(parts):
+        decorator = parts[i]
+        after = parts[i + 1] if i + 1 < len(parts) else ""
+
+        func_m = _re.match(r'\s*\ndef\s+\w+\([^)]*\):\n(.*)', after, _re.DOTALL)
+        if func_m and "hide_code" not in decorator and _is_markdown_cell_body(func_m.group(1)):
+            if decorator == "@app.cell":
+                decorator = "@app.cell(hide_code=True)"
+            else:
+                decorator = decorator[:-1] + ", hide_code=True)"
+
+        result.append(decorator)
+        if i + 1 < len(parts):
+            result.append(after)
+        i += 2
+
+    return "".join(result)
 
 
 def export_one_raw(src: Path, out_dir: Path) -> None:
@@ -46,9 +106,16 @@ def patch_html(html: str) -> str:
 
 def export_notebook(src: Path, out_html: Path, shared_dir: Path) -> None:
     """Export one notebook: reuse shared assets, write patched index.html."""
+    patched_src = _patch_source_hide_markdown(src.read_text(encoding="utf-8"))
+
     with tempfile.TemporaryDirectory() as tmp:
-        tmp_path = Path(tmp) / "out"
-        export_one_raw(src, tmp_path)
+        tmp_dir = Path(tmp)
+        # Export from a patched copy so hide_code=True is baked into the HTML
+        tmp_src = tmp_dir / src.name
+        tmp_src.write_text(patched_src, encoding="utf-8")
+
+        tmp_path = tmp_dir / "out"
+        export_one_raw(tmp_src, tmp_path)
 
         # Copy assets to shared dir on first run (or update if version changed)
         tmp_assets = tmp_path / "assets"
@@ -66,11 +133,10 @@ def export_notebook(src: Path, out_html: Path, shared_dir: Path) -> None:
                 shutil.rmtree(shared_dir)
                 shutil.copytree(tmp_assets, shared_dir)
 
-        # Patch and write index.html
+        # Patch asset paths and write index.html
         raw_html = (tmp_path / "index.html").read_text(encoding="utf-8")
-        patched  = patch_html(raw_html)
         out_html.parent.mkdir(parents=True, exist_ok=True)
-        out_html.write_text(patched, encoding="utf-8")
+        out_html.write_text(patch_html(raw_html), encoding="utf-8")
 
 
 def notebook_hash(src: Path) -> str:

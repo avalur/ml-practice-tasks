@@ -18,7 +18,7 @@ const TEASERS = [
     slug: "complete-the-integral",
     title: "Complete the Integral",
     description: "Place three numbers into the integral formula so that the equation holds: ∫ₐᵇ x dx = c.",
-    difficulty: "medium",
+    difficulty: "easy",
     count: 1,
   },
 ];

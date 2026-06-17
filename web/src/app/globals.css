@@ -918,10 +918,33 @@ pre.code {
 
 /* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
 
-.notebook-frame-wrapper {
-  /* Full viewport height minus the site header (~56px) and break container padding */
-  height: calc(100vh - 56px);
+/* Sidebar + content shell — breaks out of container padding */
+.notebooks-shell {
+  display: flex;
   margin: -1.5rem -2rem -2rem;
+  min-height: calc(100vh - 56px);
+}
+/* Sidebar fixed-height and sticky inside the notebooks shell */
+.notebooks-shell .sidebar {
+  position: sticky;
+  top: 0;
+  height: calc(100vh - 56px);
+  max-height: calc(100vh - 56px);
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  overflow-y: auto;
+}
+.notebooks-main {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 2rem;
+}
+/* Iframe wrapper fills the main area; negate the padding */
+.notebooks-main .notebook-frame-wrapper {
+  height: calc(100vh - 56px);
+  margin: -1.5rem -2rem;
 }
 .notebook-frame {
   width: 100%;

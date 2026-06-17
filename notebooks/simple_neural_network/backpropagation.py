@@ -112,6 +112,15 @@ def _(Backpropagation, mo, np):
             f"MSE = {mse:.5f}\n\n"
             f"Predictions: {preds.ravel().round(3)}"
         ), kind="success")
+        try:
+            from pyodide.ffi import to_js
+            import js as _js
+            _js.window.parent.postMessage(
+                to_js({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/backpropagation"}),
+                "*",
+            )
+        except Exception:
+            pass  # not running in Pyodide WASM
     except NotImplementedError as e:
         mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:

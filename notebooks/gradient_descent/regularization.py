@@ -94,6 +94,15 @@ def _(adagrad_l2_step, mo, np):
             f"‖w‖ with reg = {np.linalg.norm(w_cur):.3f}  "
             f"vs without = {np.linalg.norm(w_noreg):.3f}"
         ), kind="success")
+        try:
+            from pyodide.ffi import to_js
+            import js as _js
+            _js.window.parent.postMessage(
+                to_js({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/regularization"}),
+                "*",
+            )
+        except Exception:
+            pass  # not running in Pyodide WASM
     except NotImplementedError as e:
         mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:

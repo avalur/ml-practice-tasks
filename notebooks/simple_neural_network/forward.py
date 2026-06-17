@@ -106,6 +106,15 @@ def _(ForwardNN, mo, np, sigmoid):
             f"✅ sigmoid and forward pass correct!\n\n"
             f"Output on XOR inputs: {out.ravel().round(3)}"
         ), kind="success")
+        try:
+            from pyodide.ffi import to_js
+            import js as _js
+            _js.window.parent.postMessage(
+                to_js({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/forward"}),
+                "*",
+            )
+        except Exception:
+            pass  # not running in Pyodide WASM
     except NotImplementedError as e:
         mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:

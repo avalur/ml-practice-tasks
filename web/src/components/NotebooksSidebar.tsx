@@ -1,39 +1,47 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 type Notebook = { slug: string; title: string; difficulty: string };
 type Section  = { slug: string; title: string; notebooks: Notebook[] };
 
-const VISITED_KEY = "mlp:nb-visited";
-
 export function NotebooksSidebar({ sections }: { sections: Section[] }) {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
-  const [visited, setVisited] = useState<Set<string>>(new Set());
+  const [solved, setSolved] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    try {
-      const raw = localStorage.getItem(VISITED_KEY);
-      if (raw) setVisited(new Set(JSON.parse(raw)));
-    } catch {}
+  const fetchSolved = useCallback(() => {
+    fetch("/api/notebook-progress")
+      .then((r) => (r.ok ? r.json() : { solved: [] }))
+      .then((d) => setSolved(new Set<string>(d.solved ?? [])))
+      .catch(() => {});
   }, []);
 
-  // Mark current notebook visited on each navigation
+  useEffect(() => { fetchSolved(); }, [fetchSolved]);
+
+  // Listen for postMessage from marimo iframe on test success
   useEffect(() => {
-    const m = pathname.match(/^\/notebooks\/([^/]+)\/([^/]+)/);
-    if (!m) return;
-    const key = `${m[1]}/${m[2]}`;
-    setVisited((prev) => {
-      if (prev.has(key)) return prev;
-      const next = new Set(prev);
-      next.add(key);
-      try { localStorage.setItem(VISITED_KEY, JSON.stringify([...next])); } catch {}
-      return next;
-    });
-  }, [pathname]);
+    const handler = (e: MessageEvent) => {
+      if (e.data?.type !== "mlp:notebook-solved") return;
+      const notebookId = e.data.notebookId;
+      if (typeof notebookId !== "string") return;
+
+      // Optimistic update
+      setSolved((prev) => prev.has(notebookId) ? prev : new Set(prev).add(notebookId));
+
+      // Persist to DB (fire-and-forget)
+      fetch("/api/notebook-progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ notebookId }),
+      }).catch(() => {});
+    };
+
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
 
   if (collapsed) {
     return (
@@ -46,6 +54,10 @@ export function NotebooksSidebar({ sections }: { sections: Section[] }) {
     );
   }
 
+  const total   = sections.reduce((n, s) => n + s.notebooks.length, 0);
+  const solvedN = sections.reduce((n, s) =>
+    n + s.notebooks.filter((nb) => solved.has(`${s.slug}/${nb.slug}`)).length, 0);
+
   return (
     <aside className="sidebar">
       <div className="sidebar-head">
@@ -56,13 +68,21 @@ export function NotebooksSidebar({ sections }: { sections: Section[] }) {
         </button>
       </div>
 
+      <div className="sidebar-progress">
+        <div className="muted">{solvedN}/{total} solved</div>
+        <div className="bar">
+          <div className="bar-fill"
+            style={{ width: `${total ? (solvedN / total) * 100 : 0}%` }} />
+        </div>
+      </div>
+
       <nav className="tree">
         {sections.map((section) => (
           <SectionFolder
             key={section.slug}
             section={section}
             pathname={pathname}
-            visited={visited}
+            solved={solved}
           />
         ))}
       </nav>
@@ -73,11 +93,11 @@ export function NotebooksSidebar({ sections }: { sections: Section[] }) {
 function SectionFolder({
   section,
   pathname,
-  visited,
+  solved,
 }: {
   section: Section;
   pathname: string;
-  visited: Set<string>;
+  solved: Set<string>;
 }) {
   const currentSection = pathname.match(/^\/notebooks\/([^/]+)/)?.[1];
   const isActive = currentSection === section.slug;
@@ -87,8 +107,8 @@ function SectionFolder({
     if (isActive) setOpen(true);
   }, [isActive]);
 
-  const visitedCount = section.notebooks.filter((nb) =>
-    visited.has(`${section.slug}/${nb.slug}`)
+  const solvedCount = section.notebooks.filter((nb) =>
+    solved.has(`${section.slug}/${nb.slug}`)
   ).length;
 
   return (
@@ -96,19 +116,19 @@ function SectionFolder({
       <button className="folder-head" onClick={() => setOpen((o) => !o)}>
         <span className="caret">{open ? "▾" : "▸"}</span>
         <span className="folder-label">{section.title}</span>
-        <span className="folder-count">{visitedCount}/{section.notebooks.length}</span>
+        <span className="folder-count">{solvedCount}/{section.notebooks.length}</span>
       </button>
       {open && (
         <div className="folder-body">
           {section.notebooks.map((nb) => {
-            const href    = `/notebooks/${section.slug}/${nb.slug}`;
-            const active  = pathname === href;
-            const isVisit = visited.has(`${section.slug}/${nb.slug}`);
+            const href     = `/notebooks/${section.slug}/${nb.slug}`;
+            const active   = pathname === href;
+            const isSolved = solved.has(`${section.slug}/${nb.slug}`);
             return (
               <Link key={nb.slug} href={href}
                 className={`file${active ? " active" : ""}`}>
-                <span className={`check${isVisit ? " done" : ""}`}>
-                  {isVisit ? "✓" : "•"}
+                <span className={`check${isSolved ? " done" : ""}`}>
+                  {isSolved ? "✓" : "•"}
                 </span>
                 <span className="file-title">{nb.title}</span>
               </Link>

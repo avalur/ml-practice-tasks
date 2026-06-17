@@ -81,6 +81,15 @@ def _(mo, np, sgd_gradient):
             f"✅ SGD correct! After 2000 steps: MSE = {loss:.5f}, "
             f"w ≈ {np.round(w_cur, 3)}"
         ), kind="success")
+        try:
+            from pyodide.ffi import to_js
+            import js as _js
+            _js.window.parent.postMessage(
+                to_js({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/stochastic_gd"}),
+                "*",
+            )
+        except Exception:
+            pass  # not running in Pyodide WASM
     except NotImplementedError as e:
         mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:

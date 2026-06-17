@@ -91,6 +91,15 @@ def _(NeuralNetwork, mo, np):
         assert not np.allclose(nn.hidden_weights, 0), "hidden_weights should be random, not zeros"
 
         mo.callout(mo.md("✅ NeuralNetwork initialised correctly!"), kind="success")
+        try:
+            from pyodide.ffi import to_js
+            import js as _js
+            _js.window.parent.postMessage(
+                to_js({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/intro"}),
+                "*",
+            )
+        except Exception:
+            pass  # not running in Pyodide WASM
     except NotImplementedError as e:
         mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:

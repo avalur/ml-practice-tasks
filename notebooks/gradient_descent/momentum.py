@@ -79,7 +79,7 @@ def _(mo, momentum_step, np):
         loss = float(np.mean((X @ w_cur - y)**2))
         assert loss < 0.01, f"did not converge: MSE={loss:.4f}"
 
-        mo.callout(mo.md(
+        _result = mo.callout(mo.md(
             f"✅ Momentum correct! 300 steps → MSE = {loss:.5f}, "
             f"w ≈ {np.round(w_cur, 3)}"
         ), kind="success")
@@ -93,9 +93,10 @@ def _(mo, momentum_step, np):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

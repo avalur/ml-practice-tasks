@@ -102,7 +102,7 @@ def _(ForwardNN, mo, np, sigmoid):
         assert np.allclose(out, expected_out, rtol=1e-5), \
             "predicted_outputs do not match expected"
 
-        mo.callout(mo.md(
+        _result = mo.callout(mo.md(
             f"✅ sigmoid and forward pass correct!\n\n"
             f"Output on XOR inputs: {out.ravel().round(3)}"
         ), kind="success")
@@ -116,9 +116,10 @@ def _(ForwardNN, mo, np, sigmoid):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

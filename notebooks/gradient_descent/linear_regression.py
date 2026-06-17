@@ -83,7 +83,7 @@ def _(LinearRegression, mo, np):
         final_loss = float(np.mean((preds - y_tr) ** 2))
         assert final_loss < 0.05, f"final MSE {final_loss:.4f} is too high — did GD converge?"
 
-        mo.callout(mo.md(
+        _result = mo.callout(mo.md(
             f"✅ Converged! Final MSE = **{final_loss:.5f}**, "
             f"{len(model.loss_history)} iterations, "
             f"w ≈ {np.round(model.w, 2)}"
@@ -98,9 +98,10 @@ def _(LinearRegression, mo, np):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

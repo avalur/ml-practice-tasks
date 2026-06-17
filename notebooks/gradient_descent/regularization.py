@@ -89,7 +89,7 @@ def _(adagrad_l2_step, mo, np):
         assert np.linalg.norm(w_cur) < np.linalg.norm(w_noreg), \
             "Regularized weights should have smaller norm than unregularized"
 
-        mo.callout(mo.md(
+        _result = mo.callout(mo.md(
             f"✅ Adagrad + L2 correct!\n\n"
             f"‖w‖ with reg = {np.linalg.norm(w_cur):.3f}  "
             f"vs without = {np.linalg.norm(w_noreg):.3f}"
@@ -104,9 +104,10 @@ def _(adagrad_l2_step, mo, np):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

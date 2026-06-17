@@ -107,7 +107,7 @@ def _(Backpropagation, mo, np):
         correct = int(np.sum(classified == targets))
         assert correct == 4, f"only {correct}/4 correct — check weight updates"
 
-        mo.callout(mo.md(
+        _result = mo.callout(mo.md(
             f"✅ Backprop correct! {correct}/4 XOR samples classified right, "
             f"MSE = {mse:.5f}\n\n"
             f"Predictions: {preds.ravel().round(3)}"
@@ -122,9 +122,10 @@ def _(Backpropagation, mo, np):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

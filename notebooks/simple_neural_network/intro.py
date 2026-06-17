@@ -90,7 +90,7 @@ def _(NeuralNetwork, mo, np):
         assert np.allclose(nn.output_bias,  0), "output_bias should be initialised to zeros"
         assert not np.allclose(nn.hidden_weights, 0), "hidden_weights should be random, not zeros"
 
-        mo.callout(mo.md("✅ NeuralNetwork initialised correctly!"), kind="success")
+        _result = mo.callout(mo.md("✅ NeuralNetwork initialised correctly!"), kind="success")
         try:
             from pyodide.ffi import to_js
             import js as _js
@@ -101,9 +101,10 @@ def _(NeuralNetwork, mo, np):
         except Exception:
             pass  # not running in Pyodide WASM
     except NotImplementedError as e:
-        mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
+        _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
-        mo.callout(mo.md(f"❌ {e}"), kind="danger")
+        _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    mo.output.replace(_result)
     return
 
 

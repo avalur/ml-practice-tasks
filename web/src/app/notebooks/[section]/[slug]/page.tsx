@@ -36,7 +36,7 @@ export default async function NotebookPage({
   if (!nb) notFound();
 
   const session = await auth();
-  const src = `/notebooks/${section}/${slug}/index.html`;
+  const src = `/notebooks/${section}/${slug}/notebook.html`;
 
   return (
     <NotebookFrame

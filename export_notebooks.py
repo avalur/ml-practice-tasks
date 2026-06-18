@@ -246,7 +246,7 @@ def iter_notebooks(manifest: dict):
         for nb in section["notebooks"]:
             slug = nb["slug"]
             src  = NOTEBOOKS / sec / f"{slug}.py"
-            html = OUT_BASE / sec / slug / "index.html"
+            html = OUT_BASE / sec / slug / "notebook.html"
             yield sec, slug, src, html
 
 

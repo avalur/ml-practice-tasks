@@ -86,10 +86,9 @@ def _(mo, mse_gradient, mse_loss, np):
 
         _result = mo.callout(mo.md("✅ Both `mse_loss` and `mse_gradient` are correct!"), kind="success")
         try:
-            from pyodide.ffi import to_js
-            import js as _js
+            import json as _json, js as _js
             _js.window.parent.postMessage(
-                to_js({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/intro"}),
+                _js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/intro"})),
                 "*",
             )
         except Exception:

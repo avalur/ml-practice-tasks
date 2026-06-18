@@ -52,9 +52,21 @@ def _is_markdown_cell_body(body: str) -> bool:
     first_content = next((l.strip() for l in lines if l.strip()), None)
     if not first_content or not first_content.startswith("mo.md"):
         return False
+    # Skip code-pattern checks while inside the triple-quoted markdown string;
+    # otherwise English words like "for", "if", "import" in the prose trigger
+    # false positives (e.g. "no loops except for GD iterations").
+    in_string = False
     for l in lines:
         s = l.strip()
         if not s or s.startswith("return"):
+            continue
+        if s.startswith("mo.md"):
+            in_string = True   # entering the triple-quoted md block
+            continue
+        if in_string:
+            # closing triple-quote ends the string literal + the call
+            if s.startswith('"""') or s.startswith("'''"):
+                in_string = False
             continue
         if any(_re.search(p, s) for p in _CODE_PATTERNS):
             return False

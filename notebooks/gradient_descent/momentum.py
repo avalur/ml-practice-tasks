@@ -84,10 +84,9 @@ def _(mo, momentum_step, np):
             f"w ≈ {np.round(w_cur, 3)}"
         ), kind="success")
         try:
-            from pyodide.ffi import to_js
-            import js as _js
+            import json as _json, js as _js
             _js.window.parent.postMessage(
-                to_js({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/momentum"}),
+                _js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/momentum"})),
                 "*",
             )
         except Exception:

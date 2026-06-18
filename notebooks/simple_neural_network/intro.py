@@ -92,10 +92,9 @@ def _(NeuralNetwork, mo, np):
 
         _result = mo.callout(mo.md("✅ NeuralNetwork initialised correctly!"), kind="success")
         try:
-            from pyodide.ffi import to_js
-            import js as _js
+            import json as _json, js as _js
             _js.window.parent.postMessage(
-                to_js({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/intro"}),
+                _js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/intro"})),
                 "*",
             )
         except Exception:

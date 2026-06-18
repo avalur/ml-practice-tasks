@@ -39,6 +39,18 @@
         { "slug": "batchnorm_bp",           "title": "Batch Norm Backpropagation",               "difficulty": "hard"   },
         { "slug": "batchnorm_fused",        "title": "Fused Batch Norm Gradient",                "difficulty": "hard"   }
       ]
+    },
+    {
+      "slug": "transformers",
+      "title": "Transformers",
+      "description": "Build a transformer from scratch using NumPy: tokenize text, implement scaled dot-product attention, multi-head attention, and a full transformer block with residual connections and layer normalization.",
+      "order": 4,
+      "notebooks": [
+        { "slug": "tokenization",      "title": "Tokenization & Embeddings",     "difficulty": "easy"   },
+        { "slug": "attention_head",    "title": "Attention Head",                "difficulty": "medium" },
+        { "slug": "multi_head",        "title": "Multi-Head Attention",          "difficulty": "medium" },
+        { "slug": "transformer_block", "title": "Transformer Block",             "difficulty": "hard"   }
+      ]
     }
   ]
 }

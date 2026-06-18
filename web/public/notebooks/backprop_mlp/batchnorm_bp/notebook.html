@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="/notebooks/_shared/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="/notebooks/_shared/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="/notebooks/_shared/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>batchnorm bp</title>
+    
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/preload-helper-BPPi7vOr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/jsx-runtime-BqBOg78p.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEventListener-DvoEXWke.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-BLUna9fQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/precisionRound-Cl9k9ZmS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-DzliDDTm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/vega-loader.browser-C8wT63Va.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-DCL4n9wx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/badge-j3NGjqhR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/button-BbCh-29a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fullscreen-eipL3i3Y.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/menu-items-DcP01QzW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BdyjRhEt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createLucideIcon-D5guW7EU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/check-BH35Ndha.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/x-C-6liIBr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/select-DZcFyKFQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tooltip-DTV9tlSr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/use-toast-IPAtJGea.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-CvI-39U6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/Deferred-CP7vq682.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/uuid-e9lSomwA.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/DeferredRequestRegistry-CNldVcrP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/constants-DMpttj8Q.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/session-0B5NBztP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/config-ClMcu_sV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/requests-DIwGYs0l.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useLifecycle-DieWOfXE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNonce-DfoVjkkH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useTheme-CI2eq4XN.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/arrays-DYDL-3-i.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/strings-wdPMRf6Z.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/once-DRroIaBz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/capabilities-A_KhFcGV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createReducer-CI9qeK_X.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/paths-D5zczhUD.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BrR4M-k3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-HlsDto3K.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CHcznzB-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-B1U1kGCR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-ChF5Ln9c.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CpTFpfm_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CBSMxaO_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CPczQFlJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-C9ZB41s2.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/stex-BGrE-q7N.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/toDate-B5A0DFEz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/purify.es-B9KxLTTS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cjs-BRGiG41H.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/database-zap-kIkTfzTX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/main-B0OX4z33.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cells-BsaJrRWi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ErrorBoundary-DyYDV0HI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/kbd-CTUAEnEx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useInstallPackage-DUF4IRRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-dialog-BqFLkbUc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dialog-DzC_QCtT.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDebounce-7xZwVnnu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/numbers-C3BAdHZE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/SSRProvider-CkFAAHXw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/context-QkTujrKn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNumberFormatter-ByUv-u9o.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/usePress-DQ_tAz5W.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/input-C3Hrdlqq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ImperativeModal-B3Th7k4R.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cell-link-B1pHtGWp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/multi-map-CUuNtzHt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-yTS3WpF4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chevron-right-CG5QYXYk.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dropdown-menu-CR7cnzLX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/links-D1JoyKTt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useRunCells-BiCBGyeW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-LK56fFow.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-BwrPA9zQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-icon-OjtDb4gO.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RenderHTML-ChwPJgPd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/datasource-DjDpJnbt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-D-2KaAHK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/package-Tv6ztuzw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/sparkles-lWUAsPhp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/MarimoErrorOutput-B0h5OVW9.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spinner-Bhir8k53.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/html-to-image-BWL3Ct4n.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/focus-q38vUCl-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useAsyncData-bgszE9F0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/LazyAnyLanguageCodeMirror-BEvXb3VX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/micromark-factory-space-BygYYKhs.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-5FQGJX7Z-D9iBG0F7.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/markdown-renderer-CU5Lbyax.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/command-KARR7KMq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/field-zLmMOSA4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/popover-Bz_0Vkyf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/errors-vr57w7Ul.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/download-DT8gf0PL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-BGPSHfig.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useIframeCapabilities-CcI1zSdn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/error-banner-LdWZDbqd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/formats-b7Sf6DAK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/en-US-Cb8rIK52.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isValid-CklTTytn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dates-CTxr0EqQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/maps-n3GaPJwv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/extends-BiFDv3jB.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/emotion-is-prop-valid.esm-C59xfSYt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDateFormatter-ICIDGgHf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-icons.esm-BNzu6e7h.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RSPContexts-CdN1NyAt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-6NxtGaCm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-KAhMaCIV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/external-link-BTNxSavU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/message-circle-CWm2KnSx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/plus-BgB18UzY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/trash-2-rVklqqFF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-resizable-panels.browser.esm-CV8-hvjx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/JsonOutput-BJaeXQim.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chart-no-axes-column-nqk474t8.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-function-uY_yJr5g.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spec-CPQR_o92.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-vertical-CkwWkOQL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-cw-DHwG4Mac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tree-actions-BM_EJr3E.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/components-BzBUxUz0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/column-preview-BPismotx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/icons-Ol38nIbL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/radio-group-DlVSuZ_1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/floating-outline-BN9sAcQ0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/objectWithoutPropertiesLoose-DfWeGRFv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/esm-CqWdmSnV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/readonly-python-code-D3_kHsDx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-headphone-BrQspHac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-BrdxGLRX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/image-DQHXdEQn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-icons-BiMOJy0r.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/switch-BiU_sAcn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/events-CPoJAfgx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/globals-7JnRMGd4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/share-DMwTZOTH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/blob-Bgnx1kuY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseSet-CxV9N1bc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-BTTshiKq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/label-xHqFtfdz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/textarea-DwltG8V6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-ccw-C-n2VFP5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/form-BtBTvVVd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/renderShortcut-CcFk3m01.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useBoolean-Bp18o6XG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDeepCompareMemoize-zUHU--0D.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/types-W8WWuumF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/semaphore-FlZezxaf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fileToBase64-DZfwJMrG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pathUtils-CJjndqMI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/prop-types-DaaA-ptl.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/es-DGgq-Wes.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/hasIn-DiS_ryrS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/flatten-Dl4V1ub3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pick-DqWUNly1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/code-xml-CZN6vNxu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/house-mGK3v0Mm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-B5xWCt0a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/triangle-alert-D2p96PEF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/bundle.esm-DjhGJy4I.js">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/index-BIw7BKLH.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "import marimo\n\n__generated_with = \"0.23.9\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n    import numpy as np\n\n    return mo, np\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    # Batch Norm Backpropagation\n\n    Implement the backward pass through a batch normalization layer.\n    The forward graph is decomposed into 12 nodes \u2014 implement each one's\n    gradient function below.\n\n    **Forward graph** (shapes for reference: batch=32, hidden=64):\n    ```\n    logits    [32, 27] = h @ W2 + b2\n    h         [32, 64] = tanh(hpreact)\n    hpreact   [32, 64] = bngain * bnraw + bnbias\n    bnraw     [32, 64] = bndiff * bnvar_inv\n    bnvar_inv [1, 64]  = (bnvar + eps)**(-0.5)\n    bnvar     [1, 64]  = bndiff2.mean(0, keepdims=True)\n    bndiff2   [32, 64] = bndiff**2\n    bndiff    [32, 64] = hprebn - bnmeani\n    bnmeani   [1, 64]  = hprebn.mean(0, keepdims=True)\n    ```\n\n    Implement all 12 backward functions below. Each takes the upstream\n    gradient and returns the downstream gradient for its inputs.\n    \"\"\")\n    return\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(\"\"\"\n    ## Task \u2014 implement the 12 backward functions\n    \"\"\")\n    return\n\n\n@app.cell\ndef _():\n    # --- student: begin ---\n\n    def h_bp(dlogits, W2):\n        \"\"\"logits = h @ W2 + b2  \u2192  dh = dlogits @ W2.T\"\"\"\n        raise NotImplementedError(\"Implement h_bp\")\n\n    def W2_bp(h, dlogits):\n        \"\"\"logits = h @ W2 + b2  \u2192  dW2 = h.T @ dlogits\"\"\"\n        raise NotImplementedError(\"Implement W2_bp\")\n\n    def b2_bp(dlogits):\n        \"\"\"logits = h @ W2 + b2  \u2192  db2 = dlogits.sum(0)\"\"\"\n        raise NotImplementedError(\"Implement b2_bp\")\n\n    def hpreact_bp(h, dh):\n        \"\"\"h = tanh(hpreact)  \u2192  dhpreact = (1 - h**2) * dh\"\"\"\n        raise NotImplementedError(\"Implement hpreact_bp\")\n\n    def bngain_bp(bnraw, dhpreact):\n        \"\"\"hpreact = bngain * bnraw + bnbias  \u2192  dbngain, shape [1, dim]\"\"\"\n        raise NotImplementedError(\"Implement bngain_bp\")\n\n    def bnbias_bp(dhpreact):\n        \"\"\"hpreact = bngain * bnraw + bnbias  \u2192  dbnbias, shape [1, dim]\"\"\"\n        raise NotImplementedError(\"Implement bnbias_bp\")\n\n    def bnraw_bp(dhpreact, bngain):\n        \"\"\"hpreact = bngain * bnraw + bnbias  \u2192  dbnraw\"\"\"\n        raise NotImplementedError(\"Implement bnraw_bp\")\n\n    def bnvar_inv_bp(bndiff, dbnraw):\n        \"\"\"bnraw = bndiff * bnvar_inv  \u2192  dbnvar_inv, shape [1, dim]\"\"\"\n        raise NotImplementedError(\"Implement bnvar_inv_bp\")\n\n    def bnvar_bp(bnvar, dbnvar_inv, eps=1e-5):\n        \"\"\"bnvar_inv = (bnvar + eps)**(-0.5)  \u2192  dbnvar\"\"\"\n        raise NotImplementedError(\"Implement bnvar_bp\")\n\n    def bndiff2_bp(bndiff2, n, dbnvar):\n        \"\"\"bnvar = bndiff2.mean(0)  \u2192  dbndiff2\"\"\"\n        raise NotImplementedError(\"Implement bndiff2_bp\")\n\n    def bndiff_bp(bndiff, dbndiff2, bnvar_inv, dbnraw):\n        \"\"\"bndiff contributes via bndiff2 (=bndiff**2) and bnraw (=bndiff*bnvar_inv)\"\"\"\n        raise NotImplementedError(\"Implement bndiff_bp\")\n\n    def bnmeani_bp(dbndiff):\n        \"\"\"bndiff = hprebn - bnmeani  \u2192  dbnmeani, shape [1, dim]\"\"\"\n        raise NotImplementedError(\"Implement bnmeani_bp\")\n\n    # --- student: end ---\n    return (\n        W2_bp,\n        b2_bp,\n        bnbias_bp,\n        bndiff2_bp,\n        bndiff_bp,\n        bngain_bp,\n        bnmeani_bp,\n        bnraw_bp,\n        bnvar_bp,\n        bnvar_inv_bp,\n        h_bp,\n        hpreact_bp,\n    )\n\n\n@app.cell\ndef _(\n    W2_bp,\n    b2_bp,\n    bnbias_bp,\n    bndiff2_bp,\n    bndiff_bp,\n    bngain_bp,\n    bnmeani_bp,\n    bnraw_bp,\n    bnvar_bp,\n    bnvar_inv_bp,\n    h_bp,\n    hpreact_bp,\n    mo,\n    np,\n):\n    rng = np.random.default_rng(3)\n    n, hidden, out = 32, 64, 27\n\n    # Generate random tensors\n    hprebn = rng.standard_normal((n, hidden))\n    bngain = rng.standard_normal((1, hidden)) + 1.0\n    bnbias = rng.standard_normal((1, hidden))\n    W2 = rng.standard_normal((hidden, out))\n    b2 = rng.standard_normal(out)\n    dlogits = rng.standard_normal((n, out))\n\n    # Forward pass (compute intermediates)\n    h = np.tanh(hprebn)\n    logits = h @ W2 + b2\n\n    bnmeani = hprebn.mean(0, keepdims=True)\n    bndiff = hprebn - bnmeani\n    bndiff2 = bndiff ** 2\n    bnvar = bndiff2.mean(0, keepdims=True)\n    eps = 1e-5\n    bnvar_inv = (bnvar + eps) ** -0.5\n    bnraw = bndiff * bnvar_inv\n    hpreact = bngain * bnraw + bnbias\n\n    _solved = False\n    try:\n        # Verify all 12 functions against oracles\n        _dh = h_bp(dlogits, W2)\n        assert np.allclose(_dh, dlogits @ W2.T, atol=1e-5), \"h_bp failed\"\n\n        _dW2 = W2_bp(h, dlogits)\n        assert np.allclose(_dW2, h.T @ dlogits, atol=1e-5), \"W2_bp failed\"\n\n        _db2 = b2_bp(dlogits)\n        assert np.allclose(_db2, dlogits.sum(0), atol=1e-5), \"b2_bp failed\"\n\n        _dhpreact = hpreact_bp(h, _dh)\n        assert np.allclose(_dhpreact, (1 - h**2) * _dh, atol=1e-5), \"hpreact_bp failed\"\n\n        _dbngain = bngain_bp(bnraw, _dhpreact)\n        assert np.allclose(_dbngain, (bnraw * _dhpreact).sum(0, keepdims=True), atol=1e-5), \"bngain_bp failed\"\n\n        _dbnbias = bnbias_bp(_dhpreact)\n        assert np.allclose(_dbnbias, _dhpreact.sum(0, keepdims=True), atol=1e-5), \"bnbias_bp failed\"\n\n        _dbnraw = bnraw_bp(_dhpreact, bngain)\n        assert np.allclose(_dbnraw, bngain * _dhpreact, atol=1e-5), \"bnraw_bp failed\"\n\n        _dbnvar_inv = bnvar_inv_bp(bndiff, _dbnraw)\n        assert np.allclose(_dbnvar_inv, (bndiff * _dbnraw).sum(0, keepdims=True), atol=1e-5), \"bnvar_inv_bp failed\"\n\n        _dbnvar = bnvar_bp(bnvar, _dbnvar_inv, eps)\n        assert np.allclose(_dbnvar, -0.5 * (bnvar + eps)**(-1.5) * _dbnvar_inv, atol=1e-5), \"bnvar_bp failed\"\n\n        _dbndiff2 = bndiff2_bp(bndiff2, n, _dbnvar)\n        assert np.allclose(_dbndiff2, _dbnvar / n * np.ones_like(bndiff2), atol=1e-5), \"bndiff2_bp failed\"\n\n        _dbndiff = bndiff_bp(bndiff, _dbndiff2, bnvar_inv, _dbnraw)\n        assert np.allclose(_dbndiff, 2 * bndiff * _dbndiff2 + bnvar_inv * _dbnraw, atol=1e-5), \"bndiff_bp failed\"\n\n        _dbnmeani = bnmeani_bp(_dbndiff)\n        assert np.allclose(_dbnmeani, -_dbndiff.sum(0, keepdims=True), atol=1e-5), \"bnmeani_bp failed\"\n\n        _result = mo.callout(mo.md(\"\u2705 All 12 batch norm backward functions correct!\"), kind=\"success\")\n        _solved = True\n    except NotImplementedError as e:\n        _result = mo.callout(mo.md(f\"\u270f\ufe0f {e}\"), kind=\"neutral\")\n    except Exception as e:\n        _result = mo.callout(mo.md(f\"\u274c {e}\"), kind=\"danger\")\n    # --- capture \u0026 report (runs every time, pass or fail) ---\n    try:\n        import inspect as _inspect, json as _json, js as _js\n        from pyodide.ffi import to_js as _to_js\n        _srcs = []\n        for _fn in (h_bp, W2_bp, b2_bp, hpreact_bp, bngain_bp, bnbias_bp,\n                    bnraw_bp, bnvar_inv_bp, bnvar_bp, bndiff2_bp, bndiff_bp, bnmeani_bp,):\n            try:\n                _srcs.append(_inspect.getsource(_fn))\n            except Exception:\n                pass\n        _payload = _json.dumps({\"notebookId\": \"backprop_mlp/batchnorm_bp\",\n                                \"code\": \"\\n\\n\".join(_srcs), \"solved\": bool(_solved)})\n        if _solved:\n            _ch = _js.BroadcastChannel.new(\"mlp-notebooks\")\n            _ch.postMessage(_js.JSON.parse(_json.dumps(\n                {\"type\": \"mlp:notebook-solved\", \"notebookId\": \"backprop_mlp/batchnorm_bp\"})))\n            _ch.close()\n        _js.fetch(\"/api/notebook-progress\", _to_js(\n            {\"method\": \"POST\", \"headers\": {\"Content-Type\": \"application/json\"},\n             \"credentials\": \"include\", \"body\": _payload},\n            dict_converter=_js.Object.fromEntries))\n    except Exception:\n        pass  # not running in Pyodide WASM\n    mo.output.replace(_result)\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">import%20marimo%0A%0A__generated_with%20%3D%20%220.23.9%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20numpy%20as%20np%0A%0A%20%20%20%20return%20mo%2C%20np%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Batch%20Norm%20Backpropagation%0A%0A%20%20%20%20Implement%20the%20backward%20pass%20through%20a%20batch%20normalization%20layer.%0A%20%20%20%20The%20forward%20graph%20is%20decomposed%20into%2012%20nodes%20%E2%80%94%20implement%20each%20one's%0A%20%20%20%20gradient%20function%20below.%0A%0A%20%20%20%20**Forward%20graph**%20(shapes%20for%20reference%3A%20batch%3D32%2C%20hidden%3D64)%3A%0A%20%20%20%20%60%60%60%0A%20%20%20%20logits%20%20%20%20%5B32%2C%2027%5D%20%3D%20h%20%40%20W2%20%2B%20b2%0A%20%20%20%20h%20%20%20%20%20%20%20%20%20%5B32%2C%2064%5D%20%3D%20tanh(hpreact)%0A%20%20%20%20hpreact%20%20%20%5B32%2C%2064%5D%20%3D%20bngain%20*%20bnraw%20%2B%20bnbias%0A%20%20%20%20bnraw%20%20%20%20%20%5B32%2C%2064%5D%20%3D%20bndiff%20*%20bnvar_inv%0A%20%20%20%20bnvar_inv%20%5B1%2C%2064%5D%20%20%3D%20(bnvar%20%2B%20eps)**(-0.5)%0A%20%20%20%20bnvar%20%20%20%20%20%5B1%2C%2064%5D%20%20%3D%20bndiff2.mean(0%2C%20keepdims%3DTrue)%0A%20%20%20%20bndiff2%20%20%20%5B32%2C%2064%5D%20%3D%20bndiff**2%0A%20%20%20%20bndiff%20%20%20%20%5B32%2C%2064%5D%20%3D%20hprebn%20-%20bnmeani%0A%20%20%20%20bnmeani%20%20%20%5B1%2C%2064%5D%20%20%3D%20hprebn.mean(0%2C%20keepdims%3DTrue)%0A%20%20%20%20%60%60%60%0A%0A%20%20%20%20Implement%20all%2012%20backward%20functions%20below.%20Each%20takes%20the%20upstream%0A%20%20%20%20gradient%20and%20returns%20the%20downstream%20gradient%20for%20its%20inputs.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(%22%22%22%0A%20%20%20%20%23%23%20Task%20%E2%80%94%20implement%20the%2012%20backward%20functions%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20%23%20---%20student%3A%20begin%20---%0A%0A%20%20%20%20def%20h_bp(dlogits%2C%20W2)%3A%0A%20%20%20%20%20%20%20%20%22%22%22logits%20%3D%20h%20%40%20W2%20%2B%20b2%20%20%E2%86%92%20%20dh%20%3D%20dlogits%20%40%20W2.T%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20h_bp%22)%0A%0A%20%20%20%20def%20W2_bp(h%2C%20dlogits)%3A%0A%20%20%20%20%20%20%20%20%22%22%22logits%20%3D%20h%20%40%20W2%20%2B%20b2%20%20%E2%86%92%20%20dW2%20%3D%20h.T%20%40%20dlogits%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20W2_bp%22)%0A%0A%20%20%20%20def%20b2_bp(dlogits)%3A%0A%20%20%20%20%20%20%20%20%22%22%22logits%20%3D%20h%20%40%20W2%20%2B%20b2%20%20%E2%86%92%20%20db2%20%3D%20dlogits.sum(0)%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20b2_bp%22)%0A%0A%20%20%20%20def%20hpreact_bp(h%2C%20dh)%3A%0A%20%20%20%20%20%20%20%20%22%22%22h%20%3D%20tanh(hpreact)%20%20%E2%86%92%20%20dhpreact%20%3D%20(1%20-%20h**2)%20*%20dh%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20hpreact_bp%22)%0A%0A%20%20%20%20def%20bngain_bp(bnraw%2C%20dhpreact)%3A%0A%20%20%20%20%20%20%20%20%22%22%22hpreact%20%3D%20bngain%20*%20bnraw%20%2B%20bnbias%20%20%E2%86%92%20%20dbngain%2C%20shape%20%5B1%2C%20dim%5D%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bngain_bp%22)%0A%0A%20%20%20%20def%20bnbias_bp(dhpreact)%3A%0A%20%20%20%20%20%20%20%20%22%22%22hpreact%20%3D%20bngain%20*%20bnraw%20%2B%20bnbias%20%20%E2%86%92%20%20dbnbias%2C%20shape%20%5B1%2C%20dim%5D%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bnbias_bp%22)%0A%0A%20%20%20%20def%20bnraw_bp(dhpreact%2C%20bngain)%3A%0A%20%20%20%20%20%20%20%20%22%22%22hpreact%20%3D%20bngain%20*%20bnraw%20%2B%20bnbias%20%20%E2%86%92%20%20dbnraw%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bnraw_bp%22)%0A%0A%20%20%20%20def%20bnvar_inv_bp(bndiff%2C%20dbnraw)%3A%0A%20%20%20%20%20%20%20%20%22%22%22bnraw%20%3D%20bndiff%20*%20bnvar_inv%20%20%E2%86%92%20%20dbnvar_inv%2C%20shape%20%5B1%2C%20dim%5D%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bnvar_inv_bp%22)%0A%0A%20%20%20%20def%20bnvar_bp(bnvar%2C%20dbnvar_inv%2C%20eps%3D1e-5)%3A%0A%20%20%20%20%20%20%20%20%22%22%22bnvar_inv%20%3D%20(bnvar%20%2B%20eps)**(-0.5)%20%20%E2%86%92%20%20dbnvar%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bnvar_bp%22)%0A%0A%20%20%20%20def%20bndiff2_bp(bndiff2%2C%20n%2C%20dbnvar)%3A%0A%20%20%20%20%20%20%20%20%22%22%22bnvar%20%3D%20bndiff2.mean(0)%20%20%E2%86%92%20%20dbndiff2%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bndiff2_bp%22)%0A%0A%20%20%20%20def%20bndiff_bp(bndiff%2C%20dbndiff2%2C%20bnvar_inv%2C%20dbnraw)%3A%0A%20%20%20%20%20%20%20%20%22%22%22bndiff%20contributes%20via%20bndiff2%20(%3Dbndiff**2)%20and%20bnraw%20(%3Dbndiff*bnvar_inv)%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bndiff_bp%22)%0A%0A%20%20%20%20def%20bnmeani_bp(dbndiff)%3A%0A%20%20%20%20%20%20%20%20%22%22%22bndiff%20%3D%20hprebn%20-%20bnmeani%20%20%E2%86%92%20%20dbnmeani%2C%20shape%20%5B1%2C%20dim%5D%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20bnmeani_bp%22)%0A%0A%20%20%20%20%23%20---%20student%3A%20end%20---%0A%20%20%20%20return%20(%0A%20%20%20%20%20%20%20%20W2_bp%2C%0A%20%20%20%20%20%20%20%20b2_bp%2C%0A%20%20%20%20%20%20%20%20bnbias_bp%2C%0A%20%20%20%20%20%20%20%20bndiff2_bp%2C%0A%20%20%20%20%20%20%20%20bndiff_bp%2C%0A%20%20%20%20%20%20%20%20bngain_bp%2C%0A%20%20%20%20%20%20%20%20bnmeani_bp%2C%0A%20%20%20%20%20%20%20%20bnraw_bp%2C%0A%20%20%20%20%20%20%20%20bnvar_bp%2C%0A%20%20%20%20%20%20%20%20bnvar_inv_bp%2C%0A%20%20%20%20%20%20%20%20h_bp%2C%0A%20%20%20%20%20%20%20%20hpreact_bp%2C%0A%20%20%20%20)%0A%0A%0A%40app.cell%0Adef%20_(%0A%20%20%20%20W2_bp%2C%0A%20%20%20%20b2_bp%2C%0A%20%20%20%20bnbias_bp%2C%0A%20%20%20%20bndiff2_bp%2C%0A%20%20%20%20bndiff_bp%2C%0A%20%20%20%20bngain_bp%2C%0A%20%20%20%20bnmeani_bp%2C%0A%20%20%20%20bnraw_bp%2C%0A%20%20%20%20bnvar_bp%2C%0A%20%20%20%20bnvar_inv_bp%2C%0A%20%20%20%20h_bp%2C%0A%20%20%20%20hpreact_bp%2C%0A%20%20%20%20mo%2C%0A%20%20%20%20np%2C%0A)%3A%0A%20%20%20%20rng%20%3D%20np.random.default_rng(3)%0A%20%20%20%20n%2C%20hidden%2C%20out%20%3D%2032%2C%2064%2C%2027%0A%0A%20%20%20%20%23%20Generate%20random%20tensors%0A%20%20%20%20hprebn%20%3D%20rng.standard_normal((n%2C%20hidden))%0A%20%20%20%20bngain%20%3D%20rng.standard_normal((1%2C%20hidden))%20%2B%201.0%0A%20%20%20%20bnbias%20%3D%20rng.standard_normal((1%2C%20hidden))%0A%20%20%20%20W2%20%3D%20rng.standard_normal((hidden%2C%20out))%0A%20%20%20%20b2%20%3D%20rng.standard_normal(out)%0A%20%20%20%20dlogits%20%3D%20rng.standard_normal((n%2C%20out))%0A%0A%20%20%20%20%23%20Forward%20pass%20(compute%20intermediates)%0A%20%20%20%20h%20%3D%20np.tanh(hprebn)%0A%20%20%20%20logits%20%3D%20h%20%40%20W2%20%2B%20b2%0A%0A%20%20%20%20bnmeani%20%3D%20hprebn.mean(0%2C%20keepdims%3DTrue)%0A%20%20%20%20bndiff%20%3D%20hprebn%20-%20bnmeani%0A%20%20%20%20bndiff2%20%3D%20bndiff%20**%202%0A%20%20%20%20bnvar%20%3D%20bndiff2.mean(0%2C%20keepdims%3DTrue)%0A%20%20%20%20eps%20%3D%201e-5%0A%20%20%20%20bnvar_inv%20%3D%20(bnvar%20%2B%20eps)%20**%20-0.5%0A%20%20%20%20bnraw%20%3D%20bndiff%20*%20bnvar_inv%0A%20%20%20%20hpreact%20%3D%20bngain%20*%20bnraw%20%2B%20bnbias%0A%0A%20%20%20%20_solved%20%3D%20False%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20%23%20Verify%20all%2012%20functions%20against%20oracles%0A%20%20%20%20%20%20%20%20_dh%20%3D%20h_bp(dlogits%2C%20W2)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dh%2C%20dlogits%20%40%20W2.T%2C%20atol%3D1e-5)%2C%20%22h_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dW2%20%3D%20W2_bp(h%2C%20dlogits)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dW2%2C%20h.T%20%40%20dlogits%2C%20atol%3D1e-5)%2C%20%22W2_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_db2%20%3D%20b2_bp(dlogits)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_db2%2C%20dlogits.sum(0)%2C%20atol%3D1e-5)%2C%20%22b2_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dhpreact%20%3D%20hpreact_bp(h%2C%20_dh)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dhpreact%2C%20(1%20-%20h**2)%20*%20_dh%2C%20atol%3D1e-5)%2C%20%22hpreact_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbngain%20%3D%20bngain_bp(bnraw%2C%20_dhpreact)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbngain%2C%20(bnraw%20*%20_dhpreact).sum(0%2C%20keepdims%3DTrue)%2C%20atol%3D1e-5)%2C%20%22bngain_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbnbias%20%3D%20bnbias_bp(_dhpreact)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbnbias%2C%20_dhpreact.sum(0%2C%20keepdims%3DTrue)%2C%20atol%3D1e-5)%2C%20%22bnbias_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbnraw%20%3D%20bnraw_bp(_dhpreact%2C%20bngain)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbnraw%2C%20bngain%20*%20_dhpreact%2C%20atol%3D1e-5)%2C%20%22bnraw_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbnvar_inv%20%3D%20bnvar_inv_bp(bndiff%2C%20_dbnraw)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbnvar_inv%2C%20(bndiff%20*%20_dbnraw).sum(0%2C%20keepdims%3DTrue)%2C%20atol%3D1e-5)%2C%20%22bnvar_inv_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbnvar%20%3D%20bnvar_bp(bnvar%2C%20_dbnvar_inv%2C%20eps)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbnvar%2C%20-0.5%20*%20(bnvar%20%2B%20eps)**(-1.5)%20*%20_dbnvar_inv%2C%20atol%3D1e-5)%2C%20%22bnvar_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbndiff2%20%3D%20bndiff2_bp(bndiff2%2C%20n%2C%20_dbnvar)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbndiff2%2C%20_dbnvar%20%2F%20n%20*%20np.ones_like(bndiff2)%2C%20atol%3D1e-5)%2C%20%22bndiff2_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbndiff%20%3D%20bndiff_bp(bndiff%2C%20_dbndiff2%2C%20bnvar_inv%2C%20_dbnraw)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbndiff%2C%202%20*%20bndiff%20*%20_dbndiff2%20%2B%20bnvar_inv%20*%20_dbnraw%2C%20atol%3D1e-5)%2C%20%22bndiff_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_dbnmeani%20%3D%20bnmeani_bp(_dbndiff)%0A%20%20%20%20%20%20%20%20assert%20np.allclose(_dbnmeani%2C%20-_dbndiff.sum(0%2C%20keepdims%3DTrue)%2C%20atol%3D1e-5)%2C%20%22bnmeani_bp%20failed%22%0A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(%22%E2%9C%85%20All%2012%20batch%20norm%20backward%20functions%20correct!%22)%2C%20kind%3D%22success%22)%0A%20%20%20%20%20%20%20%20_solved%20%3D%20True%0A%20%20%20%20except%20NotImplementedError%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9C%8F%EF%B8%8F%20%7Be%7D%22)%2C%20kind%3D%22neutral%22)%0A%20%20%20%20except%20Exception%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9D%8C%20%7Be%7D%22)%2C%20kind%3D%22danger%22)%0A%20%20%20%20%23%20---%20capture%20%26%20report%20(runs%20every%20time%2C%20pass%20or%20fail)%20---%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20import%20inspect%20as%20_inspect%2C%20json%20as%20_json%2C%20js%20as%20_js%0A%20%20%20%20%20%20%20%20from%20pyodide.ffi%20import%20to_js%20as%20_to_js%0A%20%20%20%20%20%20%20%20_srcs%20%3D%20%5B%5D%0A%20%20%20%20%20%20%20%20for%20_fn%20in%20(h_bp%2C%20W2_bp%2C%20b2_bp%2C%20hpreact_bp%2C%20bngain_bp%2C%20bnbias_bp%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20bnraw_bp%2C%20bnvar_inv_bp%2C%20bnvar_bp%2C%20bndiff2_bp%2C%20bndiff_bp%2C%20bnmeani_bp%2C)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_srcs.append(_inspect.getsource(_fn))%0A%20%20%20%20%20%20%20%20%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20pass%0A%20%20%20%20%20%20%20%20_payload%20%3D%20_json.dumps(%7B%22notebookId%22%3A%20%22backprop_mlp%2Fbatchnorm_bp%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22code%22%3A%20%22%5Cn%5Cn%22.join(_srcs)%2C%20%22solved%22%3A%20bool(_solved)%7D)%0A%20%20%20%20%20%20%20%20if%20_solved%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch%20%3D%20_js.BroadcastChannel.new(%22mlp-notebooks%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.postMessage(_js.JSON.parse(_json.dumps(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22type%22%3A%20%22mlp%3Anotebook-solved%22%2C%20%22notebookId%22%3A%20%22backprop_mlp%2Fbatchnorm_bp%22%7D)))%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.close()%0A%20%20%20%20%20%20%20%20_js.fetch(%22%2Fapi%2Fnotebook-progress%22%2C%20_to_js(%0A%20%20%20%20%20%20%20%20%20%20%20%20%7B%22method%22%3A%20%22POST%22%2C%20%22headers%22%3A%20%7B%22Content-Type%22%3A%20%22application%2Fjson%22%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%22credentials%22%3A%20%22include%22%2C%20%22body%22%3A%20_payload%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20dict_converter%3D_js.Object.fromEntries))%0A%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20pass%20%20%23%20not%20running%20in%20Pyodide%20WASM%0A%20%20%20%20mo.output.replace(_result)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code><script>
+(function () {
+  var NB_ID = "backprop_mlp/batchnorm_bp";
+  var BOOT_SRC = "/notebooks/_shared/index-awsLWRjZ.js";
+  var BEGIN = "# --- student: begin ---";
+  var END = "# --- student: end ---";
+  function boot() {
+    var s = document.createElement("script");
+    s.type = "module";
+    s.crossOrigin = "anonymous";
+    s.src = BOOT_SRC;
+    document.head.appendChild(s);
+  }
+  function reindent(code) {
+    var lines = code.replace(/\t/g, "    ").split("\n");
+    var min = Infinity;
+    lines.forEach(function (l) {
+      if (l.trim() === "") return;
+      var n = l.match(/^ */)[0].length;
+      if (n < min) min = n;
+    });
+    if (!isFinite(min)) min = 0;
+    return lines.map(function (l) {
+      return l.trim() === "" ? "" : "    " + l.slice(min);
+    }).join("\n").replace(/\s+$/, "");
+  }
+  function patch(d) {
+    if (!d || typeof d.code !== "string" || !d.code.trim()) return;
+    var el = document.querySelector("marimo-code");
+    if (!el) return;
+    var src = decodeURIComponent(el.textContent || "");
+    var b = src.indexOf(BEGIN), e = src.indexOf(END);
+    if (b === -1 || e === -1 || e < b) return;
+    var bodyStart = src.indexOf("\n", b) + 1;   // just after the begin line
+    var endLine = src.lastIndexOf("\n", e) + 1;  // start of the end-marker line
+    el.textContent = encodeURIComponent(
+      src.slice(0, bodyStart) + reindent(d.code) + "\n" + src.slice(endLine));
+  }
+  fetch("/api/notebook-progress?notebookId=" + encodeURIComponent(NB_ID),
+        { credentials: "include" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(patch)
+    .catch(function () {})
+    .finally(boot);
+})();
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "edit",
+            "version": "0.23.9",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

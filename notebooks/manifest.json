@@ -25,6 +25,20 @@
         { "slug": "forward",         "title": "Forward Pass",           "difficulty": "medium" },
         { "slug": "backpropagation", "title": "Backpropagation",        "difficulty": "hard"   }
       ]
+    },
+    {
+      "slug": "backprop_mlp",
+      "title": "Backpropagation & MLP",
+      "description": "Build a scalar autograd engine from scratch, then implement backpropagation through cross-entropy, batch normalization, and a multi-layer perceptron — all using pure Python and NumPy.",
+      "order": 3,
+      "notebooks": [
+        { "slug": "value_class",            "title": "Scalar Value Class",                        "difficulty": "easy"   },
+        { "slug": "autograd",               "title": "Autograd: Backward Pass",                  "difficulty": "medium" },
+        { "slug": "build_mlp",              "title": "Building an MLP",                          "difficulty": "medium" },
+        { "slug": "softmax_bp",             "title": "Softmax & Cross-Entropy Backprop",         "difficulty": "medium" },
+        { "slug": "batchnorm_bp",           "title": "Batch Norm Backpropagation",               "difficulty": "hard"   },
+        { "slug": "batchnorm_fused",        "title": "Fused Batch Norm Gradient",                "difficulty": "hard"   }
+      ]
     }
   ]
 }

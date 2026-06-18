@@ -51,6 +51,15 @@
         { "slug": "multi_head",        "title": "Multi-Head Attention",          "difficulty": "medium" },
         { "slug": "transformer_block", "title": "Transformer Block",             "difficulty": "hard"   }
       ]
+    },
+    {
+      "slug": "ml_interview",
+      "title": "ML Interview Tasks",
+      "description": "Classic array and image manipulation problems commonly asked in ML engineering interviews — implement from scratch using NumPy.",
+      "order": 5,
+      "notebooks": [
+        { "slug": "image_rotation", "title": "Image Rotation", "difficulty": "medium" }
+      ]
     }
   ]
 }

@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="/notebooks/_shared/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="/notebooks/_shared/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="/notebooks/_shared/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>image rotation</title>
+    
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/preload-helper-BPPi7vOr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/jsx-runtime-BqBOg78p.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEventListener-DvoEXWke.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-BLUna9fQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/precisionRound-Cl9k9ZmS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-DzliDDTm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/vega-loader.browser-C8wT63Va.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-DCL4n9wx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/badge-j3NGjqhR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/button-BbCh-29a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fullscreen-eipL3i3Y.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/menu-items-DcP01QzW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BdyjRhEt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createLucideIcon-D5guW7EU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/check-BH35Ndha.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/x-C-6liIBr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/select-DZcFyKFQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tooltip-DTV9tlSr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/use-toast-IPAtJGea.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-CvI-39U6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/Deferred-CP7vq682.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/uuid-e9lSomwA.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/DeferredRequestRegistry-CNldVcrP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/constants-DMpttj8Q.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/session-0B5NBztP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/config-ClMcu_sV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/requests-DIwGYs0l.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useLifecycle-DieWOfXE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNonce-DfoVjkkH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useTheme-CI2eq4XN.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/arrays-DYDL-3-i.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/strings-wdPMRf6Z.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/once-DRroIaBz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/capabilities-A_KhFcGV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createReducer-CI9qeK_X.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/paths-D5zczhUD.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BrR4M-k3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-HlsDto3K.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CHcznzB-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-B1U1kGCR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-ChF5Ln9c.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CpTFpfm_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CBSMxaO_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CPczQFlJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-C9ZB41s2.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/stex-BGrE-q7N.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/toDate-B5A0DFEz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/purify.es-B9KxLTTS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cjs-BRGiG41H.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/database-zap-kIkTfzTX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/main-B0OX4z33.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cells-BsaJrRWi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ErrorBoundary-DyYDV0HI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/kbd-CTUAEnEx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useInstallPackage-DUF4IRRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-dialog-BqFLkbUc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dialog-DzC_QCtT.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDebounce-7xZwVnnu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/numbers-C3BAdHZE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/SSRProvider-CkFAAHXw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/context-QkTujrKn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNumberFormatter-ByUv-u9o.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/usePress-DQ_tAz5W.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/input-C3Hrdlqq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ImperativeModal-B3Th7k4R.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cell-link-B1pHtGWp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/multi-map-CUuNtzHt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-yTS3WpF4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chevron-right-CG5QYXYk.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dropdown-menu-CR7cnzLX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/links-D1JoyKTt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useRunCells-BiCBGyeW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-LK56fFow.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-BwrPA9zQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-icon-OjtDb4gO.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RenderHTML-ChwPJgPd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/datasource-DjDpJnbt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-D-2KaAHK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/package-Tv6ztuzw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/sparkles-lWUAsPhp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/MarimoErrorOutput-B0h5OVW9.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spinner-Bhir8k53.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/html-to-image-BWL3Ct4n.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/focus-q38vUCl-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useAsyncData-bgszE9F0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/LazyAnyLanguageCodeMirror-BEvXb3VX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/micromark-factory-space-BygYYKhs.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-5FQGJX7Z-D9iBG0F7.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/markdown-renderer-CU5Lbyax.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/command-KARR7KMq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/field-zLmMOSA4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/popover-Bz_0Vkyf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/errors-vr57w7Ul.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/download-DT8gf0PL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-BGPSHfig.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useIframeCapabilities-CcI1zSdn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/error-banner-LdWZDbqd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/formats-b7Sf6DAK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/en-US-Cb8rIK52.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isValid-CklTTytn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dates-CTxr0EqQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/maps-n3GaPJwv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/extends-BiFDv3jB.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/emotion-is-prop-valid.esm-C59xfSYt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDateFormatter-ICIDGgHf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-icons.esm-BNzu6e7h.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RSPContexts-CdN1NyAt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-6NxtGaCm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-KAhMaCIV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/external-link-BTNxSavU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/message-circle-CWm2KnSx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/plus-BgB18UzY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/trash-2-rVklqqFF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-resizable-panels.browser.esm-CV8-hvjx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/JsonOutput-BJaeXQim.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chart-no-axes-column-nqk474t8.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-function-uY_yJr5g.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spec-CPQR_o92.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-vertical-CkwWkOQL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-cw-DHwG4Mac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tree-actions-BM_EJr3E.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/components-BzBUxUz0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/column-preview-BPismotx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/icons-Ol38nIbL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/radio-group-DlVSuZ_1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/floating-outline-BN9sAcQ0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/objectWithoutPropertiesLoose-DfWeGRFv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/esm-CqWdmSnV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/readonly-python-code-D3_kHsDx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-headphone-BrQspHac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-BrdxGLRX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/image-DQHXdEQn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-icons-BiMOJy0r.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/switch-BiU_sAcn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/events-CPoJAfgx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/globals-7JnRMGd4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/share-DMwTZOTH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/blob-Bgnx1kuY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseSet-CxV9N1bc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-BTTshiKq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/label-xHqFtfdz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/textarea-DwltG8V6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-ccw-C-n2VFP5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/form-BtBTvVVd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/renderShortcut-CcFk3m01.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useBoolean-Bp18o6XG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDeepCompareMemoize-zUHU--0D.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/types-W8WWuumF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/semaphore-FlZezxaf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fileToBase64-DZfwJMrG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pathUtils-CJjndqMI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/prop-types-DaaA-ptl.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/es-DGgq-Wes.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/hasIn-DiS_ryrS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/flatten-Dl4V1ub3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pick-DqWUNly1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/code-xml-CZN6vNxu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/house-mGK3v0Mm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-B5xWCt0a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/triangle-alert-D2p96PEF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/bundle.esm-DjhGJy4I.js">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/index-BIw7BKLH.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "import marimo\n\n__generated_with = \"0.23.9\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n    import numpy as np\n    import matplotlib.pyplot as plt\n    import io\n\n    return io, mo, np, plt\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    # Image Rotation\n\n    **Classic ML-interview problem**: given a colour image stored as a NumPy\n    array of shape `(H, W, 3)`, rotate it by `angle_deg` degrees\n    **counter-clockwise** about its centre.  Fill any pixels that fall outside\n    the source image with black (`0`).\n\n    ## Algorithm \u2014 inverse mapping\n\n    For each output pixel `(row, col)` we ask: *\"where does it come from in\n    the input?\"*  That is the **inverse** (clockwise) rotation:\n\n    $$\n    \\begin{pmatrix} x_{\\text{src}} \\\\ y_{\\text{src}} \\end{pmatrix}\n    =\n    \\begin{pmatrix} \\cos\\theta \u0026 \\sin\\theta \\\\ -\\sin\\theta \u0026 \\cos\\theta \\end{pmatrix}\n    \\begin{pmatrix} x - c_x \\\\ y - c_y \\end{pmatrix}\n    +\n    \\begin{pmatrix} c_x \\\\ c_y \\end{pmatrix}\n    $$\n\n    where $(c_x, c_y) = \\bigl(\\tfrac{W-1}{2},\\, \\tfrac{H-1}{2}\\bigr)$ is the image\n    centre and $\\theta$ is the rotation angle (positive = CCW).\n\n    **Steps**:\n    1. Convert `angle_deg` to radians.\n    2. Build a grid of all output `(row, col)` coordinates with `np.mgrid`.\n    3. Shift to centre-origin: `xc = col \u2212 c\u2093`, `yc = row \u2212 cy`.\n    4. Apply the inverse rotation matrix to get `(xc_src, yc_src)`.\n    5. Shift back to image coordinates.\n    6. Round to the nearest integer (**nearest-neighbour** sampling).\n    7. Copy valid source pixels; leave the rest as black.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _(io, mo, np, plt):\n    # \u2500\u2500 Synthetic test image \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    _H, _W = 160, 160\n\n    _ys = np.arange(_H)[:, np.newaxis]\n    _xs = np.arange(_W)[np.newaxis, :]\n\n    test_image = np.zeros((_H, _W, 3), dtype=np.uint8)\n    # Warm gradient background: red from top, green from left\n    test_image[:, :, 0] = (210 * _ys / (_H - 1)).astype(np.uint8)\n    test_image[:, :, 1] = (160 * _xs / (_W - 1)).astype(np.uint8)\n    test_image[:, :, 2] = 60\n    # White L-shape in the upper-left \u2014 clearly asymmetric pointer\n    test_image[12:18, 12:75] = 255       # horizontal bar (thin)\n    test_image[12:75, 12:18] = 255       # vertical bar (thin)\n    test_image[12:32, 12:32] = 255       # filled corner square\n    # Small cyan dot in the upper-right \u2014 second asymmetry anchor\n    test_image[10:22, 135:147] = [0, 210, 210]\n\n    # Display\n    _fig, _ax = plt.subplots(figsize=(3.2, 3.2))\n    _ax.imshow(test_image)\n    _ax.axis(\"off\")\n    _ax.set_title(\"Test image (rotate me!)\", fontsize=11)\n    plt.tight_layout()\n    _buf = io.BytesIO()\n    _fig.savefig(_buf, format=\"png\", dpi=90)\n    plt.close(_fig)\n    _buf.seek(0)\n    mo.output.replace(mo.image(src=_buf.read()))\n    return (test_image,)\n\n\n@app.cell\ndef _(np):\n    # --- student: begin ---\n\n    def rotate_image(img: np.ndarray, angle_deg: float) -\u003E np.ndarray:\n        \"\"\"Rotate a colour image counter-clockwise by angle_deg degrees.\n\n        Args:\n            img:       np.ndarray of shape (H, W, 3), dtype uint8\n            angle_deg: rotation angle in degrees (positive = counter-clockwise)\n\n        Returns:\n            Rotated image of the same shape and dtype as img.\n            Pixels that map outside the original image are black (0).\n        \"\"\"\n        raise NotImplementedError(\"Implement rotate_image\")\n\n    # --- student: end ---\n    return (rotate_image,)\n\n\n@app.cell\ndef _(io, mo, np, plt, rotate_image, test_image):\n    # \u2500\u2500 Nearest-neighbour oracle \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n    def _oracle(img, angle_deg):\n        H, W = img.shape[:2]\n        angle_rad = np.deg2rad(angle_deg)\n        cos_a, sin_a = np.cos(angle_rad), np.sin(angle_rad)\n        cy, cx = (H - 1) / 2.0, (W - 1) / 2.0\n        rows, cols = np.mgrid[0:H, 0:W]\n        rc = rows - cy\n        cc = cols - cx\n        # Inverse (clockwise) rotation to find source coordinates\n        src_xc = cos_a * cc + sin_a * rc\n        src_yc = -sin_a * cc + cos_a * rc\n        src_ci = np.round(src_xc + cx).astype(int)\n        src_ri = np.round(src_yc + cy).astype(int)\n        out = np.zeros_like(img)\n        valid = (src_ci \u003E= 0) \u0026 (src_ci \u003C W) \u0026 (src_ri \u003E= 0) \u0026 (src_ri \u003C H)\n        out[valid] = img[src_ri[valid], src_ci[valid]]\n        return out\n\n    _solved = False\n    try:\n        # Test 1: output shape and dtype are preserved\n        _out = rotate_image(test_image, 30.0)\n        assert _out.shape == test_image.shape, \\\n            f\"Shape mismatch: expected {test_image.shape}, got {_out.shape}\"\n        assert _out.dtype == test_image.dtype, \\\n            f\"Dtype mismatch: expected {test_image.dtype}, got {_out.dtype}\"\n\n        # Test 2: 0\u00b0 rotation must return the original exactly\n        _out0 = rotate_image(test_image, 0.0)\n        assert np.all(_out0 == test_image), \\\n            \"0\u00b0 rotation must return an image identical to the input\"\n\n        # Test 3: causal property \u2014 rotating (5, 16) by 90\u00b0 CCW in a 33\u00d733 image\n        # should put the bright pixel near (16, 27).\n        _H33 = 33\n        _dot = np.zeros((_H33, _H33, 3), dtype=np.uint8)\n        _dot[5, 16] = 255\n        _rot90 = rotate_image(_dot, 90.0)\n        _bright = np.where(_rot90[:, :, 0] \u003E 128)\n        assert len(_bright[0]) \u003E 0, \\\n            \"After 90\u00b0 CCW rotation, the bright pixel should still be visible\"\n        _r_mean = float(_bright[0].mean())\n        _c_mean = float(_bright[1].mean())\n        assert abs(_r_mean - 16) \u003C 2 and abs(_c_mean - 27) \u003C 2, (\n            f\"After 90\u00b0 CCW: pixel at (5, 16) should land near (16, 27), \"\n            f\"got ({_r_mean:.1f}, {_c_mean:.1f}).  \"\n            f\"Check your inverse-rotation formula and angle sign.\"\n        )\n\n        # Test 4: compare to oracle on random images at several angles\n        _rng = np.random.default_rng(7)\n        _small = _rng.integers(0, 256, (40, 40, 3), dtype=np.uint8)\n        for _a in [15.0, 45.0, 90.0, 135.0]:\n            _student = rotate_image(_small, _a)\n            _ref = _oracle(_small, _a)\n            _diff = np.abs(_student.astype(np.int32) - _ref.astype(np.int32))\n            assert _diff.mean() \u003C 8.0, (\n                f\"At {_a}\u00b0: mean pixel diff vs oracle is {_diff.mean():.2f} \"\n                f\"(threshold 8). Bilinear interpolation is fine too \u2014 \"\n                f\"check your rotation direction and centre computation.\"\n            )\n\n        # \u2500\u2500 Show original vs rotated side-by-side \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\n        _rotated45 = rotate_image(test_image, 45.0)\n        _fig, (_ax1, _ax2) = plt.subplots(1, 2, figsize=(6.4, 3.2))\n        _ax1.imshow(test_image); _ax1.axis(\"off\"); _ax1.set_title(\"Original\")\n        _ax2.imshow(_rotated45);  _ax2.axis(\"off\"); _ax2.set_title(\"Rotated 45\u00b0 CCW\")\n        plt.tight_layout()\n        _buf = io.BytesIO()\n        _fig.savefig(_buf, format=\"png\", dpi=90)\n        plt.close(_fig)\n        _buf.seek(0)\n\n        _result = mo.vstack([\n            mo.image(src=_buf.read()),\n            mo.callout(mo.md(\"\u2705 `rotate_image` is correct!\"), kind=\"success\"),\n        ])\n        _solved = True\n    except NotImplementedError as e:\n        _result = mo.callout(mo.md(f\"\u270f\ufe0f {e}\"), kind=\"neutral\")\n    except Exception as e:\n        _result = mo.callout(mo.md(f\"\u274c {e}\"), kind=\"danger\")\n    # --- capture \u0026 report (runs every time, pass or fail) ---\n    try:\n        import inspect as _inspect, json as _json, js as _js\n        from pyodide.ffi import to_js as _to_js\n        _srcs = []\n        for _fn in (rotate_image,):\n            try:\n                _srcs.append(_inspect.getsource(_fn))\n            except Exception:\n                pass\n        _payload = _json.dumps({\"notebookId\": \"ml_interview/image_rotation\",\n                                \"code\": \"\\n\\n\".join(_srcs), \"solved\": bool(_solved)})\n        if _solved:\n            _ch = _js.BroadcastChannel.new(\"mlp-notebooks\")\n            _ch.postMessage(_js.JSON.parse(_json.dumps(\n                {\"type\": \"mlp:notebook-solved\",\n                 \"notebookId\": \"ml_interview/image_rotation\"})))\n            _ch.close()\n        _js.fetch(\"/api/notebook-progress\", _to_js(\n            {\"method\": \"POST\", \"headers\": {\"Content-Type\": \"application/json\"},\n             \"credentials\": \"include\", \"body\": _payload},\n            dict_converter=_js.Object.fromEntries))\n    except Exception:\n        pass  # not running in Pyodide WASM\n    mo.output.replace(_result)\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">import%20marimo%0A%0A__generated_with%20%3D%20%220.23.9%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%20%20%20%20import%20numpy%20as%20np%0A%20%20%20%20import%20matplotlib.pyplot%20as%20plt%0A%20%20%20%20import%20io%0A%0A%20%20%20%20return%20io%2C%20mo%2C%20np%2C%20plt%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Image%20Rotation%0A%0A%20%20%20%20**Classic%20ML-interview%20problem**%3A%20given%20a%20colour%20image%20stored%20as%20a%20NumPy%0A%20%20%20%20array%20of%20shape%20%60(H%2C%20W%2C%203)%60%2C%20rotate%20it%20by%20%60angle_deg%60%20degrees%0A%20%20%20%20**counter-clockwise**%20about%20its%20centre.%20%20Fill%20any%20pixels%20that%20fall%20outside%0A%20%20%20%20the%20source%20image%20with%20black%20(%600%60).%0A%0A%20%20%20%20%23%23%20Algorithm%20%E2%80%94%20inverse%20mapping%0A%0A%20%20%20%20For%20each%20output%20pixel%20%60(row%2C%20col)%60%20we%20ask%3A%20*%22where%20does%20it%20come%20from%20in%0A%20%20%20%20the%20input%3F%22*%20%20That%20is%20the%20**inverse**%20(clockwise)%20rotation%3A%0A%0A%20%20%20%20%24%24%0A%20%20%20%20%5Cbegin%7Bpmatrix%7D%20x_%7B%5Ctext%7Bsrc%7D%7D%20%5C%5C%20y_%7B%5Ctext%7Bsrc%7D%7D%20%5Cend%7Bpmatrix%7D%0A%20%20%20%20%3D%0A%20%20%20%20%5Cbegin%7Bpmatrix%7D%20%5Ccos%5Ctheta%20%26%20%5Csin%5Ctheta%20%5C%5C%20-%5Csin%5Ctheta%20%26%20%5Ccos%5Ctheta%20%5Cend%7Bpmatrix%7D%0A%20%20%20%20%5Cbegin%7Bpmatrix%7D%20x%20-%20c_x%20%5C%5C%20y%20-%20c_y%20%5Cend%7Bpmatrix%7D%0A%20%20%20%20%2B%0A%20%20%20%20%5Cbegin%7Bpmatrix%7D%20c_x%20%5C%5C%20c_y%20%5Cend%7Bpmatrix%7D%0A%20%20%20%20%24%24%0A%0A%20%20%20%20where%20%24(c_x%2C%20c_y)%20%3D%20%5Cbigl(%5Ctfrac%7BW-1%7D%7B2%7D%2C%5C%2C%20%5Ctfrac%7BH-1%7D%7B2%7D%5Cbigr)%24%20is%20the%20image%0A%20%20%20%20centre%20and%20%24%5Ctheta%24%20is%20the%20rotation%20angle%20(positive%20%3D%20CCW).%0A%0A%20%20%20%20**Steps**%3A%0A%20%20%20%201.%20Convert%20%60angle_deg%60%20to%20radians.%0A%20%20%20%202.%20Build%20a%20grid%20of%20all%20output%20%60(row%2C%20col)%60%20coordinates%20with%20%60np.mgrid%60.%0A%20%20%20%203.%20Shift%20to%20centre-origin%3A%20%60xc%20%3D%20col%20%E2%88%92%20c%E2%82%93%60%2C%20%60yc%20%3D%20row%20%E2%88%92%20cy%60.%0A%20%20%20%204.%20Apply%20the%20inverse%20rotation%20matrix%20to%20get%20%60(xc_src%2C%20yc_src)%60.%0A%20%20%20%205.%20Shift%20back%20to%20image%20coordinates.%0A%20%20%20%206.%20Round%20to%20the%20nearest%20integer%20(**nearest-neighbour**%20sampling).%0A%20%20%20%207.%20Copy%20valid%20source%20pixels%3B%20leave%20the%20rest%20as%20black.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_(io%2C%20mo%2C%20np%2C%20plt)%3A%0A%20%20%20%20%23%20%E2%94%80%E2%94%80%20Synthetic%20test%20image%20%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0A%20%20%20%20_H%2C%20_W%20%3D%20160%2C%20160%0A%0A%20%20%20%20_ys%20%3D%20np.arange(_H)%5B%3A%2C%20np.newaxis%5D%0A%20%20%20%20_xs%20%3D%20np.arange(_W)%5Bnp.newaxis%2C%20%3A%5D%0A%0A%20%20%20%20test_image%20%3D%20np.zeros((_H%2C%20_W%2C%203)%2C%20dtype%3Dnp.uint8)%0A%20%20%20%20%23%20Warm%20gradient%20background%3A%20red%20from%20top%2C%20green%20from%20left%0A%20%20%20%20test_image%5B%3A%2C%20%3A%2C%200%5D%20%3D%20(210%20*%20_ys%20%2F%20(_H%20-%201)).astype(np.uint8)%0A%20%20%20%20test_image%5B%3A%2C%20%3A%2C%201%5D%20%3D%20(160%20*%20_xs%20%2F%20(_W%20-%201)).astype(np.uint8)%0A%20%20%20%20test_image%5B%3A%2C%20%3A%2C%202%5D%20%3D%2060%0A%20%20%20%20%23%20White%20L-shape%20in%20the%20upper-left%20%E2%80%94%20clearly%20asymmetric%20pointer%0A%20%20%20%20test_image%5B12%3A18%2C%2012%3A75%5D%20%3D%20255%20%20%20%20%20%20%20%23%20horizontal%20bar%20(thin)%0A%20%20%20%20test_image%5B12%3A75%2C%2012%3A18%5D%20%3D%20255%20%20%20%20%20%20%20%23%20vertical%20bar%20(thin)%0A%20%20%20%20test_image%5B12%3A32%2C%2012%3A32%5D%20%3D%20255%20%20%20%20%20%20%20%23%20filled%20corner%20square%0A%20%20%20%20%23%20Small%20cyan%20dot%20in%20the%20upper-right%20%E2%80%94%20second%20asymmetry%20anchor%0A%20%20%20%20test_image%5B10%3A22%2C%20135%3A147%5D%20%3D%20%5B0%2C%20210%2C%20210%5D%0A%0A%20%20%20%20%23%20Display%0A%20%20%20%20_fig%2C%20_ax%20%3D%20plt.subplots(figsize%3D(3.2%2C%203.2))%0A%20%20%20%20_ax.imshow(test_image)%0A%20%20%20%20_ax.axis(%22off%22)%0A%20%20%20%20_ax.set_title(%22Test%20image%20(rotate%20me!)%22%2C%20fontsize%3D11)%0A%20%20%20%20plt.tight_layout()%0A%20%20%20%20_buf%20%3D%20io.BytesIO()%0A%20%20%20%20_fig.savefig(_buf%2C%20format%3D%22png%22%2C%20dpi%3D90)%0A%20%20%20%20plt.close(_fig)%0A%20%20%20%20_buf.seek(0)%0A%20%20%20%20mo.output.replace(mo.image(src%3D_buf.read()))%0A%20%20%20%20return%20(test_image%2C)%0A%0A%0A%40app.cell%0Adef%20_(np)%3A%0A%20%20%20%20%23%20---%20student%3A%20begin%20---%0A%0A%20%20%20%20def%20rotate_image(img%3A%20np.ndarray%2C%20angle_deg%3A%20float)%20-%3E%20np.ndarray%3A%0A%20%20%20%20%20%20%20%20%22%22%22Rotate%20a%20colour%20image%20counter-clockwise%20by%20angle_deg%20degrees.%0A%0A%20%20%20%20%20%20%20%20Args%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20img%3A%20%20%20%20%20%20%20np.ndarray%20of%20shape%20(H%2C%20W%2C%203)%2C%20dtype%20uint8%0A%20%20%20%20%20%20%20%20%20%20%20%20angle_deg%3A%20rotation%20angle%20in%20degrees%20(positive%20%3D%20counter-clockwise)%0A%0A%20%20%20%20%20%20%20%20Returns%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20Rotated%20image%20of%20the%20same%20shape%20and%20dtype%20as%20img.%0A%20%20%20%20%20%20%20%20%20%20%20%20Pixels%20that%20map%20outside%20the%20original%20image%20are%20black%20(0).%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20rotate_image%22)%0A%0A%20%20%20%20%23%20---%20student%3A%20end%20---%0A%20%20%20%20return%20(rotate_image%2C)%0A%0A%0A%40app.cell%0Adef%20_(io%2C%20mo%2C%20np%2C%20plt%2C%20rotate_image%2C%20test_image)%3A%0A%20%20%20%20%23%20%E2%94%80%E2%94%80%20Nearest-neighbour%20oracle%20%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0A%20%20%20%20def%20_oracle(img%2C%20angle_deg)%3A%0A%20%20%20%20%20%20%20%20H%2C%20W%20%3D%20img.shape%5B%3A2%5D%0A%20%20%20%20%20%20%20%20angle_rad%20%3D%20np.deg2rad(angle_deg)%0A%20%20%20%20%20%20%20%20cos_a%2C%20sin_a%20%3D%20np.cos(angle_rad)%2C%20np.sin(angle_rad)%0A%20%20%20%20%20%20%20%20cy%2C%20cx%20%3D%20(H%20-%201)%20%2F%202.0%2C%20(W%20-%201)%20%2F%202.0%0A%20%20%20%20%20%20%20%20rows%2C%20cols%20%3D%20np.mgrid%5B0%3AH%2C%200%3AW%5D%0A%20%20%20%20%20%20%20%20rc%20%3D%20rows%20-%20cy%0A%20%20%20%20%20%20%20%20cc%20%3D%20cols%20-%20cx%0A%20%20%20%20%20%20%20%20%23%20Inverse%20(clockwise)%20rotation%20to%20find%20source%20coordinates%0A%20%20%20%20%20%20%20%20src_xc%20%3D%20cos_a%20*%20cc%20%2B%20sin_a%20*%20rc%0A%20%20%20%20%20%20%20%20src_yc%20%3D%20-sin_a%20*%20cc%20%2B%20cos_a%20*%20rc%0A%20%20%20%20%20%20%20%20src_ci%20%3D%20np.round(src_xc%20%2B%20cx).astype(int)%0A%20%20%20%20%20%20%20%20src_ri%20%3D%20np.round(src_yc%20%2B%20cy).astype(int)%0A%20%20%20%20%20%20%20%20out%20%3D%20np.zeros_like(img)%0A%20%20%20%20%20%20%20%20valid%20%3D%20(src_ci%20%3E%3D%200)%20%26%20(src_ci%20%3C%20W)%20%26%20(src_ri%20%3E%3D%200)%20%26%20(src_ri%20%3C%20H)%0A%20%20%20%20%20%20%20%20out%5Bvalid%5D%20%3D%20img%5Bsrc_ri%5Bvalid%5D%2C%20src_ci%5Bvalid%5D%5D%0A%20%20%20%20%20%20%20%20return%20out%0A%0A%20%20%20%20_solved%20%3D%20False%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20%23%20Test%201%3A%20output%20shape%20and%20dtype%20are%20preserved%0A%20%20%20%20%20%20%20%20_out%20%3D%20rotate_image(test_image%2C%2030.0)%0A%20%20%20%20%20%20%20%20assert%20_out.shape%20%3D%3D%20test_image.shape%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22Shape%20mismatch%3A%20expected%20%7Btest_image.shape%7D%2C%20got%20%7B_out.shape%7D%22%0A%20%20%20%20%20%20%20%20assert%20_out.dtype%20%3D%3D%20test_image.dtype%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22Dtype%20mismatch%3A%20expected%20%7Btest_image.dtype%7D%2C%20got%20%7B_out.dtype%7D%22%0A%0A%20%20%20%20%20%20%20%20%23%20Test%202%3A%200%C2%B0%20rotation%20must%20return%20the%20original%20exactly%0A%20%20%20%20%20%20%20%20_out0%20%3D%20rotate_image(test_image%2C%200.0)%0A%20%20%20%20%20%20%20%20assert%20np.all(_out0%20%3D%3D%20test_image)%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%220%C2%B0%20rotation%20must%20return%20an%20image%20identical%20to%20the%20input%22%0A%0A%20%20%20%20%20%20%20%20%23%20Test%203%3A%20causal%20property%20%E2%80%94%20rotating%20(5%2C%2016)%20by%2090%C2%B0%20CCW%20in%20a%2033%C3%9733%20image%0A%20%20%20%20%20%20%20%20%23%20should%20put%20the%20bright%20pixel%20near%20(16%2C%2027).%0A%20%20%20%20%20%20%20%20_H33%20%3D%2033%0A%20%20%20%20%20%20%20%20_dot%20%3D%20np.zeros((_H33%2C%20_H33%2C%203)%2C%20dtype%3Dnp.uint8)%0A%20%20%20%20%20%20%20%20_dot%5B5%2C%2016%5D%20%3D%20255%0A%20%20%20%20%20%20%20%20_rot90%20%3D%20rotate_image(_dot%2C%2090.0)%0A%20%20%20%20%20%20%20%20_bright%20%3D%20np.where(_rot90%5B%3A%2C%20%3A%2C%200%5D%20%3E%20128)%0A%20%20%20%20%20%20%20%20assert%20len(_bright%5B0%5D)%20%3E%200%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%22After%2090%C2%B0%20CCW%20rotation%2C%20the%20bright%20pixel%20should%20still%20be%20visible%22%0A%20%20%20%20%20%20%20%20_r_mean%20%3D%20float(_bright%5B0%5D.mean())%0A%20%20%20%20%20%20%20%20_c_mean%20%3D%20float(_bright%5B1%5D.mean())%0A%20%20%20%20%20%20%20%20assert%20abs(_r_mean%20-%2016)%20%3C%202%20and%20abs(_c_mean%20-%2027)%20%3C%202%2C%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22After%2090%C2%B0%20CCW%3A%20pixel%20at%20(5%2C%2016)%20should%20land%20near%20(16%2C%2027)%2C%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22got%20(%7B_r_mean%3A.1f%7D%2C%20%7B_c_mean%3A.1f%7D).%20%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20f%22Check%20your%20inverse-rotation%20formula%20and%20angle%20sign.%22%0A%20%20%20%20%20%20%20%20)%0A%0A%20%20%20%20%20%20%20%20%23%20Test%204%3A%20compare%20to%20oracle%20on%20random%20images%20at%20several%20angles%0A%20%20%20%20%20%20%20%20_rng%20%3D%20np.random.default_rng(7)%0A%20%20%20%20%20%20%20%20_small%20%3D%20_rng.integers(0%2C%20256%2C%20(40%2C%2040%2C%203)%2C%20dtype%3Dnp.uint8)%0A%20%20%20%20%20%20%20%20for%20_a%20in%20%5B15.0%2C%2045.0%2C%2090.0%2C%20135.0%5D%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_student%20%3D%20rotate_image(_small%2C%20_a)%0A%20%20%20%20%20%20%20%20%20%20%20%20_ref%20%3D%20_oracle(_small%2C%20_a)%0A%20%20%20%20%20%20%20%20%20%20%20%20_diff%20%3D%20np.abs(_student.astype(np.int32)%20-%20_ref.astype(np.int32))%0A%20%20%20%20%20%20%20%20%20%20%20%20assert%20_diff.mean()%20%3C%208.0%2C%20(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22At%20%7B_a%7D%C2%B0%3A%20mean%20pixel%20diff%20vs%20oracle%20is%20%7B_diff.mean()%3A.2f%7D%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22(threshold%208).%20Bilinear%20interpolation%20is%20fine%20too%20%E2%80%94%20%22%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22check%20your%20rotation%20direction%20and%20centre%20computation.%22%0A%20%20%20%20%20%20%20%20%20%20%20%20)%0A%0A%20%20%20%20%20%20%20%20%23%20%E2%94%80%E2%94%80%20Show%20original%20vs%20rotated%20side-by-side%20%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%E2%94%80%0A%20%20%20%20%20%20%20%20_rotated45%20%3D%20rotate_image(test_image%2C%2045.0)%0A%20%20%20%20%20%20%20%20_fig%2C%20(_ax1%2C%20_ax2)%20%3D%20plt.subplots(1%2C%202%2C%20figsize%3D(6.4%2C%203.2))%0A%20%20%20%20%20%20%20%20_ax1.imshow(test_image)%3B%20_ax1.axis(%22off%22)%3B%20_ax1.set_title(%22Original%22)%0A%20%20%20%20%20%20%20%20_ax2.imshow(_rotated45)%3B%20%20_ax2.axis(%22off%22)%3B%20_ax2.set_title(%22Rotated%2045%C2%B0%20CCW%22)%0A%20%20%20%20%20%20%20%20plt.tight_layout()%0A%20%20%20%20%20%20%20%20_buf%20%3D%20io.BytesIO()%0A%20%20%20%20%20%20%20%20_fig.savefig(_buf%2C%20format%3D%22png%22%2C%20dpi%3D90)%0A%20%20%20%20%20%20%20%20plt.close(_fig)%0A%20%20%20%20%20%20%20%20_buf.seek(0)%0A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.vstack(%5B%0A%20%20%20%20%20%20%20%20%20%20%20%20mo.image(src%3D_buf.read())%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20mo.callout(mo.md(%22%E2%9C%85%20%60rotate_image%60%20is%20correct!%22)%2C%20kind%3D%22success%22)%2C%0A%20%20%20%20%20%20%20%20%5D)%0A%20%20%20%20%20%20%20%20_solved%20%3D%20True%0A%20%20%20%20except%20NotImplementedError%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9C%8F%EF%B8%8F%20%7Be%7D%22)%2C%20kind%3D%22neutral%22)%0A%20%20%20%20except%20Exception%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9D%8C%20%7Be%7D%22)%2C%20kind%3D%22danger%22)%0A%20%20%20%20%23%20---%20capture%20%26%20report%20(runs%20every%20time%2C%20pass%20or%20fail)%20---%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20import%20inspect%20as%20_inspect%2C%20json%20as%20_json%2C%20js%20as%20_js%0A%20%20%20%20%20%20%20%20from%20pyodide.ffi%20import%20to_js%20as%20_to_js%0A%20%20%20%20%20%20%20%20_srcs%20%3D%20%5B%5D%0A%20%20%20%20%20%20%20%20for%20_fn%20in%20(rotate_image%2C)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_srcs.append(_inspect.getsource(_fn))%0A%20%20%20%20%20%20%20%20%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20pass%0A%20%20%20%20%20%20%20%20_payload%20%3D%20_json.dumps(%7B%22notebookId%22%3A%20%22ml_interview%2Fimage_rotation%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22code%22%3A%20%22%5Cn%5Cn%22.join(_srcs)%2C%20%22solved%22%3A%20bool(_solved)%7D)%0A%20%20%20%20%20%20%20%20if%20_solved%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch%20%3D%20_js.BroadcastChannel.new(%22mlp-notebooks%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.postMessage(_js.JSON.parse(_json.dumps(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22type%22%3A%20%22mlp%3Anotebook-solved%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22notebookId%22%3A%20%22ml_interview%2Fimage_rotation%22%7D)))%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.close()%0A%20%20%20%20%20%20%20%20_js.fetch(%22%2Fapi%2Fnotebook-progress%22%2C%20_to_js(%0A%20%20%20%20%20%20%20%20%20%20%20%20%7B%22method%22%3A%20%22POST%22%2C%20%22headers%22%3A%20%7B%22Content-Type%22%3A%20%22application%2Fjson%22%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%22credentials%22%3A%20%22include%22%2C%20%22body%22%3A%20_payload%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20dict_converter%3D_js.Object.fromEntries))%0A%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20pass%20%20%23%20not%20running%20in%20Pyodide%20WASM%0A%20%20%20%20mo.output.replace(_result)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code><script>
+(function () {
+  var NB_ID = "ml_interview/image_rotation";
+  var BOOT_SRC = "/notebooks/_shared/index-awsLWRjZ.js";
+  var BEGIN = "# --- student: begin ---";
+  var END = "# --- student: end ---";
+  function boot() {
+    var s = document.createElement("script");
+    s.type = "module";
+    s.crossOrigin = "anonymous";
+    s.src = BOOT_SRC;
+    document.head.appendChild(s);
+  }
+  function reindent(code) {
+    var lines = code.replace(/\t/g, "    ").split("\n");
+    var min = Infinity;
+    lines.forEach(function (l) {
+      if (l.trim() === "") return;
+      var n = l.match(/^ */)[0].length;
+      if (n < min) min = n;
+    });
+    if (!isFinite(min)) min = 0;
+    return lines.map(function (l) {
+      return l.trim() === "" ? "" : "    " + l.slice(min);
+    }).join("\n").replace(/\s+$/, "");
+  }
+  function patch(d) {
+    if (!d || typeof d.code !== "string" || !d.code.trim()) return;
+    var el = document.querySelector("marimo-code");
+    if (!el) return;
+    var src = decodeURIComponent(el.textContent || "");
+    var b = src.indexOf(BEGIN), e = src.indexOf(END);
+    if (b === -1 || e === -1 || e < b) return;
+    var bodyStart = src.indexOf("\n", b) + 1;   // just after the begin line
+    var endLine = src.lastIndexOf("\n", e) + 1;  // start of the end-marker line
+    el.textContent = encodeURIComponent(
+      src.slice(0, bodyStart) + reindent(d.code) + "\n" + src.slice(endLine));
+  }
+  fetch("/api/notebook-progress?notebookId=" + encodeURIComponent(NB_ID),
+        { credentials: "include" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(patch)
+    .catch(function () {})
+    .finally(boot);
+})();
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "edit",
+            "version": "0.23.9",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

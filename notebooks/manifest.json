@@ -7,12 +7,12 @@
       "order": 1,
       "notebooks": [
         { "slug": "intro",            "title": "Introduction & Loss Function", "difficulty": "easy"   },
-        { "slug": "linear_regression","title": "Linear Regression",           "difficulty": "easy"   },
         { "slug": "full_gd",          "title": "Full Gradient Descent",       "difficulty": "easy"   },
         { "slug": "stochastic_gd",    "title": "Stochastic Gradient Descent", "difficulty": "medium" },
         { "slug": "momentum",         "title": "Momentum",                    "difficulty": "medium" },
         { "slug": "adagrad",          "title": "Adagrad",                     "difficulty": "medium" },
-        { "slug": "regularization",   "title": "L2 Regularization",           "difficulty": "medium" }
+        { "slug": "regularization",   "title": "L2 Regularization",           "difficulty": "medium" },
+        { "slug": "linear_regression","title": "Linear Regression",           "difficulty": "easy"   }
       ]
     },
     {

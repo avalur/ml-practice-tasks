@@ -29,13 +29,22 @@ export function NotebooksSidebar({ sections }: { sections: Section[] }) {
     try {
       channel = new BroadcastChannel("mlp-notebooks");
       channel.onmessage = (e) => {
-        if (e.data?.type !== "mlp:notebook-solved") return;
-        const notebookId = e.data.notebookId;
+        const notebookId = e.data?.notebookId;
         if (typeof notebookId !== "string") return;
-        // Optimistic update — the Pyodide code already called the API directly
-        setSolved((prev) =>
-          prev.has(notebookId) ? prev : new Set(prev).add(notebookId)
-        );
+        if (e.data?.type === "mlp:notebook-solved") {
+          // Optimistic — the Pyodide code already called the API directly.
+          setSolved((prev) =>
+            prev.has(notebookId) ? prev : new Set(prev).add(notebookId)
+          );
+        } else if (e.data?.type === "mlp:notebook-unsolved") {
+          // Reset cleared this notebook's progress.
+          setSolved((prev) => {
+            if (!prev.has(notebookId)) return prev;
+            const next = new Set(prev);
+            next.delete(notebookId);
+            return next;
+          });
+        }
       };
     } catch {
       // BroadcastChannel not available (old browser) — fall back to polling

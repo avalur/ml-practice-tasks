@@ -119,10 +119,13 @@ model Favorite {
 }
 
 model UserNotebookProgress {
-  id         String   @id @default(cuid())
-  userId     String
-  notebookId String   // "gradient_descent/intro"
-  solvedAt   DateTime @default(now())
+  id           String    @id @default(cuid())
+  userId       String
+  notebookId   String    // "gradient_descent/intro"
+  code         String?   @db.Text // latest captured student code (for restore)
+  attemptCount Int       @default(0)
+  solvedAt     DateTime? // null until all tests pass
+  lastRunAt    DateTime?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

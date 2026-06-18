@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import manifest from "../../../../../../notebooks/manifest.json";
+import { auth } from "@/auth";
+import { NotebookFrame } from "@/components/NotebookFrame";
 
 type Params = { section: string; slug: string };
 
@@ -33,16 +35,15 @@ export default async function NotebookPage({
   const nb = sec?.notebooks.find((n) => n.slug === slug);
   if (!nb) notFound();
 
+  const session = await auth();
   const src = `/notebooks/${section}/${slug}/index.html`;
 
   return (
-    <div className="notebook-frame-wrapper">
-      <iframe
-        src={src}
-        title={nb.title}
-        className="notebook-frame"
-        allow="clipboard-read; clipboard-write"
-      />
-    </div>
+    <NotebookFrame
+      src={src}
+      notebookId={`${section}/${slug}`}
+      title={nb.title}
+      canReset={!!session?.user}
+    />
   );
 }

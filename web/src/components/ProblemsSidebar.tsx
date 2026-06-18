@@ -67,12 +67,26 @@ export function ProblemsSidebar({ items }: { items: Item[] }) {
       }
       refreshProgress();
     };
+    // Reset clears the ✓ for one task.
+    const onReset = (e: Event) => {
+      const id = (e as CustomEvent<{ problemId?: string }>).detail?.problemId;
+      if (!id) return;
+      setSolved((prev) => {
+        if (!prev.has(id)) return prev;
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+      refreshProgress();
+    };
 
     window.addEventListener("mlp:progress-pending", onPending);
     window.addEventListener("mlp:progress", onProgress);
+    window.addEventListener("mlp:progress-reset", onReset);
     return () => {
       window.removeEventListener("mlp:progress-pending", onPending);
       window.removeEventListener("mlp:progress", onProgress);
+      window.removeEventListener("mlp:progress-reset", onReset);
     };
   }, [refreshProgress]);
 

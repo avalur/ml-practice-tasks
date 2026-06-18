@@ -51,7 +51,7 @@ def _(np):
 
 @app.cell
 def _(NeuralNetworkBase, np):
-    # ── Your implementation ───────────────────────────────────────────────────
+    # --- student: begin ---
 
     def sigmoid(x: np.ndarray) -> np.ndarray:
         """σ(x) = 1 / (1 + exp(−x))"""
@@ -68,12 +68,13 @@ def _(NeuralNetworkBase, np):
             """
             raise NotImplementedError("Implement ForwardNN.forward")
 
-    # ─────────────────────────────────────────────────────────────────────────
+    # --- student: end ---
     return ForwardNN, sigmoid
 
 
 @app.cell
 def _(ForwardNN, mo, np, sigmoid):
+    _solved = False
     try:
         # Test sigmoid
         x = np.array([-2.0, 0.0, 2.0])
@@ -106,27 +107,32 @@ def _(ForwardNN, mo, np, sigmoid):
             f"✅ sigmoid and forward pass correct!\n\n"
             f"Output on XOR inputs: {out.ravel().round(3)}"
         ), kind="success")
-        try:
-            from pyodide.ffi import to_js as _to_js
-            import json as _json, js as _js
-            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/forward"})
-            _ch = _js.BroadcastChannel.new("mlp-notebooks")
-            _ch.postMessage(_js.JSON.parse(_nb_data))
-            _ch.close()
-            _js.fetch(
-                "/api/notebook-progress",
-                _to_js({"method": "POST",
-                         "headers": {"Content-Type": "application/json"},
-                         "credentials": "include",
-                         "body": _nb_data},
-                        dict_converter=_js.Object.fromEntries),
-            )
-        except Exception:
-            pass  # not running in Pyodide WASM
+        _solved = True
     except NotImplementedError as e:
         _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
         _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    # --- capture & report (runs every time, pass or fail) ---
+    try:
+        import inspect as _inspect, json as _json, js as _js
+        from pyodide.ffi import to_js as _to_js
+        _srcs = []
+        for _fn in (ForwardNN, sigmoid,):
+            try:
+                _srcs.append(_inspect.getsource(_fn))
+            except Exception:
+                pass
+        _payload = _json.dumps({"notebookId": "simple_neural_network/forward", "code": "\n\n".join(_srcs), "solved": bool(_solved)})
+        if _solved:
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/forward"})))
+            _ch.close()
+        _js.fetch("/api/notebook-progress", _to_js(
+            {"method": "POST", "headers": {"Content-Type": "application/json"},
+             "credentials": "include", "body": _payload},
+            dict_converter=_js.Object.fromEntries))
+    except Exception:
+        pass  # not running in Pyodide WASM
     mo.output.replace(_result)
     return
 

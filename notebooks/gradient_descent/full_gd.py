@@ -29,7 +29,7 @@ def _(mo):
 
 @app.cell
 def _(np):
-    # ── Your implementation ───────────────────────────────────────────────────
+    # --- student: begin ---
 
     def calc_gradient(X: np.ndarray, y: np.ndarray, w: np.ndarray) -> np.ndarray:
         """Full-batch MSE gradient: 2/ℓ · Xᵀ(Xw − y)"""
@@ -37,10 +37,10 @@ def _(np):
 
 
     def update_weights(w: np.ndarray, gradient: np.ndarray, eta: float) -> np.ndarray:
-        """One GD step: return updated w and the weight difference."""
+        """One GD step: return updated w"""
         raise NotImplementedError("Implement update_weights")
 
-    # ─────────────────────────────────────────────────────────────────────────
+    # --- student: end ---
     return calc_gradient, update_weights
 
 
@@ -52,6 +52,7 @@ def _(calc_gradient, mo, np, update_weights):
     y = X @ w_true + 0.01 * rng.standard_normal(40)
     w = np.zeros(2)
 
+    _solved = False
     try:
         g = calc_gradient(X, y, w)
         expected_g = 2 / len(X) * X.T @ (X @ w - y)
@@ -76,27 +77,32 @@ def _(calc_gradient, mo, np, update_weights):
             f"✅ Full GD correct! After 500 steps: MSE = {loss:.5f}, "
             f"w ≈ {np.round(w_cur, 3)}"
         ), kind="success")
-        try:
-            from pyodide.ffi import to_js as _to_js
-            import json as _json, js as _js
-            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/full_gd"})
-            _ch = _js.BroadcastChannel.new("mlp-notebooks")
-            _ch.postMessage(_js.JSON.parse(_nb_data))
-            _ch.close()
-            _js.fetch(
-                "/api/notebook-progress",
-                _to_js({"method": "POST",
-                         "headers": {"Content-Type": "application/json"},
-                         "credentials": "include",
-                         "body": _nb_data},
-                        dict_converter=_js.Object.fromEntries),
-            )
-        except Exception:
-            pass  # not running in Pyodide WASM
+        _solved = True
     except NotImplementedError as e:
         _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
         _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    # --- capture & report (runs every time, pass or fail) ---
+    try:
+        import inspect as _inspect, json as _json, js as _js
+        from pyodide.ffi import to_js as _to_js
+        _srcs = []
+        for _fn in (calc_gradient, update_weights,):
+            try:
+                _srcs.append(_inspect.getsource(_fn))
+            except Exception:
+                pass
+        _payload = _json.dumps({"notebookId": "gradient_descent/full_gd", "code": "\n\n".join(_srcs), "solved": bool(_solved)})
+        if _solved:
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/full_gd"})))
+            _ch.close()
+        _js.fetch("/api/notebook-progress", _to_js(
+            {"method": "POST", "headers": {"Content-Type": "application/json"},
+             "credentials": "include", "body": _payload},
+            dict_converter=_js.Object.fromEntries))
+    except Exception:
+        pass  # not running in Pyodide WASM
     mo.output.replace(_result)
     return
 

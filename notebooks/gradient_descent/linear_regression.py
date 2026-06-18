@@ -32,7 +32,7 @@ def _(mo):
 
 @app.cell
 def _(np):
-    # ── Your implementation ───────────────────────────────────────────────────
+    # --- student: begin ---
 
     class LinearRegression:
         def __init__(self, lambda_: float = 0.01, s0: float = 1.0,
@@ -58,7 +58,7 @@ def _(np):
             """Return Xw."""
             raise NotImplementedError("Implement LinearRegression.predict()")
 
-    # ─────────────────────────────────────────────────────────────────────────
+    # --- student: end ---
     return LinearRegression,
 
 
@@ -69,6 +69,7 @@ def _(LinearRegression, mo, np):
     w_true = np.array([1.0, -2.0, 0.5])
     y_tr = X_tr @ w_true + 0.05 * rng.standard_normal(100)
 
+    _solved = False
     try:
         model = LinearRegression(lambda_=0.1, max_iter=2000)
         model.fit(X_tr, y_tr)
@@ -88,27 +89,32 @@ def _(LinearRegression, mo, np):
             f"{len(model.loss_history)} iterations, "
             f"w ≈ {np.round(model.w, 2)}"
         ), kind="success")
-        try:
-            from pyodide.ffi import to_js as _to_js
-            import json as _json, js as _js
-            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/linear_regression"})
-            _ch = _js.BroadcastChannel.new("mlp-notebooks")
-            _ch.postMessage(_js.JSON.parse(_nb_data))
-            _ch.close()
-            _js.fetch(
-                "/api/notebook-progress",
-                _to_js({"method": "POST",
-                         "headers": {"Content-Type": "application/json"},
-                         "credentials": "include",
-                         "body": _nb_data},
-                        dict_converter=_js.Object.fromEntries),
-            )
-        except Exception:
-            pass  # not running in Pyodide WASM
+        _solved = True
     except NotImplementedError as e:
         _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
         _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    # --- capture & report (runs every time, pass or fail) ---
+    try:
+        import inspect as _inspect, json as _json, js as _js
+        from pyodide.ffi import to_js as _to_js
+        _srcs = []
+        for _fn in (LinearRegression,):
+            try:
+                _srcs.append(_inspect.getsource(_fn))
+            except Exception:
+                pass
+        _payload = _json.dumps({"notebookId": "gradient_descent/linear_regression", "code": "\n\n".join(_srcs), "solved": bool(_solved)})
+        if _solved:
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/linear_regression"})))
+            _ch.close()
+        _js.fetch("/api/notebook-progress", _to_js(
+            {"method": "POST", "headers": {"Content-Type": "application/json"},
+             "credentials": "include", "body": _payload},
+            dict_converter=_js.Object.fromEntries))
+    except Exception:
+        pass  # not running in Pyodide WASM
     mo.output.replace(_result)
     return
 

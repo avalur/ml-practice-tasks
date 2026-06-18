@@ -225,6 +225,21 @@ export function SolveWorkspace({
   const onReset = () => {
     setCode(starter);
     localStorage.removeItem(storageKey);
+    setAllPassed(false);
+    postedRef.current = null; // allow re-saving after a fresh solve
+    if (!session?.user) return;
+    // Wipe submissions + progress, THEN tell the sidebar to drop the ✓. We fire
+    // the event only after the DELETE resolves so the sidebar's reconciling
+    // refresh doesn't race the delete and re-add the badge.
+    fetch(`/api/progress?problemId=${encodeURIComponent(meta.id)}`, {
+      method: "DELETE",
+    })
+      .then(() => {
+        window.dispatchEvent(
+          new CustomEvent("mlp:progress-reset", { detail: { problemId: meta.id } }),
+        );
+      })
+      .catch(() => {});
   };
 
   // Cmd/Ctrl+Enter to run, from anywhere on the page (incl. the editor).

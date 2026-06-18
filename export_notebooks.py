@@ -116,6 +116,80 @@ def patch_html(html: str) -> str:
     return html.replace(ASSETS_MARKER, SHARED_ASSETS)
 
 
+# marimo's entry module (read out and re-added by our restore script so booting
+# is gated until after we patch <marimo-code>).
+_MARIMO_ENTRY_RE = _re.compile(
+    r'<script\s+type="module"[^>]*\ssrc="([^"]+)"[^>]*>\s*</script>'
+)
+
+# Restore script: fetch the student's saved code, patch the <marimo-code> element,
+# THEN boot marimo by appending its entry module. Gating the boot eliminates the
+# race where marimo reads the code before the async fetch resolves. Always boots
+# (in `finally`), so logged-out / no-saved-code falls through to the starter.
+_RESTORE_SCRIPT = """\
+<script>
+(function () {
+  var NB_ID = "%(id)s";
+  var BOOT_SRC = "%(src)s";
+  var BEGIN = "# --- student: begin ---";
+  var END = "# --- student: end ---";
+  function boot() {
+    var s = document.createElement("script");
+    s.type = "module";
+    s.crossOrigin = "anonymous";
+    s.src = BOOT_SRC;
+    document.head.appendChild(s);
+  }
+  function reindent(code) {
+    var lines = code.replace(/\\t/g, "    ").split("\\n");
+    var min = Infinity;
+    lines.forEach(function (l) {
+      if (l.trim() === "") return;
+      var n = l.match(/^ */)[0].length;
+      if (n < min) min = n;
+    });
+    if (!isFinite(min)) min = 0;
+    return lines.map(function (l) {
+      return l.trim() === "" ? "" : "    " + l.slice(min);
+    }).join("\\n").replace(/\\s+$/, "");
+  }
+  function patch(d) {
+    if (!d || typeof d.code !== "string" || !d.code.trim()) return;
+    var el = document.querySelector("marimo-code");
+    if (!el) return;
+    var src = decodeURIComponent(el.textContent || "");
+    var b = src.indexOf(BEGIN), e = src.indexOf(END);
+    if (b === -1 || e === -1 || e < b) return;
+    var bodyStart = src.indexOf("\\n", b) + 1;   // just after the begin line
+    var endLine = src.lastIndexOf("\\n", e) + 1;  // start of the end-marker line
+    el.textContent = encodeURIComponent(
+      src.slice(0, bodyStart) + reindent(d.code) + "\\n" + src.slice(endLine));
+  }
+  fetch("/api/notebook-progress?notebookId=" + encodeURIComponent(NB_ID),
+        { credentials: "include" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(patch)
+    .catch(function () {})
+    .finally(boot);
+})();
+</script>
+"""
+
+
+def _inject_restore_script(html: str, nb_id: str) -> str:
+    """Strip marimo's entry module and re-add it via a code-restore script that
+    boots marimo only after patching <marimo-code> (deterministic, no race)."""
+    m = _MARIMO_ENTRY_RE.search(html)
+    if not m:
+        return html  # unexpected layout — leave as-is rather than break boot
+    boot_src = m.group(1)
+    html = html[: m.start()] + html[m.end():]  # remove the entry module
+    script = _RESTORE_SCRIPT % {"id": nb_id, "src": boot_src}
+    if "</head>" in html:
+        return html.replace("</head>", script + "</head>", 1)
+    return script + html
+
+
 def export_notebook(src: Path, out_html: Path, shared_dir: Path) -> None:
     """Export one notebook: reuse shared assets, write patched index.html."""
     patched_src = _patch_source_hide_markdown(src.read_text(encoding="utf-8"))
@@ -145,10 +219,12 @@ def export_notebook(src: Path, out_html: Path, shared_dir: Path) -> None:
                 shutil.rmtree(shared_dir)
                 shutil.copytree(tmp_assets, shared_dir)
 
-        # Patch asset paths and write index.html
+        # Patch asset paths, inject the code-restore script, write index.html
         raw_html = (tmp_path / "index.html").read_text(encoding="utf-8")
+        nb_id = f"{src.parent.name}/{src.stem}"
+        html = _inject_restore_script(patch_html(raw_html), nb_id)
         out_html.parent.mkdir(parents=True, exist_ok=True)
-        out_html.write_text(patch_html(raw_html), encoding="utf-8")
+        out_html.write_text(html, encoding="utf-8")
 
 
 def notebook_hash(src: Path) -> str:

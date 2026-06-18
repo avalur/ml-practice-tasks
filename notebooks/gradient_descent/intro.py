@@ -48,7 +48,7 @@ def _(mo):
 
 @app.cell
 def _(np):
-    # ── Your implementation ───────────────────────────────────────────────────
+    # --- student: begin ---
 
     def mse_loss(X: np.ndarray, y: np.ndarray, w: np.ndarray) -> float:
         """MSE loss  Q(w) = mean((Xw - y)^2)"""
@@ -58,7 +58,7 @@ def _(np):
         """Gradient of MSE:  ∇Q(w) = 2/ℓ · Xᵀ(Xw − y)"""
         raise NotImplementedError("Implement mse_gradient")
 
-    # ─────────────────────────────────────────────────────────────────────────
+    # --- student: end ---
     return mse_gradient, mse_loss
 
 
@@ -71,6 +71,7 @@ def _(mo, mse_gradient, mse_loss, np):
     y = X @ w_true + 0.1 * rng.standard_normal(50)
     w = np.zeros(3)
 
+    _solved = False
     try:
         loss = mse_loss(X, y, w)
         assert isinstance(loss, float | np.floating), "mse_loss must return a scalar"
@@ -85,27 +86,32 @@ def _(mo, mse_gradient, mse_loss, np):
             f"mse_gradient: values differ from expected"
 
         _result = mo.callout(mo.md("✅ Both `mse_loss` and `mse_gradient` are correct!"), kind="success")
-        try:
-            from pyodide.ffi import to_js as _to_js
-            import json as _json, js as _js
-            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/intro"})
-            _ch = _js.BroadcastChannel.new("mlp-notebooks")
-            _ch.postMessage(_js.JSON.parse(_nb_data))
-            _ch.close()
-            _js.fetch(
-                "/api/notebook-progress",
-                _to_js({"method": "POST",
-                         "headers": {"Content-Type": "application/json"},
-                         "credentials": "include",
-                         "body": _nb_data},
-                        dict_converter=_js.Object.fromEntries),
-            )
-        except Exception:
-            pass  # not running in Pyodide WASM
+        _solved = True
     except NotImplementedError as e:
         _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
         _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    # --- capture & report (runs every time, pass or fail) ---
+    try:
+        import inspect as _inspect, json as _json, js as _js
+        from pyodide.ffi import to_js as _to_js
+        _srcs = []
+        for _fn in (mse_gradient, mse_loss,):
+            try:
+                _srcs.append(_inspect.getsource(_fn))
+            except Exception:
+                pass
+        _payload = _json.dumps({"notebookId": "gradient_descent/intro", "code": "\n\n".join(_srcs), "solved": bool(_solved)})
+        if _solved:
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/intro"})))
+            _ch.close()
+        _js.fetch("/api/notebook-progress", _to_js(
+            {"method": "POST", "headers": {"Content-Type": "application/json"},
+             "credentials": "include", "body": _payload},
+            dict_converter=_js.Object.fromEntries))
+    except Exception:
+        pass  # not running in Pyodide WASM
     mo.output.replace(_result)
     return
 

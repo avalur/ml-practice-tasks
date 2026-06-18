@@ -31,7 +31,7 @@ def _(mo):
 
 @app.cell
 def _(np):
-    # ── Your implementation ───────────────────────────────────────────────────
+    # --- student: begin ---
 
     def adagrad_step(X: np.ndarray, y: np.ndarray, w: np.ndarray,
                      G: np.ndarray, eta: float, eps: float = 1e-8
@@ -42,7 +42,7 @@ def _(np):
         """
         raise NotImplementedError("Implement adagrad_step")
 
-    # ─────────────────────────────────────────────────────────────────────────
+    # --- student: end ---
     return adagrad_step,
 
 
@@ -53,6 +53,7 @@ def _(adagrad_step, mo, np):
     w_true = np.array([1.0, -2.0, 1.5])
     y = X @ w_true + 0.05 * rng.standard_normal(50)
 
+    _solved = False
     try:
         w0 = np.zeros(3)
         G0 = np.zeros(3)
@@ -81,27 +82,32 @@ def _(adagrad_step, mo, np):
             f"✅ Adagrad correct! 500 steps → MSE = {loss:.5f}, "
             f"w ≈ {np.round(w_cur, 3)}"
         ), kind="success")
-        try:
-            from pyodide.ffi import to_js as _to_js
-            import json as _json, js as _js
-            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/adagrad"})
-            _ch = _js.BroadcastChannel.new("mlp-notebooks")
-            _ch.postMessage(_js.JSON.parse(_nb_data))
-            _ch.close()
-            _js.fetch(
-                "/api/notebook-progress",
-                _to_js({"method": "POST",
-                         "headers": {"Content-Type": "application/json"},
-                         "credentials": "include",
-                         "body": _nb_data},
-                        dict_converter=_js.Object.fromEntries),
-            )
-        except Exception:
-            pass  # not running in Pyodide WASM
+        _solved = True
     except NotImplementedError as e:
         _result = mo.callout(mo.md(f"✏️ {e}"), kind="neutral")
     except Exception as e:
         _result = mo.callout(mo.md(f"❌ {e}"), kind="danger")
+    # --- capture & report (runs every time, pass or fail) ---
+    try:
+        import inspect as _inspect, json as _json, js as _js
+        from pyodide.ffi import to_js as _to_js
+        _srcs = []
+        for _fn in (adagrad_step,):
+            try:
+                _srcs.append(_inspect.getsource(_fn))
+            except Exception:
+                pass
+        _payload = _json.dumps({"notebookId": "gradient_descent/adagrad", "code": "\n\n".join(_srcs), "solved": bool(_solved)})
+        if _solved:
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "gradient_descent/adagrad"})))
+            _ch.close()
+        _js.fetch("/api/notebook-progress", _to_js(
+            {"method": "POST", "headers": {"Content-Type": "application/json"},
+             "credentials": "include", "body": _payload},
+            dict_converter=_js.Object.fromEntries))
+    except Exception:
+        pass  # not running in Pyodide WASM
     mo.output.replace(_result)
     return
 

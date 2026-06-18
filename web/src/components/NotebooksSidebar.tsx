@@ -21,26 +21,26 @@ export function NotebooksSidebar({ sections }: { sections: Section[] }) {
 
   useEffect(() => { fetchSolved(); }, [fetchSolved]);
 
-  // Listen for postMessage from marimo iframe on test success
+  // Listen for BroadcastChannel messages from the Pyodide Worker inside the
+  // marimo iframe. (Pyodide runs in a Web Worker where window is unavailable,
+  // so we can't use window.postMessage — BroadcastChannel works cross-thread.)
   useEffect(() => {
-    const handler = (e: MessageEvent) => {
-      if (e.data?.type !== "mlp:notebook-solved") return;
-      const notebookId = e.data.notebookId;
-      if (typeof notebookId !== "string") return;
-
-      // Optimistic update
-      setSolved((prev) => prev.has(notebookId) ? prev : new Set(prev).add(notebookId));
-
-      // Persist to DB (fire-and-forget)
-      fetch("/api/notebook-progress", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ notebookId }),
-      }).catch(() => {});
-    };
-
-    window.addEventListener("message", handler);
-    return () => window.removeEventListener("message", handler);
+    let channel: BroadcastChannel | null = null;
+    try {
+      channel = new BroadcastChannel("mlp-notebooks");
+      channel.onmessage = (e) => {
+        if (e.data?.type !== "mlp:notebook-solved") return;
+        const notebookId = e.data.notebookId;
+        if (typeof notebookId !== "string") return;
+        // Optimistic update — the Pyodide code already called the API directly
+        setSolved((prev) =>
+          prev.has(notebookId) ? prev : new Set(prev).add(notebookId)
+        );
+      };
+    } catch {
+      // BroadcastChannel not available (old browser) — fall back to polling
+    }
+    return () => channel?.close();
   }, []);
 
   if (collapsed) {

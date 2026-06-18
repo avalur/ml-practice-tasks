@@ -92,10 +92,19 @@ def _(NeuralNetwork, mo, np):
 
         _result = mo.callout(mo.md("✅ NeuralNetwork initialised correctly!"), kind="success")
         try:
+            from pyodide.ffi import to_js as _to_js
             import json as _json, js as _js
-            _js.window.parent.postMessage(
-                _js.JSON.parse(_json.dumps({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/intro"})),
-                "*",
+            _nb_data = _json.dumps({"type": "mlp:notebook-solved", "notebookId": "simple_neural_network/intro"})
+            _ch = _js.BroadcastChannel.new("mlp-notebooks")
+            _ch.postMessage(_js.JSON.parse(_nb_data))
+            _ch.close()
+            _js.fetch(
+                "/api/notebook-progress",
+                _to_js({"method": "POST",
+                         "headers": {"Content-Type": "application/json"},
+                         "credentials": "include",
+                         "body": _nb_data},
+                        dict_converter=_js.Object.fromEntries),
             )
         except Exception:
             pass  # not running in Pyodide WASM

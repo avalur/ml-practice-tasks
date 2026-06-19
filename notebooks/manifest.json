@@ -58,7 +58,17 @@
       "description": "Classic array and image manipulation problems commonly asked in ML engineering interviews — implement from scratch using NumPy.",
       "order": 5,
       "notebooks": [
-        { "slug": "image_rotation", "title": "Image Rotation", "difficulty": "medium" }
+        { "slug": "image_rotation",      "title": "Image Rotation",                          "difficulty": "medium" },
+        { "slug": "top_k_frequent",      "title": "Top K Frequent Elements",                 "difficulty": "medium" },
+        { "slug": "kth_largest",         "title": "Kth Largest Element",                     "difficulty": "medium" },
+        { "slug": "two_sum",             "title": "Two Sum",                                  "difficulty": "easy"   },
+        { "slug": "valid_anagram",       "title": "Valid Anagram",                            "difficulty": "easy"   },
+        { "slug": "longest_substring",   "title": "Longest Substring Without Repeating",     "difficulty": "medium" },
+        { "slug": "merge_intervals",     "title": "Merge Intervals",                          "difficulty": "medium" },
+        { "slug": "number_of_islands",   "title": "Number of Islands",                        "difficulty": "medium" },
+        { "slug": "lru_cache",           "title": "LRU Cache",                                "difficulty": "hard"   },
+        { "slug": "sparse_dot_product",  "title": "Sparse Dot Product",                      "difficulty": "medium" },
+        { "slug": "knn_from_scratch",    "title": "kNN from Scratch",                         "difficulty": "hard"   }
       ]
     }
   ]

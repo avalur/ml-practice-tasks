@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <!-- Preload is necessary because we show these images when we disconnect from the server,
+    but at that point we cannot load these images from the server -->
+    <link rel="preload" href="/notebooks/_shared/gradient-yHQUC_QB.png" as="image" />
+    <link rel="preload" href="/notebooks/_shared/noise-60BoTA8O.png" as="image" />
+    <!-- Preload the fonts -->
+    <link rel="preload" href="/notebooks/_shared/Lora-VariableFont_wght-CZceb_kH.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Regular-Bam3NpBI.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/PTSans-Bold-C_DwAp7Z.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Regular-CEsLFVD9.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Medium-D5MAsWEG.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+    <link rel="preload" href="/notebooks/_shared/FiraMono-Bold-C6PDArdf.woff2" as="font" type="font/woff2" crossorigin="anonymous" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="a marimo app" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <link rel="manifest" href="./manifest.json" />
+
+    <script data-marimo="true">
+      function __resizeIframe(obj) {
+        const scrollbarHeight = 20; // Max between windows, mac, and linux
+
+        function setHeight() {
+          // Guard against race condition where iframe isn't ready
+          if (!obj.contentWindow?.document?.documentElement) {
+            return;
+          }
+          const element = obj.contentWindow.document.documentElement;
+          // If there is no vertical scrollbar, we don't need to resize the iframe
+          if (element.scrollHeight === element.clientHeight) {
+            return;
+          }
+
+          // Create a new height that includes the scrollbar height if it's visible
+          const hasHorizontalScrollbar = element.scrollWidth > element.clientWidth;
+          const newHeight = element.scrollHeight + (hasHorizontalScrollbar ? scrollbarHeight : 0);
+
+          // Only update the height if it's different from the current height
+          if (obj.style.height !== `${newHeight}px`) {
+            obj.style.height = `${newHeight}px`;
+          }
+        }
+
+        // Resize the iframe to the height of the content and bottom scrollbar height
+        setHeight();
+
+        // Resize the iframe when the content changes
+        const resizeObserver = new ResizeObserver((_entries) => {
+          setHeight();
+        });
+        // Only observe if iframe content is ready
+        if (obj.contentWindow?.document?.body) {
+          resizeObserver.observe(obj.contentWindow.document.body);
+        }
+      }
+    </script>
+    <marimo-filename hidden>notebook.py</marimo-filename>
+    <!-- TODO(Trevor): Legacy, required by VS Code plugin. Remove when plugin is updated (see marimo/server/_templates/template.py) -->
+    <marimo-version data-version="{{ version }}" hidden></marimo-version>
+    <marimo-user-config data-config="{{ user_config }}" hidden></marimo-user-config>
+    <marimo-server-token data-token="{{ server_token }}" hidden></marimo-server-token>
+    <!-- /TODO -->
+    <title>longest substring</title>
+    
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/preload-helper-BPPi7vOr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-LvLJmgfZ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-Bj1aDYRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/compiler-runtime-B3qBwwSJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/jsx-runtime-BqBOg78p.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEventListener-DvoEXWke.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-BLUna9fQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/precisionRound-Cl9k9ZmS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/defaultLocale-DzliDDTm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/vega-loader.browser-C8wT63Va.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-DCL4n9wx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/clsx-Dz_KRrWq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cn-DCUzRj2J.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/badge-j3NGjqhR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/button-BbCh-29a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-dom-CSu739Rf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fullscreen-eipL3i3Y.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/menu-items-DcP01QzW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BdyjRhEt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createLucideIcon-D5guW7EU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/check-BH35Ndha.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/x-C-6liIBr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/select-DZcFyKFQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tooltip-DTV9tlSr.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/use-toast-IPAtJGea.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useEvent-D91BmmQi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/invariant-BUdrueMv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isObject-DvLSfCY5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseFor-DKD1r8uL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/merge-_9WLTEyt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/zod-H_cgTO0M.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/utils-CvI-39U6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/Deferred-CP7vq682.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/uuid-e9lSomwA.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/DeferredRequestRegistry-CNldVcrP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/constants-DMpttj8Q.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/session-0B5NBztP.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/config-ClMcu_sV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/requests-DIwGYs0l.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useLifecycle-DieWOfXE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNonce-DfoVjkkH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useTheme-CI2eq4XN.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/arrays-DYDL-3-i.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/strings-wdPMRf6Z.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/once-DRroIaBz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/capabilities-A_KhFcGV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/createReducer-CI9qeK_X.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/paths-D5zczhUD.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-BrR4M-k3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-HlsDto3K.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CHcznzB-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-B1U1kGCR.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-ChF5Ln9c.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CpTFpfm_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CBSMxaO_.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-CPczQFlJ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dist-C9ZB41s2.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/stex-BGrE-q7N.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/toDate-B5A0DFEz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/purify.es-B9KxLTTS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cjs-BRGiG41H.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isSymbol-BT6B8Bon.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/now-CsYTPAhW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/debounce-DhnxH9Rh.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/database-zap-kIkTfzTX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/main-B0OX4z33.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cells-BsaJrRWi.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ErrorBoundary-DyYDV0HI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/kbd-CTUAEnEx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useInstallPackage-DUF4IRRI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-dialog-BqFLkbUc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dialog-DzC_QCtT.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDebounce-7xZwVnnu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/numbers-C3BAdHZE.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/SSRProvider-CkFAAHXw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/context-QkTujrKn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useNumberFormatter-ByUv-u9o.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/usePress-DQ_tAz5W.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/input-C3Hrdlqq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ImperativeModal-B3Th7k4R.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/cell-link-B1pHtGWp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/multi-map-CUuNtzHt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/alert-yTS3WpF4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chevron-right-CG5QYXYk.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dropdown-menu-CR7cnzLX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/links-D1JoyKTt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useRunCells-BiCBGyeW.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-LK56fFow.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-BwrPA9zQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/copy-icon-OjtDb4gO.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RenderHTML-ChwPJgPd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/datasource-DjDpJnbt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-D-2KaAHK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/package-Tv6ztuzw.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/sparkles-lWUAsPhp.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/MarimoErrorOutput-B0h5OVW9.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spinner-Bhir8k53.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/html-to-image-BWL3Ct4n.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/focus-q38vUCl-.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useAsyncData-bgszE9F0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/LazyAnyLanguageCodeMirror-BEvXb3VX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/micromark-factory-space-BygYYKhs.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chunk-5FQGJX7Z-D9iBG0F7.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/markdown-renderer-CU5Lbyax.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/command-KARR7KMq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/field-zLmMOSA4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/popover-Bz_0Vkyf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/errors-vr57w7Ul.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/download-DT8gf0PL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-BGPSHfig.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useIframeCapabilities-CcI1zSdn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/error-banner-LdWZDbqd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/formats-b7Sf6DAK.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/en-US-Cb8rIK52.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/isValid-CklTTytn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/dates-CTxr0EqQ.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/maps-n3GaPJwv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/extends-BiFDv3jB.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/emotion-is-prop-valid.esm-C59xfSYt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDateFormatter-ICIDGgHf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-icons.esm-BNzu6e7h.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/RSPContexts-CdN1NyAt.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/table-6NxtGaCm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-KAhMaCIV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/external-link-BTNxSavU.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/message-circle-CWm2KnSx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/plus-BgB18UzY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/trash-2-rVklqqFF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/react-resizable-panels.browser.esm-CV8-hvjx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/JsonOutput-BJaeXQim.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/chart-no-axes-column-nqk474t8.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-function-uY_yJr5g.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/spec-CPQR_o92.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/ellipsis-vertical-CkwWkOQL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-cw-DHwG4Mac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/tree-actions-BM_EJr3E.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/components-BzBUxUz0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/column-preview-BPismotx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/icons-Ol38nIbL.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/radio-group-DlVSuZ_1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/floating-outline-BN9sAcQ0.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/objectWithoutPropertiesLoose-DfWeGRFv.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/esm-CqWdmSnV.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/readonly-python-code-D3_kHsDx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-headphone-BrQspHac.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-BrdxGLRX.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/image-DQHXdEQn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/file-icons-BiMOJy0r.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/switch-BiU_sAcn.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/events-CPoJAfgx.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/globals-7JnRMGd4.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/share-DMwTZOTH.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/blob-Bgnx1kuY.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/memoize-Tp7rARFe.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/get-C-qh_et5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/_baseSet-CxV9N1bc.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/state-BTTshiKq.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/label-xHqFtfdz.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/textarea-DwltG8V6.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/refresh-ccw-C-n2VFP5.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/form-BtBTvVVd.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/renderShortcut-CcFk3m01.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useBoolean-Bp18o6XG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/useDeepCompareMemoize-zUHU--0D.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/types-W8WWuumF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/semaphore-FlZezxaf.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/fileToBase64-DZfwJMrG.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pathUtils-CJjndqMI.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/prop-types-DaaA-ptl.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/es-DGgq-Wes.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/hasIn-DiS_ryrS.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/flatten-Dl4V1ub3.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/pick-DqWUNly1.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/code-xml-CZN6vNxu.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/house-mGK3v0Mm.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/square-B5xWCt0a.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/triangle-alert-D2p96PEF.js">
+    <link rel="modulepreload" crossorigin href="/notebooks/_shared/bundle.esm-DjhGJy4I.js">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/cells-jmgGt1lS.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/markdown-renderer-DdDKmWlR.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/JsonOutput-B7vuddcd.css">
+    <link rel="stylesheet" crossorigin href="/notebooks/_shared/index-BIw7BKLH.css">
+  <marimo-wasm hidden=""></marimo-wasm>
+    <script>
+        if (window.location.protocol === 'file:') {
+            alert('Warning: This file must be served by an HTTP server to function correctly.');
+        }
+    </script>
+    
+    <style>
+        #save-button {
+            display: none !important;
+        }
+        #filename-input {
+            display: none !important;
+        }
+    </style>
+    
+<script data-marimo="true">
+    Object.defineProperty(window, "__MARIMO_EXPORT_CONTEXT__", {
+        value: Object.freeze({
+            trusted: true,
+            notebookCode: "import marimo\n\n__generated_with = \"0.23.9\"\napp = marimo.App(width=\"medium\")\n\n\n@app.cell\ndef _():\n    import marimo as mo\n\n    return (mo,)\n\n\n@app.cell(hide_code=True)\ndef _(mo):\n    mo.md(r\"\"\"\n    # Longest Substring Without Repeating Characters\n\n    **LeetCode 3 \u00b7 NeetCode 150 \u2014 Sliding Window**\n\n    Given a string `s`, return the length of the longest substring that\n    contains no repeating characters.\n\n    **ML relevance**: the sliding window pattern recurs in sequence modelling \u2014\n    attention windows, context windows, session-based recommendation, temporal\n    feature extraction from event streams.  Mastering it means you can reason\n    about rolling statistics and bounded-memory processing.\n\n    ## Expected approach \u2014 sliding window, O(n)\n\n    Maintain a window `[left, right)` and a set of characters currently in it.\n    Advance `right`; whenever `s[right]` is already in the set, shrink from\n    `left` until the duplicate is removed.\n\n    ```python\n    left = 0\n    seen = set()\n    best = 0\n    for right, ch in enumerate(s):\n        while ch in seen:\n            seen.remove(s[left])\n            left += 1\n        seen.add(ch)\n        best = max(best, right - left + 1)\n    return best\n    ```\n\n    The dict variant stores the last-seen index of each character and jumps\n    `left` directly \u2014 same O(n) but fewer iterations.\n    \"\"\")\n    return\n\n\n@app.cell\ndef _():\n    # --- student: begin ---\n\n    def lengthOfLongestSubstring(s: str) -\u003E int:\n        \"\"\"Return the length of the longest substring with all unique characters.\n\n        Args:\n            s: input string (may contain letters, digits, spaces, symbols)\n\n        Returns:\n            Length of the longest such substring (0 if s is empty).\n        \"\"\"\n        raise NotImplementedError(\"Implement lengthOfLongestSubstring\")\n\n    # --- student: end ---\n    return (lengthOfLongestSubstring,)\n\n\n@app.cell\ndef _(lengthOfLongestSubstring, mo):\n    def _oracle(s):\n        best = 0\n        for i in range(len(s)):\n            seen = set()\n            for j in range(i, len(s)):\n                if s[j] in seen:\n                    break\n                seen.add(s[j])\n                best = max(best, j - i + 1)\n        return best\n\n    _cases = [\n        (\"abcabcbb\", 3),\n        (\"bbbbb\",    1),\n        (\"pwwkew\",   3),\n        (\"\",         0),\n        (\"au\",       2),\n        (\" \",        1),\n        (\"dvdf\",     3),\n        (\"abcdefg\",  7),\n        (\"aab\",      2),\n    ]\n\n    _solved = False\n    try:\n        for _s, _expected in _cases:\n            _got = lengthOfLongestSubstring(_s)\n            assert _got == _expected, \\\n                f\"lengthOfLongestSubstring('{_s}'): expected {_expected}, got {_got}\"\n\n        _result = mo.callout(mo.md(\n            \"\u2705 `lengthOfLongestSubstring` is correct on all test cases!\"\n        ), kind=\"success\")\n        _solved = True\n    except NotImplementedError as e:\n        _result = mo.callout(mo.md(f\"\u270f\ufe0f {e}\"), kind=\"neutral\")\n    except Exception as e:\n        _result = mo.callout(mo.md(f\"\u274c {e}\"), kind=\"danger\")\n    # --- capture \u0026 report ---\n    try:\n        import inspect as _inspect, json as _json, js as _js\n        from pyodide.ffi import to_js as _to_js\n        _srcs = []\n        for _fn in (lengthOfLongestSubstring,):\n            try:\n                _srcs.append(_inspect.getsource(_fn))\n            except Exception:\n                pass\n        _payload = _json.dumps({\"notebookId\": \"ml_interview/longest_substring\",\n                                \"code\": \"\\n\\n\".join(_srcs), \"solved\": bool(_solved)})\n        if _solved:\n            _ch = _js.BroadcastChannel.new(\"mlp-notebooks\")\n            _ch.postMessage(_js.JSON.parse(_json.dumps(\n                {\"type\": \"mlp:notebook-solved\",\n                 \"notebookId\": \"ml_interview/longest_substring\"})))\n            _ch.close()\n        _js.fetch(\"/api/notebook-progress\", _to_js(\n            {\"method\": \"POST\", \"headers\": {\"Content-Type\": \"application/json\"},\n             \"credentials\": \"include\", \"body\": _payload},\n            dict_converter=_js.Object.fromEntries))\n    except Exception:\n        pass\n    mo.output.replace(_result)\n    return\n\n\nif __name__ == \"__main__\":\n    app.run()\n",
+        }),
+        writable: false,
+        configurable: false,
+    });
+</script>
+<marimo-code hidden="">import%20marimo%0A%0A__generated_with%20%3D%20%220.23.9%22%0Aapp%20%3D%20marimo.App(width%3D%22medium%22)%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20import%20marimo%20as%20mo%0A%0A%20%20%20%20return%20(mo%2C)%0A%0A%0A%40app.cell(hide_code%3DTrue)%0Adef%20_(mo)%3A%0A%20%20%20%20mo.md(r%22%22%22%0A%20%20%20%20%23%20Longest%20Substring%20Without%20Repeating%20Characters%0A%0A%20%20%20%20**LeetCode%203%20%C2%B7%20NeetCode%20150%20%E2%80%94%20Sliding%20Window**%0A%0A%20%20%20%20Given%20a%20string%20%60s%60%2C%20return%20the%20length%20of%20the%20longest%20substring%20that%0A%20%20%20%20contains%20no%20repeating%20characters.%0A%0A%20%20%20%20**ML%20relevance**%3A%20the%20sliding%20window%20pattern%20recurs%20in%20sequence%20modelling%20%E2%80%94%0A%20%20%20%20attention%20windows%2C%20context%20windows%2C%20session-based%20recommendation%2C%20temporal%0A%20%20%20%20feature%20extraction%20from%20event%20streams.%20%20Mastering%20it%20means%20you%20can%20reason%0A%20%20%20%20about%20rolling%20statistics%20and%20bounded-memory%20processing.%0A%0A%20%20%20%20%23%23%20Expected%20approach%20%E2%80%94%20sliding%20window%2C%20O(n)%0A%0A%20%20%20%20Maintain%20a%20window%20%60%5Bleft%2C%20right)%60%20and%20a%20set%20of%20characters%20currently%20in%20it.%0A%20%20%20%20Advance%20%60right%60%3B%20whenever%20%60s%5Bright%5D%60%20is%20already%20in%20the%20set%2C%20shrink%20from%0A%20%20%20%20%60left%60%20until%20the%20duplicate%20is%20removed.%0A%0A%20%20%20%20%60%60%60python%0A%20%20%20%20left%20%3D%200%0A%20%20%20%20seen%20%3D%20set()%0A%20%20%20%20best%20%3D%200%0A%20%20%20%20for%20right%2C%20ch%20in%20enumerate(s)%3A%0A%20%20%20%20%20%20%20%20while%20ch%20in%20seen%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20seen.remove(s%5Bleft%5D)%0A%20%20%20%20%20%20%20%20%20%20%20%20left%20%2B%3D%201%0A%20%20%20%20%20%20%20%20seen.add(ch)%0A%20%20%20%20%20%20%20%20best%20%3D%20max(best%2C%20right%20-%20left%20%2B%201)%0A%20%20%20%20return%20best%0A%20%20%20%20%60%60%60%0A%0A%20%20%20%20The%20dict%20variant%20stores%20the%20last-seen%20index%20of%20each%20character%20and%20jumps%0A%20%20%20%20%60left%60%20directly%20%E2%80%94%20same%20O(n)%20but%20fewer%20iterations.%0A%20%20%20%20%22%22%22)%0A%20%20%20%20return%0A%0A%0A%40app.cell%0Adef%20_()%3A%0A%20%20%20%20%23%20---%20student%3A%20begin%20---%0A%0A%20%20%20%20def%20lengthOfLongestSubstring(s%3A%20str)%20-%3E%20int%3A%0A%20%20%20%20%20%20%20%20%22%22%22Return%20the%20length%20of%20the%20longest%20substring%20with%20all%20unique%20characters.%0A%0A%20%20%20%20%20%20%20%20Args%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20s%3A%20input%20string%20(may%20contain%20letters%2C%20digits%2C%20spaces%2C%20symbols)%0A%0A%20%20%20%20%20%20%20%20Returns%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20Length%20of%20the%20longest%20such%20substring%20(0%20if%20s%20is%20empty).%0A%20%20%20%20%20%20%20%20%22%22%22%0A%20%20%20%20%20%20%20%20raise%20NotImplementedError(%22Implement%20lengthOfLongestSubstring%22)%0A%0A%20%20%20%20%23%20---%20student%3A%20end%20---%0A%20%20%20%20return%20(lengthOfLongestSubstring%2C)%0A%0A%0A%40app.cell%0Adef%20_(lengthOfLongestSubstring%2C%20mo)%3A%0A%20%20%20%20def%20_oracle(s)%3A%0A%20%20%20%20%20%20%20%20best%20%3D%200%0A%20%20%20%20%20%20%20%20for%20i%20in%20range(len(s))%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20seen%20%3D%20set()%0A%20%20%20%20%20%20%20%20%20%20%20%20for%20j%20in%20range(i%2C%20len(s))%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20if%20s%5Bj%5D%20in%20seen%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20break%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20seen.add(s%5Bj%5D)%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20best%20%3D%20max(best%2C%20j%20-%20i%20%2B%201)%0A%20%20%20%20%20%20%20%20return%20best%0A%0A%20%20%20%20_cases%20%3D%20%5B%0A%20%20%20%20%20%20%20%20(%22abcabcbb%22%2C%203)%2C%0A%20%20%20%20%20%20%20%20(%22bbbbb%22%2C%20%20%20%201)%2C%0A%20%20%20%20%20%20%20%20(%22pwwkew%22%2C%20%20%203)%2C%0A%20%20%20%20%20%20%20%20(%22%22%2C%20%20%20%20%20%20%20%20%200)%2C%0A%20%20%20%20%20%20%20%20(%22au%22%2C%20%20%20%20%20%20%202)%2C%0A%20%20%20%20%20%20%20%20(%22%20%22%2C%20%20%20%20%20%20%20%201)%2C%0A%20%20%20%20%20%20%20%20(%22dvdf%22%2C%20%20%20%20%203)%2C%0A%20%20%20%20%20%20%20%20(%22abcdefg%22%2C%20%207)%2C%0A%20%20%20%20%20%20%20%20(%22aab%22%2C%20%20%20%20%20%202)%2C%0A%20%20%20%20%5D%0A%0A%20%20%20%20_solved%20%3D%20False%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20for%20_s%2C%20_expected%20in%20_cases%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_got%20%3D%20lengthOfLongestSubstring(_s)%0A%20%20%20%20%20%20%20%20%20%20%20%20assert%20_got%20%3D%3D%20_expected%2C%20%5C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20f%22lengthOfLongestSubstring('%7B_s%7D')%3A%20expected%20%7B_expected%7D%2C%20got%20%7B_got%7D%22%0A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(%0A%20%20%20%20%20%20%20%20%20%20%20%20%22%E2%9C%85%20%60lengthOfLongestSubstring%60%20is%20correct%20on%20all%20test%20cases!%22%0A%20%20%20%20%20%20%20%20)%2C%20kind%3D%22success%22)%0A%20%20%20%20%20%20%20%20_solved%20%3D%20True%0A%20%20%20%20except%20NotImplementedError%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9C%8F%EF%B8%8F%20%7Be%7D%22)%2C%20kind%3D%22neutral%22)%0A%20%20%20%20except%20Exception%20as%20e%3A%0A%20%20%20%20%20%20%20%20_result%20%3D%20mo.callout(mo.md(f%22%E2%9D%8C%20%7Be%7D%22)%2C%20kind%3D%22danger%22)%0A%20%20%20%20%23%20---%20capture%20%26%20report%20---%0A%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20import%20inspect%20as%20_inspect%2C%20json%20as%20_json%2C%20js%20as%20_js%0A%20%20%20%20%20%20%20%20from%20pyodide.ffi%20import%20to_js%20as%20_to_js%0A%20%20%20%20%20%20%20%20_srcs%20%3D%20%5B%5D%0A%20%20%20%20%20%20%20%20for%20_fn%20in%20(lengthOfLongestSubstring%2C)%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20try%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20_srcs.append(_inspect.getsource(_fn))%0A%20%20%20%20%20%20%20%20%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20pass%0A%20%20%20%20%20%20%20%20_payload%20%3D%20_json.dumps(%7B%22notebookId%22%3A%20%22ml_interview%2Flongest_substring%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22code%22%3A%20%22%5Cn%5Cn%22.join(_srcs)%2C%20%22solved%22%3A%20bool(_solved)%7D)%0A%20%20%20%20%20%20%20%20if%20_solved%3A%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch%20%3D%20_js.BroadcastChannel.new(%22mlp-notebooks%22)%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.postMessage(_js.JSON.parse(_json.dumps(%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%7B%22type%22%3A%20%22mlp%3Anotebook-solved%22%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%20%22notebookId%22%3A%20%22ml_interview%2Flongest_substring%22%7D)))%0A%20%20%20%20%20%20%20%20%20%20%20%20_ch.close()%0A%20%20%20%20%20%20%20%20_js.fetch(%22%2Fapi%2Fnotebook-progress%22%2C%20_to_js(%0A%20%20%20%20%20%20%20%20%20%20%20%20%7B%22method%22%3A%20%22POST%22%2C%20%22headers%22%3A%20%7B%22Content-Type%22%3A%20%22application%2Fjson%22%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20%20%22credentials%22%3A%20%22include%22%2C%20%22body%22%3A%20_payload%7D%2C%0A%20%20%20%20%20%20%20%20%20%20%20%20dict_converter%3D_js.Object.fromEntries))%0A%20%20%20%20except%20Exception%3A%0A%20%20%20%20%20%20%20%20pass%0A%20%20%20%20mo.output.replace(_result)%0A%20%20%20%20return%0A%0A%0Aif%20__name__%20%3D%3D%20%22__main__%22%3A%0A%20%20%20%20app.run()%0A</marimo-code><script>
+(function () {
+  var NB_ID = "ml_interview/longest_substring";
+  var BOOT_SRC = "/notebooks/_shared/index-awsLWRjZ.js";
+  var BEGIN = "# --- student: begin ---";
+  var END = "# --- student: end ---";
+  function boot() {
+    var s = document.createElement("script");
+    s.type = "module";
+    s.crossOrigin = "anonymous";
+    s.src = BOOT_SRC;
+    document.head.appendChild(s);
+  }
+  function reindent(code) {
+    var lines = code.replace(/\t/g, "    ").split("\n");
+    var min = Infinity;
+    lines.forEach(function (l) {
+      if (l.trim() === "") return;
+      var n = l.match(/^ */)[0].length;
+      if (n < min) min = n;
+    });
+    if (!isFinite(min)) min = 0;
+    return lines.map(function (l) {
+      return l.trim() === "" ? "" : "    " + l.slice(min);
+    }).join("\n").replace(/\s+$/, "");
+  }
+  function patch(d) {
+    if (!d || typeof d.code !== "string" || !d.code.trim()) return;
+    var el = document.querySelector("marimo-code");
+    if (!el) return;
+    var src = decodeURIComponent(el.textContent || "");
+    var b = src.indexOf(BEGIN), e = src.indexOf(END);
+    if (b === -1 || e === -1 || e < b) return;
+    var bodyStart = src.indexOf("\n", b) + 1;   // just after the begin line
+    var endLine = src.lastIndexOf("\n", e) + 1;  // start of the end-marker line
+    el.textContent = encodeURIComponent(
+      src.slice(0, bodyStart) + reindent(d.code) + "\n" + src.slice(endLine));
+  }
+  fetch("/api/notebook-progress?notebookId=" + encodeURIComponent(NB_ID),
+        { credentials: "include" })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(patch)
+    .catch(function () {})
+    .finally(boot);
+})();
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+    <!-- This is a portal for the data editor to render in -->
+    <div id="portal" data-testid="glide-portal" style="position: fixed; left: 0; top: 0; z-index: 9999"></div>
+    <script data-marimo="true">
+      Object.defineProperty(window, "__MARIMO_MOUNT_CONFIG__", {
+        value: Object.freeze({
+            "filename": "notebook.py",
+            "cwd": "",
+            "lspWorkspace": null,
+            "mode": "edit",
+            "version": "0.23.9",
+            "serverToken": "unused",
+            "config": {"ai": {"custom_providers": {}, "enabled": true, "models": {"custom_models": [], "displayed_models": []}}, "completion": {"activate_on_typing": true, "auto_close_pairs": true, "copilot": false, "signature_hint_on_typing": false}, "diagnostics": {"sql_linter": true}, "display": {"cell_output": "below", "code_editor_font_size": 14, "dataframes": "rich", "default_table_max_columns": 50, "default_table_page_size": 10, "default_width": "medium", "reference_highlighting": true, "theme": "light"}, "formatting": {"line_length": 79}, "keymap": {"overrides": {}, "preset": "default"}, "language_servers": {"pylsp": {"enable_flake8": false, "enable_mypy": true, "enable_pydocstyle": false, "enable_pyflakes": false, "enable_pylint": false, "enable_ruff": true, "enabled": false}}, "mcp": {"mcpServers": {}, "presets": []}, "package_management": {"manager": "pip"}, "runtime": {"auto_instantiate": false, "auto_reload": "off", "default_csv_encoding": "utf-8", "default_sql_output": "auto", "on_cell_change": "autorun", "output_max_bytes": 8000000, "reactive_tests": true, "show_tracebacks": false, "std_stream_max_bytes": 1000000, "watcher_on_save": "lazy"}, "save": {"autosave": "off", "autosave_delay": 1000, "format_on_save": false}, "server": {"browser": "default", "follow_symlink": false}, "snippets": {"custom_paths": [], "include_default_snippets": true}},
+            "configOverrides": {},
+            "appConfig": {"sql_output": "auto", "width": "medium"},
+            "view": {"showAppCode": false},
+            "notebook": null,
+            "session": null,
+            "runtimeConfig": null,
+        }),
+        writable: false,
+        configurable: false,
+      });
+    </script>
+  </body>
+</html>

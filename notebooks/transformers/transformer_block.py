@@ -115,7 +115,7 @@ def _(mo):
     return (feed_forward, layer_norm, transformer_block)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(feed_forward, layer_norm, mo, np, _scaffold_attention_head):
     # (scaffold attention fns available from scaffold cell via marimo dependency)
 

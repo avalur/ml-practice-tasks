@@ -97,7 +97,7 @@ def _(math):
     return (Value,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(Value, mo):
     _solved = False
     try:

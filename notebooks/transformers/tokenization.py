@@ -74,7 +74,7 @@ def _(np):
     return build_vocab, get_embedding_table
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(build_vocab, get_embedding_table, mo, np):
     _solved = False
     try:

@@ -46,7 +46,7 @@ def _(np):
     return adagrad_step,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(adagrad_step, mo, np):
     rng = np.random.default_rng(5)
     X = rng.standard_normal((50, 3))

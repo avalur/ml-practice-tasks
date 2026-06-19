@@ -70,7 +70,7 @@ def _(np):
     return (attention_head,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(attention_head, mo, np):
     # Oracle
     def _oracle(x, Wq, Wk, Wv):

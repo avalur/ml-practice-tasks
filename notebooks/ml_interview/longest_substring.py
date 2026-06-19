@@ -31,19 +31,6 @@ def _(mo):
     Advance `right`; whenever `s[right]` is already in the set, shrink from
     `left` until the duplicate is removed.
 
-    ```python
-    left = 0
-    seen = set()
-    best = 0
-    for right, ch in enumerate(s):
-        while ch in seen:
-            seen.remove(s[left])
-            left += 1
-        seen.add(ch)
-        best = max(best, right - left + 1)
-    return best
-    ```
-
     The dict variant stores the last-seen index of each character and jumps
     `left` directly — same O(n) but fewer iterations.
     """)
@@ -69,7 +56,7 @@ def _():
     return (lengthOfLongestSubstring,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(lengthOfLongestSubstring, mo):
     def _oracle(s):
         best = 0

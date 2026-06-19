@@ -45,7 +45,7 @@ def _(np):
     return momentum_step,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, momentum_step, np):
     rng = np.random.default_rng(3)
     X = rng.standard_normal((60, 2))

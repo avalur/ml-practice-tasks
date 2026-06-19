@@ -71,7 +71,7 @@ def _(np):
     return NeuralNetwork,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(NeuralNetwork, mo, np):
     _solved = False
     try:

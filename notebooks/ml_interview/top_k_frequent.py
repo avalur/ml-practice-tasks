@@ -34,19 +34,6 @@ def _(mo):
     Frequencies are in `[1, n]`, so make `n+1` buckets (bucket i holds
     elements with frequency i), then scan from the right.
 
-    ```python
-    # Bucket sort skeleton
-    count = {}
-    for x in nums: count[x] = count.get(x, 0) + 1
-    buckets = [[] for _ in range(len(nums) + 1)]
-    for val, freq in count.items():
-        buckets[freq].append(val)
-    result = []
-    for freq in range(len(buckets) - 1, 0, -1):
-        result.extend(buckets[freq])
-        if len(result) >= k:
-            return result[:k]
-    ```
     """)
     return
 
@@ -72,7 +59,7 @@ def _():
     return (topKFrequent,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, topKFrequent):
     def _oracle(nums, k):
         count = {}

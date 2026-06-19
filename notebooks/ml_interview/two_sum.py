@@ -32,14 +32,12 @@ def _(mo):
     For each element check whether `target - element` is already in the dict.
     This avoids the O(n²) nested-loop approach the interviewer is watching for.
 
-    ```
     seen = {}
     for i, x in enumerate(nums):
         complement = target - x
         if complement in seen:
             return [seen[complement], i]
         seen[x] = i
-    ```
     """)
     return
 
@@ -64,7 +62,7 @@ def _():
     return (twoSum,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, twoSum):
     def _oracle(nums, target):
         seen = {}

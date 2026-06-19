@@ -102,7 +102,7 @@ def _(mo):
             bnraw_bp, bnvar_inv_bp, bnvar_bp, bndiff2_bp, bndiff_bp, bnmeani_bp)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(b2_bp, bngain_bp, bnbias_bp, bnmeani_bp, bnraw_bp, bnvar_bp,
       bnvar_inv_bp, bndiff2_bp, bndiff_bp, h_bp, hpreact_bp, mo, np, W2_bp):
     rng = np.random.default_rng(3)

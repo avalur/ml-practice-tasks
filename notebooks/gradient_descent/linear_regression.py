@@ -62,7 +62,7 @@ def _(np):
     return LinearRegression,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(LinearRegression, mo, np):
     rng = np.random.default_rng(42)
     X_tr = rng.standard_normal((100, 3))

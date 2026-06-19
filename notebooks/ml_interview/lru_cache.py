@@ -38,28 +38,6 @@ def _(mo):
     Python's `collections.OrderedDict` supports O(1) `move_to_end` and
     `popitem(last=False)`, making the implementation concise:
 
-    ```python
-    from collections import OrderedDict
-
-    class LRUCache:
-        def __init__(self, capacity):
-            self.cap = capacity
-            self.cache = OrderedDict()
-
-        def get(self, key):
-            if key not in self.cache:
-                return -1
-            self.cache.move_to_end(key)
-            return self.cache[key]
-
-        def put(self, key, value):
-            if key in self.cache:
-                self.cache.move_to_end(key)
-            self.cache[key] = value
-            if len(self.cache) > self.cap:
-                self.cache.popitem(last=False)
-    ```
-
     For extra credit: implement the same thing *without* `OrderedDict` using
     a doubly-linked list (head = LRU, tail = MRU) and a plain dict.
     """)
@@ -93,7 +71,7 @@ def _():
     return (LRUCache,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(LRUCache, mo):
     def _run_sequence(capacity, ops):
         """ops: list of ('get', key) or ('put', key, val) tuples."""

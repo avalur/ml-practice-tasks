@@ -29,16 +29,6 @@ def _(mo):
     **Min-heap of size k — O(n log k)**
     Keep a heap of the k largest seen so far; its root is the answer.
 
-    ```python
-    import heapq
-    heap = []
-    for x in nums:
-        heapq.heappush(heap, x)
-        if len(heap) > k:
-            heapq.heappop(heap)
-    return heap[0]
-    ```
-
     **Quickselect — O(n) average** (bonus)
     Partition around a pivot (like quicksort), recurse only into the side
     that contains the k-th position.  Expected O(n), worst O(n²).
@@ -69,7 +59,7 @@ def _():
     return (findKthLargest,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(findKthLargest, mo):
     _cases = [
         ([3, 2, 1, 5, 6, 4],   2, 5),

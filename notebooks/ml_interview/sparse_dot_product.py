@@ -37,14 +37,6 @@ def _(mo):
     non-zero entries, then iterate over the *smaller* dict and look up indices
     in the *larger* one.
 
-    ```python
-    d1 = {i: v for i, v in enumerate(v1) if v != 0}
-    d2 = {i: v for i, v in enumerate(v2) if v != 0}
-    if len(d1) > len(d2):
-        d1, d2 = d2, d1
-    return sum(val * d2[i] for i, val in d1.items() if i in d2)
-    ```
-
     The interviewer is checking that you don't loop over all zeros.
     """)
     return
@@ -71,7 +63,7 @@ def _():
     return (sparseDotProduct,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, sparseDotProduct):
     import math as _math
 

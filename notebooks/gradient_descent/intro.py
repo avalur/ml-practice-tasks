@@ -62,7 +62,7 @@ def _(np):
     return mse_gradient, mse_loss
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, mse_gradient, mse_loss, np):
     """Checks — reruns automatically when you edit the cells above."""
     rng = np.random.default_rng(0)

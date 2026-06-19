@@ -47,7 +47,7 @@ def _(np):
     return adagrad_l2_step,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(adagrad_l2_step, mo, np):
     rng = np.random.default_rng(11)
     n, d = 60, 4

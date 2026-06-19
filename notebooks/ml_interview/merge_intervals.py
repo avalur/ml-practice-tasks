@@ -29,16 +29,6 @@ def _(mo):
 
     ## Expected approach — sort then scan, O(n log n)
 
-    ```python
-    intervals.sort(key=lambda x: x[0])
-    merged = [intervals[0][:]]
-    for start, end in intervals[1:]:
-        if start <= merged[-1][1]:          # overlaps current last
-            merged[-1][1] = max(merged[-1][1], end)
-        else:
-            merged.append([start, end])
-    return merged
-    ```
     """)
     return
 
@@ -64,7 +54,7 @@ def _():
     return (merge,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(merge, mo):
     def _oracle(intervals):
         ivs = sorted(intervals, key=lambda x: x[0])

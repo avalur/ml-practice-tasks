@@ -31,25 +31,6 @@ def _(mo):
     For every unvisited `'1'`, increment the count and flood-fill the whole
     island to `'0'` (or a visited marker) so it is not double-counted.
 
-    ```python
-    def dfs(grid, r, c):
-        if r < 0 or r >= len(grid) or c < 0 or c >= len(grid[0]):
-            return
-        if grid[r][c] != '1':
-            return
-        grid[r][c] = '0'           # mark visited
-        dfs(grid, r+1, c); dfs(grid, r-1, c)
-        dfs(grid, r, c+1); dfs(grid, r, c-1)
-
-    count = 0
-    for r in range(len(grid)):
-        for c in range(len(grid[0])):
-            if grid[r][c] == '1':
-                count += 1
-                dfs(grid, r, c)
-    return count
-    ```
-
     You may modify the input grid in place.  Iterative BFS (using a deque)
     is also fine and avoids Python's recursion limit on large grids.
     """)
@@ -76,7 +57,7 @@ def _():
     return (numIslands,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, numIslands):
     def _copy_grid(g):
         return [row[:] for row in g]

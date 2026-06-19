@@ -184,7 +184,7 @@ def _(mo, random):
     return (Neuron, Layer, MLP)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, np, random, Value):
     _solved = False
     try:

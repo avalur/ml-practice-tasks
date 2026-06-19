@@ -35,22 +35,6 @@ def _(mo):
 
     ## Vectorised implementation (O(n · m · d) but all in numpy)
 
-    ```python
-    def knn_predict(X_train, y_train, X_test, k):
-        # Euclidean distances: shape [m_test, n_train]
-        diffs = X_test[:, np.newaxis, :] - X_train[np.newaxis, :, :]  # [m, n, d]
-        dists = np.sqrt((diffs ** 2).sum(axis=-1))                     # [m, n]
-        # k nearest indices for each test point
-        knn_idx = np.argsort(dists, axis=1)[:, :k]                     # [m, k]
-        knn_labels = y_train[knn_idx]                                   # [m, k]
-        # Majority vote (np.bincount per row)
-        n_classes = y_train.max() + 1
-        preds = []
-        for labels_row in knn_labels:
-            counts = np.bincount(labels_row, minlength=n_classes)
-            preds.append(counts.argmax())
-        return np.array(preds)
-    ```
     """)
     return
 
@@ -83,7 +67,7 @@ def _(np):
     return (knn_predict,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(knn_predict, mo, np):
     def _oracle(X_train, y_train, X_test, k):
         diffs = X_test[:, np.newaxis, :] - X_train[np.newaxis, :, :]

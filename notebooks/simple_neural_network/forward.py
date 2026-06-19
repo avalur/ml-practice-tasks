@@ -72,7 +72,7 @@ def _(NeuralNetworkBase, np):
     return ForwardNN, sigmoid
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(ForwardNN, mo, np, sigmoid):
     _solved = False
     try:

@@ -52,7 +52,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(io, mo, np, plt):
     # ── Synthetic test image ──────────────────────────────────────────────
     _H, _W = 160, 160
@@ -107,7 +107,7 @@ def _(np):
     return (rotate_image,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(io, mo, np, plt, rotate_image, test_image):
     # ── Nearest-neighbour oracle ──────────────────────────────────────────
     def _oracle(img, angle_deg):

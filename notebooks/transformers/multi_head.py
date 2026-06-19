@@ -77,7 +77,7 @@ def _(mo):
     return (multi_head_attention,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, multi_head_attention, np):
     # Oracle using scaffold attention head
     def _oracle_mha(x, heads, W_out, _attn_fn):

@@ -59,7 +59,7 @@ def _(mo):
     return (hprebn_bp,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(hprebn_bp, mo, np):
     rng = np.random.default_rng(5)
     n, hidden = 16, 8

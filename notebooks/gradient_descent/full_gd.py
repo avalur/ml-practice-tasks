@@ -44,7 +44,7 @@ def _(np):
     return calc_gradient, update_weights
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(calc_gradient, mo, np, update_weights):
     rng = np.random.default_rng(0)
     X = rng.standard_normal((40, 2))

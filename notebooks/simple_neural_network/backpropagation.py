@@ -87,7 +87,7 @@ def _(NeuralNetworkBase, np, sigmoid_derivative):
     return Backpropagation,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(Backpropagation, mo, np):
     # XOR dataset
     inputs  = np.array([[0,0],[0,1],[1,0],[1,1]], dtype=float)

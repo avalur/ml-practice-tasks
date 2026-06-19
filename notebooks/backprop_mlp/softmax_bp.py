@@ -86,7 +86,7 @@ def _(mo):
             counts_bp, norm_logits_bp, logit_maxes_bp, logits_bp)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(logit_maxes_bp, logprobs_bp, counts_bp, counts_sum_bp,
       counts_sum_inv_bp, mo, norm_logits_bp, logits_bp, probs_bp, np):
     rng = np.random.default_rng(7)

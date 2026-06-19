@@ -47,7 +47,7 @@ def _(np):
     return sgd_gradient,
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, np, sgd_gradient):
     rng = np.random.default_rng(7)
     X = rng.standard_normal((80, 3))

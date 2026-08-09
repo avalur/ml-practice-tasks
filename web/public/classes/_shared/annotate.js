@@ -43,6 +43,11 @@
   // pointer *movement*, not to each point's age. It stays whole for as long as
   // the pointer keeps moving, only starts to fade once you hold still, and
   // moving again pulls it back — so a pause mid-explanation costs nothing.
+  //
+  // It only draws while the button is held (or the screen is touched). Hovering
+  // used to paint, which meant every idle sweep of the mouse across the deck
+  // left a red streak over the slide; press-to-point also removes the need for a
+  // Tail on/off switch, since letting go is what ends the trail.
   var LASER_COLOR = "#ff1f1f";
   var LASER_W = 7;
   var LASER_HOLD = 350;          // stillness tolerated before the fade begins
@@ -60,7 +65,7 @@
   var boardSeq = 0;
 
   var tool = "pen";   // pen | highlighter | eraser | laser
-  var laserTail = true;
+  var laserDown = false;   // the laser only draws while the pointer is pressed
   var drawing = false;
   var penOn = false;
   var color = COLORS[0];
@@ -268,8 +273,6 @@
     if (!laserPts.length) laserFade = 0;   // a fresh trail starts at full strength
     laserMoveAt = now;
     laserPts.push({ x: pt[0], y: pt[1], brk: brk });
-    // "No Tail": keep only the head, so nothing trails behind the cursor.
-    if (!laserTail && laserPts.length > 2) laserPts = laserPts.slice(-2);
     if (laserPts.length > LASER_MAX_PTS) laserPts = laserPts.slice(-LASER_MAX_PTS);
     if (!laserRaf) {
       laserFrameAt = now;
@@ -277,8 +280,16 @@
     }
   }
 
+  /** Let go: stop feeding the trail and let it fade from this moment, rather
+   * than after the stillness the movement rule would otherwise wait out. */
+  function laserRelease() {
+    laserDown = false;
+    laserMoveAt = 0;
+  }
+
   function laserClear() {
     laserPts = [];
+    laserDown = false;
     laserFade = 0;
     laserMoveAt = 0;
     var v = viewport();
@@ -290,7 +301,7 @@
    * hook is what makes it testable, and what to log when it misbehaves on the
    * iPad. */
   window.mlpLaser = function () {
-    return { fade: laserFade, pts: laserPts.length, tail: laserTail, color: LASER_COLOR };
+    return { fade: laserFade, pts: laserPts.length, down: laserDown, color: LASER_COLOR };
   };
 
   // ------------------------------------------------------------------ input
@@ -309,12 +320,21 @@
 
   function onDown(e) {
     if (!penOn || e.button !== 0) return;
-    if (e.pointerType === "touch") return;      // palm rejection
+    // Palm rejection is for ink. The laser has nothing to spoil, and touching
+    // the iPad screen is how you point with it.
+    if (e.pointerType === "touch" && tool !== "laser") return;
     canvas.setPointerCapture(e.pointerId);
     e.preventDefault();
     drawing = true;
 
-    if (tool === "laser") { laserPush(toNorm(e)); return; }
+    if (tool === "laser") {
+      // A new press starts its own trail: it must not be joined to wherever the
+      // last one ended.
+      laserPts = [];
+      laserDown = true;
+      laserPush(toNorm(e));
+      return;
+    }
     if (tool === "eraser") {
       erased = [];
       eraseAt(toNorm(e));
@@ -327,9 +347,12 @@
 
   function onMove(e) {
     if (!penOn) return;
-    // The laser follows the pointer without a button held down — it is a
-    // pointer, not a pen.
-    if (tool === "laser") { e.preventDefault(); laserPush(toNorm(e)); return; }
+    if (tool === "laser") {
+      if (!laserDown) return;   // hovering points at nothing
+      e.preventDefault();
+      laserPush(toNorm(e));
+      return;
+    }
     if (!drawing) return;
     e.preventDefault();
     var events = e.getCoalescedEvents ? e.getCoalescedEvents() : [];
@@ -360,9 +383,8 @@
     if (!drawing) return;
     drawing = false;
     e.preventDefault();
-    // Lifting the pen means nothing to the laser: the trail is kept alive by
-    // movement alone, exactly as it is while hovering.
-    if (tool === "laser") return;
+    // Letting go ends the trail: it stays a moment, then fades.
+    if (tool === "laser") { laserRelease(); return; }
 
     var key = pageKey();
     if (tool === "eraser") {
@@ -708,15 +730,10 @@
     btn("ink-er", "🧽", "Eraser (e)", function () {
       setTool(tool === "eraser" ? "pen" : "eraser"); setPen(true);
     });
-    btn("ink-laser-btn", "🔴", "Red laser pointer (l) — nothing is saved", function () {
-      setTool(tool === "laser" ? "pen" : "laser"); setPen(true);
-    });
-    btn("ink-tail", "〜", "Laser: Tail (stays while you move) / No Tail", function () {
-      laserTail = !laserTail;
-      if (!laserTail) laserClear();
-      status("laser: " + (laserTail ? "Tail" : "No Tail"));
-      updateUi();
-    });
+    btn("ink-laser-btn", "🔴", "Red laser pointer (l) — hold to draw the trail, nothing is saved",
+      function () {
+        setTool(tool === "laser" ? "pen" : "laser"); setPen(true);
+      });
 
     btn("", "↶", "Undo (u)", undo);
     btn("", "↷", "Redo (Shift+U)", redo);
@@ -765,7 +782,6 @@
     q(".ink-hl").classList.toggle("on", penOn && tool === "highlighter");
     q(".ink-er").classList.toggle("on", penOn && tool === "eraser");
     q(".ink-laser-btn").classList.toggle("on", penOn && tool === "laser");
-    q(".ink-tail").classList.toggle("on", laserTail);
     Array.prototype.forEach.call(toolbar.querySelectorAll(".ink-swatch"), function (b) {
       b.classList.toggle("on", b.dataset.color === color);
     });

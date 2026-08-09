@@ -202,11 +202,15 @@ Four non-obvious invariants:
 - Ink is keyed by a stable `data-mlp-id` (`s<n>` for deck slides, `b<n>` for
   boards) stamped **before** any board is inserted — never by reveal's `h.v`
   indices, which shift the moment a board is added or deleted.
-- The laser trail is driven by **movement, not by point age**: one shared fade
-  level that only rises after `LASER_HOLD` ms of stillness and walks back down as
-  soon as the pointer moves, so a pause mid-explanation doesn't cost the trail
-  (Notability's "Tail"). Red is the laser's alone — it is deliberately absent from
-  the pen palette, so red on screen always means "pointer, not ink".
+- The laser draws **only while the pointer is pressed** (touch included — palm
+  rejection is for ink, and tapping the iPad is how you point). Hovering paints
+  nothing; that is also why there is no Tail on/off switch, since letting go is
+  what ends a trail. Within a press it is driven by **movement, not by point
+  age**: one shared fade level that only rises after `LASER_HOLD` ms of stillness
+  and walks back down as soon as the pointer moves, so a pause mid-explanation
+  doesn't cost the trail (Notability's "Tail"). Red is the laser's alone — it is
+  deliberately absent from the pen palette, so red on screen always means
+  "pointer, not ink".
 - Board-list writes are chained, and only ink gets a `keepalive` flush on
   unload. Each board PUT replaces the whole list, so two in flight can land out
   of order; and re-sending the list on unload would race the next load's GET.

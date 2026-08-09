@@ -455,10 +455,12 @@ test("present mode: boards are real slides, insert and delete", async ({ page })
 });
 
 // The laser is a pointer, not a pen: it must leave nothing behind on the ink
-// canvas, and nothing that could reach the saved PDF. Its Tail behaviour is all
-// timing, so the assertions lean on the mlpLaser() state hook to decide *when*
-// to look, and on the canvas pixels to decide *what* is there.
-test("present mode: laser trail survives movement, revives, then fades", async ({
+// canvas, and nothing that could reach the saved PDF. It draws only while the
+// button is held — hovering across the deck used to paint a red streak over the
+// slide. The trail behaviour is all timing, so the assertions lean on the
+// mlpLaser() hook to decide *when* to look, and on pixels to decide *what* is
+// there.
+test("present mode: laser draws only while pressed, revives, then fades", async ({
   page,
 }) => {
   const errors: string[] = [];
@@ -507,12 +509,23 @@ test("present mode: laser trail survives movement, revives, then fades", async (
   await page.keyboard.press("l");
   await expect(page.locator(".ink-laser")).toHaveCount(1);
 
-  // Sweep for well over 2 s. Nothing may expire while the pointer keeps moving,
-  // so the whole span has to still be on screen at the end — an age-based decay
-  // would have dropped everything older than a second.
   const box = (await page.locator("canvas.ink-canvas").boundingBox())!;
   const y = box.y + box.height * 0.5;
+
+  // Hovering draws nothing at all: the pointer has to be pressed.
+  for (let i = 0; i < 8; i++) {
+    await page.mouse.move(box.x + box.width * (0.2 + i * 0.05), y);
+  }
+  await page.waitForTimeout(200);
+  expect((await trail()).n).toBe(0);
+  expect((await laser()).down).toBe(false);
+
+  // Sweep for well over 2 s with the button down. Nothing may expire while the
+  // pointer keeps moving, so the whole span has to still be on screen at the
+  // end — an age-based decay would have dropped everything older than a second.
   await page.mouse.move(box.x + box.width * 0.2, y);
+  await page.mouse.down();
+  expect((await laser()).down).toBe(true);
   for (let i = 1; i <= 24; i++) {
     await page.mouse.move(box.x + box.width * (0.2 + i * 0.027), y);
     await page.waitForTimeout(90);
@@ -526,7 +539,7 @@ test("present mode: laser trail survives movement, revives, then fades", async (
   // Crucially: the persistent layer stays untouched.
   expect(await inkPixels()).toBe(0);
 
-  // Standing still starts the fade...
+  // Holding still — button still down — starts the fade...
   await expect
     .poll(async () => (await laser()).fade, { timeout: 5000, intervals: [50] })
     .toBeGreaterThan(0.45);
@@ -544,10 +557,18 @@ test("present mode: laser trail survives movement, revives, then fades", async (
   expect(revived.meanA).toBeGreaterThan(swept.meanA * 0.9);
   expect(revived.span).toBeGreaterThan(0.5);
 
-  // Left alone it goes completely: HOLD + FADE is ~1.25 s.
+  // Letting go ends it: the trail fades out and moving no longer revives it.
+  await page.mouse.up();
+  expect((await laser()).down).toBe(false);
+  await page.mouse.move(box.x + box.width * 0.4, y - 20);
   await expect
     .poll(() => trail().then((t) => t.n), { timeout: 8000, intervals: [250] })
     .toBe(0);
+  for (let i = 0; i < 6; i++) {
+    await page.mouse.move(box.x + box.width * (0.3 + i * 0.05), y - 30);
+  }
+  await page.waitForTimeout(200);
+  expect((await trail()).n).toBe(0);
   expect(await inkPixels()).toBe(0);
 
   expect(errors).toEqual([]);

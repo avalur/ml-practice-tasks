@@ -76,7 +76,6 @@ body.ink-active .ink-canvas { cursor: crosshair; }
 .ink-btn.on { background: #4c7dfd; border-color: #a9c2ff; }
 .ink-btn.ink-dim { opacity: 0.35; cursor: default; }
 .ink-btn.ink-dim:hover { background: rgba(255, 255, 255, 0.08); }
-.ink-tail { font-size: 16px; }
 
 .ink-swatch {
   appearance: none;

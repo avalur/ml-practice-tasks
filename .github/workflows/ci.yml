@@ -59,6 +59,10 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Sync database schema
         run: pnpm prisma db push --skip-generate
+      # Classes are seeded from classes/manifest.json, so a class page can tell
+      # "you are not enrolled" apart from "no such class" (which is a 404).
+      - name: Seed classes
+        run: node scripts/sync-classes.cjs
       - name: Build
         run: pnpm build
       - name: Typecheck

@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import {
   allRefs,
+  codePrefix,
   flatten,
   getAccess,
   getClassMeta,
@@ -12,6 +13,7 @@ import {
   type Item,
   type Lesson,
 } from "@/lib/classes";
+import { JoinClassForm } from "@/components/JoinClassForm";
 
 type Params = { slug: string };
 
@@ -41,19 +43,10 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
   const cls = await getClassMeta(slug);
   if (!cls) notFound();
 
+  // Public: the course, its lessons and its tasks are readable by anyone. Only
+  // the lecture notes and the teacher's own views are gated.
   const access = await getAccess(slug);
   if (!access.classRow) notFound();
-  if (!access.isMember) {
-    return (
-      <article>
-        <h1>{cls.title}</h1>
-        <p className="muted">
-          You are not in this class. Ask your teacher for the invite code, then
-          enter it on the <Link href="/classes">Classes</Link> page.
-        </p>
-      </article>
-    );
-  }
 
   const refs = allRefs(cls);
   const [solved, endedRows] = await Promise.all([
@@ -84,13 +77,28 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
       {access.isTeacher && (
         <div className="class-teacher-bar">
           <span className="badge hard">teacher</span>
-          <span className="muted">
-            Invite code: <code className="class-code">{access.classRow.inviteCode}</code>
-          </span>
           <Link href={`/classes/${slug}/monitor`}>Live monitor</Link>
-          <Link href={`/classes/${slug}/homework`}>Homework overview</Link>
+          <Link href={`/classes/${slug}/homework`}>Homework overview &amp; group codes</Link>
         </div>
       )}
+
+      {/* Joining changes nothing about what you can read — it is how the teacher
+          gets to see your homework, so it is offered rather than demanded. */}
+      {!access.isTeacher &&
+        (access.myGroup ? (
+          <p className="muted">
+            You are in this class as <strong>{access.myGroup.label}</strong> (code{" "}
+            <code className="class-code">{access.myGroup.code}</code>). Your homework
+            is visible to the teacher.
+          </p>
+        ) : access.userId ? (
+          <JoinClassForm placeholder={`${codePrefix(slug)}…`} />
+        ) : (
+          <p className="muted">
+            Everything here is open. <Link href="/api/auth/signin">Sign in</Link> and
+            enter your teacher&rsquo;s group code if you want your homework counted.
+          </p>
+        ))}
 
       <ul className="class-lessons">
         {cls.lessons.map((lesson) => {
@@ -111,7 +119,8 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 <span className="meta">
                   {lesson.date && <span className="muted">{lesson.date}</span>}
                   {delivered && <span className="badge easy">delivered</span>}
-                  {hasPdf && (
+                  {/* Notes are the one members-only thing here. */}
+                  {hasPdf && access.isMember && (
                     <a
                       href={`/api/classes/${slug}/lessons/${lesson.slug}/notes`}
                       className="muted"
@@ -156,7 +165,9 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 <p className="class-lesson-line">
                   <span className="muted">Homework:</span>{" "}
                   <span className={`badge ${due?.cls ?? "easy"}`}>
-                    {hwDone}/{hwItems.length}
+                    {/* "0/26" is a progress bar with nothing behind it when
+                        nobody is signed in — show the size of the assignment. */}
+                    {access.userId ? `${hwDone}/${hwItems.length}` : `${hwItems.length} tasks`}
                     {due ? ` · ${due.text}` : ""}
                   </span>
                 </p>

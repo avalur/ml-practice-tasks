@@ -112,12 +112,32 @@ export async function deckHashFor(
 
 // --- access control -------------------------------------------------------
 
+/* Codes are dictated out loud and typed back from memory, so "TLF-OSEN-A",
+ * "tlf osen a" and "tlfosena" all have to find the same group. Everything is
+ * matched on this form; the teacher's spelling is kept only for display. */
+export function normalizeCode(raw: string): string {
+  return raw.toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+/** A starting point for a teacher writing a new code: the distinctive tail of
+ * the class slug, e.g. "ml-intensive-tlf" → "TLF-". Only a suggestion — nothing
+ * validates against it. */
+export function codePrefix(slug: string): string {
+  const parts = slug.split("-").filter(Boolean);
+  const tail = parts[parts.length - 1] ?? slug;
+  return `${tail.toUpperCase().slice(0, 6)}-`;
+}
+
 export type Access = {
   userId: string | null;
   email: string | null;
-  classRow: { id: string; slug: string; title: string; inviteCode: string } | null;
+  classRow: { id: string; slug: string; title: string } | null;
   isTeacher: boolean;
+  /** Enrolled with a code, or teaching. Classes themselves are public; this
+   * gates the lecture notes and everything teacher-facing. */
   isMember: boolean;
+  /** The group the caller joined with, when they joined with a code. */
+  myGroup: { code: string; label: string } | null;
 };
 
 /** Resolve the caller's relationship to a class in one round trip. */
@@ -132,26 +152,38 @@ export async function getAccess(slug: string): Promise<Access> {
       id: true,
       slug: true,
       title: true,
-      inviteCode: true,
       teacherEmails: true,
-      enrollments: userId
-        ? { where: { userId }, select: { id: true }, take: 1 }
-        : false,
+      // Not conditional on `userId`: a select that is sometimes `false` gives
+      // this row two different shapes, and the caller then cannot read the
+      // group off it. An impossible id costs one indexed miss instead.
+      enrollments: {
+        where: { userId: userId ?? "" },
+        select: { invite: { select: { code: true, label: true } } },
+        take: 1,
+      },
     },
   });
 
   if (!row) {
-    return { userId, email, classRow: null, isTeacher: false, isMember: false };
+    return {
+      userId,
+      email,
+      classRow: null,
+      isTeacher: false,
+      isMember: false,
+      myGroup: null,
+    };
   }
 
   const isTeacher = !!email && row.teacherEmails.includes(email);
-  const enrolled = Array.isArray(row.enrollments) && row.enrollments.length > 0;
+  const enrollment = userId ? row.enrollments[0] : undefined;
   return {
     userId,
     email,
-    classRow: { id: row.id, slug: row.slug, title: row.title, inviteCode: row.inviteCode },
+    classRow: { id: row.id, slug: row.slug, title: row.title },
     isTeacher,
-    isMember: isTeacher || enrolled,
+    isMember: isTeacher || !!enrollment,
+    myGroup: enrollment?.invite ?? null,
   };
 }
 
@@ -233,8 +265,48 @@ export async function classRoster(classId: string) {
     orderBy: { joinedAt: "asc" },
     select: {
       joinedAt: true,
+      invite: { select: { code: true, label: true } },
       user: { select: { id: true, name: true, email: true, image: true } },
     },
   });
-  return rows.map((r) => ({ ...r.user, joinedAt: r.joinedAt }));
+  return rows.map((r) => ({ ...r.user, joinedAt: r.joinedAt, group: r.invite }));
+}
+
+/** The students of a class: everyone who actually typed an invite code.
+ *
+ * Teachers are enrolled too (sync-classes.cjs puts them in their own roster),
+ * but they never typed a code, so they are not students and do not belong in
+ * the homework overview. Sorted by group, then by name, so cohorts read as
+ * blocks. */
+export async function classStudents(classId: string) {
+  const rows = await classRoster(classId);
+  return rows
+    .filter((r) => r.group)
+    .sort(
+      (a, b) =>
+        a.group!.label.localeCompare(b.group!.label) ||
+        (a.name || a.email || "").localeCompare(b.name || b.email || ""),
+    );
+}
+
+/** Invite codes of a class with how many students came in on each. */
+export async function classInvites(classId: string) {
+  const rows = await prisma.classInvite.findMany({
+    where: { classId },
+    orderBy: { createdAt: "asc" },
+    select: {
+      id: true,
+      code: true,
+      label: true,
+      createdAt: true,
+      _count: { select: { enrollments: true } },
+    },
+  });
+  return rows.map((r) => ({
+    id: r.id,
+    code: r.code,
+    label: r.label,
+    createdAt: r.createdAt,
+    students: r._count.enrollments,
+  }));
 }

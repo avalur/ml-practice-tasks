@@ -1209,6 +1209,31 @@ pre.code {
 .class-join-ok  { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--easy); }
 .class-join-err { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--hard); }
 
+/* ── Group invite codes (teacher, on the homework page) ──────────────────── */
+
+.invite-codes { margin: 1.5rem 0 2rem; }
+.invite-codes h2 { margin-bottom: 0.25rem; }
+.invite-list { list-style: none; padding: 0; margin: 1rem 0; }
+.invite-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.invite-label { font-weight: 600; flex: 1; }
+.invite-new { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.75rem; }
+.invite-new input {
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.95rem;
+}
+.invite-new input:first-of-type { letter-spacing: 0.08em; text-transform: uppercase; }
+
 .class-upload { margin: 0.5rem 0 1rem; }
 .class-upload label { cursor: pointer; display: inline-block; }
 
@@ -1262,6 +1287,15 @@ pre.code {
 }
 .hw-table th { background: var(--panel-2); font-weight: 600; }
 .hw-name { text-align: left !important; white-space: nowrap; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; }
+.hw-group {
+  text-align: left !important;
+  white-space: nowrap;
+  max-width: 12rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
 .hw-total { font-weight: 700; }
 .hw-full      { color: var(--easy); }
 .hw-part      { color: var(--medium); }

@@ -108,19 +108,10 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   const lesson = cls && findLesson(cls, lessonSlug);
   if (!cls || !lesson) notFound();
 
+  // Public, like the class page. The annotated lecture notes are the exception:
+  // those are for the students who joined a group.
   const access = await getAccess(slug);
   if (!access.classRow) notFound();
-  if (!access.isMember) {
-    return (
-      <article>
-        <h1>{lesson.title}</h1>
-        <p className="muted">
-          You are not in this class. Ask your teacher for the invite code, then
-          enter it on the <Link href="/classes">Classes</Link> page.
-        </p>
-      </article>
-    );
-  }
 
   const refs = flatten([...lesson.practice, ...(lesson.homework?.items ?? [])]);
   const [solved, delivered] = await Promise.all([
@@ -156,7 +147,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             uploads a copy to Blob storage; this appears once that copy lands.
             The store is private, so the link goes through our own route, which
             checks membership and signs a short-lived download URL. */}
-        {delivered?.pdfUrl && (
+        {delivered?.pdfUrl && access.isMember && (
           <a
             className="bt-clear-btn"
             href={`/api/classes/${slug}/lessons/${lessonSlug}/notes`}
@@ -175,7 +166,9 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
         {delivered?.endedAt
           ? `Delivered ${delivered.endedAt.toLocaleDateString()}` +
             (delivered.pdfUrl
-              ? " — the lecture notes above are the slides with everything written on them in class."
+              ? access.isMember
+                ? " — the lecture notes above are the slides with everything written on them in class."
+                : " — the annotated lecture notes go to the students of this class; join your group on the class page to get them."
               : delivered.pdfBytes
                 ? " — notes exported by the teacher, but not published here."
                 : ".")

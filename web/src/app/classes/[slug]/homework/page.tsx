@@ -3,7 +3,9 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import {
   allRefs,
-  classRoster,
+  classInvites,
+  classStudents,
+  codePrefix,
   findLesson,
   flatten,
   getAccess,
@@ -12,6 +14,7 @@ import {
   solvedKeys,
   type Item,
 } from "@/lib/classes";
+import { InviteCodes } from "@/components/InviteCodes";
 
 type Params = { slug: string };
 type Search = { lesson?: string };
@@ -44,7 +47,13 @@ export default async function HomeworkPage({
   if (!access.classRow) notFound();
   if (!access.isTeacher) notFound();
 
-  const roster = await classRoster(access.classRow.id);
+  // Students only: everyone who typed a group code. Teachers are in the
+  // enrollment table too (so they show up in their own live monitor), but they
+  // are not a row of the homework table.
+  const [roster, invites] = await Promise.all([
+    classStudents(access.classRow.id),
+    classInvites(access.classRow.id),
+  ]);
   const ids = roster.map((m) => m.id);
   const solved = await solvedKeys(ids, allRefs(cls));
   const done = (userId: string, type: string, id: string) =>
@@ -61,14 +70,18 @@ export default async function HomeworkPage({
       </p>
       <h1>Homework overview</h1>
       <p className="muted">
-        {roster.length} enrolled · derived from actual submissions, so a student
-        who solves a task outside class still counts.
+        {roster.length} student{roster.length === 1 ? "" : "s"} · derived from
+        actual submissions, so a student who solves a task outside class still
+        counts.
       </p>
+
+      <InviteCodes slug={slug} prefix={codePrefix(slug)} invites={invites} />
 
       {roster.length === 0 ? (
         <p className="muted">
-          Nobody has joined yet. Invite code:{" "}
-          <code className="class-code">{access.classRow.inviteCode}</code>
+          {invites.length === 0
+            ? "No group codes yet — make one above and read it out to the room."
+            : "Nobody has entered a code yet."}
         </p>
       ) : focus && focus.homework ? (
         <>
@@ -84,6 +97,7 @@ export default async function HomeworkPage({
               <thead>
                 <tr>
                   <th className="hw-name">Student</th>
+                  <th className="hw-group">Group</th>
                   {focus.homework.items.map((item: Item) =>
                     isGroup(item) ? (
                       <th
@@ -106,6 +120,9 @@ export default async function HomeworkPage({
                   return (
                     <tr key={m.id}>
                       <td className="hw-name">{m.name || m.email}</td>
+                      <td className="hw-group" title={m.group?.code}>
+                        {m.group?.label}
+                      </td>
                       {focus.homework!.items.map((item: Item) => {
                         const refs = flatten([item]);
                         const n = refs.filter((r) => done(m.id, r.type, r.id)).length;
@@ -131,6 +148,7 @@ export default async function HomeworkPage({
             <thead>
               <tr>
                 <th className="hw-name">Student</th>
+                <th className="hw-group">Group</th>
                 {withHomework.map((l) => (
                   <th key={l.slug} title={l.title}>
                     <Link href={`/classes/${slug}/homework?lesson=${l.slug}`}>
@@ -160,6 +178,9 @@ export default async function HomeworkPage({
                 return (
                   <tr key={m.id}>
                     <td className="hw-name">{m.name || m.email}</td>
+                    <td className="hw-group" title={m.group?.code}>
+                      {m.group?.label}
+                    </td>
                     {cells}
                     <td className="hw-total">
                       {allDone}/{allTotal}

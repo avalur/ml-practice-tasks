@@ -70,8 +70,9 @@ async function ClassesTab() {
       <h2>Classes</h2>
       {joined.length === 0 ? (
         <p className="muted">
-          Not in any class yet — join one from the{" "}
-          <Link href="/classes">Classes</Link> tab with your teacher's invite code.
+          Not in a group yet. Every class under <Link href="/classes">Classes</Link>{" "}
+          is open to read; enter your teacher&rsquo;s group code on the class page
+          to have your homework counted.
         </p>
       ) : (
         <ul className="problem-list">

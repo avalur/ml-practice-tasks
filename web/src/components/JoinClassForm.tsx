@@ -3,7 +3,10 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-export function JoinClassForm() {
+/* The invite code no longer unlocks anything — the class, its lessons and its
+ * tasks are public. It puts the student into a group, which is what lets the
+ * teacher follow their homework. Hence the wording. */
+export function JoinClassForm({ placeholder }: { placeholder?: string }) {
   const router = useRouter();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
@@ -22,7 +25,7 @@ export function JoinClassForm() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setMsg({ kind: "ok", text: `Joined ${data.title}.` });
+        setMsg({ kind: "ok", text: `Joined ${data.title} — group “${data.group}”.` });
         setCode("");
         router.refresh();
       } else if (res.status === 401) {
@@ -38,19 +41,21 @@ export function JoinClassForm() {
 
   return (
     <form className="class-join" onSubmit={submit}>
-      <label htmlFor="class-code">Have an invite code?</label>
+      <label htmlFor="class-code">
+        Got a group code from your teacher? Enter it so your homework is counted.
+      </label>
       <div className="class-join-row">
         <input
           id="class-code"
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="e.g. 83M8YV"
+          placeholder={placeholder ?? "e.g. TLF-OSEN-A"}
           autoComplete="off"
           spellCheck={false}
-          maxLength={16}
+          maxLength={24}
         />
         <button type="submit" className="bt-clear-btn" disabled={busy || !code.trim()}>
-          {busy ? "Joining…" : "Join class"}
+          {busy ? "Joining…" : "Join"}
         </button>
       </div>
       {msg && (

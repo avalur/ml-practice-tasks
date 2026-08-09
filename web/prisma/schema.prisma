@@ -143,25 +143,49 @@ model Class {
   id            String   @id @default(cuid())
   slug          String   @unique // matches classes/<slug>/
   title         String
-  inviteCode    String   @unique // generated on first sync, never rotated
   teacherEmails String[] // seeded from class.json; authorizes before first sign-in
   createdAt     DateTime @default(now())
 
+  invites     ClassInvite[]
   enrollments ClassEnrollment[]
   sessions    LessonSession[]
+}
+
+// One invite code, handed out to one group of students. A class can have several
+// — the code a student typed is what tells cohorts apart in the homework
+// overview, so the teacher writes both the code and the group's name.
+model ClassInvite {
+  id        String   @id @default(cuid())
+  classId   String
+  code      String // as the teacher wrote it, e.g. "TLF-OSEN-A"
+  // Same code with the separators and case thrown away. Codes are read out loud
+  // and typed back from memory, so lookup and uniqueness both use this form.
+  codeKey   String   @unique
+  label     String // the group's name, e.g. "Autumn stream A"
+  createdAt DateTime @default(now())
+
+  class       Class             @relation(fields: [classId], references: [id], onDelete: Cascade)
+  enrollments ClassEnrollment[]
+
+  @@index([classId])
 }
 
 model ClassEnrollment {
   id       String   @id @default(cuid())
   classId  String
   userId   String
+  // Which code the student came in with — null for the teachers seeded by
+  // sync-classes.cjs, who are in the roster without ever typing one.
+  inviteId String?
   joinedAt DateTime @default(now())
 
-  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
-  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class  Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user   User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  invite ClassInvite? @relation(fields: [inviteId], references: [id], onDelete: SetNull)
 
   @@unique([classId, userId])
   @@index([userId])
+  @@index([inviteId])
 }
 
 // One row per lesson actually delivered. Created when the teacher hits Present.

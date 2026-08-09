@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { normalizeCode } from "@/lib/classes";
 
-// POST { code } — enroll the caller in the class holding that invite code.
-// Idempotent: joining twice is a no-op, not an error.
+// POST { code } — join the group that owns this invite code.
+//
+// Classes themselves are public, so this is not about getting in: it is what
+// makes a visitor a *student* of one, whose homework the teacher can see. A code
+// identifies a group and a class can hand out several, so joining records which
+// one was used. Idempotent, and a different code moves the student to that group
+// rather than failing.
 export async function POST(req: Request) {
   const session = await auth();
   const userId = session?.user?.id;
@@ -16,22 +22,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "bad json" }, { status: 400 });
   }
 
-  const raw = typeof body.code === "string" ? body.code.trim().toUpperCase() : "";
-  // Codes are read out loud, so accept the shapes people actually type.
-  const code = raw.replace(/[\s-]/g, "");
+  const code = normalizeCode(typeof body.code === "string" ? body.code : "");
   if (!code) return NextResponse.json({ error: "missing code" }, { status: 400 });
 
-  const cls = await prisma.class.findUnique({
-    where: { inviteCode: code },
-    select: { id: true, slug: true, title: true },
+  const invite = await prisma.classInvite.findUnique({
+    where: { codeKey: code },
+    select: {
+      id: true,
+      label: true,
+      class: { select: { id: true, slug: true, title: true } },
+    },
   });
-  if (!cls) return NextResponse.json({ error: "no class with that code" }, { status: 404 });
+  if (!invite) {
+    return NextResponse.json({ error: "no group with that code" }, { status: 404 });
+  }
 
   await prisma.classEnrollment.upsert({
-    where: { classId_userId: { classId: cls.id, userId } },
-    create: { classId: cls.id, userId },
-    update: {},
+    where: { classId_userId: { classId: invite.class.id, userId } },
+    create: { classId: invite.class.id, userId, inviteId: invite.id },
+    update: { inviteId: invite.id },
   });
 
-  return NextResponse.json({ ok: true, slug: cls.slug, title: cls.title });
+  return NextResponse.json({
+    ok: true,
+    slug: invite.class.slug,
+    title: invite.class.title,
+    group: invite.label,
+  });
 }

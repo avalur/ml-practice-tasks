@@ -32,6 +32,13 @@ export type TestSession = {
   /** Record a delivered lesson with a published PDF, as "Finish lesson" would.
    * Requires signInAs to have been given a classSlug. */
   publishLessonPdf: (lessonSlug: string, url: string, bytes?: number) => Promise<void>;
+  /** Hand out a group code, as a teacher would on the homework page. Returns the
+   * code to type. Removed again by dispose(). */
+  createInvite: (classSlug: string, label: string) => Promise<string>;
+  /** The group this user is in, straight from the database. */
+  myGroup: (classSlug: string) => Promise<string | null>;
+  /** Drop a code the test made through the UI, so the class is left as found. */
+  deleteInviteByCode: (code: string) => Promise<void>;
   dispose: () => Promise<void>;
 };
 
@@ -40,9 +47,12 @@ export type TestSession = {
  * allowed, and only a user this helper created is ever deleted. */
 const TEST_EMAIL = /@example\.test$/;
 
+/** Same normalization the app does — codes are matched without case or dashes. */
+const normalize = (code: string) => code.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
 export async function signInAs(
   context: BrowserContext,
-  opts: { email: string; name: string; classSlug?: string },
+  opts: { email: string; name: string; classSlug?: string; teacher?: boolean },
 ): Promise<TestSession> {
   if (!TEST_EMAIL.test(opts.email)) {
     throw new Error(
@@ -56,7 +66,12 @@ export async function signInAs(
   const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
 
   let classId: string | null = null;
+  let addedTeacherEmail = false;
+  const inviteIds: string[] = [];
   const lessonSessionIds: string[] = [];
+
+  const codeFor = (label: string) =>
+    `E2E-${label}-${process.pid}`.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 24);
 
   const existing = await prisma.user.findUnique({ where: { email: opts.email } });
   const user =
@@ -69,20 +84,39 @@ export async function signInAs(
     // create the row rather than depending on `pnpm db:sync-classes` having run.
     const cls = await prisma.class.upsert({
       where: { slug: opts.classSlug },
-      create: {
-        slug: opts.classSlug,
-        title: opts.classSlug,
-        inviteCode: `E2E${process.pid}`.slice(0, 10),
-        teacherEmails: [],
-      },
+      create: { slug: opts.classSlug, title: opts.classSlug, teacherEmails: [] },
       update: {},
     });
     classId = cls.id;
-    await prisma.classEnrollment.upsert({
-      where: { classId_userId: { classId: cls.id, userId: user.id } },
-      create: { classId: cls.id, userId: user.id },
-      update: {},
-    });
+
+    if (opts.teacher) {
+      // Authorization reads Class.teacherEmails, so a test teacher has to be put
+      // there — and taken back out by dispose(). The address is synthetic and has
+      // no OAuth account behind it, so nobody can sign in as it in the meantime.
+      if (!cls.teacherEmails.includes(opts.email)) {
+        await prisma.class.update({
+          where: { id: cls.id },
+          data: { teacherEmails: [...cls.teacherEmails, opts.email] },
+        });
+        addedTeacherEmail = true;
+      }
+      // Deliberately no enrollment: a teacher is not a row of their own roster.
+    } else {
+      // A test member arrives through a throwaway group code, exactly as a
+      // student would: the homework overview only lists people who typed one.
+      const code = codeFor(opts.email.split("@")[0]);
+      const invite = await prisma.classInvite.upsert({
+        where: { codeKey: normalize(code) },
+        create: { classId: cls.id, code, codeKey: normalize(code), label: "E2E group" },
+        update: {},
+      });
+      inviteIds.push(invite.id);
+      await prisma.classEnrollment.upsert({
+        where: { classId_userId: { classId: cls.id, userId: user.id } },
+        create: { classId: cls.id, userId: user.id, inviteId: invite.id },
+        update: { inviteId: invite.id },
+      });
+    }
   }
 
   const sessionToken = `e2e-${user.id}-${process.pid}`;
@@ -142,7 +176,46 @@ export async function signInAs(
       });
       lessonSessionIds.push(row.id);
     },
+    async createInvite(classSlug: string, label: string) {
+      const cls = await prisma.class.upsert({
+        where: { slug: classSlug },
+        create: { slug: classSlug, title: classSlug, teacherEmails: [] },
+        update: {},
+      });
+      const code = codeFor(label);
+      const invite = await prisma.classInvite.upsert({
+        where: { codeKey: normalize(code) },
+        create: { classId: cls.id, code, codeKey: normalize(code), label },
+        update: { label },
+      });
+      inviteIds.push(invite.id);
+      return invite.code;
+    },
+    async myGroup(classSlug: string) {
+      const row = await prisma.classEnrollment.findFirst({
+        where: { user: { id: user.id }, class: { slug: classSlug } },
+        select: { invite: { select: { label: true } } },
+      });
+      return row?.invite?.label ?? null;
+    },
+    async deleteInviteByCode(code: string) {
+      await prisma.classInvite
+        .delete({ where: { codeKey: normalize(code) } })
+        .catch(() => {});
+    },
     async dispose() {
+      if (addedTeacherEmail && classId) {
+        const cls = await prisma.class.findUnique({
+          where: { id: classId },
+          select: { teacherEmails: true },
+        });
+        if (cls) {
+          await prisma.class.update({
+            where: { id: classId },
+            data: { teacherEmails: cls.teacherEmails.filter((e) => e !== opts.email) },
+          });
+        }
+      }
       // Cascades from User would do most of this, but be explicit: a stray
       // enrollment would show up in the teacher's roster on the real site, and a
       // stray lesson session would put a dead PDF link on a real lesson page.
@@ -151,6 +224,10 @@ export async function signInAs(
       }
       await prisma.userProblemProgress.deleteMany({ where: { userId: user.id } });
       await prisma.classEnrollment.deleteMany({ where: { userId: user.id } });
+      // With the enrollment gone the throwaway codes have nobody behind them.
+      if (inviteIds.length) {
+        await prisma.classInvite.deleteMany({ where: { id: { in: inviteIds } } });
+      }
       await prisma.session.deleteMany({ where: { userId: user.id } });
       if (created) await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
       await prisma.$disconnect();

@@ -11,18 +11,29 @@ const CLASS = "ml-intensive-tlf";
 const LESSON = "l01-intro-python";
 const PRESENT = `/classes/${CLASS}/${LESSON}/present.html`;
 
-test("logged out: classes tab invites sign-in and hides teacher tools", async ({
+// The course is open: a visitor with no account reads the lessons, the slides and
+// the task lists. The code is not a gate any more — it says whose homework the
+// teacher tracks — and the annotated notes are the one thing it still buys.
+test("logged out: the class is readable, its notes and teacher tools are not", async ({
   page,
   request,
 }) => {
   await page.goto("/classes");
   await expect(page.getByRole("heading", { name: "Classes" })).toBeVisible();
-  await expect(page.getByText(/Sign in to join a class/i)).toBeVisible();
+  await expect(page.getByRole("link", { name: /ML Intensive for TLF/ })).toBeVisible();
 
-  // A non-member must not see the lesson list, the invite code or practice ids.
   await page.goto(`/classes/${CLASS}`);
-  await expect(page.getByText(/not in this class/i)).toBeVisible();
-  await expect(page.getByText(/Lecture 5/)).toHaveCount(0);
+  await expect(page.getByText(/Lecture 5/)).toBeVisible();
+  await expect(page.getByText(/enter your teacher’s group code/)).toBeVisible();
+  // No code box for a visitor who cannot be enrolled anyway…
+  await expect(page.locator("#class-code")).toHaveCount(0);
+  // …and nothing that belongs to the teacher.
+  await expect(page.getByText(/Live monitor/)).toHaveCount(0);
+
+  await page.goto(`/classes/${CLASS}/lessons/${LESSON}`);
+  await expect(page.getByRole("heading", { name: /Python Refresher/ })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Open slides" })).toBeVisible();
+  await expect(page.getByTestId("lecture-pdf")).toHaveCount(0);
 
   // Teacher-only routes are 404, not 403: they should not even confirm existence.
   // The lecture-notes download is members-only for the same reason — it hands out
@@ -34,6 +45,45 @@ test("logged out: classes tab invites sign-in and hides teacher tools", async ({
   ]) {
     const res = await request.get(path);
     expect(res.status(), path).toBe(404);
+  }
+
+  // Joining and minting codes both need an account, and a code mints only for a
+  // teacher of that class.
+  const join = await request.post("/api/classes/join", { data: { code: "WHATEVER" } });
+  expect(join.status()).toBe(401);
+  const mint = await request.post(`/api/classes/${CLASS}/invites`, {
+    data: { code: "TLF-STEAL", label: "mine now" },
+  });
+  expect(mint.ok()).toBe(false);
+});
+
+// A code is a group: the student types it, and that is what puts them in the
+// teacher's homework table under that group's name.
+test("student: entering a group code joins the class and records the group", async ({
+  page,
+  context,
+}) => {
+  const session = await signInAs(context, {
+    email: "e2e-join-student@example.test",
+    name: "E2E Joiner",
+  });
+  try {
+    const code = await session.createInvite(CLASS, "Autumn stream A");
+    expect(await session.myGroup(CLASS)).toBeNull();
+
+    await page.goto(`/classes/${CLASS}`);
+    // Signed in but not in a group yet — the box is offered, not demanded.
+    await expect(page.getByText(/Got a group code/)).toBeVisible();
+
+    // Typed the way a student would: lower case, dashes forgotten.
+    await page.locator("#class-code").fill(code.toLowerCase().replace(/-/g, " "));
+    await page.getByRole("button", { name: "Join" }).click();
+
+    await expect(page.getByText(/You are in this class as/)).toBeVisible();
+    await expect(page.getByText("Autumn stream A")).toBeVisible();
+    expect(await session.myGroup(CLASS)).toBe("Autumn stream A");
+  } finally {
+    await session.dispose();
   }
 });
 
@@ -94,6 +144,63 @@ test("member: a topic assigned as homework renders as one collapsed group", asyn
     await expect(page.getByText("2/26", { exact: false }).first()).toBeVisible();
   } finally {
     await session.dispose();
+  }
+});
+
+// The teacher writes the codes, one per group, and the homework table lists only
+// the people who typed one — with the group they landed in.
+test("teacher: writes a group code, and its student appears in the homework table", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const teacher = await signInAs(context, {
+    email: "e2e-teacher@example.test",
+    name: "E2E Teacher",
+    classSlug: CLASS,
+    teacher: true,
+  });
+  const code = `E2E-STREAM-${process.pid}`;
+  const studentCtx = await browser.newContext();
+  const student = await signInAs(studentCtx, {
+    email: "e2e-grouped-student@example.test",
+    name: "E2E Grouped",
+  });
+  try {
+    await page.goto(`/classes/${CLASS}/homework`);
+    await expect(page.getByRole("heading", { name: "Group codes" })).toBeVisible();
+
+    await page.getByLabel("New code").fill(code);
+    await page.getByLabel("Group name").fill("Evening stream");
+    await page.getByRole("button", { name: "New code" }).click();
+
+    const row = page.locator(".invite-list li").filter({ hasText: code });
+    await expect(row).toContainText("Evening stream");
+    await expect(row).toContainText("0 students");
+    // Nobody has used it, so it is still disposable.
+    await expect(row.getByRole("button", { name: "delete" })).toBeVisible();
+
+    // The teacher reads the code out; the student types it.
+    const studentPage = await studentCtx.newPage();
+    await studentPage.goto(`/classes/${CLASS}`);
+    await studentPage.locator("#class-code").fill(code);
+    await studentPage.getByRole("button", { name: "Join" }).click();
+    await expect(studentPage.getByText(/You are in this class as/)).toBeVisible();
+
+    await page.reload();
+    await expect(row).toContainText("1 student");
+    // A code with a student behind it must not be deletable: that would erase
+    // which group they belong to.
+    await expect(row.getByRole("button", { name: "delete" })).toHaveCount(0);
+
+    const table = page.locator("table.hw-table");
+    const studentRow = table.locator("tr").filter({ hasText: "E2E Grouped" });
+    await expect(studentRow).toContainText("Evening stream");
+  } finally {
+    await student.dispose();
+    await studentCtx.close();
+    await teacher.deleteInviteByCode(code);
+    await teacher.dispose();
   }
 });
 

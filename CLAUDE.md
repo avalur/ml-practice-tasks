@@ -98,12 +98,22 @@ A third content family, for lecturing from the reveal.js decks in
   reveal background actually resolves.
 - Renaming a class **slug** also needs the `Class` row renamed in place
   (`prisma.class.update`), not re-synced: `sync-classes.cjs` matches on slug, so
-  it would create a second row with a fresh invite code and orphan the existing
-  enrollments and lesson sessions.
-- **Only dynamic state is in Postgres**: `Class` (seeded, holds the invite code),
+  it would create a second row and orphan the existing enrollments, group codes
+  and lesson sessions.
+- **Only dynamic state is in Postgres**: `Class` (seeded), `ClassInvite`,
   `ClassEnrollment`, `LessonSession`, `LessonAnnotation`. Homework completion is
   *derived* from `UserProblemProgress`/`UserNotebookProgress` — no extra table.
   Authorization is `session.user.email ∈ Class.teacherEmails`.
+- **Classes are public.** The course, its lessons, its slides and its task lists
+  need no account — the one exception is the annotated lecture notes. A code
+  therefore does not unlock anything: it puts a student in a **group**
+  (`ClassInvite`, one per cohort, written by the teacher on the homework page),
+  and `ClassEnrollment.inviteId` records which one they typed. The homework
+  overview lists exactly the people with a code; teachers are enrolled without
+  one, which is what keeps them out of their own student table. Lookup is on
+  `codeKey` (upper-cased, separators stripped), so "TLF-OSEN-A", "tlf osen a"
+  and "tlfosena" are one code. A code with students behind it cannot be deleted —
+  that would erase which group they are in.
 
 Bringing a deck over: `python tools/import_decks.py --class <slug> --deck all`.
 It keeps `<div class="slides">` verbatim (so in-slide `<script type="py-editor">`
@@ -244,7 +254,7 @@ python export_decks.py --check # CI: fail if class decks drifted
 python export_decks.py --watch # authoring: rebuild on save (use ?dev=1 in the browser)
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
-cd web && pnpm db:sync-classes # upsert Class rows + mint invite codes
+cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 ```
 
 CI (`.github/workflows/ci.yml`) runs the `--check` + `pytest problems` pair on

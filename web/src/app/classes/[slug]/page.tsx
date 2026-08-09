@@ -60,14 +60,18 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
     access.userId ? solvedKeys([access.userId], refs) : Promise.resolve(new Set<string>()),
     prisma.lessonSession.findMany({
       where: { classId: access.classRow.id, endedAt: { not: null } },
-      select: { lessonSlug: true },
-      distinct: ["lessonSlug"],
+      orderBy: { endedAt: "desc" },
+      select: { lessonSlug: true, pdfUrl: true },
     }),
   ]);
 
-  // Lessons that have actually been delivered. The PDF itself is not hosted here
-  // — the teacher downloads it and shares it directly.
+  // Lessons that have actually been delivered, and those whose annotated PDF
+  // finished uploading — the download itself goes through the notes route, which
+  // signs a short-lived link to the private Blob object.
   const deliveredLessons = new Set(endedRows.map((r) => r.lessonSlug));
+  const lessonsWithPdf = new Set(
+    endedRows.filter((r) => r.pdfUrl).map((r) => r.lessonSlug),
+  );
 
   const isDone = (type: string, id: string) =>
     !!access.userId && solved.has(`${access.userId}|${type}:${id}`);
@@ -94,6 +98,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
           const hwDone = hwItems.filter((r) => isDone(r.type, r.id)).length;
           const due = dueState(lesson);
           const delivered = deliveredLessons.has(lesson.slug);
+          const hasPdf = lessonsWithPdf.has(lesson.slug);
           return (
             <li key={lesson.slug} className="class-lesson">
               <div className="class-lesson-head">
@@ -106,6 +111,14 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 <span className="meta">
                   {lesson.date && <span className="muted">{lesson.date}</span>}
                   {delivered && <span className="badge easy">delivered</span>}
+                  {hasPdf && (
+                    <a
+                      href={`/api/classes/${slug}/lessons/${lesson.slug}/notes`}
+                      className="muted"
+                    >
+                      notes PDF
+                    </a>
+                  )}
                 </span>
               </div>
 

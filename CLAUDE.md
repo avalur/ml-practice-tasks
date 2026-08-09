@@ -138,10 +138,49 @@ not an overlay — they navigate, export and behave like slides. The deck file o
 disk is never touched; `LessonSession.boards` (`[{id, afterId}]`) is the only
 record of where they went, and a reload re-inserts them.
 
-"Finish lesson" renders every slide with its ink to a PDF and **downloads it to
-the teacher's machine**; nothing is uploaded and the site never hosts it (the
-teacher shares the file with the class directly). `POST …/sessions/<id>/finish`
-only records `endedAt` + `pdfBytes`, which is what drives the "delivered" badge.
+"Finish lesson" renders every slide with its ink to a PDF, **downloads it to the
+teacher's machine** and, in the background, publishes a copy for the class. It
+calls `POST …/sessions/<id>/finish` twice: once with `{bytes}` (sets `endedAt` —
+the "delivered" badge) and again with `{url}` once the upload lands (sets
+`pdfUrl` — the download link on the class and lesson pages). The two are separate
+on purpose: with no Blob store, or no network, the lesson is still delivered and
+the teacher still has the file.
+
+**Why the upload takes a detour through an iframe.** The PDF is far too big to
+POST to a route — a Vercel serverless request body caps at 4.5 MB and a 36-slide
+deck already measures 4.9 MB (61-slide `decision_trees` would be ~8 MB) — so it
+has to go client-side straight to Blob storage. But `present.html` is a static
+page with no bundler and cannot import `@vercel/blob/client`. So it opens
+`/classes/blob-bridge` (a real Next page) in a hidden same-origin iframe and
+hands the `Blob` over with `postMessage`, which structured-clones it natively.
+Three things this buys, all of them load-bearing:
+- the teacher's cookies ride along, so `/api/blob/upload-token` can check
+  `teacherEmails` before minting what is a **write capability** on the store,
+  scoped to `classes/<class>/<lesson>/` and `application/pdf`;
+- a separate browsing context is immune to the `<a download>` abort (below), so
+  the upload survives the teacher's own file landing;
+- `handleUpload` is deliberately configured **without** `onUploadCompleted` — that
+  callback needs a publicly reachable URL and so never fires on localhost. The
+  browser reports the URL to `/finish` instead, which behaves identically in dev
+  and prod.
+
+The store is **private**, so the object URL recorded in `pdfUrl` answers 403 to
+everybody — including us. The download link is
+`GET /api/classes/<slug>/lessons/<lesson>/notes`: it checks membership, issues a
+delegation (`issueSignedToken`) and `presignUrl`s a 10-minute GET, then 307s to
+it. The bytes never pass through the function, and `&download=1` is not part of
+the signed payload, so appending it is safe and is what makes the browser save
+the file instead of opening it. Two traps worth remembering:
+- `presignUrl` needs `access: 'private'` passed explicitly. Omit it and the host
+  comes out as `<store>.undefined.blob.vercel-storage.com`, which fails DNS.
+- a private store rejects `access: 'public'` uploads with a clear message that the
+  **browser never sees** — the error response carries no CORS header, so Chrome
+  reports "blocked by CORS policy" instead. If a client upload dies on CORS,
+  reproduce it server-side with `put()` before believing the browser.
+
+Setup is one env var, `BLOB_READ_WRITE_TOKEN` (see `web/.env.local.example`);
+without it the token route answers 501 and present mode says "not published"
+while still handing the teacher the file.
 
 Four non-obvious invariants:
 - reveal is initialised at a **fixed 1280×720**, not the source decks'
@@ -163,7 +202,8 @@ Four non-obvious invariants:
   of order; and re-sending the list on unload would race the next load's GET.
 - `finishLesson` posts to `/finish` **before** triggering the download: clicking
   an `<a download>` aborts requests started after it, which silently swallowed
-  the call when it ran second.
+  the call when it ran second. The Blob upload starts before it too, and runs in
+  the bridge iframe for the same reason.
 - Before capturing, `finishLesson` sets **inline** `z-index` on `.slides` (10)
   and `.backgrounds` (1). html2canvas ignores reveal's stylesheet `z-index` and
   paints siblings in DOM order, where `.backgrounds` comes last — so every slide

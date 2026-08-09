@@ -829,8 +829,9 @@
     if (!window.jspdf || !window.html2canvas) {
       alert("PDF libraries did not load; cannot export."); return;
     }
-    if (!confirm("Finish the lesson and save a PDF of every slide with your notes " +
-                 "to your downloads?")) return;
+    if (!confirm("Finish the lesson? Every slide with your notes goes to your " +
+                 "downloads as a PDF, and a copy is published on the lesson page " +
+                 "for the class.")) return;
 
     var wasPen = penOn;
     setPen(false);
@@ -917,15 +918,12 @@
       progress(0.98, "Saving the PDF…");
       var blob = pdf.output("blob");
       var name = pdfName();
+      var mb = Math.round(blob.size / 104857.6) / 10;
 
       // Close the session *before* handing over the file. Clicking an
       // `<a download>` aborts requests that start after it, which silently ate
       // this call when it ran second. `keepalive` covers the teacher closing the
       // tab as soon as the download appears.
-      //
-      // Nothing is uploaded: the PDF goes to the teacher's downloads and they
-      // share it with the class themselves. This only records that the lesson
-      // happened, so the class page can show which ones have been delivered.
       try {
         await fetch(API + "/finish", {
           method: "POST",
@@ -939,12 +937,12 @@
         // not worth interrupting the teacher over.
       }
 
+      // The teacher's copy first, then a copy for the class. The upload runs in
+      // the bridge iframe, so it survives the download click below, and it is
+      // never awaited here: the lesson is over either way, and a slow network
+      // must not hold the deck hostage.
+      publish(blob, name, mb);
       download(blob, name);
-      progress(1, "Saved: " + name + " (" + Math.round(blob.size / 104857.6) / 10 + " MB)");
-      setTimeout(function () {
-        var b = document.getElementById("ink-progress");
-        if (b) b.remove();
-      }, 4000);
     } finally {
       if (slidesEl) slidesEl.style.zIndex = savedZ.slides;
       if (bgEl) bgEl.style.zIndex = savedZ.bg;
@@ -970,6 +968,95 @@
     a.download = name;
     a.click();
     setTimeout(function () { URL.revokeObjectURL(a.href); }, 10000);
+  }
+
+  function hideProgressIn(ms) {
+    setTimeout(function () {
+      var b = document.getElementById("ink-progress");
+      if (b) b.remove();
+    }, ms);
+  }
+
+  /* Publish the PDF for the class, reporting into the same progress box the
+   * render used. Best-effort by design: the teacher already has the file, so a
+   * missing Blob store or a dead network downgrades to a message, never an
+   * alert. */
+  function publish(blob, name, mb) {
+    var saved = "Saved: " + name + " (" + mb + " MB)";
+    progress(1, saved + " — publishing for the class…");
+    uploadViaBridge(blob, name, function (pct) {
+      progress(1, saved + " — publishing for the class… " + Math.round(pct) + "%");
+    }).then(function (url) {
+      return fetch(API + "/finish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        keepalive: true,
+        body: JSON.stringify({ url: url, bytes: blob.size })
+      }).then(function (r) {
+        if (!r.ok) throw new Error("the site rejected the link (HTTP " + r.status + ")");
+      });
+    }).then(function () {
+      progress(1, saved + " — published; the class can download it from the lesson page.");
+      hideProgressIn(8000);
+    }).catch(function (err) {
+      progress(1, saved + " — it is in your downloads. Not published: " +
+                  ((err && err.message) || err));
+      hideProgressIn(20000);
+    });
+  }
+
+  /* Hand the Blob to /classes/blob-bridge in a hidden iframe, which owns the
+   * @vercel/blob client upload (see that page for why it cannot happen here).
+   * Resolves with the public URL. */
+  function uploadViaBridge(blob, name, onProgress) {
+    return new Promise(function (resolve, reject) {
+      var frame = document.createElement("iframe");
+      frame.setAttribute("title", "upload bridge");
+      frame.style.cssText = "position:fixed;left:-9999px;width:1px;height:1px;border:0";
+      frame.src = "/classes/blob-bridge";
+
+      var settled = false;
+      var timer = setTimeout(function () {
+        finish(function () { reject(new Error("the upload bridge timed out")); });
+      }, 10 * 60 * 1000);
+
+      function finish(done) {
+        if (settled) return;
+        settled = true;
+        clearTimeout(timer);
+        window.removeEventListener("message", onMessage);
+        frame.remove();
+        done();
+      }
+
+      function onMessage(e) {
+        if (e.origin !== location.origin || e.source !== frame.contentWindow) return;
+        var d = e.data;
+        if (!d || typeof d !== "object") return;
+        if (d.type === "mlp-blob-ready") {
+          frame.contentWindow.postMessage({
+            type: "mlp-blob-upload",
+            blob: blob,
+            pathname: "classes/" + CLASS + "/" + LESSON + "/" + name,
+            classSlug: CLASS,
+            sessionId: SESSION
+          }, location.origin);
+        } else if (d.type === "mlp-blob-progress") {
+          if (onProgress) onProgress(d.percentage || 0);
+        } else if (d.type === "mlp-blob-done") {
+          finish(function () { resolve(d.url); });
+        } else if (d.type === "mlp-blob-error") {
+          finish(function () { reject(new Error(d.error)); });
+        }
+      }
+
+      window.addEventListener("message", onMessage);
+      frame.onerror = function () {
+        finish(function () { reject(new Error("the upload bridge failed to load")); });
+      };
+      document.body.appendChild(frame);
+    });
   }
 
   // ------------------------------------------------------------------ init

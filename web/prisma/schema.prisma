@@ -171,10 +171,13 @@ model LessonSession {
   lessonSlug String
   deckHash   String // detects ink drawn against a since-edited deck
   startedAt  DateTime  @default(now())
-  // Set when the teacher presses "Finish lesson". The PDF itself is downloaded to
-  // the teacher's machine and shared out of band, so only its size is recorded.
+  // Set when the teacher presses "Finish lesson": the PDF goes straight to their
+  // downloads, and a copy is uploaded to Vercel Blob in the background. pdfUrl is
+  // null until that upload lands (or stays null if no Blob store is configured —
+  // the local file is the primary copy, publishing is the bonus).
   endedAt    DateTime?
   pdfBytes   Int?
+  pdfUrl     String?
   // Blank boards inserted during the lesson: [{id, afterId}] in insertion order.
   // They are real reveal sections injected into the deck at runtime, so the deck
   // file stays untouched and this is the only record of where they went.

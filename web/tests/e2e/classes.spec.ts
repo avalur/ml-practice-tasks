@@ -25,7 +25,13 @@ test("logged out: classes tab invites sign-in and hides teacher tools", async ({
   await expect(page.getByText(/Lecture 5/)).toHaveCount(0);
 
   // Teacher-only routes are 404, not 403: they should not even confirm existence.
-  for (const path of [`/classes/${CLASS}/monitor`, `/classes/${CLASS}/homework`]) {
+  // The lecture-notes download is members-only for the same reason — it hands out
+  // a signed URL into a private Blob store.
+  for (const path of [
+    `/classes/${CLASS}/monitor`,
+    `/classes/${CLASS}/homework`,
+    `/api/classes/${CLASS}/lessons/${LESSON}/notes`,
+  ]) {
     const res = await request.get(path);
     expect(res.status(), path).toBe(404);
   }
@@ -89,6 +95,88 @@ test("member: a topic assigned as homework renders as one collapsed group", asyn
   } finally {
     await session.dispose();
   }
+});
+
+// "Finish lesson" downloads the annotated PDF to the teacher and uploads a copy
+// to Vercel Blob; once that copy lands, every member gets a download link.
+test("member: a published lecture PDF is offered on the lesson and class pages", async ({
+  page,
+  context,
+}) => {
+  const session = await signInAs(context, {
+    email: "e2e-pdf-student@example.test",
+    name: "E2E Student",
+    classSlug: CLASS,
+  });
+  const url =
+    "https://e2etest.private.blob.vercel-storage.com/classes/e2e-notes-abc123.pdf";
+  // The store is private, so the raw object URL is never linked: both pages point
+  // at the route that checks membership and signs a short-lived download link.
+  const notes = `/api/classes/${CLASS}/lessons/${LESSON}/notes`;
+  try {
+    // Deliberately no "nothing is published yet" assertion first: this runs
+    // against the real database, where the lesson may genuinely have been
+    // delivered. The test publishes the newest session, which is the one both
+    // pages show.
+    await session.publishLessonPdf(LESSON, url, 4_900_000);
+
+    await page.goto(`/classes/${CLASS}/lessons/${LESSON}`);
+    const link = page.getByTestId("lecture-pdf");
+    await expect(link).toHaveAttribute("href", notes);
+    await expect(link).toContainText("4.7 MB");
+
+    await page.goto(`/classes/${CLASS}`);
+    await expect(page.getByRole("link", { name: "notes PDF" })).toHaveAttribute("href", notes);
+  } finally {
+    await session.dispose();
+  }
+});
+
+// The token this route mints is a write capability on the Blob store, so it must
+// never be handed to a passer-by. (Without a store configured it refuses even
+// earlier, with 501 — either way, no token comes back.)
+test("blob upload token: refused without a teacher session", async ({ request }) => {
+  const res = await request.post("/api/blob/upload-token", {
+    data: {
+      type: "blob.generate-client-token",
+      payload: {
+        pathname: `classes/${CLASS}/${LESSON}/steal.pdf`,
+        callbackUrl: "http://localhost:3000/api/blob/upload-token",
+        clientPayload: JSON.stringify({ classSlug: CLASS, sessionId: "whatever" }),
+        multipart: false,
+      },
+    },
+  });
+  expect(res.ok()).toBe(false);
+  expect(await res.text()).not.toContain("clientToken");
+});
+
+// The bridge is how the static deck reaches @vercel/blob/client. Opened at the
+// top level, window.parent is the page itself, so it can be driven directly:
+// this checks the message protocol end to end and that a passer-by's upload dies
+// on the token route rather than in a silent hang.
+test("blob bridge: takes a Blob over postMessage and reports the refusal", async ({
+  page,
+}) => {
+  await page.goto("/classes/blob-bridge");
+  const state = page.getByTestId("blob-bridge-state");
+  await expect(state).toContainText("waiting for a file");
+
+  await page.evaluate((cls) => {
+    const blob = new Blob([new Uint8Array(1024)], { type: "application/pdf" });
+    window.postMessage(
+      {
+        type: "mlp-blob-upload",
+        blob,
+        pathname: `classes/${cls}/l01-intro-python/notes.pdf`,
+        classSlug: cls,
+        sessionId: "not-a-real-session",
+      },
+      location.origin,
+    );
+  }, CLASS);
+
+  await expect(state).toContainText(/failed:/);
 });
 
 // The authoring loop is `export_decks.py --watch` + ?dev=1: the page must notice
@@ -392,7 +480,11 @@ test("present mode: Finish lesson builds a PDF of every page", async ({ page }) 
     new RegExp(`^${CLASS}-${LESSON}-\\d{4}-\\d{2}-\\d{2}\\.pdf$`),
   );
 
-  // No upload machinery may linger: there is no Blob bridge iframe any more.
+  // Publishing runs in a hidden bridge iframe and must not be able to spoil the
+  // lesson: this smoke-test session is not a real one and there is no Blob store
+  // configured, so the upload is refused — the teacher still gets the file, sees
+  // why it was not published, and no iframe is left behind.
+  await expect(page.locator("#ink-progress")).toContainText(/Not published:/);
   await expect(page.locator('iframe[src*="blob-bridge"]')).toHaveCount(0);
 
   const path = await download.path();

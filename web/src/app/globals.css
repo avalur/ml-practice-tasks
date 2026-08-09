@@ -1175,6 +1175,9 @@ pre.code {
   gap: 0.6rem;
   margin: 1rem 0;
 }
+/* .bt-clear-btn carries margin-left:auto from the brainteaser toolbar, which
+   scattered these buttons across the row once there were three of them. */
+.class-lesson-actions .bt-clear-btn { margin-left: 0; }
 .class-present-btn {
   appearance: none;
   border: 1px solid var(--accent);

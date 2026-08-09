@@ -128,7 +128,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
     prisma.lessonSession.findFirst({
       where: { classId: access.classRow.id, lessonSlug, endedAt: { not: null } },
       orderBy: { endedAt: "desc" },
-      select: { pdfBytes: true, endedAt: true },
+      select: { pdfBytes: true, pdfUrl: true, endedAt: true },
     }),
   ]);
 
@@ -152,20 +152,36 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
           Open slides
         </a>
         {access.isTeacher && <PresentButton classSlug={slug} lessonSlug={lessonSlug} />}
+        {/* "Finish lesson" saves the annotated PDF to the teacher's machine and
+            uploads a copy to Blob storage; this appears once that copy lands.
+            The store is private, so the link goes through our own route, which
+            checks membership and signs a short-lived download URL. */}
+        {delivered?.pdfUrl && (
+          <a
+            className="bt-clear-btn"
+            href={`/api/classes/${slug}/lessons/${lessonSlug}/notes`}
+            data-testid="lecture-pdf"
+          >
+            Download notes (PDF
+            {delivered.pdfBytes
+              ? `, ${Math.round(delivered.pdfBytes / 104857.6) / 10} MB`
+              : ""}
+            )
+          </a>
+        )}
       </div>
 
-      {/* The lecture PDF is downloaded to the teacher's machine by "Finish
-          lesson" and shared with the class directly, so the site only reports
-          whether the lesson has been delivered. */}
       <p className="muted">
         {delivered?.endedAt
           ? `Delivered ${delivered.endedAt.toLocaleDateString()}` +
-            (delivered.pdfBytes
-              ? ` — notes exported (${Math.round(delivered.pdfBytes / 104857.6) / 10} MB) and shared by the teacher.`
-              : ".")
+            (delivered.pdfUrl
+              ? " — the lecture notes above are the slides with everything written on them in class."
+              : delivered.pdfBytes
+                ? " — notes exported by the teacher, but not published here."
+                : ".")
           : access.isTeacher
-            ? "Not delivered yet. “Finish lesson” in present mode saves a PDF of every slide with your notes to your downloads."
-            : "Lecture notes are shared by the teacher after the lesson."}
+            ? "Not delivered yet. “Finish lesson” in present mode saves a PDF of every slide with your notes to your downloads and publishes a copy here."
+            : "Lecture notes appear here after the lesson."}
       </p>
 
       {lesson.practice.length > 0 && (

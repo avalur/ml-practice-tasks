@@ -29,6 +29,9 @@ export type TestSession = {
   userId: string;
   /** Mark a problem solved for this user, as the in-browser runner would. */
   solveProblem: (problemId: string) => Promise<void>;
+  /** Record a delivered lesson with a published PDF, as "Finish lesson" would.
+   * Requires signInAs to have been given a classSlug. */
+  publishLessonPdf: (lessonSlug: string, url: string, bytes?: number) => Promise<void>;
   dispose: () => Promise<void>;
 };
 
@@ -52,6 +55,9 @@ export async function signInAs(
   const { PrismaClient } = await import("@prisma/client");
   const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
 
+  let classId: string | null = null;
+  const lessonSessionIds: string[] = [];
+
   const existing = await prisma.user.findUnique({ where: { email: opts.email } });
   const user =
     existing ??
@@ -71,6 +77,7 @@ export async function signInAs(
       },
       update: {},
     });
+    classId = cls.id;
     await prisma.classEnrollment.upsert({
       where: { classId_userId: { classId: cls.id, userId: user.id } },
       create: { classId: cls.id, userId: user.id },
@@ -121,9 +128,27 @@ export async function signInAs(
         update: { clientSolved: true },
       });
     },
+    async publishLessonPdf(lessonSlug: string, url: string, bytes = 4_900_000) {
+      if (!classId) throw new Error("publishLessonPdf needs signInAs({classSlug})");
+      const row = await prisma.lessonSession.create({
+        data: {
+          classId,
+          lessonSlug,
+          deckHash: "e2e",
+          endedAt: new Date(),
+          pdfUrl: url,
+          pdfBytes: bytes,
+        },
+      });
+      lessonSessionIds.push(row.id);
+    },
     async dispose() {
       // Cascades from User would do most of this, but be explicit: a stray
-      // enrollment would show up in the teacher's roster on the real site.
+      // enrollment would show up in the teacher's roster on the real site, and a
+      // stray lesson session would put a dead PDF link on a real lesson page.
+      if (lessonSessionIds.length) {
+        await prisma.lessonSession.deleteMany({ where: { id: { in: lessonSessionIds } } });
+      }
       await prisma.userProblemProgress.deleteMany({ where: { userId: user.id } });
       await prisma.classEnrollment.deleteMany({ where: { userId: user.id } });
       await prisma.session.deleteMany({ where: { userId: user.id } });

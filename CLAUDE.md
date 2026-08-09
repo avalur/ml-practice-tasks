@@ -70,13 +70,141 @@ before `_`):
 6. Verify: `pytest problems/<topic>/<slug>` (reference green) and
    `pytest tasks/<topic>/<slug>` (stub should fail with NotImplementedError).
 
+## Classes (taught courses)
+
+A third content family, for lecturing from the reveal.js decks in
+`~/IdeaProjects/avalur.github.io/ai_club/`. Same file-first shape as above:
+
+- **Source of truth = `classes/<class>/`.**
+  - `class.json` — title, `teacherEmails`, and `lessons[]` (slug, title, date,
+    `deck`, `practice[]`, `homework{due,items[]}`, optional `revealOverrides`).
+  - `decks/<deck>.html` — a per-class **copy** of a deck, edited freely in
+    PyCharm. It is a *fragment*: the deck's `<style>` plus `<div class="slides">`,
+    no `<html>`/`<head>` — the exporter supplies the page shell.
+  - `assets/` — images and PyScript `.toml` files the decks reference.
+- **`web/public/classes/` is generated** by `export_decks.py` — never hand-edit.
+  Per lesson it emits `<class>/<lesson>/present.html`, plus `_shared/` (reveal
+  subset, self-hosted KaTeX, html2canvas, jsPDF, `annotate.js`, `fitslides.js`)
+  and `manifest.json` (read at request time — `classes/` lives outside `web/`
+  and is not deployed to Vercel). A class or lesson dir with nothing behind it in
+  the manifest is **deleted** on build (and flagged by `--check`), so renaming a
+  slug can't leave the old URL published.
+- Only assets the **live** lessons reference are published: `needed_assets()`
+  scans each listed deck for `assets/…` refs (plus the data files a pyscript toml
+  mounts). A class keeps decks for lessons it no longer lists, and their images
+  have no business on the CDN — that alone took this class from 11 MB to 1.6 MB.
+  `--check` fails on both a missing and a stale published asset, and
+  `web/tests/e2e/assets.spec.ts` loads every lesson and verifies each image and
+  reveal background actually resolves.
+- Renaming a class **slug** also needs the `Class` row renamed in place
+  (`prisma.class.update`), not re-synced: `sync-classes.cjs` matches on slug, so
+  it would create a second row with a fresh invite code and orphan the existing
+  enrollments and lesson sessions.
+- **Only dynamic state is in Postgres**: `Class` (seeded, holds the invite code),
+  `ClassEnrollment`, `LessonSession`, `LessonAnnotation`. Homework completion is
+  *derived* from `UserProblemProgress`/`UserNotebookProgress` — no extra table.
+  Authorization is `session.user.email ∈ Class.teacherEmails`.
+
+Bringing a deck over: `python tools/import_decks.py --class <slug> --deck all`.
+It keeps `<div class="slides">` verbatim (so in-slide `<script type="py-editor">`
+blocks survive), rewrites image refs to `assets/`, re-encodes them (JPEG when
+opaque, WebP when there's alpha — a resized photographic PNG stays huge), and
+reports every page-level script it drops. Re-run it only when re-importing; the
+regular build is `export_decks.py`.
+
+Present mode lives at `/classes/<class>/<lesson>/present.html`; adding
+`?session=<id>` (the teacher's "Present" button) is what attaches the ink layer.
+Deliberately a standalone page, not a Next.js route: `reveal.css` restyles
+`html`/`body` globally and PyScript needs a real document to scan.
+
+**Authoring a deck by hand** (the normal way Alexander writes slides): run
+`python export_decks.py --watch` next to `pnpm start`, edit
+`classes/<class>/decks/<deck>.html` in PyCharm, and keep the lesson open at
+`…/present.html?dev=1`. The watcher rebuilds only the lessons whose deck changed;
+`devreload.js` polls the page's own ETag and reloads it, and `hash: true` puts you
+back on the slide you were looking at. There is deliberately **no dev renderer** —
+the page you author against is the file that ships. Two consequences to remember:
+- the exporter uses `write_if_changed`, so a rebuild that produces identical bytes
+  leaves the mtime (and the ETag) alone — without that, every save would reload
+  every open tab;
+- `next start` lists `public/` at boot: editing an existing file is picked up per
+  request, but a **new** file (an image just added to `assets/`, a new lesson, a
+  new `_shared/` script) 404s until the server restarts. `next dev` has no such
+  cache — verified — so **author against `pnpm dev`**, and keep `pnpm start` for
+  checking the real production build.
+
+Blank grid boards are **real reveal sections** injected into the deck at runtime,
+not an overlay — they navigate, export and behave like slides. The deck file on
+disk is never touched; `LessonSession.boards` (`[{id, afterId}]`) is the only
+record of where they went, and a reload re-inserts them.
+
+"Finish lesson" renders every slide with its ink to a PDF and **downloads it to
+the teacher's machine**; nothing is uploaded and the site never hosts it (the
+teacher shares the file with the class directly). `POST …/sessions/<id>/finish`
+only records `endedAt` + `pdfBytes`, which is what drives the "delivered" badge.
+
+Four non-obvious invariants:
+- reveal is initialised at a **fixed 1280×720**, not the source decks'
+  `width:'100%'`. Ink is stored normalized to the slide box, so a fixed aspect
+  ratio is what keeps strokes aligned across window sizes and in the PDF.
+- `fitslides.js` scales down any slide whose content overflows (118 of 341 do).
+  It re-measures on a delay ladder plus `document.fonts.ready`, because the
+  theme's webfonts and async KaTeX both change text metrics after `ready`.
+- Ink is keyed by a stable `data-mlp-id` (`s<n>` for deck slides, `b<n>` for
+  boards) stamped **before** any board is inserted — never by reveal's `h.v`
+  indices, which shift the moment a board is added or deleted.
+- The laser trail is driven by **movement, not by point age**: one shared fade
+  level that only rises after `LASER_HOLD` ms of stillness and walks back down as
+  soon as the pointer moves, so a pause mid-explanation doesn't cost the trail
+  (Notability's "Tail"). Red is the laser's alone — it is deliberately absent from
+  the pen palette, so red on screen always means "pointer, not ink".
+- Board-list writes are chained, and only ink gets a `keepalive` flush on
+  unload. Each board PUT replaces the whole list, so two in flight can land out
+  of order; and re-sending the list on unload would race the next load's GET.
+- `finishLesson` posts to `/finish` **before** triggering the download: clicking
+  an `<a download>` aborts requests started after it, which silently swallowed
+  the call when it ran second.
+- Before capturing, `finishLesson` sets **inline** `z-index` on `.slides` (10)
+  and `.backgrounds` (1). html2canvas ignores reveal's stylesheet `z-index` and
+  paints siblings in DOM order, where `.backgrounds` comes last — so every slide
+  with an opaque `data-background-color` exported completely blank. The PDF still
+  had the right page count, which is why `tests/e2e/classes.spec.ts` checks each
+  page for pixels and not just the count.
+
+In-slide links to site tasks use `<a class="practice" href="/problems/…">`;
+`export_decks.py` validates every one of them (and every `class.json` id) against
+the problem/notebook manifests and **fails the build on a typo**.
+
+PyScript in the decks, four things learned the hard way:
+- a py-editor must call `matplotlib.use('Agg')` **before** importing `pyplot`.
+  Editors run in a worker, where matplotlib's Pyodide backend does
+  `from js import document` and `plt.subplots()` dies with an ImportError. The
+  decks only ever `savefig`, so a non-interactive backend is what they want;
+  `validate_matplotlib_backend` fails the build when the order is wrong, per env.
+- a `[files]` key in a `pyscript.toml` resolves against **the toml's own URL**, and
+  the toml is copied into `assets/` — so keys must be bare filenames. A key that
+  404s is mounted as an *empty* file, so the slide prints nothing instead of
+  failing; `validate_py_configs` now fails the build on it.
+- `config` may appear on **only one** py-editor per `env`. Copying it onto the
+  others (to survive running them out of order) makes PyScript throw
+  "duplicated config for env: …" at boot and stop upgrading editors — don't. It
+  is unnecessary anyway: configs are registered when the tags are parsed, so the
+  packages are there whichever editor of that env runs first.
+- `write_if_changed` renames a temp file into place. `--watch` rewrites pages the
+  dev server is serving, and a truncating overwrite can hand a browser half a
+  page — which looks exactly like a deck whose py-editor config vanished.
+
 ## Commands
 
 ```bash
 python generate.py            # rebuild tasks/ from problems/
 python generate.py --check    # CI: fail if tasks/ drifted from problems/
+python export_decks.py        # rebuild web/public/classes/ from classes/
+python export_decks.py --check # CI: fail if class decks drifted
+python export_decks.py --watch # authoring: rebuild on save (use ?dev=1 in the browser)
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
+cd web && pnpm db:sync-classes # upsert Class rows + mint invite codes
 ```
 
 CI (`.github/workflows/ci.yml`) runs the `--check` + `pytest problems` pair on

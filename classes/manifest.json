@@ -1,0 +1,10 @@
+{
+  "classes": [
+    {
+      "slug": "ml-intensive-tlf",
+      "title": "ML Intensive for TLF",
+      "description": "A one-week intro to Machine Learning: from Python and NumPy to gradient descent, trees, backpropagation and recurrent neural networks. You will learn how models make predictions, measure their mistakes and improve themselves step by step. By the end of the course, concepts such as loss functions, stochastic gradient descent, backpropagation and RNNs will no longer sound like mysterious spells.",
+      "order": 1
+    }
+  ]
+}

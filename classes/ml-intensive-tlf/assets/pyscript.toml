@@ -1,0 +1,7 @@
+name = "Numpy and Pandas"
+packages = ["numpy", "pandas"]
+
+[files]
+# Resolved against this file's own URL (/classes/<class>/assets/), so bare names.
+"example.csv" = ""
+"titanic.csv" = ""

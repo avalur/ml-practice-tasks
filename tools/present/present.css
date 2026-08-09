@@ -1,0 +1,179 @@
+/* Chrome for the generated present.html: ink canvas, blank boards, toolbar.
+ * Loaded after reveal.css, so it may rely on reveal's globals being in place. */
+
+/* Full viewport: a blank board's white grid is painted full-screen by reveal's
+ * background layer, so the drawable area has to match it. Stroke coordinates
+ * stay tied to the slide box — see sizeCanvases() in annotate.js. */
+.ink-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  touch-action: none;          /* stop Safari panning while the pen is down */
+  cursor: crosshair;
+}
+
+body.ink-active .ink-canvas { cursor: crosshair; }
+
+/* Laser trail. Above the ink so the pointer is always visible, but never
+ * interactive — the ink canvas owns pointer events. Nothing here is saved or
+ * exported: it is redrawn from scratch every frame and fades to nothing. */
+.ink-laser {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+
+/* Blank grid boards are real reveal sections; their white background and grid
+ * come from data-background-* attributes, so all that is needed here is to stop
+ * reveal from vertically centring an empty section. */
+.reveal .slides section.mlp-board {
+  height: 100%;
+  top: 0 !important;
+}
+
+/* ------------------------------------------------------------------ toolbar */
+
+.ink-bar {
+  position: fixed;
+  z-index: 60;
+  left: 50%;
+  bottom: 14px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  background: rgba(24, 26, 32, 0.88);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(6px);
+  font: 14px/1 system-ui, -apple-system, sans-serif;
+  transition: opacity 0.4s ease;
+}
+
+.ink-bar-idle { opacity: 0.12; }
+.ink-bar-idle:hover { opacity: 1; }
+
+.ink-btn {
+  appearance: none;
+  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f4f8;
+  border-radius: 8px;
+  min-width: 32px;
+  height: 30px;
+  padding: 0 8px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ink-btn:hover { background: rgba(255, 255, 255, 0.18); }
+.ink-btn.on { background: #4c7dfd; border-color: #a9c2ff; }
+.ink-btn.ink-dim { opacity: 0.35; cursor: default; }
+.ink-btn.ink-dim:hover { background: rgba(255, 255, 255, 0.08); }
+.ink-tail { font-size: 16px; }
+
+.ink-swatch {
+  appearance: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  padding: 0;
+}
+
+.ink-swatch.on { border-color: #fff; transform: scale(1.15); }
+
+.ink-w .ink-dot {
+  display: block;
+  border-radius: 50%;
+  background: #f2f4f8;
+}
+
+.ink-finish {
+  background: #1f8a4c;
+  border-color: #2fbf6c;
+  font-weight: 600;
+  padding: 0 12px;
+}
+
+.ink-finish:hover { background: #24a45b; }
+
+.ink-status {
+  color: #b9c0cc;
+  font-size: 12px;
+  min-width: 90px;
+  max-width: 260px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ----------------------------------------------------------- export progress */
+
+#ink-progress {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(12, 14, 18, 0.72);
+}
+
+.ink-prog-inner {
+  width: min(420px, 80vw);
+  padding: 22px 24px;
+  border-radius: 14px;
+  background: #1b1e25;
+  color: #f2f4f8;
+  font: 15px/1.4 system-ui, -apple-system, sans-serif;
+  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.5);
+}
+
+.ink-prog-text { margin-bottom: 12px; }
+
+.ink-prog-track {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  overflow: hidden;
+}
+
+.ink-prog-bar {
+  height: 100%;
+  width: 0;
+  background: #4c7dfd;
+  transition: width 0.2s ease;
+}
+
+/* Live-reload badge (?dev=1 only) — deliberately tiny and in a corner nobody
+ * projects, so an authoring session looks like the real thing. */
+.dev-reload-badge {
+  position: fixed;
+  right: 8px;
+  bottom: 6px;
+  z-index: 60;
+  padding: 2px 7px;
+  border-radius: 999px;
+  font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  letter-spacing: 0.04em;
+  color: #0b2c14;
+  background: #8fe0a5;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.dev-reload-badge[data-state="hit"] { background: #ffd479; opacity: 0.95; }
+.dev-reload-badge[data-state="off"] { background: #f19b9b; opacity: 0.9; }
+
+/* Nothing here should ever reach the printed/rasterised slide. */
+@media print {
+  .ink-bar, #ink-progress, .ink-laser, .dev-reload-badge { display: none !important; }
+}

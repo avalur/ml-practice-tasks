@@ -1,0 +1,98 @@
+{
+  "slug": "ml-intensive-tlf",
+  "title": "ML Intensive for TLF (5 lessons, 2.5h each)",
+  "teacherEmails": ["ovalur@gmail.com"],
+  "lessons": [
+    {
+      "slug": "l01-intro-python",
+      "title": "Lecture 1. Python Refresher",
+      "date": "2026-08-17",
+      "deck": "intro_to_python",
+      "practice": [
+        { "type": "problem", "id": "py_basics/middle_value_of_triple" },
+        { "type": "problem", "id": "py_basics/fizz_buzz" },
+        { "type": "problem", "id": "py_functional/flat_it" }
+      ],
+      "homework": {
+        "due": "2026-08-18T23:59",
+        "items": [
+          { "type": "problem", "id": "py_*", "title": "Python fundamentals" }
+        ]
+      }
+    },
+    {
+      "slug": "l02-numpy-pandas",
+      "title": "Lecture 2. NumPy and Pandas",
+      "date": "2026-08-18",
+      "deck": "numpy_pandas",
+      "practice": [
+        { "type": "problem", "id": "numpy_basics/reverse_vector" },
+        { "type": "problem", "id": "numpy_basics/make_immutable" },
+        { "type": "problem", "id": "numpy_basics/matrix_product" },
+        { "type": "problem", "id": "numpy_basics/to_column" },
+        { "type": "problem", "id": "numpy_basics/pairwise_distances" },
+        { "type": "problem", "id": "numpy_combine/stack_columns" },
+        { "type": "problem", "id": "numpy_indexing/mask_negate" }
+      ],
+      "homework": {
+        "due": "2026-08-19T23:59",
+        "items": [
+          { "type": "problem", "id": "numpy_basics/*", "title": "NumPy basics" },
+          { "type": "problem", "id": "pandas_basics/*", "title": "Pandas basics" }
+        ]
+      }
+    },
+    {
+      "slug": "l03-ml-intro",
+      "title": "Lecture 3. Introduction to Machine Learning",
+      "date": "2026-08-19",
+      "deck": "ml_intro",
+      "practice": [
+        { "type": "problem", "id": "numpy_linalg/normalize_rows" },
+        { "type": "problem", "id": "numpy_manipulation/replace_nans" },
+        { "type": "problem", "id": "numpy_manipulation/pad_border" },
+        { "type": "problem", "id": "numpy_reductions/moving_average" }
+      ],
+      "homework": {
+        "due": "2026-08-20T23:59",
+        "items": [
+          { "type": "problem", "id": "numpy_linalg/*", "title": "Linear algebra with NumPy" },
+          { "type": "problem", "id": "numpy_reductions/*", "title": "NumPy reductions" },
+          { "type": "problem", "id": "pandas_exploration/*", "title": "Exploring data with Pandas" }
+        ]
+      }
+    },
+    {
+      "slug": "l04-linear-models",
+      "title": "Lecture 4. Linear models, Stochastic Gradient Descent",
+      "date": "2026-08-20",
+      "deck": "linear_models",
+      "practice": [
+        { "type": "problem", "id": "py_basics/iterate_me" },
+        { "type": "problem", "id": "numpy_manipulation/swap_rows" },
+        { "type": "problem", "id": "pandas_manipulation/clean_data" }
+      ],
+      "homework": {
+        "due": "2026-08-21T23:59",
+        "items": [
+          { "type": "notebook", "id": "gradient_descent/*", "title": "Gradient descent notebooks" }
+        ]
+      }
+    },
+    {
+      "slug": "l05-backprop",
+      "title": "Lecture 5. Neural networks and backpropagation",
+      "date": "2026-08-21",
+      "deck": "nn_backprop",
+      "practice": [
+        { "type": "notebook", "id": "ml_interview/image_rotation" }
+      ],
+      "homework": {
+        "due": "2026-08-22T23:59",
+        "items": [
+          { "type": "notebook", "id": "simple_neural_network/*", "title": "Simple neural network" }
+        ]
+      }
+    }
+  ]
+}

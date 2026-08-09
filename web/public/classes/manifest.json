@@ -1,0 +1,489 @@
+{
+  "classes": [
+    {
+      "slug": "ml-intensive-tlf",
+      "title": "ML Intensive for TLF (5 lessons, 2.5h each)",
+      "description": "A one-week intro to Machine Learning: from Python and NumPy to gradient descent, trees, backpropagation and recurrent neural networks. You will learn how models make predictions, measure their mistakes and improve themselves step by step. By the end of the course, concepts such as loss functions, stochastic gradient descent, backpropagation and RNNs will no longer sound like mysterious spells.",
+      "order": 1,
+      "lessons": [
+        {
+          "slug": "l01-intro-python",
+          "title": "Lecture 1. Python Refresher",
+          "date": "2026-08-17",
+          "deck": "intro_to_python",
+          "practice": [
+            {
+              "type": "problem",
+              "id": "py_basics/middle_value_of_triple"
+            },
+            {
+              "type": "problem",
+              "id": "py_basics/fizz_buzz"
+            },
+            {
+              "type": "problem",
+              "id": "py_functional/flat_it"
+            }
+          ],
+          "homework": {
+            "due": "2026-08-18T23:59",
+            "items": [
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "py_*",
+                "title": "Python fundamentals",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "py_basics/bin_basic"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/bin_tricky"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/common_type"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/filter_list_by_list"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/fizz_buzz"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/iterate_me"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/merge_iterative"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/middle_value_of_triple"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_basics/reverse_iterative"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_classes/list_twist"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_classes/range"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/alphabet"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/comprehensions"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/merge_kway"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/min_to_drop"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/reverse_dict"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_datastructures/traverse_dictionary"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_functional/context_manager"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_functional/flat_it"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_functional/lru_cache"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_functional/profiler"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_functional/warm_up"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_strings/caesar_cipher"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_strings/count_util"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_strings/git_log"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "py_strings/normalize_path"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "slug": "l02-numpy-pandas",
+          "title": "Lecture 2. NumPy and Pandas",
+          "date": "2026-08-18",
+          "deck": "numpy_pandas",
+          "practice": [
+            {
+              "type": "problem",
+              "id": "numpy_basics/reverse_vector"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_basics/make_immutable"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_basics/matrix_product"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_basics/to_column"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_basics/pairwise_distances"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_combine/stack_columns"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_indexing/mask_negate"
+            }
+          ],
+          "homework": {
+            "due": "2026-08-19T23:59",
+            "items": [
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "numpy_basics/*",
+                "title": "NumPy basics",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/flatten"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/make_immutable"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/matrix_product"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/memory_size"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/null_vector"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/null_with_one"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/pairwise_distances"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/range_vector"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/reverse_vector"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/rgba_dtype"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/to_column"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/to_matrix"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/transpose_2d"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/vector_mean"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_basics/version"
+                  }
+                ]
+              },
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "pandas_basics/*",
+                "title": "Pandas basics",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "pandas_basics/df_columns"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "pandas_basics/loc_iloc"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "pandas_basics/series_ops"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "slug": "l03-ml-intro",
+          "title": "Lecture 3. Introduction to Machine Learning",
+          "date": "2026-08-19",
+          "deck": "ml_intro",
+          "practice": [
+            {
+              "type": "problem",
+              "id": "numpy_linalg/normalize_rows"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_manipulation/replace_nans"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_manipulation/pad_border"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_reductions/moving_average"
+            }
+          ],
+          "homework": {
+            "due": "2026-08-20T23:59",
+            "items": [
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "numpy_linalg/*",
+                "title": "Linear algebra with NumPy",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/cauchy"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/diag_of_product"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/gram_matrix"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/nonzero_product"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/normalize_rows"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/trace"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_linalg/vander"
+                  }
+                ]
+              },
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "numpy_reductions/*",
+                "title": "NumPy reductions",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "numpy_reductions/accumulate_at"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_reductions/most_frequent"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_reductions/moving_average"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_reductions/one_hot"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "numpy_reductions/sum_last_two"
+                  }
+                ]
+              },
+              {
+                "type": "group",
+                "of": "problem",
+                "pattern": "pandas_exploration/*",
+                "title": "Exploring data with Pandas",
+                "items": [
+                  {
+                    "type": "problem",
+                    "id": "pandas_exploration/filter_rows"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "pandas_exploration/groupby_agg"
+                  },
+                  {
+                    "type": "problem",
+                    "id": "pandas_exploration/sort_rows"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "slug": "l04-linear-models",
+          "title": "Lecture 4. Linear models, Stochastic Gradient Descent",
+          "date": "2026-08-20",
+          "deck": "linear_models",
+          "practice": [
+            {
+              "type": "problem",
+              "id": "py_basics/iterate_me"
+            },
+            {
+              "type": "problem",
+              "id": "numpy_manipulation/swap_rows"
+            },
+            {
+              "type": "problem",
+              "id": "pandas_manipulation/clean_data"
+            }
+          ],
+          "homework": {
+            "due": "2026-08-21T23:59",
+            "items": [
+              {
+                "type": "group",
+                "of": "notebook",
+                "pattern": "gradient_descent/*",
+                "title": "Gradient descent notebooks",
+                "items": [
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/adagrad"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/full_gd"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/intro"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/linear_regression"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/momentum"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/regularization"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "gradient_descent/stochastic_gd"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "slug": "l05-backprop",
+          "title": "Lecture 5. Neural networks and backpropagation",
+          "date": "2026-08-21",
+          "deck": "nn_backprop",
+          "practice": [
+            {
+              "type": "notebook",
+              "id": "ml_interview/image_rotation"
+            }
+          ],
+          "homework": {
+            "due": "2026-08-22T23:59",
+            "items": [
+              {
+                "type": "group",
+                "of": "notebook",
+                "pattern": "simple_neural_network/*",
+                "title": "Simple neural network",
+                "items": [
+                  {
+                    "type": "notebook",
+                    "id": "simple_neural_network/backpropagation"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "simple_neural_network/forward"
+                  },
+                  {
+                    "type": "notebook",
+                    "id": "simple_neural_network/intro"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

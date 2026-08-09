@@ -16,18 +16,19 @@ generator client {
 // --- Auth.js (NextAuth) models ---
 
 model User {
-  id            String    @id @default(cuid())
-  name          String?
-  email         String?   @unique
-  emailVerified DateTime?
-  image         String?
-  accounts      Account[]
-  sessions      Session[]
-  submissions   Submission[]
-  progress      UserProblemProgress[]
-  favorites     Favorite[]
+  id               String                 @id @default(cuid())
+  name             String?
+  email            String?                @unique
+  emailVerified    DateTime?
+  image            String?
+  accounts         Account[]
+  sessions         Session[]
+  submissions      Submission[]
+  progress         UserProblemProgress[]
+  favorites        Favorite[]
   notebookProgress UserNotebookProgress[]
-  createdAt     DateTime  @default(now())
+  enrollments      ClassEnrollment[]
+  createdAt        DateTime               @default(now())
 }
 
 model Account {
@@ -121,7 +122,7 @@ model Favorite {
 model UserNotebookProgress {
   id           String    @id @default(cuid())
   userId       String
-  notebookId   String    // "gradient_descent/intro"
+  notebookId   String // "gradient_descent/intro"
   code         String?   @db.Text // latest captured student code (for restore)
   attemptCount Int       @default(0)
   solvedAt     DateTime? // null until all tests pass
@@ -130,6 +131,71 @@ model UserNotebookProgress {
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, notebookId])
+}
+
+// --- Classes ---
+// Structure (lessons, decks, practice, homework) lives in files under classes/
+// and is read at request time; only dynamic state is stored here. Homework
+// completion is derived from UserProblemProgress/UserNotebookProgress, so it
+// needs no table of its own.
+
+model Class {
+  id            String   @id @default(cuid())
+  slug          String   @unique // matches classes/<slug>/
+  title         String
+  inviteCode    String   @unique // generated on first sync, never rotated
+  teacherEmails String[] // seeded from class.json; authorizes before first sign-in
+  createdAt     DateTime @default(now())
+
+  enrollments ClassEnrollment[]
+  sessions    LessonSession[]
+}
+
+model ClassEnrollment {
+  id       String   @id @default(cuid())
+  classId  String
+  userId   String
+  joinedAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, userId])
+  @@index([userId])
+}
+
+// One row per lesson actually delivered. Created when the teacher hits Present.
+model LessonSession {
+  id         String    @id @default(cuid())
+  classId    String
+  lessonSlug String
+  deckHash   String // detects ink drawn against a since-edited deck
+  startedAt  DateTime  @default(now())
+  // Set when the teacher presses "Finish lesson". The PDF itself is downloaded to
+  // the teacher's machine and shared out of band, so only its size is recorded.
+  endedAt    DateTime?
+  pdfBytes   Int?
+  // Blank boards inserted during the lesson: [{id, afterId}] in insertion order.
+  // They are real reveal sections injected into the deck at runtime, so the deck
+  // file stays untouched and this is the only record of where they went.
+  boards     Json?
+
+  class       Class              @relation(fields: [classId], references: [id], onDelete: Cascade)
+  annotations LessonAnnotation[]
+
+  @@index([classId, lessonSlug])
+}
+
+model LessonAnnotation {
+  id        String   @id @default(cuid())
+  sessionId String
+  pageKey   String // "3.1" = slide h.v, "3.1#b2" = 2nd blank board after it
+  strokes   Json // [{c,w,hl,p:[[x,y,pressure],…]}] normalized to the slide box
+  updatedAt DateTime @updatedAt
+
+  session LessonSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, pageKey])
 }
 
 model UserProblemProgress {

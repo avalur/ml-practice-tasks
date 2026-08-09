@@ -18,6 +18,8 @@ jobs:
         run: python generate.py --check
       - name: Check web content is generated from problems/
         run: python export_web.py --check
+      - name: Check class decks are generated from classes/
+        run: python export_decks.py --check
       - name: Run reference solutions
         run: pytest problems -q
 

@@ -1089,3 +1089,179 @@ pre.code {
 .it-token:active:not(.it-token--used) { cursor: grabbing; transform: scale(0.95); }
 .it-token--used { opacity: 0.2; cursor: default; }
 .it-token--dragging { opacity: 0.4; }
+
+/* ── Classes ─────────────────────────────────────────────────────────────── */
+
+.class-breadcrumb { margin-bottom: 0.25rem; font-size: 0.85rem; }
+
+.class-teacher-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.5rem;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  font-size: 0.9rem;
+}
+.class-code {
+  padding: 0.1rem 0.4rem;
+  border-radius: 4px;
+  background: var(--panel-2);
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+}
+
+.class-lessons { list-style: none; padding: 0; margin: 1.5rem 0 0; }
+.class-lesson {
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--border);
+}
+.class-lesson:last-child { border-bottom: none; }
+.class-lesson-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.class-lesson-head .meta { display: flex; align-items: center; gap: 0.5rem; font-size: 0.85rem; }
+.class-lesson-title { font-weight: 600; }
+.class-lesson-line { margin: 0.35rem 0 0; font-size: 0.88rem; }
+
+/* A whole topic assigned as one item: collapsed by default so a 26-task
+   homework reads as a single line with a count. */
+.ref-group {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.ref-group > summary {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 1.1rem;
+  cursor: pointer;
+  list-style: none;
+}
+.ref-group > summary::-webkit-details-marker { display: none; }
+.ref-group > summary::before {
+  content: "▸";
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.ref-group[open] > summary::before { content: "▾"; }
+.ref-group > summary:hover { color: var(--accent); }
+.ref-group > summary .title { font-weight: 600; }
+.ref-group > summary .meta {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+}
+.ref-group > .problem-list {
+  margin: 0;
+  padding: 0 0.7rem 0.7rem 2rem;
+  gap: 0.4rem;
+}
+.ref-group > .problem-list .problem-card { padding: 0.55rem 0.8rem; }
+
+.class-lesson-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin: 1rem 0;
+}
+.class-present-btn {
+  appearance: none;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: 6px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.class-present-btn:hover { filter: brightness(1.08); }
+.class-present-btn:disabled { opacity: 0.6; cursor: default; }
+
+.class-join { margin-top: 2rem; max-width: 26rem; }
+.class-join label { display: block; margin-bottom: 0.4rem; font-size: 0.9rem; color: var(--muted); }
+.class-join-row { display: flex; gap: 0.5rem; }
+.class-join-row input {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.95rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.class-join-ok  { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--easy); }
+.class-join-err { margin: 0.5rem 0 0; font-size: 0.85rem; color: var(--hard); }
+
+.class-upload { margin: 0.5rem 0 1rem; }
+.class-upload label { cursor: pointer; display: inline-block; }
+
+/* ── Live monitor ────────────────────────────────────────────────────────── */
+
+.mon { margin-top: 1rem; }
+.mon-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.mon-title { font-weight: 600; }
+.mon-stats {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.85rem;
+}
+.mon-filter { display: flex; align-items: center; gap: 0.35rem; color: var(--muted); }
+.mon-empty { font-size: 0.9rem; }
+.mon-list { list-style: none; padding: 0; margin: 0; }
+.mon-list li {
+  display: grid;
+  grid-template-columns: 4.75rem 1rem minmax(5rem, 1fr) minmax(6rem, 2fr) auto;
+  gap: 0.5rem;
+  align-items: baseline;
+  padding: 0.3rem 0.4rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.85rem;
+}
+.mon-time { color: var(--muted); font-variant-numeric: tabular-nums; }
+.mon-ok  .mon-mark { color: var(--easy); }
+.mon-bad .mon-mark { color: var(--hard); }
+.mon-who { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mon-what { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.mon-score { font-variant-numeric: tabular-nums; color: var(--muted); }
+.mon-nb { font-size: 0.75rem; }
+
+/* ── Homework matrix ─────────────────────────────────────────────────────── */
+
+.hw-scroll { overflow-x: auto; margin-top: 1rem; }
+.hw-table { border-collapse: collapse; font-size: 0.85rem; }
+.hw-table th,
+.hw-table td {
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.hw-table th { background: var(--panel-2); font-weight: 600; }
+.hw-name { text-align: left !important; white-space: nowrap; max-width: 14rem; overflow: hidden; text-overflow: ellipsis; }
+.hw-total { font-weight: 700; }
+.hw-full      { color: var(--easy); }
+.hw-part      { color: var(--medium); }
+.hw-none      { color: var(--muted); }
+.hw-none-late { color: var(--hard); }
+.hw-na        { color: var(--border); }

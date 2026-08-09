@@ -2,6 +2,8 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getManifest } from "@/lib/content";
+import { flatten, getClasses, myClassSlugs } from "@/lib/classes";
+import { JoinClassForm } from "@/components/JoinClassForm";
 import { visibleProblems } from "@/lib/problem";
 import { computeStreak } from "@/lib/stats";
 import { ProfileNav } from "./ProfileNav";
@@ -47,11 +49,56 @@ export default async function ProfilePage({
       <section>
         {tab === "favorites" ? (
           <FavoritesTab userId={userId} manifest={manifest} />
+        ) : tab === "classes" ? (
+          <ClassesTab />
         ) : (
           <SubmissionsTab userId={userId} />
         )}
       </section>
     </div>
+  );
+}
+
+async function ClassesTab() {
+  const [all, mine] = await Promise.all([getClasses(), myClassSlugs()]);
+  const member = new Set(mine.member);
+  const teaching = new Set(mine.teaching);
+  const joined = all.filter((c) => member.has(c.slug));
+
+  return (
+    <>
+      <h2>Classes</h2>
+      {joined.length === 0 ? (
+        <p className="muted">
+          Not in any class yet — join one from the{" "}
+          <Link href="/classes">Classes</Link> tab with your teacher's invite code.
+        </p>
+      ) : (
+        <ul className="problem-list">
+          {joined.map((cls) => {
+            const hwTotal = cls.lessons.reduce(
+              (n, l) => n + flatten(l.homework?.items ?? []).length,
+              0,
+            );
+            return (
+              <li key={cls.slug}>
+                <Link href={`/classes/${cls.slug}`} className="problem-card">
+                  <span className="title">{cls.title}</span>
+                  <span className="meta">
+                    {teaching.has(cls.slug) && <span className="badge hard">teacher</span>}
+                    <span className="badge easy">{cls.lessons.length} lessons</span>
+                    {hwTotal > 0 && (
+                      <span className="badge medium">{hwTotal} homework tasks</span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+      <JoinClassForm />
+    </>
   );
 }
 

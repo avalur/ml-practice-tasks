@@ -11,3 +11,6 @@ node_modules/
 /MEMORY.md
 /project_ml_leetcode.md
 /user_avalur_instructor.md
+
+# Local Codex/MCP config
+.codex/

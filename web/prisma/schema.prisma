@@ -16,19 +16,44 @@ generator client {
 // --- Auth.js (NextAuth) models ---
 
 model User {
-  id               String                 @id @default(cuid())
-  name             String?
-  email            String?                @unique
-  emailVerified    DateTime?
-  image            String?
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  // Set only for accounts that registered with a password (OAuth users have
+  // none until they set one through the reset-by-email flow). Format is
+  // scrypt$N$r$p$salt$hash — see src/lib/password.ts.
+  passwordHash  String?
+  // Failed sign-in throttling. Cleared on every successful sign-in.
+  failedLogins  Int       @default(0)
+  lockedUntil   DateTime?
+
   accounts         Account[]
   sessions         Session[]
+  passwordResets   PasswordResetToken[]
   submissions      Submission[]
   progress         UserProblemProgress[]
   favorites        Favorite[]
   notebookProgress UserNotebookProgress[]
   enrollments      ClassEnrollment[]
   createdAt        DateTime               @default(now())
+}
+
+// A password-reset link, one row per request. Only the SHA-256 of the token that
+// went out by email is stored: the database never holds anything that can be
+// mailed back as a link. Single use, short lived.
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    String
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }
 
 model Account {

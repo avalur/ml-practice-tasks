@@ -244,6 +244,42 @@ PyScript in the decks, four things learned the hard way:
   dev server is serving, and a truncating overwrite can hand a browser half a
   page — which looks exactly like a deck whose py-editor config vanished.
 
+## Accounts and sign-in
+
+Auth.js v5 with the Prisma adapter and **database** sessions: a session is a
+`Session` row plus the `authjs.session-token` cookie (`__Secure-` prefixed over
+https). Google and GitHub link on verified email, so one address is one account.
+
+Email+password sits **next to** Auth.js rather than inside it, in
+`/api/account/{register,login,forgot-password,reset-password}` with pages
+`/signin`, `/register`, `/forgot-password`, `/reset-password`:
+
+- Auth.js's own Credentials provider refuses to run under the database strategy.
+  But a session here is just a row and a cookie, so `src/lib/session-cookie.ts`
+  writes both and `auth()` reads them back as its own — including Sign out.
+  **The cookie name must match Auth.js's exactly**, prefix and all, or the
+  session it looks up will not be the one just created.
+- Hashing is `scrypt` from node:crypto (`src/lib/password.ts`), parameters stored
+  in the hash string. No bcrypt/argon2 dependency to break on a deploy.
+- Registering onto an **existing** address is refused, never adopted: otherwise
+  anyone who knows the address of a Google user could put a password on their
+  account. Proving you own the address is what the reset flow is for, and it
+  works for OAuth-only accounts — that is how they get a password.
+- Reset tokens are stored **hashed** (SHA-256), single use, one hour, one letter
+  a minute per account. A successful reset drops every other session and marks
+  `emailVerified` — following the link is the proof.
+- `forgot-password` answers the same sentence whether or not the address is
+  registered, and `login` answers the same sentence for "no such user" and "wrong
+  password" (and hashes anyway, so both take the same time). Eight failures lock
+  an account for 15 minutes.
+- These routes set cookies and change passwords, and `SameSite=Lax` still allows
+  a cross-site POST, so each one checks the `Origin` header itself — Auth.js's
+  CSRF token only covers the routes Auth.js serves.
+- Mail goes through Resend over plain `fetch` (`src/lib/mailer.ts`). With no
+  `RESEND_API_KEY` the letter is printed to the server log instead, so the whole
+  flow works locally and in CI with nothing configured. Prod needs
+  `RESEND_API_KEY` and a verified sender domain in `MAIL_FROM`.
+
 ## Commands
 
 ```bash

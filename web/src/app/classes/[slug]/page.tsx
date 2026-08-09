@@ -95,7 +95,8 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
           <JoinClassForm placeholder={`${codePrefix(slug)}…`} />
         ) : (
           <p className="muted">
-            Everything here is open. <Link href="/api/auth/signin">Sign in</Link> and
+            Everything here is open.{" "}
+            <Link href={`/signin?next=${encodeURIComponent(`/classes/${slug}`)}`}>Sign in</Link> and
             enter your teacher&rsquo;s group code if you want your homework counted.
           </p>
         ))}

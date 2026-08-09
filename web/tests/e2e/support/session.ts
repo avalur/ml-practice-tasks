@@ -50,6 +50,50 @@ const TEST_EMAIL = /@example\.test$/;
 /** Same normalization the app does — codes are matched without case or dashes. */
 const normalize = (code: string) => code.toUpperCase().replace(/[^A-Z0-9]/g, "");
 
+/** For tests where the *app* creates the account (registration): read state back
+ * and clean up afterwards. Same guard rail — synthetic addresses only. */
+export async function testAccount(email: string) {
+  if (!TEST_EMAIL.test(email)) {
+    throw new Error(`testAccount refuses ${email}: use a @example.test address.`);
+  }
+  const { PrismaClient } = await import("@prisma/client");
+  const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+  return {
+    /** How many live reset links this account has — the observable effect of
+     * "forgot password", since the token itself only exists in the email. */
+    async resetTokenCount(): Promise<number> {
+      return prisma.passwordResetToken.count({ where: { user: { email } } });
+    },
+    /* Issue a link the way the route does, and hand the test the raw token: the
+     * database stores only a hash, so a test can never read back the one that
+     * was mailed. This is the same code path from the reset page's point of
+     * view — token in the URL, hash in the table. */
+    async issueResetToken(opts?: { expiresAt?: Date }): Promise<string> {
+      const { createHash, randomBytes } = await import("node:crypto");
+      const token = randomBytes(32).toString("base64url");
+      const user = await prisma.user.findUniqueOrThrow({ where: { email } });
+      await prisma.passwordResetToken.create({
+        data: {
+          userId: user.id,
+          tokenHash: createHash("sha256").update(token).digest("hex"),
+          expiresAt: opts?.expiresAt ?? new Date(Date.now() + 3600_000),
+        },
+      });
+      return token;
+    },
+    async sessionCount(): Promise<number> {
+      return prisma.session.count({ where: { user: { email } } });
+    },
+    async exists(): Promise<boolean> {
+      return (await prisma.user.count({ where: { email } })) > 0;
+    },
+    async remove() {
+      await prisma.user.deleteMany({ where: { email } }); // cascades sessions + tokens
+      await prisma.$disconnect();
+    },
+  };
+}
+
 export async function signInAs(
   context: BrowserContext,
   opts: { email: string; name: string; classSlug?: string; teacher?: boolean },

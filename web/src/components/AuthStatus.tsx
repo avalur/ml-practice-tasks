@@ -1,9 +1,12 @@
 "use client";
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 
 export function AuthStatus() {
   const { data: session, status } = useSession();
+  const pathname = usePathname();
 
   if (status === "loading") return <span className="muted">…</span>;
 
@@ -22,9 +25,15 @@ export function AuthStatus() {
     );
   }
 
+  // Our own page rather than signIn(): it offers a password as well as the two
+  // OAuth providers, and it comes back to where you were.
+  const next =
+    pathname && !pathname.startsWith("/signin") && !pathname.startsWith("/register")
+      ? `?next=${encodeURIComponent(pathname)}`
+      : "";
   return (
-    <button className="btn small" onClick={() => signIn()}>
+    <Link className="btn small" href={`/signin${next}`}>
       Sign in
-    </button>
+    </Link>
   );
 }

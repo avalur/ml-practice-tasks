@@ -254,6 +254,15 @@ Auth.js v5 with the Prisma adapter and **database** sessions: a session is a
 `Session` row plus the `authjs.session-token` cookie (`__Secure-` prefixed over
 https). Google and GitHub link on verified email, so one address is one account.
 
+A person's name is stored **twice**: `firstName`/`lastName` are what the user
+types (registration asks for them right after the email, `/profile?tab=account`
+changes them later, `POST /api/account/profile`), and `name` is the display
+string every other page already reads — the header, class rosters, the monitor
+feed — rewritten from the two halves on every save. OAuth accounts arrive with
+only a `name`, so `splitName()` in `src/lib/person.ts` shows it back split on
+the first space rather than an empty form; there is no backfill and none is
+needed.
+
 Email+password sits **next to** Auth.js rather than inside it, in
 `/api/account/{register,login,forgot-password,reset-password}` with pages
 `/signin`, `/register`, `/forgot-password`, `/reset-password`:

@@ -4,11 +4,7 @@ const NAV = [
   { tab: "favorites",   icon: "⭐", label: "Favorites" },
   { tab: "submissions", icon: "📋", label: "Submissions" },
   { tab: "classes",     icon: "🎓", label: "Classes" },
-] as const;
-
-const COMING_SOON = [
-  { icon: "📚", label: "Study Plan" },
-  { icon: "🗂", label: "Library" },
+  { tab: "account",     icon: "⚙️", label: "Account" },
 ] as const;
 
 export function ProfileNav({
@@ -52,13 +48,6 @@ export function ProfileNav({
             <span>{icon}</span>
             {label}
           </Link>
-        ))}
-        {COMING_SOON.map(({ icon, label }) => (
-          <span key={label} className="profile-nav-link disabled">
-            <span>{icon}</span>
-            {label}
-            <span className="badge soon-badge">soon</span>
-          </span>
         ))}
       </nav>
     </aside>

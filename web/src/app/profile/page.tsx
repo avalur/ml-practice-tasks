@@ -4,6 +4,8 @@ import { prisma } from "@/lib/db";
 import { getManifest } from "@/lib/content";
 import { flatten, getClasses, myClassSlugs } from "@/lib/classes";
 import { JoinClassForm } from "@/components/JoinClassForm";
+import { ProfileNameForm } from "@/components/ProfileNameForm";
+import { splitName } from "@/lib/person";
 import { visibleProblems } from "@/lib/problem";
 import { computeStreak } from "@/lib/stats";
 import { ProfileNav } from "./ProfileNav";
@@ -13,7 +15,7 @@ export const metadata = { title: "Profile — ML Practice" };
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; saved?: string }>;
 }) {
   const session = await auth();
   if (!session?.user?.id) {
@@ -25,7 +27,7 @@ export default async function ProfilePage({
     );
   }
 
-  const { tab = "submissions" } = await searchParams;
+  const { tab = "submissions", saved } = await searchParams;
   const userId = session.user.id;
 
   const [solvedCount, streak, manifest] = await Promise.all([
@@ -51,11 +53,32 @@ export default async function ProfilePage({
           <FavoritesTab userId={userId} manifest={manifest} />
         ) : tab === "classes" ? (
           <ClassesTab />
+        ) : tab === "account" ? (
+          <AccountTab userId={userId} saved={saved === "1"} />
         ) : (
           <SubmissionsTab userId={userId} />
         )}
       </section>
     </div>
+  );
+}
+
+async function AccountTab({ userId, saved }: { userId: string; saved: boolean }) {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { name: true, firstName: true, lastName: true, email: true },
+  });
+  const { first, last } = splitName(user ?? {});
+
+  return (
+    <>
+      <h2>Account</h2>
+      <p className="muted">
+        Your name is what your teacher sees next to your homework.
+      </p>
+      {saved && <p className="result-good" data-testid="account-saved">Saved.</p>}
+      <ProfileNameForm first={first} last={last} email={user?.email ?? null} />
+    </>
   );
 }
 

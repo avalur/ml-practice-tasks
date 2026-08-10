@@ -38,8 +38,9 @@ test("register, sign out, sign back in with the password", async ({ page }) => {
   const account = await testAccount(EMAIL);
   try {
     await page.goto("/register");
-    await page.getByLabel(/^Name/).fill("E2E Password User");
     await page.getByLabel("Email").fill(EMAIL);
+    await page.getByLabel(/^First name/).fill("E2E");
+    await page.getByLabel(/^Last name/).fill("Password User");
     await page.getByLabel(/^Password/).fill(PASSWORD);
     await page.getByRole("button", { name: "Create account" }).click();
 
@@ -68,11 +69,46 @@ test("register, sign out, sign back in with the password", async ({ page }) => {
   }
 });
 
+test("the profile's Account tab renames the person everywhere", async ({ page }) => {
+  const account = await testAccount(EMAIL);
+  try {
+    await page.goto("/register");
+    await page.getByLabel("Email").fill(EMAIL);
+    await page.getByLabel(/^First name/).fill("Typo");
+    await page.getByLabel(/^Password/).fill(PASSWORD);
+    await page.getByRole("button", { name: "Create account" }).click();
+    await expect(page).toHaveURL(/\/profile$/);
+
+    await page.goto("/profile?tab=account");
+    // The form starts from what the account already has, not empty.
+    await expect(page.getByLabel(/^First name/)).toHaveValue("Typo");
+    await page.getByLabel(/^First name/).fill("Ada");
+    await page.getByLabel(/^Last name/).fill("Lovelace");
+    await page.getByRole("button", { name: "Save" }).click();
+    await expect(page.getByTestId("account-saved")).toBeVisible();
+
+    // Both halves are stored, and the display name every other page reads —
+    // the header, class rosters, the monitor feed — is written from them.
+    expect(await account.user()).toMatchObject({
+      firstName: "Ada",
+      lastName: "Lovelace",
+      name: "Ada Lovelace",
+    });
+    await expect(page.locator(".auth-name")).toHaveText("Ada Lovelace");
+
+    // The removed "coming soon" entries are gone from the sidebar.
+    await expect(page.getByText("Study Plan")).toHaveCount(0);
+    await expect(page.getByText("Library")).toHaveCount(0);
+  } finally {
+    await account.remove();
+  }
+});
+
 test("the same email cannot be registered twice", async ({ page, request }) => {
   const account = await testAccount(EMAIL);
   try {
     const first = await request.post("/api/account/register", {
-      data: { email: EMAIL, password: PASSWORD, name: "First" },
+      data: { email: EMAIL, password: PASSWORD, firstName: "First" },
     });
     expect(first.ok()).toBe(true);
 
@@ -101,7 +137,7 @@ test("forgotten password: the link sets a new one and drops other sessions", asy
   const account = await testAccount(EMAIL);
   try {
     await request.post("/api/account/register", {
-      data: { email: EMAIL, password: PASSWORD, name: "Forgetful" },
+      data: { email: EMAIL, password: PASSWORD, firstName: "Forgetful" },
     });
     expect(await account.sessionCount()).toBe(1); // from registering
 
@@ -173,6 +209,7 @@ test("a cross-site POST is refused", async ({ request }) => {
     "/api/account/login",
     "/api/account/forgot-password",
     "/api/account/reset-password",
+    "/api/account/profile",
   ]) {
     const res = await request.post(path, {
       headers: { origin: "https://evil.example" },

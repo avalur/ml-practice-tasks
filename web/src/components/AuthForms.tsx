@@ -35,6 +35,43 @@ async function post(url: string, body: unknown): Promise<{ ok: boolean; data: Re
   return { ok: res.ok, data };
 }
 
+/* Shared by registration and the profile editor so the two stay in step —
+ * first and last name are stored separately, not parsed out of one field. */
+export function NameFields({
+  firstName,
+  lastName,
+  setFirstName,
+  setLastName,
+  hint = "",
+}: {
+  firstName: string;
+  lastName: string;
+  setFirstName: (v: string) => void;
+  setLastName: (v: string) => void;
+  hint?: string;
+}) {
+  return (
+    <>
+      <label htmlFor="firstName">First name{hint}</label>
+      <input
+        id="firstName"
+        value={firstName}
+        onChange={(e) => setFirstName(e.target.value)}
+        autoComplete="given-name"
+        maxLength={40}
+      />
+      <label htmlFor="lastName">Last name</label>
+      <input
+        id="lastName"
+        value={lastName}
+        onChange={(e) => setLastName(e.target.value)}
+        autoComplete="family-name"
+        maxLength={40}
+      />
+    </>
+  );
+}
+
 function OAuthButtons({ next }: { next: string }) {
   return (
     <div className="auth-oauth">
@@ -107,7 +144,8 @@ export function SignInForm() {
 
 export function RegisterForm() {
   const next = useAfterAuth();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
@@ -118,7 +156,12 @@ export function RegisterForm() {
     if (busy) return;
     setBusy(true);
     setErr("");
-    const { ok, data } = await post("/api/account/register", { name, email, password });
+    const { ok, data } = await post("/api/account/register", {
+      firstName,
+      lastName,
+      email,
+      password,
+    });
     if (ok) window.location.assign(next);
     else {
       setErr(data.error ?? "Could not create the account.");
@@ -131,14 +174,6 @@ export function RegisterForm() {
       <OAuthButtons next={next} />
       <div className="auth-or">or with an email and password</div>
       <form onSubmit={submit}>
-        <label htmlFor="name">Name (shown to your teacher)</label>
-        <input
-          id="name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          autoComplete="name"
-          maxLength={80}
-        />
         <label htmlFor="email">Email</label>
         <input
           id="email"
@@ -147,6 +182,13 @@ export function RegisterForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+        />
+        <NameFields
+          firstName={firstName}
+          lastName={lastName}
+          setFirstName={setFirstName}
+          setLastName={setLastName}
+          hint=" (shown to your teacher)"
         />
         <label htmlFor="password">Password (at least 8 characters)</label>
         <input

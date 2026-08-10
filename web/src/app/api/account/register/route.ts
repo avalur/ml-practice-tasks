@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { hashPassword, passwordProblem } from "@/lib/password";
 import { cleanEmail, crossSite, startSession } from "@/lib/session-cookie";
+import { cleanNamePart, displayName } from "@/lib/person";
 
-// POST { email, password, name? } — create an account and sign it in.
+// POST { email, password, firstName?, lastName? } — create an account and sign
+// it in.
 //
 // Lives under /api/account rather than /api/auth so it cannot shadow anything
 // Auth.js serves from its catch-all.
@@ -21,7 +23,8 @@ export async function POST(req: Request) {
   if (!email) return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
   const bad = passwordProblem(body.password, email);
   if (bad) return NextResponse.json({ error: bad }, { status: 400 });
-  const name = typeof body.name === "string" ? body.name.trim().slice(0, 80) : "";
+  const firstName = cleanNamePart(body.firstName);
+  const lastName = cleanNamePart(body.lastName);
 
   /* An address that already has an account is refused rather than adopted.
    * Adopting it would be an account takeover: sign in with Google once, and
@@ -46,7 +49,9 @@ export async function POST(req: Request) {
   const user = await prisma.user.create({
     data: {
       email,
-      name: name || email.split("@")[0],
+      firstName: firstName || null,
+      lastName: lastName || null,
+      name: displayName(firstName, lastName, email.split("@")[0]),
       passwordHash: await hashPassword(body.password as string),
     },
     select: { id: true, name: true },

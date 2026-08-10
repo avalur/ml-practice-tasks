@@ -87,6 +87,13 @@ export async function testAccount(email: string) {
     async exists(): Promise<boolean> {
       return (await prisma.user.count({ where: { email } })) > 0;
     },
+    /** The stored name, as the rest of the site reads it. */
+    async user(): Promise<{ name: string | null; firstName: string | null; lastName: string | null }> {
+      return prisma.user.findUniqueOrThrow({
+        where: { email },
+        select: { name: true, firstName: true, lastName: true },
+      });
+    },
     async remove() {
       await prisma.user.deleteMany({ where: { email } }); // cascades sessions + tokens
       await prisma.$disconnect();

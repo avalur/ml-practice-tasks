@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
-import { signInAs } from "./support/session";
+import { draftClass, signInAs } from "./support/session";
 
 // Classes smoke tests. The present page is generated static HTML served from
 // public/classes (see export_decks.py), so it can be exercised without auth —
@@ -84,6 +84,115 @@ test("student: entering a group code joins the class and records the group", asy
     expect(await session.myGroup(CLASS)).toBe("Autumn stream A");
   } finally {
     await session.dispose();
+  }
+});
+
+/* A class can be written in the open repo without being on the site: while
+ * Class.publishedAt is null it belongs to its teachers and to nobody else. The
+ * point of the button is that publishing needs no deploy, so both directions are
+ * exercised through the UI and read back from the database.
+ *
+ * Runs on a scratch class (see draftClass) rather than the real course, because
+ * this suite talks to the live database. */
+test("draft class: only its teacher sees it, and Publish puts it live", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const fixture = await draftClass({
+    slug: `e2e-draft-${process.pid}`,
+    title: `E2E Scratch Class ${process.pid}`,
+  });
+  const teacher = await signInAs(context, {
+    email: "e2e-draft-teacher@example.test",
+    name: "E2E Draft Teacher",
+    classSlug: fixture.slug,
+    teacher: true,
+  });
+  // A student who is *already* enrolled: "teachers only" has to mean that too.
+  const studentCtx = await browser.newContext();
+  const student = await signInAs(studentCtx, {
+    email: "e2e-draft-student@example.test",
+    name: "E2E Draft Student",
+    classSlug: fixture.slug,
+  });
+  const anonCtx = await browser.newContext();
+  page.on("dialog", (d) => d.accept()); // the confirm() on Unpublish
+
+  const clsUrl = `/classes/${fixture.slug}`;
+  const lessonUrl = `${clsUrl}/lessons/${fixture.lessonSlug}`;
+  const title = new RegExp(`E2E Scratch Class ${process.pid}`);
+
+  try {
+    // --- hidden -----------------------------------------------------------
+    const anonPage = await anonCtx.newPage();
+    await anonPage.goto("/classes");
+    await expect(anonPage.getByRole("link", { name: title })).toHaveCount(0);
+
+    for (const [who, ctx] of [
+      ["anonymous", anonCtx],
+      ["enrolled student", studentCtx],
+    ] as const) {
+      for (const url of [clsUrl, lessonUrl]) {
+        const res = await ctx.request.get(url);
+        expect(res.status(), `${who} ${url}`).toBe(404);
+      }
+    }
+
+    // Not offered in the student's own list either — that would be a dead link.
+    const studentPage = await studentCtx.newPage();
+    await studentPage.goto("/profile?tab=classes");
+    await expect(studentPage.getByText(title)).toHaveCount(0);
+
+    // A code handed out early enrolls nobody, and answers exactly what an unknown
+    // code answers.
+    const code = await teacher.createInvite(fixture.slug, "Draft group");
+    const early = await studentCtx.request.post("/api/classes/join", { data: { code } });
+    expect(early.status()).toBe(404);
+
+    // --- the teacher's own view ------------------------------------------
+    await page.goto("/classes");
+    const card = page.locator("li").filter({ has: page.getByRole("link", { name: title }) });
+    // Exact text: the badge, not the word wherever else it appears.
+    await expect(card.locator("span.badge").filter({ hasText: /^draft$/ })).toBeVisible();
+    // The list only reports the state; publishing lives on the class page, next
+    // to the note explaining what it costs.
+    await expect(card.getByTestId("publish-toggle")).toHaveCount(0);
+
+    await page.goto(clsUrl);
+    await expect(page.getByTestId("draft-note")).toBeVisible();
+    expect(await fixture.published()).toBe(false);
+
+    // --- publish ----------------------------------------------------------
+    await page.getByTestId("publish-toggle").click();
+    await expect(page.getByTestId("draft-note")).toHaveCount(0);
+    await expect(page.getByTestId("publish-toggle")).toHaveText("Unpublish");
+    expect(await fixture.published()).toBe(true);
+
+    // …and the list follows.
+    await page.goto("/classes");
+    await expect(card.locator("span.badge").filter({ hasText: /^draft$/ })).toHaveCount(0);
+
+    await anonPage.goto("/classes");
+    await expect(anonPage.getByRole("link", { name: title })).toBeVisible();
+    expect((await anonCtx.request.get(clsUrl)).status()).toBe(200);
+    expect((await anonCtx.request.get(lessonUrl)).status()).toBe(200);
+    // The same code now works, without anything being re-deployed.
+    const join = await studentCtx.request.post("/api/classes/join", { data: { code } });
+    expect(join.ok(), await join.text()).toBe(true);
+
+    // --- and back off the site -------------------------------------------
+    await page.goto(clsUrl);
+    await page.getByTestId("publish-toggle").click();
+    await expect(page.getByTestId("draft-note")).toBeVisible();
+    expect(await fixture.published()).toBe(false);
+    expect((await anonCtx.request.get(clsUrl)).status()).toBe(404);
+  } finally {
+    await student.dispose();
+    await studentCtx.close();
+    await teacher.dispose();
+    await anonCtx.close();
+    await fixture.dispose();
   }
 });
 

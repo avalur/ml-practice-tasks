@@ -104,8 +104,32 @@ A third content family, for lecturing from the reveal.js decks in
   `ClassEnrollment`, `LessonSession`, `LessonAnnotation`. Homework completion is
   *derived* from `UserProblemProgress`/`UserNotebookProgress` — no extra table.
   Authorization is `session.user.email ∈ Class.teacherEmails`.
-- **Classes are public.** The course, its lessons, its slides and its task lists
-  need no account — the one exception is the annotated lecture notes. A code
+- **A class is published or a draft**, and `Class.publishedAt` (null = draft) is
+  the only truth. A draft is complete and presentable but belongs to its
+  **teachers alone**: absent from `/classes`, 404 on its own pages and lesson
+  pages, and its group codes enroll nobody. Every caller asks the same question,
+  `access.visible` from `getAccess()` (`published || isTeacher`); the list pages
+  use `visibleClasses()`, which also treats a class with **no `Class` row** as
+  hidden — nothing is visible before `db:sync-classes` has run.
+  - `"draft": true` in `class.json` picks the state the row is **created** with
+    and nothing else. `sync-classes.cjs` never writes `publishedAt` on update: it
+    only prints a `⚠` when the file and the DB disagree. Otherwise a routine sync
+    would hide a running course, or undo a Publish pressed an hour earlier.
+  - Publishing happens either from the site (the teacher's **Publish** button →
+    `POST /api/classes/<slug>/publish`) or from here
+    (`pnpm db:sync-classes --publish <slug>` / `--unpublish <slug>`).
+  - Draft lessons are **still exported**. `present.html` is a static file under
+    `web/public/`, so skipping it would mean the button could not put a class
+    online without a deploy. So a deck URL stays fetchable by anyone who knows
+    it — nothing links there, there is no sitemap, and `classes/` is committed to
+    a public repo anyway: "hidden" means unlisted and unreachable *through the
+    app*, not confidential.
+  - The e2e coverage runs on a **scratch class** (`draftClass()` in
+    `tests/e2e/support/session.ts`, a temporary manifest entry plus a hidden row),
+    never by hiding the real course: the suite talks to the live database, and a
+    killed run would leave `ml-intensive-tlf` 404ing on the public site.
+- **Published classes are public.** The course, its lessons, its slides and its
+  task lists need no account — the one exception is the annotated lecture notes. A code
   therefore does not unlock anything: it puts a student in a **group**
   (`ClassInvite`, one per cohort, written by the teacher on the homework page),
   and `ClassEnrollment.inviteId` records which one they typed. The homework
@@ -329,6 +353,8 @@ python export_decks.py --watch # authoring: rebuild on save (use ?dev=1 in the b
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
+cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
+cd web && pnpm db:sync-classes --unpublish <slug> # take it back off
 ```
 
 CI (`.github/workflows/ci.yml`) runs the `--check` + `pytest problems` pair on

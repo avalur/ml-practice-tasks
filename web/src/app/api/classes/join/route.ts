@@ -29,10 +29,27 @@ export async function POST(req: Request) {
     select: {
       id: true,
       label: true,
-      class: { select: { id: true, slug: true, title: true } },
+      class: {
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          publishedAt: true,
+          teacherEmails: true,
+        },
+      },
     },
   });
   if (!invite) {
+    return NextResponse.json({ error: "no group with that code" }, { status: 404 });
+  }
+
+  /* A draft class has nothing to join yet — and the same answer as an unknown
+   * code, so a code handed out early does not confirm that the class exists. Its
+   * own teachers are the exception: trying the code is how you check it works. */
+  const email = session.user?.email?.toLowerCase();
+  const isTeacher = !!email && invite.class.teacherEmails.includes(email);
+  if (!invite.class.publishedAt && !isTeacher) {
     return NextResponse.json({ error: "no group with that code" }, { status: 404 });
   }
 

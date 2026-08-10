@@ -2,7 +2,7 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getManifest } from "@/lib/content";
-import { flatten, getClasses, myClassSlugs } from "@/lib/classes";
+import { flatten, myClassSlugs, visibleClasses } from "@/lib/classes";
 import { JoinClassForm } from "@/components/JoinClassForm";
 import { ProfileNameForm } from "@/components/ProfileNameForm";
 import { splitName } from "@/lib/person";
@@ -83,7 +83,9 @@ async function AccountTab({ userId, saved }: { userId: string; saved: boolean })
 }
 
 async function ClassesTab() {
-  const [all, mine] = await Promise.all([getClasses(), myClassSlugs()]);
+  // visibleClasses(), not getClasses(): a class you were enrolled in and that is
+  // back in draft would otherwise sit here as a link to a 404.
+  const [all, mine] = await Promise.all([visibleClasses(), myClassSlugs()]);
   const member = new Set(mine.member);
   const teaching = new Set(mine.teaching);
   const joined = all.filter((c) => member.has(c.slug));

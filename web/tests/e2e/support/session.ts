@@ -101,6 +101,75 @@ export async function testAccount(email: string) {
   };
 }
 
+/** A throwaway class that starts life as a draft — a manifest entry plus a DB row
+ * with `publishedAt: null`.
+ *
+ * Publication is decided per request from `Class.publishedAt`, but the pages read
+ * their lesson structure from the generated `public/classes/manifest.json`, so a
+ * DB row alone resolves to a 404 for everyone and proves nothing. Hence a real
+ * manifest entry, written and taken back out.
+ *
+ * Deliberately *not* the real course. This suite runs against the live database,
+ * and hiding `ml-intensive-tlf` for the seconds a test takes would 404 it on the
+ * public site — with a killed run leaving it hidden until somebody noticed. A
+ * scratch class is a draft from birth, so nobody but its test teacher ever sees
+ * it; the worst a crashed run leaves behind is a manifest entry that
+ * `python export_decks.py` rewrites and a hidden row nothing links to.
+ */
+export async function draftClass(opts: { slug: string; title: string; lesson?: string }) {
+  const { PrismaClient } = await import("@prisma/client");
+  const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+  const lessonSlug = opts.lesson ?? "l01-scratch";
+
+  const manifestPath = path.join(
+    __dirname, "..", "..", "..", "public", "classes", "manifest.json",
+  );
+  const original = await fs.promises.readFile(manifestPath, "utf8");
+  const parsed = JSON.parse(original);
+  parsed.classes.push({
+    slug: opts.slug,
+    title: opts.title,
+    description: "Scratch class used by the e2e suite.",
+    order: 999,
+    lessons: [
+      {
+        slug: lessonSlug,
+        title: "Lesson 1. Scratch",
+        date: null,
+        deck: "scratch",
+        practice: [],
+        homework: null,
+      },
+    ],
+  });
+  await fs.promises.writeFile(manifestPath, JSON.stringify(parsed, null, 2) + "\n");
+
+  await prisma.class.upsert({
+    where: { slug: opts.slug },
+    create: { slug: opts.slug, title: opts.title, teacherEmails: [], publishedAt: null },
+    update: { publishedAt: null },
+  });
+
+  return {
+    slug: opts.slug,
+    lessonSlug,
+    async published(): Promise<boolean> {
+      const row = await prisma.class.findUnique({
+        where: { slug: opts.slug },
+        select: { publishedAt: true },
+      });
+      return !!row?.publishedAt;
+    },
+    async dispose() {
+      // The manifest first: it is a generated file, and leaving it edited would
+      // make `export_decks.py --check` fail for everyone.
+      await fs.promises.writeFile(manifestPath, original);
+      await prisma.class.deleteMany({ where: { slug: opts.slug } });
+      await prisma.$disconnect();
+    },
+  };
+}
+
 export async function signInAs(
   context: BrowserContext,
   opts: { email: string; name: string; classSlug?: string; teacher?: boolean },
@@ -135,7 +204,14 @@ export async function signInAs(
     // create the row rather than depending on `pnpm db:sync-classes` having run.
     const cls = await prisma.class.upsert({
       where: { slug: opts.classSlug },
-      create: { slug: opts.classSlug, title: opts.classSlug, teacherEmails: [] },
+      // Published, like any class the sync script creates from a class.json
+      // without `"draft": true` — the draft case has its own fixture below.
+      create: {
+        slug: opts.classSlug,
+        title: opts.classSlug,
+        teacherEmails: [],
+        publishedAt: new Date(),
+      },
       update: {},
     });
     classId = cls.id;

@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { cache } from "react";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
@@ -133,6 +134,12 @@ export type Access = {
   email: string | null;
   classRow: { id: string; slug: string; title: string } | null;
   isTeacher: boolean;
+  /** Published, i.e. listed and readable by anyone. A draft class is still fully
+   * built and presentable — it is simply nowhere on the public site yet. */
+  published: boolean;
+  /** The check every class page and the notes route makes: a draft belongs to
+   * its teachers, and to nobody else — enrolled students included. */
+  visible: boolean;
   /** Enrolled with a code, or teaching. Classes themselves are public; this
    * gates the lecture notes and everything teacher-facing. */
   isMember: boolean;
@@ -140,9 +147,16 @@ export type Access = {
   myGroup: { code: string; label: string } | null;
 };
 
+/* Per-request memo. Both of these are asked more than once while one page
+ * renders — a class page resolves access in generateMetadata and again in the
+ * body — and each call was a Session lookup plus a Class lookup against Neon.
+ * React's cache() is request-scoped, so this dedupes without ever serving one
+ * visitor's session to another. */
+const currentSession = cache(auth);
+
 /** Resolve the caller's relationship to a class in one round trip. */
-export async function getAccess(slug: string): Promise<Access> {
-  const session = await auth();
+export const getAccess = cache(async function getAccess(slug: string): Promise<Access> {
+  const session = await currentSession();
   const userId = session?.user?.id ?? null;
   const email = session?.user?.email?.toLowerCase() ?? null;
 
@@ -153,6 +167,7 @@ export async function getAccess(slug: string): Promise<Access> {
       slug: true,
       title: true,
       teacherEmails: true,
+      publishedAt: true,
       // Not conditional on `userId`: a select that is sometimes `false` gives
       // this row two different shapes, and the caller then cannot read the
       // group off it. An impossible id costs one indexed miss instead.
@@ -170,6 +185,8 @@ export async function getAccess(slug: string): Promise<Access> {
       email,
       classRow: null,
       isTeacher: false,
+      published: false,
+      visible: false,
       isMember: false,
       myGroup: null,
     };
@@ -177,19 +194,53 @@ export async function getAccess(slug: string): Promise<Access> {
 
   const isTeacher = !!email && row.teacherEmails.includes(email);
   const enrollment = userId ? row.enrollments[0] : undefined;
+  const published = row.publishedAt !== null;
   return {
     userId,
     email,
     classRow: { id: row.id, slug: row.slug, title: row.title },
     isTeacher,
+    published,
+    visible: published || isTeacher,
     isMember: isTeacher || !!enrollment,
     myGroup: enrollment?.invite ?? null,
   };
-}
+});
+
+/** Manifest classes the caller is allowed to see, in manifest order.
+ *
+ * `draft` comes back with them so a teacher's own list can badge the ones only
+ * they can see. A class with no DB row at all is treated as a draft: publishing
+ * is a deliberate act, and an unsynced class has no teachers either — which is
+ * also why its own page already 404s. */
+export const visibleClasses = cache(async function visibleClasses(): Promise<
+  Array<ClassMeta & { draft: boolean }>
+> {
+  const session = await currentSession();
+  const email = session?.user?.email?.toLowerCase();
+
+  const [all, rows] = await Promise.all([
+    getClasses(),
+    prisma.class.findMany({
+      select: { slug: true, publishedAt: true, teacherEmails: true },
+    }),
+  ]);
+
+  const state = new Map(rows.map((r) => [r.slug, r]));
+  const out: Array<ClassMeta & { draft: boolean }> = [];
+  for (const cls of all) {
+    const row = state.get(cls.slug);
+    if (!row) continue;
+    const draft = row.publishedAt === null;
+    if (draft && !(email && row.teacherEmails.includes(email))) continue;
+    out.push({ ...cls, draft });
+  }
+  return out;
+});
 
 /** Class ids the user can see (enrolled in, or teaches). */
 export async function myClassSlugs(): Promise<{ member: string[]; teaching: string[] }> {
-  const session = await auth();
+  const session = await currentSession();
   const userId = session?.user?.id;
   const email = session?.user?.email?.toLowerCase();
   if (!userId) return { member: [], teaching: [] };

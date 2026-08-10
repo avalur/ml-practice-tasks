@@ -174,6 +174,11 @@ def lesson_items(lesson: dict, problems: set[str], notebooks: set[str],
 def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[str]:
     """Check every practice/homework id in class.json resolves to real content."""
     errors = []
+    # `"draft": "true"` would be silently truthy in JS and silently ignored here,
+    # so a class could sit hidden (or exposed) because of a typo in a quote.
+    if "draft" in cls and not isinstance(cls["draft"], bool):
+        errors.append(f"{cls['slug']}: \"draft\" must be true or false, "
+                      f"got {cls['draft']!r}")
     for lesson in cls["lessons"]:
         _, _, errs = lesson_items(lesson, problems, notebooks,
                                   f"{cls['slug']}/{lesson['slug']}")
@@ -761,7 +766,12 @@ def build() -> int:
         n, skipped, asset_errs = copy_assets(cls)
         errors += asset_errs
         note = f" ({skipped} unused, not published)" if skipped else ""
-        print(f"  {cls['slug']}: {n} assets{note}")
+        # A draft class is still built in full: present.html is a static file, so
+        # skipping it would mean the site's Publish button could not put a class
+        # online without a deploy. Publication is decided in the DB, at request
+        # time — see Class.publishedAt.
+        draft = "  [draft in class.json]" if cls.get("draft") else ""
+        print(f"  {cls['slug']}: {n} assets{note}{draft}")
         for line in describe_groups(cls, problems, notebooks):
             print(f"    ↳ {line}")
         for lesson in cls["lessons"]:

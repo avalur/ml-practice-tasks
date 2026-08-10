@@ -14,6 +14,7 @@ import {
   type Lesson,
 } from "@/lib/classes";
 import { JoinClassForm } from "@/components/JoinClassForm";
+import { PublishToggle } from "@/components/PublishToggle";
 
 type Params = { slug: string };
 
@@ -23,8 +24,9 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const cls = await getClassMeta(slug);
-  return { title: cls ? `${cls.title} — ML Practice` : "Class" };
+  const [cls, access] = await Promise.all([getClassMeta(slug), getAccess(slug)]);
+  // Same gate as the page: a draft class must not put its title in a <title>.
+  return { title: cls && access.visible ? `${cls.title} — ML Practice` : "Class" };
 }
 
 function dueState(lesson: Lesson): { text: string; cls: string } | null {
@@ -43,10 +45,11 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
   const cls = await getClassMeta(slug);
   if (!cls) notFound();
 
-  // Public: the course, its lessons and its tasks are readable by anyone. Only
-  // the lecture notes and the teacher's own views are gated.
+  // Public once published: the course, its lessons and its tasks are then
+  // readable by anyone, and only the lecture notes and the teacher's own views
+  // are gated. Before that the class belongs to its teachers alone.
   const access = await getAccess(slug);
-  if (!access.classRow) notFound();
+  if (!access.classRow || !access.visible) notFound();
 
   const refs = allRefs(cls);
   const [solved, endedRows] = await Promise.all([
@@ -75,11 +78,22 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
       <p className="muted">{cls.description}</p>
 
       {access.isTeacher && (
-        <div className="class-teacher-bar">
-          <span className="badge hard">teacher</span>
-          <Link href={`/classes/${slug}/monitor`}>Live monitor</Link>
-          <Link href={`/classes/${slug}/homework`}>Homework overview &amp; group codes</Link>
-        </div>
+        <>
+          <div className="class-teacher-bar">
+            <span className="badge hard">teacher</span>
+            <Link href={`/classes/${slug}/monitor`}>Live monitor</Link>
+            <Link href={`/classes/${slug}/homework`}>Homework overview &amp; group codes</Link>
+            <PublishToggle slug={slug} published={access.published} />
+          </div>
+          {!access.published && (
+            <p className="class-draft-note" data-testid="draft-note">
+              <span className="badge medium">draft</span> Only you can see this class.
+              Everything works — slides, present mode, practice links — it is just not
+              listed anywhere public and its pages answer 404 to everyone else, students
+              included. Publish when you are ready.
+            </p>
+          )}
+        </>
       )}
 
       {/* Joining changes nothing about what you can read — it is how the teacher

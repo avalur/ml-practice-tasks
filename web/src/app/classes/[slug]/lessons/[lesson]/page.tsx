@@ -24,9 +24,10 @@ export async function generateMetadata({
   params: Promise<Params>;
 }): Promise<Metadata> {
   const { slug, lesson } = await params;
-  const cls = await getClassMeta(slug);
+  const [cls, access] = await Promise.all([getClassMeta(slug), getAccess(slug)]);
   const l = cls && findLesson(cls, lesson);
-  return { title: l ? `${l.title} — ML Practice` : "Lesson" };
+  // Same gate as the page: a draft lesson must not put its title in a <title>.
+  return { title: l && access.visible ? `${l.title} — ML Practice` : "Lesson" };
 }
 
 // `content`, not `ref`: React reserves a prop called `ref`, and a server
@@ -108,10 +109,11 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   const lesson = cls && findLesson(cls, lessonSlug);
   if (!cls || !lesson) notFound();
 
-  // Public, like the class page. The annotated lecture notes are the exception:
-  // those are for the students who joined a group.
+  // Public once the class is published, like the class page. The annotated
+  // lecture notes are the exception: those are for the students who joined a
+  // group.
   const access = await getAccess(slug);
-  if (!access.classRow) notFound();
+  if (!access.classRow || !access.visible) notFound();
 
   const refs = flatten([...lesson.practice, ...(lesson.homework?.items ?? [])]);
   const [solved, delivered] = await Promise.all([

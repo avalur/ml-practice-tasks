@@ -24,7 +24,7 @@ export async function GET(
   // 404 rather than 403 for outsiders: this should not confirm that a class,
   // a lesson or a recording exists.
   const access = await getAccess(slug);
-  if (!access.classRow || !access.isMember) {
+  if (!access.classRow || !access.visible || !access.isMember) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 

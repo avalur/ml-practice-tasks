@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getClasses, myClassSlugs } from "@/lib/classes";
+import { myClassSlugs, visibleClasses } from "@/lib/classes";
 
 export const metadata: Metadata = {
   title: "Classes — ML Practice",
@@ -8,10 +8,11 @@ export const metadata: Metadata = {
 };
 
 export default async function ClassesPage() {
-  // Classes are public: the slides, the practice and the homework of every course
-  // are readable without an account. The invite code lives on the class page and
-  // only decides whose homework the teacher tracks.
-  const [all, mine] = await Promise.all([getClasses(), myClassSlugs()]);
+  // Published classes are public: the slides, the practice and the homework of
+  // every course are readable without an account. The invite code lives on the
+  // class page and only decides whose homework the teacher tracks. A draft class
+  // is in this list for its own teachers only.
+  const [all, mine] = await Promise.all([visibleClasses(), myClassSlugs()]);
   const member = new Set(mine.member);
   const teaching = new Set(mine.teaching);
 
@@ -35,6 +36,7 @@ export default async function ClassesPage() {
               <Link href={`/classes/${cls.slug}`} className="problem-card">
                 <span className="title">{cls.title}</span>
                 <span className="meta">
+                  {cls.draft && <span className="badge medium">draft</span>}
                   {teaching.has(cls.slug) && <span className="badge hard">teacher</span>}
                   {member.has(cls.slug) && !teaching.has(cls.slug) && (
                     <span className="badge easy">joined</span>

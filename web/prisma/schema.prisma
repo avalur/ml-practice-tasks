@@ -176,6 +176,12 @@ model Class {
   title         String
   teacherEmails String[] // seeded from class.json; authorizes before first sign-in
   createdAt     DateTime @default(now())
+  // null = draft: visible to its teachers only, nowhere in the public lists. The
+  // DB is the only truth here, because Publish has to work from the site without
+  // a redeploy; class.json's `"draft": true` merely picks the value the row is
+  // created with. The `@default(now())` is what backfills the classes that
+  // existed before this column, so nothing goes dark on `prisma db push`.
+  publishedAt   DateTime? @default(now())
 
   invites     ClassInvite[]
   enrollments ClassEnrollment[]

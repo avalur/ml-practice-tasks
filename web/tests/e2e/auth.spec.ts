@@ -226,8 +226,14 @@ const MUTATIONS = [
   "/api/classes/join",
 ];
 
+/* Every mutation checks the origin *before* it looks at who is calling, so a
+ * teacher-only route belongs in this list too — even though it answers 403 to a
+ * stranger and therefore has no place in the body test below. The slug does not
+ * have to exist: nothing is looked up until the origin passes. */
+const CROSS_SITE = [...MUTATIONS, "/api/classes/no-such-class/publish"];
+
 test("a cross-site POST is refused", async ({ request }) => {
-  for (const path of MUTATIONS) {
+  for (const path of CROSS_SITE) {
     const res = await request.post(path, {
       headers: { origin: "https://evil.example" },
       data: { email: EMAIL, password: PASSWORD, token: "x", code: "x" },

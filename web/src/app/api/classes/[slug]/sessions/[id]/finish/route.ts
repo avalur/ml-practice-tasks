@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite } from "@/lib/http";
 import { getAccess } from "@/lib/classes";
 
 /* POST { bytes?, url? } — close the lesson session, then publish its PDF.
@@ -30,25 +31,37 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ slug: string; id: string }> },
 ) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug, id } = await params;
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
+  /* An *empty* body is allowed — "the lesson is over, there is no PDF" is a
+   * valid call. Malformed JSON is not: swallowing it would turn a bug in
+   * present.html into a silently unpublished lecture. */
   let bytes: number | null = null;
   let url: string | null = null;
-  try {
-    const body = (await req.json()) as Record<string, unknown>;
-    const n = Number(body.bytes);
+  const raw = (await req.text()).trim();
+  if (raw) {
+    let body: unknown;
+    try {
+      body = JSON.parse(raw);
+    } catch {
+      return NextResponse.json({ error: "bad json" }, { status: 400 });
+    }
+    if (typeof body !== "object" || body === null || Array.isArray(body)) {
+      return NextResponse.json({ error: "bad json" }, { status: 400 });
+    }
+    const fields = body as Record<string, unknown>;
+    const n = Number(fields.bytes);
     if (Number.isFinite(n) && n > 0) bytes = Math.round(n);
-    if (typeof body.url === "string" && body.url) {
-      if (!isBlobUrl(body.url)) {
+    if (typeof fields.url === "string" && fields.url) {
+      if (!isBlobUrl(fields.url)) {
         return NextResponse.json({ error: "url is not a Vercel Blob URL" }, { status: 400 });
       }
-      url = body.url;
+      url = fields.url;
     }
-  } catch {
-    // A body is optional here; finishing without one is fine.
   }
 
   const existing = await prisma.lessonSession.findFirst({

@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
-import { crossSite } from "@/lib/session-cookie";
-import { cleanNamePart, displayName } from "@/lib/person";
+import { crossSite, jsonBody } from "@/lib/http";
+import { cleanNamePart, displayName, nameProblem } from "@/lib/person";
 
 // POST { firstName, lastName } — set the signed-in user's name.
 //
@@ -15,18 +15,16 @@ export async function POST(req: Request) {
   const userId = session?.user?.id;
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const firstName = cleanNamePart(body.firstName);
   const lastName = cleanNamePart(body.lastName);
   if (!firstName && !lastName) {
     return NextResponse.json({ error: "Enter your first or last name." }, { status: 400 });
   }
+  const tooLong = nameProblem(firstName, lastName);
+  if (tooLong) return NextResponse.json({ error: tooLong }, { status: 400 });
 
   const user = await prisma.user.update({
     where: { id: userId },

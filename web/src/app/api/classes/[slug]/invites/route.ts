@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { getAccess, normalizeCode } from "@/lib/classes";
 
 /* Invite codes of a class — teacher only.
@@ -14,17 +15,14 @@ const MAX_LABEL = 60;
 
 /** POST { code, label } — add a code. */
 export async function POST(req: Request, { params }: { params: Promise<{ slug: string }> }) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug } = await params;
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const code = String(body.code ?? "").trim().toUpperCase();
   const label = String(body.label ?? "").trim();
@@ -74,31 +72,33 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
  * A code with students behind it stays: deleting it would blank out which group
  * they belong to, and the roster is the whole point of the feature. */
 export async function DELETE(req: Request, { params }: { params: Promise<{ slug: string }> }) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug } = await params;
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const id = String(body.id ?? "");
+
+  /* One statement, so a student joining at this exact moment cannot slip between
+   * the check and the delete and lose which group they are in: the `none` filter
+   * becomes a NOT EXISTS in the DELETE itself. */
+  const deleted = await prisma.classInvite.deleteMany({
+    where: { id, classId: access.classRow.id, enrollments: { none: {} } },
+  });
+  if (deleted.count === 1) return NextResponse.json({ ok: true });
+
+  // Nothing went: either there is no such code here, or somebody used it.
   const invite = await prisma.classInvite.findFirst({
     where: { id, classId: access.classRow.id },
-    select: { id: true, _count: { select: { enrollments: true } } },
+    select: { _count: { select: { enrollments: true } } },
   });
   if (!invite) return NextResponse.json({ error: "no such code" }, { status: 404 });
-  if (invite._count.enrollments > 0) {
-    return NextResponse.json(
-      { error: `${invite._count.enrollments} student(s) joined with this code` },
-      { status: 409 },
-    );
-  }
-
-  await prisma.classInvite.delete({ where: { id: invite.id } });
-  return NextResponse.json({ ok: true });
+  return NextResponse.json(
+    { error: `${invite._count.enrollments} student(s) joined with this code` },
+    { status: 409 },
+  );
 }

@@ -113,7 +113,9 @@ A third content family, for lecturing from the reveal.js decks in
   one, which is what keeps them out of their own student table. Lookup is on
   `codeKey` (upper-cased, separators stripped), so "TLF-OSEN-A", "tlf osen a"
   and "tlfosena" are one code. A code with students behind it cannot be deleted —
-  that would erase which group they are in.
+  that would erase which group they are in. The delete is one `deleteMany`
+  filtered on `enrollments: { none: {} }`, so somebody joining at that exact
+  moment cannot slip between the check and the delete.
 
 Bringing a deck over: `python tools/import_decks.py --class <slug> --deck all`.
 It keeps `<div class="slides">` verbatim (so in-slide `<script type="py-editor">`
@@ -274,20 +276,43 @@ Email+password sits **next to** Auth.js rather than inside it, in
   session it looks up will not be the one just created.
 - Hashing is `scrypt` from node:crypto (`src/lib/password.ts`), parameters stored
   in the hash string. No bcrypt/argon2 dependency to break on a deploy.
+  `verifyPassword(pw, null)` deliberately does **not** return early: it verifies
+  against a dummy so an unregistered address cannot be told from a wrong password
+  by timing. Restoring the early return is a silent account-enumeration leak, and
+  is what `tests/e2e/password.spec.ts` measures. The dummy is **random bytes in
+  the shape of a hash**, built once at import — not `hashPassword()` of anything:
+  deriving it on first use would make the first absent-account request in each
+  process cost two scrypts, and on serverless that is most of them.
 - Registering onto an **existing** address is refused, never adopted: otherwise
   anyone who knows the address of a Google user could put a password on their
   account. Proving you own the address is what the reset flow is for, and it
   works for OAuth-only accounts — that is how they get a password.
 - Reset tokens are stored **hashed** (SHA-256), single use, one hour, one letter
   a minute per account. A successful reset drops every other session and marks
-  `emailVerified` — following the link is the proof.
+  `emailVerified` — following the link is the proof. "Single use" is an atomic
+  `updateMany` on `(tokenHash, usedAt: null, not expired)` — reading the row and
+  checking `usedAt` in separate statements lets two concurrent requests both
+  through. The password is validated against the account's email *before* the
+  claim, so a typo does not burn the link.
+- The emailed link is built from `siteOrigin()` (`SITE_URL`), never from
+  `req.url`: Auth.js runs with `trustHost: true`, so the request carries whatever
+  Host arrived, and a reset link derived from it can be aimed at another domain.
 - `forgot-password` answers the same sentence whether or not the address is
   registered, and `login` answers the same sentence for "no such user" and "wrong
   password" (and hashes anyway, so both take the same time). Eight failures lock
   an account for 15 minutes.
-- These routes set cookies and change passwords, and `SameSite=Lax` still allows
-  a cross-site POST, so each one checks the `Origin` header itself — Auth.js's
-  CSRF token only covers the routes Auth.js serves.
+- Every cookie-authenticated mutation — account **and** class routes — starts
+  with the same two lines from `src/lib/http.ts`: `crossSite(req)` and
+  `jsonBody(req)`. `SameSite=Lax` still allows a cross-site POST and Auth.js's
+  CSRF token only covers the routes Auth.js serves, so the origin (scheme
+  included) is checked per route; and `jsonBody` returns null for a body that is
+  not an object, because `await req.json()` can legitimately be `null` and the
+  first property read then answers 500 instead of 400.
+- `rateLimited()` bounds the anonymous endpoints per IP, in memory, best-effort:
+  login and register each burn a scrypt per call and the account lockout cannot
+  help, since invented addresses never hit the same account twice. The limits are
+  sized for **a classroom behind one NAT address** — locking a lesson out would
+  be the worse failure.
 - Mail goes through Resend over plain `fetch` (`src/lib/mailer.ts`). With no
   `RESEND_API_KEY` the letter is printed to the server log instead, so the whole
   flow works locally and in CI with nothing configured. Prod needs

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { normalizeCode } from "@/lib/classes";
 
 // POST { code } — join the group that owns this invite code.
@@ -11,16 +12,14 @@ import { normalizeCode } from "@/lib/classes";
 // one was used. Idempotent, and a different code moves the student to that group
 // rather than failing.
 export async function POST(req: Request) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
+
   const session = await auth();
   const userId = session?.user?.id;
   if (!userId) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const code = normalizeCode(typeof body.code === "string" ? body.code : "");
   if (!code) return NextResponse.json({ error: "missing code" }, { status: 400 });

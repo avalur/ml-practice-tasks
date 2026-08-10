@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { getAccess } from "@/lib/classes";
 
 const BOARD_ID = /^b\d+$/;
@@ -17,17 +18,14 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<{ slug: string; id: string }> },
 ) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug, id } = await params;
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   if (!Array.isArray(body.boards) || body.boards.length > MAX_BOARDS) {
     return NextResponse.json({ error: "bad boards" }, { status: 400 });

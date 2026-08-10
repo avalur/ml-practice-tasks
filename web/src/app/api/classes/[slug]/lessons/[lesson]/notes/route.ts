@@ -53,7 +53,12 @@ export async function GET(
       headers: { "Cache-Control": "private, no-store" },
     });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "could not sign the download link";
-    return NextResponse.json({ error: message }, { status: 503 });
+    // The store's own message can name the token or the bucket; it belongs in
+    // the log, not in a student's browser.
+    console.error("[notes] could not sign a download link for", pathname, err);
+    return NextResponse.json(
+      { error: "The lecture notes are temporarily unavailable." },
+      { status: 503 },
+    );
   }
 }

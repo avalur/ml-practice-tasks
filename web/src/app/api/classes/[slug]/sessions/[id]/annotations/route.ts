@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { getAccess } from "@/lib/classes";
 
 type Params = { slug: string; id: string };
@@ -55,16 +56,13 @@ export async function PUT(
   req: Request,
   { params }: { params: Promise<Params> },
 ) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug, id } = await params;
   const { error, session } = await requireOwner(slug, id);
   if (error) return error;
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const pageKey = typeof body.pageKey === "string" ? body.pageKey : "";
   if (!PAGE_KEY.test(pageKey)) {
@@ -98,6 +96,7 @@ export async function DELETE(
   req: Request,
   { params }: { params: Promise<Params> },
 ) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug, id } = await params;
   const { error, session } = await requireOwner(slug, id);
   if (error) return error;

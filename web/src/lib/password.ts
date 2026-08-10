@@ -44,23 +44,58 @@ export async function hashPassword(password: string): Promise<string> {
   return ["scrypt", N, R, P, salt.toString("base64"), key.toString("base64")].join("$");
 }
 
-/** Constant-time check. False for any malformed or missing hash. */
-export async function verifyPassword(password: string, stored: string | null): Promise<boolean> {
-  if (!stored) return false;
+type Parsed = { salt: Buffer; expected: Buffer; N: number; r: number; p: number };
+
+function parseHash(stored: string | null): Parsed | null {
+  if (!stored) return null;
   const parts = stored.split("$");
-  if (parts.length !== 6 || parts[0] !== "scrypt") return false;
+  if (parts.length !== 6 || parts[0] !== "scrypt") return null;
   const [, n, r, p, saltB64, keyB64] = parts;
-  const salt = Buffer.from(saltB64, "base64");
-  const expected = Buffer.from(keyB64, "base64");
+  const parsed = {
+    salt: Buffer.from(saltB64, "base64"),
+    expected: Buffer.from(keyB64, "base64"),
+    N: Number(n),
+    r: Number(r),
+    p: Number(p),
+  };
+  const sane = [parsed.N, parsed.r, parsed.p].every(Number.isInteger);
+  return sane && parsed.salt.length > 0 && parsed.expected.length > 0 ? parsed : null;
+}
+
+/* What to verify against when the account has no usable hash — no such user, an
+ * OAuth-only one, or a corrupted row. Without it those answer in microseconds
+ * while a real account costs a scrypt, and that gap alone tells a stranger which
+ * addresses are registered here.
+ *
+ * It is random bytes in the shape of a hash rather than a hash of anything: the
+ * comparison is meant to fail, and building it this way keeps the work *exactly*
+ * one scrypt, the same as a real account. Deriving it lazily with hashPassword()
+ * would instead make the first absent-account request in each process cost two —
+ * a cold-start signal, which on serverless is most of them.
+ *
+ * One caveat for the day N/R/P are raised: rows written with the old cost will
+ * verify faster than this dummy. Re-hash on successful login at that point, so
+ * the old cost disappears from the table. */
+const DUMMY = [
+  "scrypt",
+  N,
+  R,
+  P,
+  randomBytes(16).toString("base64"),
+  randomBytes(KEYLEN).toString("base64"),
+].join("$");
+
+/** Constant-time check. False for any malformed or missing hash — and those
+ *  still cost a full scrypt, so they cannot be told apart by timing. */
+export async function verifyPassword(password: string, stored: string | null): Promise<boolean> {
+  const parsed = parseHash(stored);
+  const { salt, expected, N: n, r, p } = parsed ?? (parseHash(DUMMY) as Parsed);
   let actual: Buffer;
   try {
-    actual = await scryptAsync(password.normalize("NFKC"), salt, expected.length, {
-      N: Number(n),
-      r: Number(r),
-      p: Number(p),
-    });
+    actual = await scryptAsync(password.normalize("NFKC"), salt, expected.length, { N: n, r, p });
   } catch {
     return false;
   }
-  return actual.length === expected.length && timingSafeEqual(actual, expected);
+  const match = actual.length === expected.length && timingSafeEqual(actual, expected);
+  return parsed !== null && match;
 }

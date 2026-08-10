@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+import { MAX_NAME_PART } from "@/lib/person";
 
 /* The four password screens. All of them talk to /api/account/*, which sets the
  * same session cookie Auth.js reads, so a password session and a Google session
@@ -58,7 +59,7 @@ export function NameFields({
         value={firstName}
         onChange={(e) => setFirstName(e.target.value)}
         autoComplete="given-name"
-        maxLength={40}
+        maxLength={MAX_NAME_PART}
       />
       <label htmlFor="lastName">Last name</label>
       <input
@@ -66,7 +67,7 @@ export function NameFields({
         value={lastName}
         onChange={(e) => setLastName(e.target.value)}
         autoComplete="family-name"
-        maxLength={40}
+        maxLength={MAX_NAME_PART}
       />
     </>
   );

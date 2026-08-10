@@ -1,39 +1,55 @@
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { hashPassword, passwordProblem } from "@/lib/password";
-import { crossSite, startSession } from "@/lib/session-cookie";
+import { startSession } from "@/lib/session-cookie";
 
 // POST { token, password } — set a new password and sign in.
 
 export async function POST(req: Request) {
   if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const token = typeof body.token === "string" ? body.token : "";
   if (!token) return NextResponse.json({ error: "Missing link token." }, { status: 400 });
   const bad = passwordProblem(body.password);
   if (bad) return NextResponse.json({ error: bad }, { status: 400 });
 
-  const row = await prisma.passwordResetToken.findUnique({
-    where: { tokenHash: createHash("sha256").update(token).digest("hex") },
-    select: { id: true, userId: true, expiresAt: true, usedAt: true, user: { select: { email: true } } },
+  /* Claim the link before doing anything with it. Reading it and checking
+   * `usedAt` in separate statements lets two concurrent requests both pass the
+   * check, which is exactly what a single-use link must not allow: this
+   * updateMany is one atomic statement, so only one of them gets count === 1. */
+  const tokenHash = createHash("sha256").update(token).digest("hex");
+
+  /* Check the password against this account's own email *before* claiming the
+   * link: a recoverable typo must not burn it and send them back for another. */
+  const owner = await prisma.passwordResetToken.findUnique({
+    where: { tokenHash },
+    select: { user: { select: { email: true } } },
   });
-  if (!row || row.usedAt || row.expiresAt < new Date()) {
+  const bad2 = passwordProblem(body.password, owner?.user.email ?? undefined);
+  if (bad2) return NextResponse.json({ error: bad2 }, { status: 400 });
+
+  const claimed = await prisma.passwordResetToken.updateMany({
+    where: { tokenHash, usedAt: null, expiresAt: { gt: new Date() } },
+    data: { usedAt: new Date() },
+  });
+  const row =
+    claimed.count === 1
+      ? await prisma.passwordResetToken.findUnique({
+          where: { tokenHash },
+          select: { userId: true },
+        })
+      : null;
+  if (!row) {
     return NextResponse.json(
       { error: "This link has expired or was already used. Request a new one." },
       { status: 400 },
     );
   }
-
-  const bad2 = passwordProblem(body.password, row.user.email ?? undefined);
-  if (bad2) return NextResponse.json({ error: bad2 }, { status: 400 });
 
   await prisma.$transaction([
     prisma.user.update({

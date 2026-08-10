@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody, rateLimited } from "@/lib/http";
 import { verifyPassword } from "@/lib/password";
-import { cleanEmail, crossSite, startSession } from "@/lib/session-cookie";
+import { cleanEmail, startSession } from "@/lib/session-cookie";
 
 // POST { email, password } — sign in with a password.
 
@@ -15,12 +16,16 @@ const REFUSED = "Wrong email or password.";
 export async function POST(req: Request) {
   if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
+  /* Every attempt costs a scrypt, by design — that is what stops an unknown
+   * address from answering faster than a real one. The lockout below cannot
+   * bound that work, because invented addresses never hit the same account
+   * twice, so bound it per source instead. */
+  if (rateLimited(req, "login", 120, 5 * 60_000)) {
+    return NextResponse.json({ error: "Too many attempts. Try again shortly." }, { status: 429 });
   }
+
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const email = cleanEmail(body.email);
   const password = typeof body.password === "string" ? body.password : "";
@@ -41,8 +46,9 @@ export async function POST(req: Request) {
     );
   }
 
-  // Runs even when there is no such user, so a missing account and a wrong
-  // password take the same time to answer.
+  // Runs even when there is no such user: verifyPassword burns a scrypt against
+  // a dummy hash when there is nothing to compare, so a missing account and a
+  // wrong password take the same time to answer.
   const ok = await verifyPassword(password, user?.passwordHash ?? null);
 
   if (!user || !ok) {

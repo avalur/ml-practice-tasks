@@ -196,6 +196,20 @@ test("teacher: writes a group code, and its student appears in the homework tabl
     const table = page.locator("table.hw-table");
     const studentRow = table.locator("tr").filter({ hasText: "E2E Grouped" });
     await expect(studentRow).toContainText("Evening stream");
+
+    // Renaming in the profile has to reach the roster: the teacher sees people
+    // by User.name, which is derived from the first/last name they type.
+    await studentPage.goto("/profile?tab=account");
+    await expect(studentPage.getByLabel(/^First name/)).toHaveValue("E2E"); // split from the old name
+    await studentPage.getByLabel(/^First name/).fill("Renamed");
+    await studentPage.getByLabel(/^Last name/).fill("Student");
+    await studentPage.getByRole("button", { name: "Save" }).click();
+    await expect(studentPage.getByTestId("account-saved")).toBeVisible();
+
+    await page.reload();
+    await expect(table.locator("tr").filter({ hasText: "Renamed Student" })).toContainText(
+      "Evening stream",
+    );
   } finally {
     await student.dispose();
     await studentCtx.close();

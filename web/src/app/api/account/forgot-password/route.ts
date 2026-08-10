@@ -1,8 +1,9 @@
 import { createHash, randomBytes } from "node:crypto";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody, rateLimited, siteOrigin } from "@/lib/http";
 import { resetEmail, sendMail } from "@/lib/mailer";
-import { cleanEmail, crossSite } from "@/lib/session-cookie";
+import { cleanEmail } from "@/lib/session-cookie";
 
 // POST { email } — email a reset link, if that address has an account.
 
@@ -17,12 +18,13 @@ const SENT = { ok: true, message: "If that email has an account, a reset link is
 export async function POST(req: Request) {
   if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  /* The per-account gap below is one letter a minute, but a list of addresses
+   * turns that into a lot of letters from one machine — and mail costs money
+   * and sender reputation. Same answer as always, so this leaks nothing. */
+  if (rateLimited(req, "forgot", 20, 10 * 60_000)) return NextResponse.json(SENT);
+
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const email = cleanEmail(body.email);
   if (!email) return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
@@ -47,8 +49,9 @@ export async function POST(req: Request) {
     },
   });
 
-  const origin = new URL(req.url).origin;
-  const link = `${origin}/reset-password?token=${token}`;
+  // Not `new URL(req.url).origin`: that is the Host header the request arrived
+  // with, and this link goes into somebody's inbox. See siteOrigin().
+  const link = `${siteOrigin(req)}/reset-password?token=${token}`;
   await sendMail({ to: email, ...resetEmail(link, TTL_MINUTES) });
 
   return NextResponse.json(SENT);

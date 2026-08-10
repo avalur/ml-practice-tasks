@@ -69,7 +69,9 @@ test("register, sign out, sign back in with the password", async ({ page }) => {
   }
 });
 
-test("the profile's Account tab renames the person everywhere", async ({ page }) => {
+/* That the new name reaches a class roster is asserted where the roster is —
+ * classes.spec.ts, "teacher: writes a group code…". */
+test("the profile's Account tab sets both halves of the name", async ({ page }) => {
   const account = await testAccount(EMAIL);
   try {
     await page.goto("/register");
@@ -95,6 +97,18 @@ test("the profile's Account tab renames the person everywhere", async ({ page })
       name: "Ada Lovelace",
     });
     await expect(page.locator(".auth-name")).toHaveText("Ada Lovelace");
+
+    /* A name longer than the cap is refused, not silently cut: the form is
+     * prefilled from whatever the provider supplied, and someone who came to fix
+     * the *other* field must not lose half a surname to a quiet truncation. */
+    // page.request, not the `request` fixture: this call needs the session
+    // cookie the browser context is holding.
+    const long = await page.request.post("/api/account/profile", {
+      data: { firstName: "Ada", lastName: "L".repeat(61) },
+    });
+    expect(long.status()).toBe(400);
+    expect((await long.json()).error).toMatch(/Last name is too long/);
+    expect(await account.user()).toMatchObject({ name: "Ada Lovelace" });
 
     // The removed "coming soon" entries are gone from the sidebar.
     await expect(page.getByText("Study Plan")).toHaveCount(0);
@@ -200,22 +214,43 @@ test("an expired link is refused", async ({ request }) => {
   }
 });
 
-// These endpoints set session cookies and change passwords, and SameSite=Lax
-// still lets another site POST to them. Auth.js's CSRF token covers only the
-// routes it serves, so they check the origin themselves.
+// These endpoints set session cookies, change passwords and enroll students, and
+// SameSite=Lax still lets another site POST to them. Auth.js's CSRF token covers
+// only the routes it serves, so they check the origin themselves.
+const MUTATIONS = [
+  "/api/account/register",
+  "/api/account/login",
+  "/api/account/forgot-password",
+  "/api/account/reset-password",
+  "/api/account/profile",
+  "/api/classes/join",
+];
+
 test("a cross-site POST is refused", async ({ request }) => {
-  for (const path of [
-    "/api/account/register",
-    "/api/account/login",
-    "/api/account/forgot-password",
-    "/api/account/reset-password",
-    "/api/account/profile",
-  ]) {
+  for (const path of MUTATIONS) {
     const res = await request.post(path, {
       headers: { origin: "https://evil.example" },
-      data: { email: EMAIL, password: PASSWORD, token: "x" },
+      data: { email: EMAIL, password: PASSWORD, token: "x", code: "x" },
     });
     expect(res.status(), path).toBe(403);
+  }
+
+  // Same host, wrong scheme, is still another origin.
+  const downgraded = await request.post("/api/account/login", {
+    headers: { origin: "http://localhost:3000", "x-forwarded-proto": "https" },
+    data: { email: EMAIL, password: PASSWORD },
+  });
+  expect(downgraded.status()).toBe(403);
+});
+
+// A JSON body that parses but is not an object used to reach the first property
+// read and answer 500.
+test("a non-object JSON body is a 400, not a 500", async ({ request }) => {
+  for (const path of MUTATIONS) {
+    for (const data of [null, 42, "a string", [1, 2]]) {
+      const res = await request.post(path, { data });
+      expect([400, 401], `${path} with ${JSON.stringify(data)}`).toContain(res.status());
+    }
   }
 });
 

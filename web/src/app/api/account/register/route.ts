@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody, rateLimited } from "@/lib/http";
 import { hashPassword, passwordProblem } from "@/lib/password";
-import { cleanEmail, crossSite, startSession } from "@/lib/session-cookie";
-import { cleanNamePart, displayName } from "@/lib/person";
+import { cleanEmail, startSession } from "@/lib/session-cookie";
+import { cleanNamePart, displayName, nameProblem } from "@/lib/person";
 
 // POST { email, password, firstName?, lastName? } — create an account and sign
 // it in.
@@ -12,12 +13,13 @@ import { cleanNamePart, displayName } from "@/lib/person";
 export async function POST(req: Request) {
   if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
+  // A scrypt and a row per call, from anybody.
+  if (rateLimited(req, "register", 60, 10 * 60_000)) {
+    return NextResponse.json({ error: "Too many attempts. Try again shortly." }, { status: 429 });
   }
+
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
 
   const email = cleanEmail(body.email);
   if (!email) return NextResponse.json({ error: "Enter a valid email." }, { status: 400 });
@@ -25,6 +27,8 @@ export async function POST(req: Request) {
   if (bad) return NextResponse.json({ error: bad }, { status: 400 });
   const firstName = cleanNamePart(body.firstName);
   const lastName = cleanNamePart(body.lastName);
+  const tooLong = nameProblem(firstName, lastName);
+  if (tooLong) return NextResponse.json({ error: tooLong }, { status: 400 });
 
   /* An address that already has an account is refused rather than adopted.
    * Adopting it would be an account takeover: sign in with Google once, and

@@ -42,21 +42,6 @@ export async function startSession(
   });
 }
 
-/* Requests here carry the session cookie, and SameSite=Lax still allows a
- * cross-site POST from a form. So check the origin: these endpoints change
- * passwords and create sessions, and Auth.js's own CSRF token does not cover
- * routes it does not serve. */
-export function crossSite(req: Request): boolean {
-  const origin = req.headers.get("origin");
-  if (!origin) return false; // same-origin fetch may omit it; no cookie-less risk
-  const host = req.headers.get("x-forwarded-host") ?? req.headers.get("host");
-  try {
-    return new URL(origin).host !== host;
-  } catch {
-    return true;
-  }
-}
-
 /** Normalized form of an address, or null when it cannot be one. */
 export function cleanEmail(raw: unknown): string | null {
   if (typeof raw !== "string") return null;

@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { crossSite, jsonBody } from "@/lib/http";
 import { deckHashFor, findLesson, getAccess, getClassMeta } from "@/lib/classes";
 
 // POST { lessonSlug } — start (or resume) a lesson session. Teacher only.
@@ -11,17 +12,14 @@ export async function POST(
   req: Request,
   { params }: { params: Promise<{ slug: string }> },
 ) {
+  if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
   const { slug } = await params;
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
 
-  let body: Record<string, unknown>;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "bad json" }, { status: 400 });
-  }
+  const body = await jsonBody(req);
+  if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });
   const lessonSlug = typeof body.lessonSlug === "string" ? body.lessonSlug : "";
 
   const meta = await getClassMeta(slug);

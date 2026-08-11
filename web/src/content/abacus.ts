@@ -166,11 +166,35 @@ const nutsAndFloors = (points: number): AbacusProblem => ({
   },
 });
 
+const dwarvesAndHats = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Однажды вечером людоед поймал 10 гномов и предложил им такую игру: на следующее утро он наденет на каждого из гномов белый или чёрный колпак и выстроит их в колонну друг за другом, так что первый стоящий будет видеть 9 остальных, второй — восьмерых, …, последний уже никого не будет видеть перед собой. После этого гномы по очереди, начиная с первого, должны будут сказать одно из слов «белый» либо «чёрный». Если гном угадывает цвет своего колпака, то людоед его отпускает, если нет — съедает. Сколько гномов могут гарантированно выжить в этой смертельной игре?",
+    en: "One evening an ogre caught 10 dwarves and offered them a game: next morning he will put a white or a black cap on each of them and line them up in a column, one behind another, so that the first one sees the other nine, the second sees eight, …, and the last one sees nobody in front of him. Then, in that order and starting with the first, each dwarf must say one of two words, “white” or “black”. A dwarf who names the colour of his own cap is let go; one who does not is eaten. How many dwarves can be sure to survive this deadly game?",
+  },
+});
+
+const surgeonsAndGloves = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Имеется 4 хирурга и 4 пары перчаток. Как может каждый хирург сделать операции каждому из остальных так, чтобы ни один из них ничем новым не заразился (предполагается, что каждый чем-то болеет и передаёт микробов через кровь и руки)?",
+    en: "There are 4 surgeons and 4 pairs of gloves. How can every surgeon operate on each of the others so that none of them catches anything new? Assume each of them carries some illness and passes germs on through blood and through hands.",
+  },
+});
+
 const whichIsLarger = (points: number): AbacusProblem => ({
   points,
   statement: {
     ru: "Что больше: $127^7$ или $33^{10}$?",
     en: "Which is larger, $127^7$ or $33^{10}$?",
+  },
+});
+
+const twelveCoins = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Есть 12 одинаковых монеток, одна из которых фальшивая (она отличается по весу от остальных, но неизвестно, легче она или тяжелее). Как определить фальшивую монету за три взвешивания на чашечных весах?",
+    en: "There are 12 identical-looking coins, one of them counterfeit: it differs in weight from the rest, but whether it is lighter or heavier is unknown. How can the counterfeit be found in three weighings on a balance scale?",
   },
 });
 
@@ -229,12 +253,12 @@ export const ABACUS: AbacusGame = {
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           antsOnAStick(10),
           nutsAndFloors(20),
-          empty(30),
+          dwarvesAndHats(30),
         ]),
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
           empty(20),
-          empty(30),
+          twelveCoins(30),
         ]),
       ],
     },
@@ -250,13 +274,13 @@ export const ABACUS: AbacusGame = {
         ]),
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           antsOnAStick(10),
-          empty(20),
-          empty(30),
+          dwarvesAndHats(20),
+          surgeonsAndGloves(30),
         ]),
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
           empty(20),
-          empty(30),
+          twelveCoins(30),
         ]),
       ],
     },

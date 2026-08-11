@@ -800,3 +800,44 @@ test("present mode: no exported page loses its slide content", async ({ page }) 
     .filter((p) => p.expected && p.kb < 25);
   expect(blank, `pages that came out blank: ${JSON.stringify(blank)}`).toEqual([]);
 });
+
+/* Practice that lives off-site — a Colab notebook, a dataset — is a `link`
+ * item. It carries no progress, and the trap is that "no progress" reads as
+ * "complete": flatten() drops links, and [].every() is true, so the class page
+ * would tick a link the moment it rendered. Both surfaces are checked.
+ *
+ * Runs on a scratch class, like the draft test above, so it does not depend on
+ * what any real course happens to assign this term. */
+test("practice links open off-site and are never ticked as done", async ({
+  page,
+  context,
+}) => {
+  const href = "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/x.ipynb";
+  const fixture = await draftClass({
+    slug: `e2e-links-${process.pid}`,
+    title: "E2E Links",
+    practice: [{ type: "link", title: "Practice 1 — Colab", href }],
+  });
+  const teacher = await signInAs(context, {
+    email: "e2e-links-teacher@example.test",
+    name: "E2E Links Teacher",
+    classSlug: fixture.slug,
+    teacher: true,
+  });
+  try {
+    for (const url of [
+      `/classes/${fixture.slug}`,
+      `/classes/${fixture.slug}/lessons/${fixture.lessonSlug}`,
+    ]) {
+      await page.goto(url);
+      const link = page.getByRole("link", { name: /Practice 1 — Colab/ });
+      await expect(link).toHaveAttribute("href", href);
+      await expect(link).toHaveAttribute("target", "_blank");
+      // The tick is the whole point: an untracked item must not claim to be done.
+      await expect(link).not.toContainText("✓");
+    }
+  } finally {
+    await teacher.dispose();
+    await fixture.dispose();
+  }
+});

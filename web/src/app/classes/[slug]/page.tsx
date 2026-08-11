@@ -9,6 +9,7 @@ import {
   getAccess,
   getClassMeta,
   isGroup,
+  isLink,
   solvedKeys,
   type Item,
   type Lesson,
@@ -150,6 +151,19 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 <p className="class-lesson-line">
                   <span className="muted">In class:</span>{" "}
                   {lesson.practice.map((item: Item, i) => {
+                    // An off-site link is opened, never solved. Checking it for
+                    // completion would tick it: flatten() drops links, and
+                    // [].every() is true.
+                    if (isLink(item)) {
+                      return (
+                        <span key={`link:${item.href}`}>
+                          {i > 0 && ", "}
+                          <a href={item.href} target="_blank" rel="noopener noreferrer">
+                            {item.title}
+                          </a>
+                        </span>
+                      );
+                    }
                     // A group has no page of its own; the lesson is where it opens.
                     const [key, href, label] = isGroup(item)
                       ? [

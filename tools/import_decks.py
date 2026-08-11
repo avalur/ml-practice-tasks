@@ -63,11 +63,34 @@ def extract_slides(html: str, deck: str) -> str:
     raise SystemExit(f"{deck}: <div class=\"slides\"> is never closed")
 
 
-def extract_styles(html: str, slides: str) -> str:
-    """Concatenate the deck's own <style> blocks (head styles, not slide markup)."""
+def extract_styles(html: str, slides: str, deck_dir: Path) -> str:
+    """Concatenate the deck's own CSS — inline <style> blocks and linked local
+    stylesheets — in the order the head declares them.
+
+    A deck may keep its CSS in a sibling .css file rather than a <style> block.
+    The fragment has no <head> for a <link> to survive in, so the file is
+    inlined here: without it the deck imports cleanly and renders completely
+    unstyled, which reads as a broken theme rather than a missing file.
+    """
     head = html.replace(slides, "")
-    blocks = re.findall(r"<style>(.*?)</style>", head, re.S)
-    return "\n".join(b.strip("\n") for b in blocks)
+    parts: list[str] = []
+    for m in re.finditer(r"<style>(.*?)</style>|<link\b([^>]*?)>", head, re.S):
+        if m.group(1) is not None:
+            parts.append(m.group(1).strip("\n"))
+            continue
+        attrs = m.group(2)
+        if "stylesheet" not in attrs:
+            continue
+        href = re.search(r'href="([^"]+)"', attrs)
+        if not href or not is_local_ref(href.group(1)):
+            continue  # reveal's own reset/theme/highlight CSS
+        path = (deck_dir / href.group(1)).resolve()
+        if not path.is_file():
+            print(f"    MISSING stylesheet, skipped: {href.group(1)}")
+            continue
+        print(f"    inlined stylesheet: {href.group(1)}")
+        parts.append(f"/* {path.name} */\n{path.read_text(encoding='utf-8').strip()}")
+    return "\n".join(p for p in parts if p.strip())
 
 
 def report_dropped_scripts(html: str, slides: str, deck: str) -> None:
@@ -191,16 +214,40 @@ class AssetCopier:
         return original.name
 
 
+def is_local_ref(val: str) -> bool:
+    """True for a path the deck owns — not remote, not already imported, not reveal's."""
+    return not (val.startswith(("http://", "https://", "//", "data:", "assets/"))
+                or val.startswith(VENDOR_PREFIXES))
+
+
+def rewrite_css_urls(css: str, deck_dir: Path, copier: AssetCopier) -> str:
+    """Point every `url(...)` in the deck's own CSS at assets/<name>.
+
+    A stylesheet carries images too — a slide background lives in CSS as often
+    as in markup — and those references are invisible to the markup rewrite
+    below. They resolve against the .css file's own directory, which is the
+    deck directory, since that is where the linked stylesheet sits.
+    """
+
+    def sub_url(match: re.Match[str]) -> str:
+        quote, val = match.group(1), match.group(2)
+        if not is_local_ref(val) or Path(val).suffix.lower() not in IMAGE_EXT:
+            return match.group(0)
+        src = (deck_dir / val).resolve()
+        if not src.is_file():
+            print(f"    MISSING css image, left as-is: {val}")
+            return match.group(0)
+        return f"url({quote}assets/{copier.add(src)}{quote})"
+
+    return re.sub(r"""url\((["']?)([^)"']+)\1\)""", sub_url, css)
+
+
 def rewrite_assets(slides: str, deck_dir: Path, copier: AssetCopier, deck: str) -> str:
     """Point every deck-owned image/config reference at assets/<name>."""
 
-    def is_local(val: str) -> bool:
-        return not (val.startswith(("http://", "https://", "//", "data:", "assets/"))
-                    or val.startswith(VENDOR_PREFIXES))
-
     def sub_attr(match: re.Match[str]) -> str:
         attr, val = match.group(1), match.group(2)
-        if not is_local(val) or Path(val).suffix.lower() not in IMAGE_EXT:
+        if not is_local_ref(val) or Path(val).suffix.lower() not in IMAGE_EXT:
             return match.group(0)
         src = (deck_dir / val).resolve()
         if not src.is_file():
@@ -264,11 +311,12 @@ def import_deck(src_html: Path, class_slug: str, max_width: int) -> None:
     print(f"  {deck} … ")
 
     slides = extract_slides(html, deck)
-    styles = extract_styles(html, slides)
     report_dropped_scripts(html, slides, deck)
 
     class_dir = CLASSES / class_slug
     copier = AssetCopier(class_dir / "assets", max_width)
+    styles = rewrite_css_urls(extract_styles(html, slides, src_html.parent),
+                              src_html.parent, copier)
     slides = rewrite_assets(slides, src_html.parent, copier, deck)
 
     title_m = re.search(r"<title>(.*?)</title>", html, re.S)

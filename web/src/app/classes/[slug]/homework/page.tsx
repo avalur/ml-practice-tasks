@@ -12,7 +12,7 @@ import {
   getClassMeta,
   isGroup,
   solvedKeys,
-  type Item,
+  type TrackedItem,
 } from "@/lib/classes";
 import { InviteCodes } from "@/components/InviteCodes";
 
@@ -98,7 +98,7 @@ export default async function HomeworkPage({
                 <tr>
                   <th className="hw-name">Student</th>
                   <th className="hw-group">Group</th>
-                  {focus.homework.items.map((item: Item) =>
+                  {focus.homework.items.map((item: TrackedItem) =>
                     isGroup(item) ? (
                       <th
                         key={`group:${item.pattern}`}
@@ -123,7 +123,7 @@ export default async function HomeworkPage({
                       <td className="hw-group" title={m.group?.code}>
                         {m.group?.label}
                       </td>
-                      {focus.homework!.items.map((item: Item) => {
+                      {focus.homework!.items.map((item: TrackedItem) => {
                         const refs = flatten([item]);
                         const n = refs.filter((r) => done(m.id, r.type, r.id)).length;
                         const key = isGroup(item)

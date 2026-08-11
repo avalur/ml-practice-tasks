@@ -116,7 +116,13 @@ export async function testAccount(email: string) {
  * it; the worst a crashed run leaves behind is a manifest entry that
  * `python export_decks.py` rewrites and a hidden row nothing links to.
  */
-export async function draftClass(opts: { slug: string; title: string; lesson?: string }) {
+export async function draftClass(opts: {
+  slug: string;
+  title: string;
+  lesson?: string;
+  /** Practice items for the scratch lesson, in published-manifest shape. */
+  practice?: unknown[];
+}) {
   const { PrismaClient } = await import("@prisma/client");
   const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
   const lessonSlug = opts.lesson ?? "l01-scratch";
@@ -137,7 +143,7 @@ export async function draftClass(opts: { slug: string; title: string; lesson?: s
         title: "Lesson 1. Scratch",
         date: null,
         deck: "scratch",
-        practice: [],
+        practice: opts.practice ?? [],
         homework: null,
       },
     ],

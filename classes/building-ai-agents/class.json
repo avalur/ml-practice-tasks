@@ -1,0 +1,32 @@
+{
+  "slug": "building-ai-agents",
+  "title": "Building AI Agents",
+  "draft": true,
+  "teacherEmails": ["ovalur@gmail.com"],
+  "lessons": [
+    {
+      "slug": "l01-intro-agents",
+      "title": "Lecture 1. From LLM to AI Agents",
+      "date": "2026-10-08",
+      "deck": "intro_ai_agents",
+      "practice": [
+        {
+          "type": "link",
+          "title": "Practice 1 — How to use LLMs (Colab)",
+          "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Intro_AI_Agents_part1.ipynb"
+        },
+        {
+          "type": "link",
+          "title": "Practice 2 — Your first agent (Colab)",
+          "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Intro_AI_Agents_part2.ipynb"
+        }
+      ]
+    },
+    {
+      "slug": "l02-tools-mcp",
+      "title": "Lecture 2. Tools and MCP",
+      "date": "2026-10-15",
+      "deck": "tools_mcp"
+    }
+  ]
+}

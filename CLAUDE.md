@@ -78,6 +78,16 @@ A third content family, for lecturing from the reveal.js decks in
 - **Source of truth = `classes/<class>/`.**
   - `class.json` — title, `teacherEmails`, and `lessons[]` (slug, title, date,
     `deck`, `practice[]`, `homework{due,items[]}`, optional `revealOverrides`).
+    A practice entry is a `problem`, a `notebook`, or a **`link`** —
+    `{type, title, href}` for work that lives off-site (a Colab notebook, a
+    dataset). A link is **practice only**: `export_decks.py` refuses one in
+    `homework`, and the TS type says so too (`Homework.items` is `TrackedItem[]`,
+    which excludes `LinkRef`). The homework page is a roster of who handed what
+    in, and an untrackable column would read as a class that all failed. The
+    same asymmetry is the one trap in the UI: `flatten()` drops links, so
+    `flatten([link]).every(done)` is `[].every()` — **`true`** — and a link ticks
+    itself as done unless the render branches on `isLink` first. Covered by
+    "practice links open off-site and are never ticked" in `classes.spec.ts`.
   - `decks/<deck>.html` — a per-class **copy** of a deck, edited freely in
     PyCharm. It is a *fragment*: the deck's `<style>` plus `<div class="slides">`,
     no `<html>`/`<head>` — the exporter supplies the page shell.
@@ -147,6 +157,26 @@ blocks survive), rewrites image refs to `assets/`, re-encodes them (JPEG when
 opaque, WebP when there's alpha — a resized photographic PNG stays huge), and
 reports every page-level script it drops. Re-run it only when re-importing; the
 regular build is `export_decks.py`.
+
+A deck may keep its CSS in a sibling `.css` file instead of a `<style>` block
+(both `building-ai-agents` decks do). The importer **inlines** linked local
+stylesheets into the fragment, in head order, because a fragment has no `<head>`
+for a `<link>` to survive in — without it the deck imports cleanly and renders
+completely unstyled, which reads as a broken theme. A stylesheet can carry
+images too, so `url(...)` refs inside it are copied and rewritten to `assets/`
+just like markup refs.
+
+**An asset can be referenced only from CSS**, and that path is easy to break in
+three separate places, none of which raise: `ASSET_REF_RE` has to count
+`url(assets/…)` or the file looks unused and gets pruned (with `--check` calling
+it stale); `absolutize_assets` has to rewrite the `<style>` block and not just
+the slides, since `present.html` sits one directory below the published assets;
+and `tests/e2e/assets.spec.ts` has to walk `getComputedStyle().backgroundImage`,
+because such a background is neither an `<img>` nor a `data-background-*`
+attribute. Miss any one and the slide simply loses its picture. That suite
+asserts on same-origin URLs only — pruning can only break what we publish, and a
+deck that hotlinks a third-party image shouldn't fail CI on someone else's
+downtime.
 
 Present mode lives at `/classes/<class>/<lesson>/present.html`; adding
 `?session=<id>` (the teacher's "Present" button) is what attaches the ink layer.

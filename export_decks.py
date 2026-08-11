@@ -116,7 +116,7 @@ def group_title(pattern: str, ids: list[str]) -> str:
 
 
 def expand_item(item: dict, problems: set[str], notebooks: set[str],
-                where: str) -> tuple[dict | None, list[str]]:
+                where: str, allow_links: bool = True) -> tuple[dict | None, list[str]]:
     """Resolve one practice/homework entry, expanding an id with a `*` in it.
 
     A wildcard becomes a *group*: one entry the UI can render as a single line
@@ -129,6 +129,23 @@ def expand_item(item: dict, problems: set[str], notebooks: set[str],
     topic, "py_*" is every topic starting with py_.
     """
     kind = item["type"]
+    if kind == "link":
+        # Practice that lives off-site (a Colab notebook, a dataset). There is
+        # nothing to resolve it against, so validate the shape instead: a bare
+        # word here would render as an unclickable row, and a relative path
+        # would resolve against the lesson URL rather than the site root.
+        if not allow_links:
+            # The homework page is a roster of who handed what in. A link has no
+            # completion to report, so it would sit there as a column of "·" for
+            # every student — indistinguishable from nobody having done it.
+            return None, [f"{where}: a link cannot be homework, only practice "
+                          f"(nothing tracks it) — {item.get('title')!r}"]
+        title, href = item.get("title"), item.get("href")
+        if not title:
+            return None, [f"{where}: link needs a title"]
+        if not href or not href.startswith(("https://", "http://", "/")):
+            return None, [f"{where}: link {title!r} needs an absolute href, got {href!r}"]
+        return {"type": "link", "title": title, "href": href}, []
     if kind not in ("problem", "notebook"):
         return None, [f"{where}: unknown item type {kind!r}"]
     pool = problems if kind == "problem" else notebooks
@@ -151,10 +168,10 @@ def expand_item(item: dict, problems: set[str], notebooks: set[str],
 
 
 def expand_items(items: list[dict], problems: set[str], notebooks: set[str],
-                 where: str) -> tuple[list[dict], list[str]]:
+                 where: str, allow_links: bool = True) -> tuple[list[dict], list[str]]:
     out, errors = [], []
     for it in items:
-        resolved, errs = expand_item(it, problems, notebooks, where)
+        resolved, errs = expand_item(it, problems, notebooks, where, allow_links)
         errors += errs
         if resolved:
             out.append(resolved)
@@ -167,7 +184,8 @@ def lesson_items(lesson: dict, problems: set[str], notebooks: set[str],
     practice, e1 = expand_items(lesson.get("practice", []), problems, notebooks,
                                f"{where} practice")
     hw = (lesson.get("homework") or {}).get("items", [])
-    homework, e2 = expand_items(hw, problems, notebooks, f"{where} homework")
+    homework, e2 = expand_items(hw, problems, notebooks, f"{where} homework",
+                                allow_links=False)
     return practice, homework, e1 + e2
 
 
@@ -465,6 +483,21 @@ Reveal.addEventListener('fragmentshown', function (event) {{
 """
 
 
+def absolutize_assets(text: str, class_slug: str) -> str:
+    """Point deck-relative `assets/…` references at the path they're served from.
+
+    Assets sit next to the deck under classes/<class>/assets/ and are served
+    from /classes/<class>/assets/, but present.html lives one level deeper,
+    under the lesson slug. Both the markup and the deck's own inlined CSS need
+    this: a `url(assets/…)` background left relative resolves against the
+    lesson directory and 404s, which costs the slide its background and
+    nothing else — no error, just a blank panel where the picture was.
+    """
+    base = f"/classes/{class_slug}/assets/"
+    text = text.replace('="assets/', f'="{base}')
+    return re.sub(r"""url\((["']?)assets/""", rf"url(\g<1>{base}", text)
+
+
 def build_lesson(cls: dict, lesson: dict, problems: set[str],
                  notebooks: set[str]) -> list[str]:
     class_slug = cls["slug"]
@@ -482,9 +515,8 @@ def build_lesson(cls: dict, lesson: dict, problems: set[str],
     if errors:
         return errors
 
-    # Assets sit next to the deck under classes/<class>/assets/ and are served
-    # from /classes/<class>/assets/, so make the relative refs absolute.
-    slides = slides.replace('="assets/', f'="/classes/{class_slug}/assets/')
+    slides = absolutize_assets(slides, class_slug)
+    styles = absolutize_assets(styles, class_slug)
 
     errors = validate_py_configs(slides, class_slug, f"{class_slug}/{lesson['slug']}")
     if errors:
@@ -578,9 +610,13 @@ def stale_dirs(classes: list[dict]) -> list[Path]:
     return stale
 
 
+# Markup attributes, plus `url(assets/…)` from the deck's own inlined <style> —
+# a stylesheet can hold a slide background, and a reference only CSS makes would
+# otherwise look unused: the asset gets pruned and --check calls it stale.
 ASSET_REF_RE = re.compile(
     r'(?:src|href|poster|config|data-background-image|data-background-video)'
     r'="assets/([^"?#]+)'
+    r"""|url\(["']?assets/([^)"'?#]+)"""
 )
 
 
@@ -590,7 +626,9 @@ def deck_assets(class_slug: str, deck: Path) -> set[str]:
     A pyscript toml counts twice over: the file itself, plus the data files its
     [files] table mounts (whose keys are relative to the toml, i.e. bare names).
     """
-    names = set(ASSET_REF_RE.findall(deck.read_text(encoding="utf-8")))
+    names = {name
+             for groups in ASSET_REF_RE.findall(deck.read_text(encoding="utf-8"))
+             for name in groups if name}
     for name in list(names):
         if not name.endswith(".toml"):
             continue

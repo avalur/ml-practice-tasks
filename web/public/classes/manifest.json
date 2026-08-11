@@ -484,6 +484,41 @@
           }
         }
       ]
+    },
+    {
+      "slug": "building-ai-agents",
+      "title": "Building AI Agents",
+      "description": "What an AI agent actually is, and how to build one: a language model, a set of tools, a loop and some memory. Starting from the wire format a model speaks, you will write the agent loop by hand before reaching for any framework — tool definitions and dispatch, the Model Context Protocol, retrieval, evaluation. By the end you will know which problems deserve an agent, and which are better served by a single call.",
+      "order": 2,
+      "lessons": [
+        {
+          "slug": "l01-intro-agents",
+          "title": "Lecture 1. From LLM to AI Agents",
+          "date": "2026-10-08",
+          "deck": "intro_ai_agents",
+          "practice": [
+            {
+              "type": "link",
+              "title": "Practice 1 — How to use LLMs (Colab)",
+              "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Intro_AI_Agents_part1.ipynb"
+            },
+            {
+              "type": "link",
+              "title": "Practice 2 — Your first agent (Colab)",
+              "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Intro_AI_Agents_part2.ipynb"
+            }
+          ],
+          "homework": null
+        },
+        {
+          "slug": "l02-tools-mcp",
+          "title": "Lecture 2. Tools and MCP",
+          "date": "2026-10-15",
+          "deck": "tools_mcp",
+          "practice": [],
+          "homework": null
+        }
+      ]
     }
   ]
 }

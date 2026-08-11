@@ -9,10 +9,12 @@ import {
   getAccess,
   getClassMeta,
   isGroup,
+  isLink,
   solvedKeys,
   type ContentRef,
   type GroupRef,
   type Item,
+  type LinkRef,
 } from "@/lib/classes";
 import { PresentButton } from "@/components/PresentButton";
 
@@ -85,11 +87,27 @@ function GroupCard({ group, done }: { group: GroupRef; done: (r: ContentRef) => 
   );
 }
 
+/* Work that lives off-site: it opens in a new tab and is never ticked off. */
+function LinkRow({ link }: { link: LinkRef }) {
+  return (
+    <a href={link.href} className="problem-card" target="_blank" rel="noopener noreferrer">
+      <span className="title">{link.title}</span>
+      <span className="meta">
+        <span className="badge medium">external</span>
+      </span>
+    </a>
+  );
+}
+
 function RefList({ items, done }: { items: Item[]; done: (r: ContentRef) => boolean }) {
   return (
     <ul className="problem-list">
       {items.map((item) =>
-        isGroup(item) ? (
+        isLink(item) ? (
+          <li key={`link:${item.href}`}>
+            <LinkRow link={item} />
+          </li>
+        ) : isGroup(item) ? (
           <li key={`group:${item.pattern}`}>
             <GroupCard group={item} done={done} />
           </li>

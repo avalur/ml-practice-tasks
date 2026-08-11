@@ -26,9 +26,24 @@ export type GroupRef = {
   items: ContentRef[];
 };
 
-export type Item = ContentRef | GroupRef;
+/** A practice item that lives outside the site — a Colab notebook, a dataset.
+ *
+ * It carries no progress: nothing here is solved, only opened. Everything that
+ * counts completion goes through `flatten()`, which drops these, so a link can
+ * never be mistaken for an unsolved task. */
+export type LinkRef = { type: "link"; title: string; href: string };
 
-export type Homework = { due: string; items: Item[] };
+/** Anything the site can count as done for a student. */
+export type TrackedItem = ContentRef | GroupRef;
+
+export type Item = TrackedItem | LinkRef;
+
+/** Homework is `TrackedItem[]`, not `Item[]`: the homework page is a roster of
+ * who handed what in, one column per item. An off-site link has no completion
+ * to report, so it would show as a column of "·" for the whole class — a row of
+ * dots that means "untracked" but reads as "nobody did it". export_decks.py
+ * rejects a link in homework for the same reason. */
+export type Homework = { due: string; items: TrackedItem[] };
 
 export type Lesson = {
   slug: string;
@@ -43,9 +58,13 @@ export function isGroup(item: Item): item is GroupRef {
   return item.type === "group";
 }
 
+export function isLink(item: Item): item is LinkRef {
+  return item.type === "link";
+}
+
 /** Flatten groups so counting and DB lookups only ever see real content refs. */
 export function flatten(items: Item[]): ContentRef[] {
-  return items.flatMap((i) => (isGroup(i) ? i.items : [i]));
+  return items.flatMap((i) => (isGroup(i) ? i.items : isLink(i) ? [] : [i]));
 }
 
 export type ClassMeta = {

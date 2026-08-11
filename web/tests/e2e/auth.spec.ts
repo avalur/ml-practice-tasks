@@ -230,7 +230,11 @@ const MUTATIONS = [
  * teacher-only route belongs in this list too — even though it answers 403 to a
  * stranger and therefore has no place in the body test below. The slug does not
  * have to exist: nothing is looked up until the origin passes. */
-const CROSS_SITE = [...MUTATIONS, "/api/classes/no-such-class/publish"];
+const CROSS_SITE = [
+  ...MUTATIONS,
+  "/api/classes/no-such-class/publish",
+  "/api/brainteasers/abacus/publish",
+];
 
 test("a cross-site POST is refused", async ({ request }) => {
   for (const path of CROSS_SITE) {

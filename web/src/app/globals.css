@@ -936,6 +936,237 @@ pre.code {
   white-space: nowrap;
 }
 
+/* ── Math Abacus (abacus-*) ──────────────────────────────────────────────── */
+
+.abacus-page { max-width: 760px; }
+
+.abacus-head {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.abacus-head h1 { margin: 0; flex: 1 1 auto; }
+.abacus-head-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.abacus-head-actions .bt-clear-btn { margin-left: 0; }
+
+.abacus-lang {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.abacus-lang-btn {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  padding: 0.25rem 0.6rem;
+  cursor: pointer;
+}
+.abacus-lang-btn.is-active {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+/* Difficulty tabs — one board per age group. */
+.abacus-levels {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0 0.25rem;
+  flex-wrap: wrap;
+}
+.abacus-level {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--panel);
+  color: var(--muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.abacus-level:hover { border-color: var(--accent); }
+.abacus-level.is-active {
+  border-color: var(--accent);
+  color: var(--text);
+  background: color-mix(in srgb, var(--accent) 12%, var(--panel));
+}
+.abacus-level-name { font-weight: 700; font-size: 0.95rem; }
+.abacus-level-ages { font-size: 0.75rem; color: var(--muted); }
+
+.abacus-grid {
+  display: grid;
+  gap: 0.6rem;
+  margin: 1.25rem 0 1rem;
+  align-items: stretch;
+}
+/* Each theme is one grid row; the wrapper exists only to key the React list. */
+.abacus-row { display: contents; }
+
+.abacus-theme {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding-right: 0.5rem;
+}
+
+.abacus-cell {
+  position: relative;
+  min-height: 74px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s;
+}
+.abacus-cell:hover:not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.abacus-cell.is-selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+.abacus-cell[data-state="locked"] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border-style: dashed;
+}
+.abacus-cell[data-state="done"] {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 10%, var(--panel));
+}
+.abacus-points { font-size: 1.4rem; font-weight: 700; }
+.abacus-mark {
+  position: absolute;
+  top: 0.3rem;
+  right: 0.45rem;
+  font-size: 0.85rem;
+  color: var(--easy);
+}
+
+.abacus-status {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.abacus-detail {
+  margin-top: 1rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--panel);
+}
+.abacus-detail-head {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.abacus-detail-actions { margin-top: 1rem; }
+
+/* TikZ line art built by tools/build_figures.py. Strokes are `currentColor`, so
+   the drawing follows the theme; dvisvgm's own pt width is its natural size. */
+.tikz-figure {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 0.9rem 0;
+}
+
+/* ── Printable statement sheet ───────────────────────────────────────────── */
+
+.abacus-print { max-width: 760px; }
+.abacus-print h2 {
+  margin: 1.6rem 0 0.6rem;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--border);
+}
+.abacus-print-problem {
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 0.9rem;
+  padding: 0.7rem 0;
+  break-inside: avoid;
+}
+.abacus-print-points {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.abacus-print-body > div > :first-child,
+.abacus-print-body .statement > :first-child {
+  margin-top: 0;
+}
+.abacus-print-ages {
+  margin: -0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+.abacus-print-lang {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+@media print {
+  /* Print the sheet, not the site: no chrome, no dark theme, and no problem
+     split across a page boundary. */
+  .site-header,
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  /* html/body animate their colours on a theme switch; a print job that starts
+     mid-transition would put that half-dark frame on paper. */
+  * {
+    transition: none !important;
+  }
+  .container { padding: 0 !important; max-width: none !important; }
+  .abacus-print { max-width: none; }
+  .abacus-print h2 { border-bottom-color: #999; }
+  .abacus-print-points,
+  .abacus-print-lang,
+  .muted {
+    color: #444 !important;
+  }
+  /* .statement is a dark panel on screen; on paper it must be plain text, or
+     the whole statement prints as a black box. */
+  .abacus-print .statement {
+    background: none !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0.2rem 0 !important;
+    color: #000 !important;
+  }
+  .abacus-print .statement code {
+    background: none !important;
+    border: 1px solid #999;
+  }
+}
+
 /* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
 
 /* Sidebar + content shell — breaks out of container padding */

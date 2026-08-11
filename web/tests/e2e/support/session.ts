@@ -170,6 +170,45 @@ export async function draftClass(opts: { slug: string; title: string; lesson?: s
   };
 }
 
+/** The publication state of a brain teaser, remembered and put back.
+ *
+ * Unlike a class, a teaser cannot be faked up on the side: the board is a TS
+ * module, so there is exactly one abacus and the test has to flip the real row.
+ * It is recorded on the way in and restored by dispose(), so the only exposure
+ * is the second or two a test spends with it flipped — and a killed run, which
+ * is why nothing here is left to an `afterAll`.
+ */
+export async function teaserState(slug: string) {
+  const { PrismaClient } = await import("@prisma/client");
+  const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+
+  const read = async () =>
+    (await prisma.teaserState.findUnique({ where: { slug }, select: { publishedAt: true } }))
+      ?.publishedAt ?? null;
+  const write = async (publishedAt: Date | null) => {
+    await prisma.teaserState.upsert({
+      where: { slug },
+      create: { slug, publishedAt },
+      update: { publishedAt },
+    });
+  };
+
+  const before = await read();
+
+  return {
+    async published(): Promise<boolean> {
+      return (await read()) !== null;
+    },
+    async setPublished(next: boolean) {
+      await write(next ? new Date() : null);
+    },
+    async dispose() {
+      await write(before);
+      await prisma.$disconnect();
+    },
+  };
+}
+
 export async function signInAs(
   context: BrowserContext,
   opts: { email: string; name: string; classSlug?: string; teacher?: boolean },

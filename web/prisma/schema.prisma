@@ -262,6 +262,17 @@ model LessonAnnotation {
   @@unique([sessionId, pageKey])
 }
 
+// Whether a brain teaser is on the site yet. Everything else about a teaser is
+// code, but publication has to be changeable from the site without a deploy, so
+// it is a row. **No row means draft**: a new teaser is private to the site
+// editors (ADMIN_EMAILS) until somebody presses Publish, which is what lets an
+// unfinished board be built in the open.
+model TeaserState {
+  slug        String    @id // "abacus"
+  publishedAt DateTime?
+  updatedAt   DateTime  @updatedAt
+}
+
 model UserProblemProgress {
   id               String    @id @default(cuid())
   userId           String

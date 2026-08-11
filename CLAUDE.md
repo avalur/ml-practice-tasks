@@ -274,6 +274,67 @@ PyScript in the decks, four things learned the hard way:
   dev server is serving, and a truncating overwrite can hand a browser half a
   page — which looks exactly like a deck whose py-editor config vanished.
 
+## Brain teasers
+
+Puzzles under `/brainteasers`, listed by the hardcoded `TEASERS` array in
+`web/src/app/brainteasers/page.tsx`. Almost no database: each teaser is a page
+that carries its own content. Conventions the **Math Abacus** added, worth
+following for the next one:
+
+- Content is a typed module, `web/src/content/abacus.ts` — the three age variants
+  (`hard` 10–12, `extreme` 13–15, `nightmare` 16+), their themes, costs and both
+  translations of every statement, so a half-translated theme is a type error.
+  Statements are markdown with `$…$` / `$$…$$`. A variant is a whole separate 3×3
+  board; the board's progress key is per level (`mlp:abacus:v1:<level>`), because
+  they are three different games sharing one page.
+- **A teaser can be a draft.** `TeaserState.publishedAt` in Postgres is the only
+  truth and **no row means draft**, so a new puzzle is private the moment it
+  exists and nothing goes live by being deployed. `teaserAccess(slug)` in
+  `web/src/lib/teasers.ts` is the single gate (`visible = published || admin`);
+  the list page, both abacus pages and the API route all ask it. Publication is
+  one flag for the whole game — publishing shows all three levels.
+- Who may press Publish is **`ADMIN_EMAILS`** (`web/src/lib/admin.ts`), a
+  comma-separated env var, not a column: the list changes without a migration,
+  and unset means *nobody*, so a deploy that forgets it hides the button rather
+  than handing it out. Classes are unaffected — those still authorize against
+  `Class.teacherEmails`. Set it in Vercel, or Publish is dead in production.
+- `web/src/lib/abacus.ts` is client-safe (types, `isOpen`, `cellKey`);
+  `abacus-render.ts` is the server half that pulls in `marked` and `katex`.
+  Statements are rendered to HTML **on the server, in both languages** and handed
+  to the board, so neither library ships to the browser and switching language
+  costs no round trip. Math is masked out before `marked` runs and spliced back
+  after — markdown otherwise eats the `_` and `*` inside a formula.
+- Russian is scoped to these pages (`mlp:abacus:lang`, or `?lang=` on the URL);
+  the rest of the site stays English. Progress lives in localStorage — the
+  hand-in order is the whole game, but who solved what is not ours to record.
+
+**Pictures are TikZ.** Sources in `figures/<name>.tex`, compiled by
+`python tools/build_figures.py` (TeX Live: `latex` → `dvisvgm`) into the committed
+`web/src/content/figures.generated.ts`, and dropped into a statement with
+`${figure("abacus/tiles-in-a-box")}` on its own blank-line-separated paragraph.
+Inline SVG rather than a file under `public/` for one reason: the builder rewrites
+black to **`currentColor`**, so a single drawing follows the dark theme, the light
+theme and the printed sheet. Two rules follow from that — sources must be plain
+line art (no fills, no transparency: the dvisvgm route supports neither reliably),
+and `--check` compares the **sha256 of each .tex** recorded in the generated file,
+so CI catches a source edited without a rebuild while only this machine needs a
+LaTeX install.
+
+The e2e suite reads the draft board by **signing in as an editor**
+(`e2e-admin@example.test`, listed in the local `ADMIN_EMAILS`), so the board tests
+write nothing. Only the publish test flips the real row, and `teaserState()` in
+`tests/e2e/support/session.ts` records the state on the way in and restores it —
+there is one abacus and no way to fake up a scratch one, unlike a class.
+
+Printing is a real page, `/brainteasers/abacus/print?lang=ru|en|both&level=…`, plus the
+browser's own Print dialog — vector text and real KaTeX, where jsPDF would
+rasterize. Two traps, both found by exporting an actual PDF and looking at it:
+`.statement` is a dark panel on screen and prints as a black box unless the
+`@media print` block strips it, and `html`/`body` **animate** their colours, so a
+print job that starts mid-transition puts a half-dark frame on paper — hence
+`transition: none` in that block. `tests/e2e/brainteasers.spec.ts` asserts both by
+emulating print media.
+
 ## Accounts and sign-in
 
 Auth.js v5 with the Prisma adapter and **database** sessions: a session is a
@@ -350,6 +411,8 @@ python generate.py --check    # CI: fail if tasks/ drifted from problems/
 python export_decks.py        # rebuild web/public/classes/ from classes/
 python export_decks.py --check # CI: fail if class decks drifted
 python export_decks.py --watch # authoring: rebuild on save (use ?dev=1 in the browser)
+python tools/build_figures.py         # rebuild the TikZ figures (needs TeX Live)
+python tools/build_figures.py --check # CI: a .tex edited without a rebuild
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)

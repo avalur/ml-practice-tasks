@@ -20,6 +20,9 @@ jobs:
         run: python export_web.py --check
       - name: Check class decks are generated from classes/
         run: python export_decks.py --check
+      # Compares recorded source hashes, so it needs no LaTeX here.
+      - name: Check TikZ figures are rebuilt from figures/
+        run: python tools/build_figures.py --check
       - name: Run reference solutions
         run: pytest problems -q
 
@@ -45,6 +48,9 @@ jobs:
       AUTH_SECRET: ci-placeholder-not-a-real-secret
       DATABASE_URL: postgresql://postgres:postgres@localhost:5432/mlp_test
       DIRECT_URL: postgresql://postgres:postgres@localhost:5432/mlp_test
+      # The brain-teaser tests read a draft board, which only a site editor can
+      # see. Synthetic address, throwaway database — this grants nothing real.
+      ADMIN_EMAILS: e2e-admin@example.test
     defaults:
       run:
         working-directory: web

@@ -314,11 +314,21 @@ following for the next one:
 `${figure("abacus/tiles-in-a-box")}` on its own blank-line-separated paragraph.
 Inline SVG rather than a file under `public/` for one reason: the builder rewrites
 black to **`currentColor`**, so a single drawing follows the dark theme, the light
-theme and the printed sheet. Two rules follow from that — sources must be plain
-line art (no fills, no transparency: the dvisvgm route supports neither reliably),
-and `--check` compares the **sha256 of each .tex** recorded in the generated file,
-so CI catches a source edited without a rebuild while only this machine needs a
-LaTeX install.
+theme and the printed sheet. Hence: every *stroke* is black in the source, and
+fills are **mid-tone**, because they sit under a white line on the dark theme and
+a near-black one on the light one. Transparency is out — the dvisvgm route does
+not carry it.
+
+A drawing with **words** in it is built once per language: the source defines
+`\lang{русский}{english}` over `\ifdefined\figlangru`, the builder compiles it
+twice (`\def\figlangru{1}\input{…}`) and emits two keys, `<name>.ru` and
+`<name>.en`. Load `fontenc` with **`[T1,T2A]`** — T2A last, so it is the default
+and carries Cyrillic *and* Latin. `--no-fonts` turns glyphs into paths, so no
+label text survives in the DOM; a test can only compare the two SVGs, not read
+them.
+
+`--check` compares the **sha256 of each .tex** recorded in the generated file, so
+CI catches a source edited without a rebuild while only this machine needs LaTeX.
 
 The e2e suite reads the draft board by **signing in as an editor**
 (`e2e-admin@example.test`, listed in the local `ADMIN_EMAILS`), so the board tests

@@ -1,10 +1,10 @@
 // The Math Abacus board — three age variants, their themes, costs and
-// (eventually) statements.
+// statements.
 //
 // Everything a game consists of lives here, hardcoded like the other brain
 // teasers, so the types catch a half-translated theme before it reaches a page.
-// The boards are deliberately empty for now: the cells, the costs and the
-// hand-in order are real, the statements are not written yet.
+// Cells with no statement yet are real cells: they take part in the hand-in
+// order and print as "not written yet".
 
 import { figure } from "@/content/figures.generated";
 
@@ -51,28 +51,29 @@ export interface AbacusGame {
   variants: AbacusVariant[];
 }
 
-// A filled-in cell looks like this — markdown, `$…$` inline and `$$…$$` display
-// math, and an optional link to a task on the site:
+// ── writing the problems ─────────────────────────────────────────────────────
 //
-//   {
-//     points: 10,
-//     href: "/problems/py_basics/bin_basic",
-//     statement: {
-//       ru: `В треугольнике $ABC$ угол $C$ прямой, $a = 3$ и $b = 4$.
-//
-//   Найдите радиус *вписанной* окружности: $$r = \\frac{a + b - c}{2}$$`,
-//       en: `In triangle $ABC$ …`,
-//     },
-//   }
-const EMPTY_3 = (): AbacusProblem[] => [{ points: 10 }, { points: 20 }, { points: 30 }];
+// A statement is markdown: `$…$` and `$$…$$` are KaTeX, and a drawing goes in as
+// `figure("abacus/<name>")` — see tools/build_figures.py. A problem shared by
+// two age groups is a function taking the paragraph the older group gets extra,
+// so the common text stays in one place.
+
+const empty = (points: number): AbacusProblem => ({ points });
+const EMPTY_3 = (): AbacusProblem[] => [empty(10), empty(20), empty(30)];
 
 /** Markdown paragraphs: blank line between, and an absent one drops out. */
 const para = (...parts: Array<string | undefined>) => parts.filter(Boolean).join("\n\n");
 
+const theme = (id: string, ru: string, en: string, problems: AbacusProblem[]): AbacusTheme => ({
+  id,
+  title: { ru, en },
+  problems,
+});
+
 /* Set for two age groups at once — same picture, same cost. The older ones are
  * additionally asked to justify the number, hence the extra paragraph. */
-const tilesInABox = (extra?: Loc): AbacusProblem => ({
-  points: 10,
+const tilesInABox = (points: number, extra?: Loc): AbacusProblem => ({
+  points,
   statement: {
     ru: para(
       "Какое максимальное число плиток $1\\times2\\times2$ можно положить в коробку $3\\times3\\times3$?",
@@ -92,17 +93,64 @@ const PROVE_IT: Loc = {
   en: "Give an example, and prove that no more will fit.",
 };
 
-/** The placeholder 3×3 every variant starts as. Themes may differ per level —
- *  each variant owns its own list. */
-const PLACEHOLDER_THEMES = (): AbacusTheme[] => [
-  { id: "geometry", title: { ru: "Геометрия", en: "Geometry" }, problems: EMPTY_3() },
-  {
-    id: "combinatorics",
-    title: { ru: "Комбинаторика", en: "Combinatorics" },
-    problems: EMPTY_3(),
+/* Also two age groups, and this drawing has words in it — hence one figure per
+ * language (see tools/build_figures.py). */
+const ropeInThePit = (points: number, extra?: Loc): AbacusProblem => ({
+  points,
+  statement: {
+    ru: para(
+      "Пусть имеется яма глубиной 1 км, верёвка длиной 900 м и нож. Верёвку можно закрепить вверху ямы и посередине (в точке на глубине 500 м). Как можно спуститься в яму, не пострадав?",
+      extra?.ru,
+      figure("abacus/rope-in-the-pit.ru"),
+    ),
+    en: para(
+      "There is a pit 1 km deep, a rope 900 m long and a knife. The rope can be fastened at the top of the pit and at its middle — a point 500 m down. How can you get to the bottom unharmed?",
+      extra?.en,
+      figure("abacus/rope-in-the-pit.en"),
+    ),
   },
-  { id: "algebra", title: { ru: "Алгебра", en: "Algebra" }, problems: EMPTY_3() },
-];
+});
+
+const SHORTEST_ROPE: Loc = {
+  ru: "При какой наименьшей длине верёвки это можно сделать?",
+  en: "And what is the shortest rope that would still do?",
+};
+
+/* The pursuit on a graph. The oldest group gets the same question on a cube. */
+const zooPaths = (points: number, extra?: Loc): AbacusProblem => ({
+  points,
+  statement: {
+    ru: para(
+      "Дорожки зоопарка представляют собой квадрат с проведёнными в нём средними линиями. По ним ходят два служащих зоопарка со скоростями $V_0$ и сбежавшая мартышка, скорость которой $3V_0$. Могут ли служащие гарантированно поймать мартышку?",
+      extra?.ru,
+    ),
+    en: para(
+      "The paths of a zoo form a square with both of its midlines drawn. Two keepers walk along them at speed $V_0$; an escaped monkey moves at $3V_0$. Can the keepers be sure to catch it?",
+      extra?.en,
+    ),
+  },
+});
+
+const ON_A_CUBE: Loc = {
+  ru: "Решите эту же задачу для куба $2\\times2\\times2$ (дорожки — это по-прежнему средние линии и стороны граней).",
+  en: "Then solve the same problem on a $2\\times2\\times2$ cube, where the paths are again the midlines and the edges of its faces.",
+};
+
+const SQUARE_OVER_CUBE: AbacusProblem = {
+  points: 10,
+  statement: {
+    // Two different naturals — with the same one it would be $a^2/a^3 = 1/a$,
+    // so the formula is what makes the sentence unambiguous.
+    ru: `Докажите, что любое натуральное число можно представить в виде отношения квадрата к кубу натурального числа:
+
+$$n = \\frac{a^2}{b^3}, \\qquad a,\\, b \\in \\mathbb{N}.$$`,
+    en: `Prove that every natural number can be written as the ratio of a square to a cube of natural numbers:
+
+$$n = \\frac{a^2}{b^3}, \\qquad a,\\, b \\in \\mathbb{N}.$$`,
+  },
+};
+
+// ── the boards ───────────────────────────────────────────────────────────────
 
 export const ABACUS: AbacusGame = {
   slug: "abacus",
@@ -117,38 +165,13 @@ export const ABACUS: AbacusGame = {
       label: "Hard",
       ages: { ru: "10–12 лет", en: "ages 10–12" },
       themes: [
-        {
-          id: "geometry",
-          title: { ru: "Геометрия", en: "Geometry" },
-          problems: [tilesInABox(), { points: 20 }, { points: 30 }],
-        },
-        {
-          id: "combinatorics",
-          title: { ru: "Комбинаторика", en: "Combinatorics" },
-          problems: EMPTY_3(),
-        },
-        {
-          id: "numbers",
-          title: { ru: "Числа", en: "Numbers" },
-          problems: [
-            {
-              points: 10,
-              statement: {
-                // Two different naturals — with the same one it would be
-                // $a^2/a^3 = 1/a$, so the formula is what makes the sentence
-                // unambiguous.
-                ru: `Докажите, что любое натуральное число можно представить в виде отношения квадрата к кубу натурального числа:
-
-$$n = \\frac{a^2}{b^3}, \\qquad a,\\, b \\in \\mathbb{N}.$$`,
-                en: `Prove that every natural number can be written as the ratio of a square to a cube of natural numbers:
-
-$$n = \\frac{a^2}{b^3}, \\qquad a,\\, b \\in \\mathbb{N}.$$`,
-              },
-            },
-            { points: 20 },
-            { points: 30 },
-          ],
-        },
+        theme("geometry", "Геометрия", "Geometry", [
+          tilesInABox(10),
+          empty(20),
+          ropeInThePit(30),
+        ]),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
+        theme("numbers", "Числа", "Numbers", [SQUARE_OVER_CUBE, empty(20), empty(30)]),
       ],
     },
     {
@@ -156,24 +179,28 @@ $$n = \\frac{a^2}{b^3}, \\qquad a,\\, b \\in \\mathbb{N}.$$`,
       label: "Extreme",
       ages: { ru: "13–15 лет", en: "ages 13–15" },
       themes: [
-        {
-          id: "geometry",
-          title: { ru: "Геометрия", en: "Geometry" },
-          problems: [tilesInABox(PROVE_IT), { points: 20 }, { points: 30 }],
-        },
-        {
-          id: "combinatorics",
-          title: { ru: "Комбинаторика", en: "Combinatorics" },
-          problems: EMPTY_3(),
-        },
-        { id: "algebra", title: { ru: "Алгебра", en: "Algebra" }, problems: EMPTY_3() },
+        theme("geometry", "Геометрия", "Geometry", [
+          tilesInABox(10, PROVE_IT),
+          zooPaths(20),
+          ropeInThePit(30, SHORTEST_ROPE),
+        ]),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
+        theme("algebra", "Алгебра", "Algebra", EMPTY_3()),
       ],
     },
     {
       level: "nightmare",
       label: "Nightmare",
       ages: { ru: "16 лет и старше", en: "ages 16+" },
-      themes: PLACEHOLDER_THEMES(),
+      themes: [
+        theme("geometry", "Геометрия", "Geometry", [
+          ropeInThePit(10, SHORTEST_ROPE),
+          zooPaths(20, ON_A_CUBE),
+          empty(30),
+        ]),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
+        theme("algebra", "Алгебра", "Algebra", EMPTY_3()),
+      ],
     },
   ],
 };

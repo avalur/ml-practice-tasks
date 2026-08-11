@@ -71,6 +71,38 @@ test("abacus: handing one in opens the next cell of that theme only, and survive
   }
 });
 
+test("abacus: a problem can differ by age group — the cube is Nightmare's alone", async ({
+  page,
+  context,
+}) => {
+  const editor = await asEditor(context);
+  try {
+    await page.goto("/brainteasers/abacus?lang=ru");
+    const detail = page.getByTestId("abacus-detail");
+
+    for (const [level, cube] of [
+      ["extreme", false],
+      ["nightmare", true],
+    ] as const) {
+      await page.getByTestId(`abacus-level-${level}`).click();
+      // The 20 sits behind the 10 in its theme.
+      await cell(page, "geometry", 0).click();
+      if (cube) {
+        // The same pit the middle group meets as a 30 is the oldest group's 10 —
+        // one problem, two costs.
+        await expect(detail).toContainText("яма глубиной 1 км");
+        await expect(detail).toContainText("наименьшей длине верёвки");
+      }
+      await page.getByTestId("abacus-hand-in").click();
+      await cell(page, "geometry", 1).click();
+      await expect(detail).toContainText("сбежавшая мартышка");
+      await expect(detail.getByText("для куба")).toHaveCount(cube ? 1 : 0);
+    }
+  } finally {
+    await editor.dispose();
+  }
+});
+
 test("abacus: each difficulty is its own board, with its own progress", async ({
   page,
   context,
@@ -152,6 +184,23 @@ test("abacus: an authored statement renders as markdown with KaTeX, in both lang
       )
       .toBe("rgb(230, 232, 236)"); // --text, dark theme
 
+    // A drawing with words in it is built once per language, so the two boards
+    // must not be handed the same SVG. dvisvgm turns glyphs into paths, so there
+    // is no text to read back — comparing the markup is the check available.
+    // The 30 is behind the rule, so hand in the cheaper two to reach it.
+    await page.getByTestId("abacus-hand-in").click();
+    await cell(page, "geometry", 1).click();
+    await page.getByTestId("abacus-hand-in").click();
+    await cell(page, "geometry", 2).click();
+    await expect(detail).toContainText("яма глубиной 1 км");
+    const ru = await detail.locator("svg.tikz-figure").innerHTML();
+    await page.getByRole("button", { name: "EN" }).click();
+    await expect(detail).toContainText("a pit 1 km deep");
+    const en = await detail.locator("svg.tikz-figure").innerHTML();
+    expect(ru.length).toBeGreaterThan(1000);
+    expect(ru).not.toBe(en);
+    await page.getByRole("button", { name: "RU" }).click();
+
     // And it reaches the printed sheet the same way.
     await page.goto("/brainteasers/abacus/print?lang=ru&level=hard");
     const printed = page.locator(".abacus-print-problem").filter({ hasText: "Докажите" });
@@ -204,13 +253,14 @@ test("abacus: the print sheet lists every problem, in the language asked for", a
 
     await expect(page.getByRole("heading", { name: "Математическая абака · Extreme" })).toBeVisible();
     await expect(page.getByText("13–15 лет")).toBeVisible();
-    await expect(page.locator(".abacus-print-problem")).toHaveCount(9);
+    const blocks = page.locator(".abacus-print-problem");
+    await expect(blocks).toHaveCount(9);
+    await expect(blocks.first()).toContainText("плиток");
     // Written and unwritten cells both make it onto the sheet, each saying what
     // it is — an unfinished game should print as unfinished, not as short.
-    await expect(page.locator(".abacus-print-problem").first()).toContainText("плиток");
-    await expect(
-      page.locator(".abacus-print-problem").filter({ hasText: "Условие ещё не добавлено" }),
-    ).toHaveCount(8);
+    const texts = await blocks.allInnerTexts();
+    expect(texts.filter((t) => t.trim().length > 10)).toHaveLength(9);
+    expect(texts.some((t) => t.includes("Условие ещё не добавлено"))).toBe(true);
     // On paper: no site chrome, no buttons, and black on white however the
     // reader has the site themed.
     await page.emulateMedia({ media: "print" });

@@ -64,13 +64,32 @@ def sha(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def compile_svg(tex: Path) -> str:
+def variants(tex: Path) -> list[str | None]:
+    """A drawing with words in it is built once per language.
+
+    The source asks for it by using `\\figlangru`, normally through a
+    `\\lang{русский}{english}` helper; it then comes out as two figures, keyed
+    `<name>.ru` and `<name>.en`. A wordless drawing stays a single figure — most
+    are, and two copies of the same paths would be a waste."""
+    return ["ru", "en"] if "figlangru" in tex.read_text(encoding="utf8") else [None]
+
+
+def compile_svg(tex: Path, lang: str | None = None) -> str:
     """latex → dvi → svg, then make the result themeable."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
         shutil.copy(tex, work / tex.name)
+        # pdftex reads a leading backslash argument as commands, which is how the
+        # language reaches the source without a second file to keep in sync.
+        job = f"\\def\\figlang{lang}{{1}}\\input{{{tex.name}}}" if lang else tex.name
         run = subprocess.run(
-            ["latex", "-interaction=nonstopmode", "-halt-on-error", tex.name],
+            [
+                "latex",
+                "-interaction=nonstopmode",
+                "-halt-on-error",
+                f"-jobname={tex.stem}",
+                job,
+            ],
             cwd=work,
             capture_output=True,
             text=True,
@@ -127,7 +146,8 @@ def committed() -> dict[str, str]:
 
 
 def check() -> int:
-    recorded = committed()
+    # One source can stand behind two keys (…ru / …en), so compare per source.
+    recorded = {re.sub(r"\.(ru|en)$", "", k): v for k, v in committed().items()}
     expected = {name_of(t): sha(t) for t in sources()}
     problems = []
     for name, digest in expected.items():
@@ -149,8 +169,10 @@ def build() -> int:
     figures = {}
     for tex in sources():
         name = name_of(tex)
-        print(f"  {name}")
-        figures[name] = {"source": sha(tex), "svg": compile_svg(tex)}
+        for lang in variants(tex):
+            key = f"{name}.{lang}" if lang else name
+            print(f"  {key}")
+            figures[key] = {"source": sha(tex), "svg": compile_svg(tex, lang)}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(render(figures), encoding="utf8")
     print(f"Wrote {OUT.relative_to(ROOT)} ({len(figures)} drawings).")

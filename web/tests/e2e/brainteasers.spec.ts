@@ -36,6 +36,12 @@ test("abacus: the cheap problem of each theme is open, the dearer ones are locke
       await expect(cell(page, theme, 1)).toBeDisabled();
     }
     await expect(page.getByTestId("abacus-progress")).toHaveText("Handed in 0 of 9");
+
+    // An open cell shows its statement; this board's 10s are all written.
+    await cell(page, "combinatorics", 0).click();
+    await expect(page.getByTestId("abacus-detail")).toContainText(
+      "two people with the same number of friends",
+    );
   } finally {
     await editor.dispose();
   }
@@ -97,6 +103,12 @@ test("abacus: a problem can differ by age group — the cube is Nightmare's alon
       await cell(page, "geometry", 1).click();
       await expect(detail).toContainText("сбежавшая мартышка");
       await expect(detail.getByText("для куба")).toHaveCount(cube ? 1 : 0);
+
+      // The ants and the two powers are the same on both of these boards.
+      await cell(page, "combinatorics", 0).click();
+      await expect(detail).toContainText("100 одинаковых муравьёв");
+      await cell(page, "algebra", 0).click();
+      await expect(detail).toContainText("Что больше");
     }
   } finally {
     await editor.dispose();
@@ -203,7 +215,9 @@ test("abacus: an authored statement renders as markdown with KaTeX, in both lang
 
     // And it reaches the printed sheet the same way.
     await page.goto("/brainteasers/abacus/print?lang=ru&level=hard");
-    const printed = page.locator(".abacus-print-problem").filter({ hasText: "Докажите" });
+    const printed = page
+      .locator(".abacus-print-problem")
+      .filter({ hasText: "любое натуральное число" });
     await expect(printed).toHaveCount(1);
     await expect(printed.locator(".katex")).not.toHaveCount(0);
   } finally {

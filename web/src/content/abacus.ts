@@ -59,7 +59,6 @@ export interface AbacusGame {
 // so the common text stays in one place.
 
 const empty = (points: number): AbacusProblem => ({ points });
-const EMPTY_3 = (): AbacusProblem[] => [empty(10), empty(20), empty(30)];
 
 /** Markdown paragraphs: blank line between, and an absent one drops out. */
 const para = (...parts: Array<string | undefined>) => parts.filter(Boolean).join("\n\n");
@@ -136,6 +135,45 @@ const ON_A_CUBE: Loc = {
   en: "Then solve the same problem on a $2\\times2\\times2$ cube, where the paths are again the midlines and the edges of its faces.",
 };
 
+/* The same for both age groups that get it — no extra paragraph. */
+const antsOnAStick = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Дана палка длиной 1 м и 100 одинаковых муравьёв, бегающих со скоростями 10 см/с. Петя рассаживает одновременно всех муравьёв на палку (то есть задаёт положение и направление движения — вперёд или назад), и они начинают двигаться. Если муравьи сталкиваются друг с другом, то они меняют скорости на противоположные, а если добегают до конца палки, то просто падают вниз. Какое максимальное время хотя бы один муравей может оставаться на палке?",
+    en: "A stick 1 m long carries 100 identical ants, each moving at 10 cm/s. Petya seats them all on the stick at once — that is, he sets every ant's position and its direction, forward or backward — and they start moving. When two ants meet, both reverse their velocities; when an ant reaches an end of the stick, it simply falls off. What is the longest time at least one ant can stay on the stick?",
+  },
+});
+
+const sameNumberOfFriends = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Докажите, что в вашем классе найдутся два человека, имеющие одинаковое число друзей в вашем классе.",
+    en: "Prove that in your class there are two people with the same number of friends in that class.",
+  },
+});
+
+const nutsAndFloors = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: para(
+      "У обезьяны есть 2 ореха и 15-этажный дом. Обезьяна может бросать орех с любого этажа и смотреть, разбивается орех (и тогда он потерян) или нет. Может ли она за 5 попыток определить минимальный этаж, при падении с которого орех разбивается?",
+      figure("abacus/nuts-and-floors"),
+    ),
+    en: para(
+      "A monkey has 2 nuts and a 15-storey building. It may drop a nut from any floor and see whether the nut breaks — in which case that nut is gone — or not. Can it find the lowest floor a nut breaks from in 5 drops?",
+      figure("abacus/nuts-and-floors"),
+    ),
+  },
+});
+
+const whichIsLarger = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Что больше: $127^7$ или $33^{10}$?",
+    en: "Which is larger, $127^7$ or $33^{10}$?",
+  },
+});
+
 const SQUARE_OVER_CUBE: AbacusProblem = {
   points: 10,
   statement: {
@@ -170,7 +208,11 @@ export const ABACUS: AbacusGame = {
           empty(20),
           ropeInThePit(30),
         ]),
-        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", [
+          sameNumberOfFriends(10),
+          nutsAndFloors(20),
+          empty(30),
+        ]),
         theme("numbers", "Числа", "Numbers", [SQUARE_OVER_CUBE, empty(20), empty(30)]),
       ],
     },
@@ -184,8 +226,16 @@ export const ABACUS: AbacusGame = {
           zooPaths(20),
           ropeInThePit(30, SHORTEST_ROPE),
         ]),
-        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
-        theme("algebra", "Алгебра", "Algebra", EMPTY_3()),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", [
+          antsOnAStick(10),
+          nutsAndFloors(20),
+          empty(30),
+        ]),
+        theme("algebra", "Алгебра", "Algebra", [
+          whichIsLarger(10),
+          empty(20),
+          empty(30),
+        ]),
       ],
     },
     {
@@ -198,8 +248,16 @@ export const ABACUS: AbacusGame = {
           zooPaths(20, ON_A_CUBE),
           empty(30),
         ]),
-        theme("combinatorics", "Комбинаторика", "Combinatorics", EMPTY_3()),
-        theme("algebra", "Алгебра", "Algebra", EMPTY_3()),
+        theme("combinatorics", "Комбинаторика", "Combinatorics", [
+          antsOnAStick(10),
+          empty(20),
+          empty(30),
+        ]),
+        theme("algebra", "Алгебра", "Algebra", [
+          whichIsLarger(10),
+          empty(20),
+          empty(30),
+        ]),
       ],
     },
   ],

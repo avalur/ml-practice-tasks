@@ -458,7 +458,16 @@ pytest tasks/<topic>/<slug>   # run a student stub
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
 cd web && pnpm db:sync-classes --unpublish <slug> # take it back off
+cd web && pnpm db:users        # who has registered (read-only; --limit N)
 ```
+
+`db:users` answers "who is on the site" without opening Prisma Studio. Two things
+it deliberately does not do: print `passwordHash`, session tokens or reset tokens,
+and report `User.emailVerified` as "verified". That column is written in exactly
+one place — the reset-password route — so it is null for every OAuth account, and
+showing it raw reads as "nobody has confirmed their address" when Google
+confirmed most of them. The `address` column answers the real question instead:
+`oauth` (the provider vouched), `reset` (they followed a mailed link), `unproven`.
 
 CI (`.github/workflows/ci.yml`) runs the `--check` + `pytest problems` pair on
 push/PR. So: **always regenerate and run `pytest problems` before committing.**

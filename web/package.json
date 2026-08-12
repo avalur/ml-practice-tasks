@@ -11,7 +11,8 @@
     "postinstall": "prisma generate",
     "db:push": "dotenv -e .env.local -- prisma db push",
     "db:sync-problems": "dotenv -e .env.local -- node scripts/sync-problems.cjs",
-    "db:sync-classes": "dotenv -e .env.local -- node scripts/sync-classes.cjs"
+    "db:sync-classes": "dotenv -e .env.local -- node scripts/sync-classes.cjs",
+    "db:users": "dotenv -e .env.local -- node scripts/list-users.cjs"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.2",

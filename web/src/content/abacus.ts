@@ -115,6 +115,20 @@ const SHORTEST_ROPE: Loc = {
   en: "And what is the shortest rope that would still do?",
 };
 
+const anyasHouses = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: para(
+      "Аня рисует несколько фигурок в виде домика, каждую следующую прикладывая к предыдущей (на рисунке показано 3 домика). Всего она нарисовала 10 домиков. Сколько треугольников можно увидеть на рисунке Ани?",
+      figure("abacus/houses-in-a-row"),
+    ),
+    en: para(
+      "Anya draws a row of little houses, each new one placed against the one before it (the picture shows 3 of them). Altogether she drew 10 houses. How many triangles can be seen in Anya's drawing?",
+      figure("abacus/houses-in-a-row"),
+    ),
+  },
+});
+
 /* The pursuit on a graph. The oldest group gets the same question on a cube. */
 const zooPaths = (points: number, extra?: Loc): AbacusProblem => ({
   points,
@@ -229,7 +243,7 @@ export const ABACUS: AbacusGame = {
       themes: [
         theme("geometry", "Геометрия", "Geometry", [
           tilesInABox(10),
-          empty(20),
+          anyasHouses(20),
           ropeInThePit(30),
         ]),
         theme("combinatorics", "Комбинаторика", "Combinatorics", [

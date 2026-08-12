@@ -32,7 +32,11 @@ hours of work). They are **not** wired into `class.json`, and cannot be as they
 stand:
 
 - `Intro_AI_Agents_part1.ipynb` — how to use LLMs: local inference with
-  `llama-cpp-python` on a GGUF model, Hugging Face, then a hosted API.
+  `llama-cpp-python` on a GGUF model, Hugging Face, then a hosted API. On a GPU
+  runtime it compiles llama.cpp with CUDA rather than taking the prebuilt CPU
+  wheel, which costs a few minutes of the lesson and is why the cell verifies
+  `llama_supports_gpu_offload()` before moving on: a CPU-only build does not
+  fail on `n_gpu_layers=-1`, it just quietly runs on the CPU.
 - `Intro_AI_Agents_part2.ipynb` — the first agent, built on τ²-bench's airline
   task with LangChain/LangGraph.
 

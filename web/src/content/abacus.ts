@@ -196,6 +196,36 @@ const surgeonsAndGloves = (points: number): AbacusProblem => ({
   },
 });
 
+const digitGrid = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: para(
+      "Поставьте в каждую клетку число от 0 до 9 так, чтобы в каждой строке все числа были различными. В столбцах соседние числа не должны быть одинаковыми, а сумма чисел в каждом столбце указана снизу.",
+      figure("abacus/digit-grid"),
+    ),
+    en: para(
+      "Put a digit from 0 to 9 in every cell so that within each row all the numbers are different. Down a column, neighbouring numbers must not be equal, and the sum of each column is given underneath.",
+      figure("abacus/digit-grid"),
+    ),
+  },
+});
+
+const doublesOnTheBoard = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "На доске выписаны все натуральные числа от 1 до 20. Какое наименьшее количество чисел нужно стереть, чтобы не осталось чисел, отличающихся в два раза?",
+    en: "All the natural numbers from 1 to 20 are written on a board. What is the smallest count of them one has to erase so that no number left is twice another?",
+  },
+});
+
+const upsideDownNumbers = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Заметим, что если перевернуть вверх ногами лист, на котором написаны цифры, то цифры 0 и 8 не изменяются, 6 превращается в 9, а 9 — в 6, остальные цифры потеряют смысл. Сколько существует пятизначных чисел, которые при переворачивании листа не изменяются?",
+    en: "Note that when a sheet with digits written on it is turned upside down, 0 and 8 stay as they are, 6 becomes 9 and 9 becomes 6, while every other digit loses its meaning. How many five-digit numbers are left unchanged by turning the sheet?",
+  },
+});
+
 const whichIsLarger = (points: number): AbacusProblem => ({
   points,
   statement: {
@@ -249,9 +279,13 @@ export const ABACUS: AbacusGame = {
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           sameNumberOfFriends(10),
           nutsAndFloors(20),
-          empty(30),
+          upsideDownNumbers(30),
         ]),
-        theme("numbers", "Числа", "Numbers", [SQUARE_OVER_CUBE, empty(20), empty(30)]),
+        theme("numbers", "Числа", "Numbers", [
+          SQUARE_OVER_CUBE,
+          doublesOnTheBoard(20),
+          digitGrid(30),
+        ]),
       ],
     },
     {
@@ -267,12 +301,12 @@ export const ABACUS: AbacusGame = {
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           antsOnAStick(10),
           nutsAndFloors(20),
-          dwarvesAndHats(30),
+          twelveCoins(30),
         ]),
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
           empty(20),
-          twelveCoins(30),
+          dwarvesAndHats(30),
         ]),
       ],
     },
@@ -288,13 +322,13 @@ export const ABACUS: AbacusGame = {
         ]),
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           antsOnAStick(10),
-          dwarvesAndHats(20),
-          surgeonsAndGloves(30),
+          surgeonsAndGloves(20),
+          twelveCoins(30),
         ]),
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
-          empty(20),
-          twelveCoins(30),
+          dwarvesAndHats(20),
+          empty(30),
         ]),
       ],
     },

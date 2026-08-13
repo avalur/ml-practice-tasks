@@ -1152,6 +1152,14 @@ pre.code {
   .muted {
     color: #444 !important;
   }
+  /* One theme per sheet of paper — that is how the problems are handed out.
+     The first one stays with the title instead of leaving a blank first page. */
+  .abacus-print-theme {
+    break-before: page;
+  }
+  .abacus-print-theme:first-of-type {
+    break-before: auto;
+  }
   /* .statement is a dark panel on screen; on paper it must be plain text, or
      the whole statement prints as a black box. */
   .abacus-print .statement {

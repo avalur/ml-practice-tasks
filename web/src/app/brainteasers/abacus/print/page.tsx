@@ -73,7 +73,7 @@ export default async function AbacusPrintPage({
       <p className="muted no-print">{t.hint}</p>
 
       {variant.themes.map((theme) => (
-        <section key={theme.id}>
+        <section key={theme.id} className="abacus-print-theme">
           <h2>{langs.map((l) => pick(theme.title, l)).join(" / ")}</h2>
           {theme.problems.map((p, i) => (
             <div key={i} className="abacus-print-problem">

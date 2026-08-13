@@ -129,6 +129,14 @@ const anyasHouses = (points: number): AbacusProblem => ({
   },
 });
 
+const pentagonSide = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "В пятиугольнике $ABCDE$ угол $A$ равен $60^\\circ$, а остальные углы равны между собой; $ED = 2$, $DC = 3$. Найдите $AB$.",
+    en: "In the pentagon $ABCDE$ the angle at $A$ is $60^\\circ$ and the other four angles are equal to one another; $ED = 2$ and $DC = 3$. Find $AB$.",
+  },
+});
+
 /* The pursuit on a graph. The oldest group gets the same question on a cube. */
 const zooPaths = (points: number, extra?: Loc): AbacusProblem => ({
   points,
@@ -242,6 +250,22 @@ const twelveCoins = (points: number): AbacusProblem => ({
   },
 });
 
+const whoWrote2022 = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "2022 человека выписывали последовательности. Каждый начал с 0: первый писал каждое следующее число на 1 больше предыдущего, второй — на 2 больше предыдущего, и так далее, а 2022-й — каждое следующее число на 2022 больше предыдущего. Сколько из этих людей написали число 2022?",
+    en: "2022 people were writing out sequences. Each of them started at 0: the first wrote every next number 1 greater than the one before, the second 2 greater, and so on, up to the 2022nd, who wrote every next number 2022 greater. How many of these people wrote the number 2022?",
+  },
+});
+
+const divisibleByThousand = (points: number): AbacusProblem => ({
+  points,
+  statement: {
+    ru: "Какое наименьшее натуральное число $n$ удовлетворяет условию: $n^3 + 3n^2 + 2n$ делится на 1000?",
+    en: "What is the smallest natural number $n$ for which $n^3 + 3n^2 + 2n$ is divisible by 1000?",
+  },
+});
+
 const SQUARE_OVER_CUBE: AbacusProblem = {
   points: 10,
   statement: {
@@ -305,7 +329,7 @@ export const ABACUS: AbacusGame = {
         ]),
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
-          empty(20),
+          whoWrote2022(20),
           dwarvesAndHats(30),
         ]),
       ],
@@ -318,7 +342,7 @@ export const ABACUS: AbacusGame = {
         theme("geometry", "Геометрия", "Geometry", [
           ropeInThePit(10, SHORTEST_ROPE),
           zooPaths(20, ON_A_CUBE),
-          empty(30),
+          pentagonSide(30),
         ]),
         theme("combinatorics", "Комбинаторика", "Combinatorics", [
           antsOnAStick(10),
@@ -328,7 +352,7 @@ export const ABACUS: AbacusGame = {
         theme("algebra", "Алгебра", "Algebra", [
           whichIsLarger(10),
           dwarvesAndHats(20),
-          empty(30),
+          divisibleByThousand(30),
         ]),
       ],
     },

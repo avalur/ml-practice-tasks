@@ -269,12 +269,35 @@ test("abacus: the print sheet lists every problem, in the language asked for", a
     await expect(page.getByText("13–15 лет")).toBeVisible();
     const blocks = page.locator(".abacus-print-problem");
     await expect(blocks).toHaveCount(9);
+
+    // Several figures land on one page here, and dvisvgm numbers its glyph
+    // definitions per file: two of them defining `#g0-48` means the first wins
+    // for everybody and a digit is quietly drawn in the wrong font. The builder
+    // namespaces every id; this is the check that it kept doing so.
+    const idTrouble = await page.evaluate(() => {
+      const seen = new Set<string>();
+      const duplicated: string[] = [];
+      for (const el of document.querySelectorAll("[id]")) {
+        if (seen.has(el.id)) duplicated.push(el.id);
+        seen.add(el.id);
+      }
+      const dangling: string[] = [];
+      for (const el of document.querySelectorAll("[href^='#'], [*|href^='#']")) {
+        const ref = (el.getAttribute("href") ?? "").slice(1);
+        if (ref && !document.getElementById(ref)) dangling.push(ref);
+      }
+      return { duplicated, dangling, uses: document.querySelectorAll("use").length };
+    });
+    expect(idTrouble.uses).toBeGreaterThan(0); // there are glyph refs to get wrong
+    expect(idTrouble.duplicated).toEqual([]);
+    expect(idTrouble.dangling).toEqual([]);
     await expect(blocks.first()).toContainText("плиток");
-    // Written and unwritten cells both make it onto the sheet, each saying what
-    // it is — an unfinished game should print as unfinished, not as short.
+    // Every cell says something — its statement, or that it has none yet. An
+    // unfinished game prints as unfinished rather than as short. (Which of the
+    // two a cell shows is not asserted: a board fills up over time, and Extreme
+    // has no blanks left.)
     const texts = await blocks.allInnerTexts();
     expect(texts.filter((t) => t.trim().length > 10)).toHaveLength(9);
-    expect(texts.some((t) => t.includes("Условие ещё не добавлено"))).toBe(true);
     // On paper: no site chrome, no buttons, and black on white however the
     // reader has the site themed.
     await page.emulateMedia({ media: "print" });
@@ -308,6 +331,15 @@ test("abacus: the print sheet lists every problem, in the language asked for", a
       return out;
     });
     expect(statement).toEqual({ bg: "rgba(0, 0, 0, 0)", color: "rgb(0, 0, 0)" });
+
+    // Each theme is handed out as its own sheet, except the first, which shares
+    // the page with the title rather than leaving it blank.
+    const breaks = await page.evaluate(() =>
+      [...document.querySelectorAll(".abacus-print-theme")].map(
+        (el) => getComputedStyle(el).breakBefore,
+      ),
+    );
+    expect(breaks).toEqual(["auto", "page", "page"]);
 
     // The TikZ drawing follows: currentColor means it prints black even though
     // this reader is in dark mode.

@@ -74,7 +74,7 @@ def variants(tex: Path) -> list[str | None]:
     return ["ru", "en"] if "figlangru" in tex.read_text(encoding="utf8") else [None]
 
 
-def compile_svg(tex: Path, lang: str | None = None) -> str:
+def compile_svg(tex: Path, key: str, lang: str | None = None) -> str:
     """latex → dvi → svg, then make the result themeable."""
     with tempfile.TemporaryDirectory() as tmp:
         work = Path(tmp)
@@ -106,14 +106,24 @@ def compile_svg(tex: Path, lang: str | None = None) -> str:
         )
         if run.returncode != 0:
             raise SystemExit(f"dvisvgm failed on {tex}:\n{run.stderr[-2000:]}")
-        return clean(svg.read_text(encoding="utf8"))
+        return clean(svg.read_text(encoding="utf8"), key)
 
 
-def clean(svg: str) -> str:
+def clean(svg: str, key: str) -> str:
     # Drop the XML prologue and the generator comment: this goes inside a page,
     # not into a file of its own.
     svg = re.sub(r"<\?xml[^>]*\?>\s*", "", svg)
     svg = re.sub(r"<!--.*?-->\s*", "", svg, flags=re.S)
+
+    # Namespace every id to this figure. dvisvgm defines each glyph once as
+    # `id='g0-48'` and repeats it with `<use href='#g0-48'>`, numbering fonts
+    # from zero per file — so two figures on one page (the printed sheet has
+    # four) both define `#g0-48`, the first definition wins for everybody, and
+    # digits silently come out in the wrong font. That is exactly how the bold
+    # 0 and 1 of the sums row ended up as the little ones from the house.
+    slug = re.sub(r"[^a-z0-9]+", "-", key.lower()).strip("-")
+    svg = re.sub(r"\bid=(['\"])([^'\"]+)\1", rf"id=\1{slug}-\2\1", svg)
+    svg = re.sub(r"\b((?:xlink:)?href)=(['\"])#([^'\"]+)\2", rf"\1=\2#{slug}-\3\2", svg)
 
     # Black is the only colour the sources use, and it becomes the reader's text
     # colour — the whole reason these are inlined rather than served as files.
@@ -172,7 +182,7 @@ def build() -> int:
         for lang in variants(tex):
             key = f"{name}.{lang}" if lang else name
             print(f"  {key}")
-            figures[key] = {"source": sha(tex), "svg": compile_svg(tex, lang)}
+            figures[key] = {"source": sha(tex), "svg": compile_svg(tex, key, lang)}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(render(figures), encoding="utf8")
     print(f"Wrote {OUT.relative_to(ROOT)} ({len(figures)} drawings).")

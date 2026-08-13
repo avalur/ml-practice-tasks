@@ -130,8 +130,7 @@ export async function draftClass(opts: {
   const manifestPath = path.join(
     __dirname, "..", "..", "..", "public", "classes", "manifest.json",
   );
-  const original = await fs.promises.readFile(manifestPath, "utf8");
-  const parsed = JSON.parse(original);
+  const parsed = JSON.parse(await fs.promises.readFile(manifestPath, "utf8"));
   parsed.classes.push({
     slug: opts.slug,
     title: opts.title,
@@ -167,9 +166,18 @@ export async function draftClass(opts: {
       return !!row?.publishedAt;
     },
     async dispose() {
-      // The manifest first: it is a generated file, and leaving it edited would
-      // make `export_decks.py --check` fail for everyone.
-      await fs.promises.writeFile(manifestPath, original);
+      /* The manifest first: it is a generated file, and leaving it edited would
+       * make `export_decks.py --check` fail for everyone.
+       *
+       * Take out *this* entry rather than restoring the snapshot taken on the way
+       * in: Playwright runs the spec files in parallel, and writing back an older
+       * copy of the file would delete a class another worker is in the middle of
+       * testing. */
+      const current = JSON.parse(await fs.promises.readFile(manifestPath, "utf8"));
+      current.classes = current.classes.filter(
+        (c: { slug: string }) => c.slug !== opts.slug,
+      );
+      await fs.promises.writeFile(manifestPath, JSON.stringify(current, null, 2) + "\n");
       await prisma.class.deleteMany({ where: { slug: opts.slug } });
       await prisma.$disconnect();
     },
@@ -215,6 +223,62 @@ export async function teaserState(slug: string) {
   };
 }
 
+/** A throwaway live abacus event, made straight in the database.
+ *
+ * Its code is prefixed `E2E-` and dispose() refuses to delete anything else, so
+ * this can never take down a real game — the suite runs against the live
+ * database, where a real event may be in progress while the tests run. */
+export async function abacusSession(opts: { title?: string } = {}) {
+  const { PrismaClient } = await import("@prisma/client");
+  const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+
+  const code = `E2E-${process.pid}`.toUpperCase().slice(0, 16);
+  const codeKey = normalize(code);
+  // A killed run may have left one behind; the code is ours to reuse.
+  await prisma.abacusSession.deleteMany({ where: { codeKey } });
+  await prisma.abacusSession.create({
+    data: {
+      code,
+      codeKey,
+      title: opts.title ?? "E2E scratch game",
+      createdBy: "e2e@example.test",
+    },
+  });
+
+  return {
+    code,
+    /** The board as the API would report it — teams, verdicts, scores. */
+    async board() {
+      const row = await prisma.abacusSession.findUniqueOrThrow({
+        where: { codeKey },
+        select: {
+          closedAt: true,
+          teams: {
+            select: {
+              id: true,
+              name: true,
+              level: true,
+              verdicts: { select: { themeId: true, index: true, correct: true, points: true } },
+            },
+          },
+        },
+      });
+      return row;
+    },
+    async setClosed(closed: boolean) {
+      await prisma.abacusSession.update({
+        where: { codeKey },
+        data: { closedAt: closed ? new Date() : null },
+      });
+    },
+    async dispose() {
+      if (!code.startsWith("E2E-")) throw new Error(`refusing to delete ${code}`);
+      await prisma.abacusSession.deleteMany({ where: { codeKey } }); // teams and verdicts cascade
+      await prisma.$disconnect();
+    },
+  };
+}
+
 export async function signInAs(
   context: BrowserContext,
   opts: { email: string; name: string; classSlug?: string; teacher?: boolean },
@@ -238,10 +302,16 @@ export async function signInAs(
   const codeFor = (label: string) =>
     `E2E-${label}-${process.pid}`.toUpperCase().replace(/[^A-Z0-9-]/g, "").slice(0, 24);
 
+  /* Playwright runs the spec files in parallel, and two of them sign in as the
+   * same synthetic editor. So: upsert rather than create (a duplicate email is a
+   * unique violation), and remember whether this call is the one that made the
+   * row. */
   const existing = await prisma.user.findUnique({ where: { email: opts.email } });
-  const user =
-    existing ??
-    (await prisma.user.create({ data: { email: opts.email, name: opts.name } }));
+  const user = await prisma.user.upsert({
+    where: { email: opts.email },
+    create: { email: opts.email, name: opts.name },
+    update: {},
+  });
   const created = !existing;
 
   if (opts.classSlug) {
@@ -400,8 +470,17 @@ export async function signInAs(
       if (inviteIds.length) {
         await prisma.classInvite.deleteMany({ where: { id: { in: inviteIds } } });
       }
-      await prisma.session.deleteMany({ where: { userId: user.id } });
-      if (created) await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
+      /* This session, not every session of this user: another worker may be
+       * signed in as the same synthetic editor right now, and pulling its
+       * session out from under it turns its next request into a 403. Each call
+       * has its own token (the pid is in it), so this is exact. */
+      await prisma.session.deleteMany({ where: { sessionToken } });
+      if (created) {
+        const stillSignedIn = await prisma.session.count({ where: { userId: user.id } });
+        if (stillSignedIn === 0) {
+          await prisma.user.delete({ where: { id: user.id } }).catch(() => {});
+        }
+      }
       await prisma.$disconnect();
     },
   };

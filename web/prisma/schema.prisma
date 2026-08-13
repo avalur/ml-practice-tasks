@@ -291,3 +291,59 @@ model UserProblemProgress {
 
   @@unique([userId, problemId])
 }
+
+// ── Live abacus sessions ─────────────────────────────────────────────────────
+//
+// One event: the teacher dictates a code, teams type it with a name and a
+// difficulty, and the teacher rules on their answers. Teams have no accounts —
+// the code is the invitation and a cookie is the identity — so nothing here
+// points at a User.
+
+model AbacusSession {
+  id        String    @id @default(cuid())
+  code      String // as dictated, e.g. "ABAKA-7"
+  // Same code without case or separators: it is read out to a room and typed
+  // back from memory, exactly like a class invite code.
+  codeKey   String    @unique
+  title     String?
+  createdBy String // the editor's email, so the session list says whose it is
+  createdAt DateTime  @default(now())
+  // Set by "Close session": joins and marking stop, the monitor freezes.
+  closedAt  DateTime?
+
+  teams AbacusTeam[]
+}
+
+model AbacusTeam {
+  id        String   @id @default(cuid())
+  sessionId String
+  name      String
+  level     String // hard | extreme | nightmare — each team picks its own board
+  // The whole identity of a team: an httpOnly cookie holding this token. One
+  // browser, one team; losing it means joining again under another name.
+  token     String   @unique
+  joinedAt  DateTime @default(now())
+
+  session  AbacusSession   @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  verdicts AbacusVerdict[]
+
+  @@unique([sessionId, name])
+  @@index([sessionId])
+}
+
+model AbacusVerdict {
+  id      String   @id @default(cuid())
+  teamId  String
+  themeId String // "geometry"
+  index   Int // 0..2 within the theme
+  correct Boolean
+  // What the cell was worth when it was ruled. A snapshot: re-pricing a board
+  // later must not silently rewrite a finished event's standings.
+  points  Int
+  at      DateTime @default(now())
+
+  team AbacusTeam @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, themeId, index])
+  @@index([teamId])
+}

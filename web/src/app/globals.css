@@ -1091,6 +1091,194 @@ pre.code {
   margin: 0.9rem 0;
 }
 
+/* ── Live abacus sessions (abx-*) ────────────────────────────────────────── */
+
+/* Joining */
+.abx-join { display: flex; flex-direction: column; gap: 0.3rem; max-width: 26rem; margin-top: 1.5rem; }
+.abx-join label,
+.abx-join-label { font-size: 0.85rem; color: var(--muted); margin-top: 0.7rem; }
+.abx-join input {
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 1.05rem;
+}
+.abx-levels { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 0.2rem; }
+.abx-join-go { margin-top: 1.2rem; }
+
+/* The code, for dictating across a room */
+.abx-code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--accent);
+}
+.abx-code-small {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+.abx-dictate { margin: 0.75rem 0 0.25rem; }
+
+/* Editor strip on the board page */
+.abx-strip {
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  margin-bottom: 1.25rem;
+  max-width: 760px;
+}
+.abx-strip-form { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.abx-strip-form input {
+  flex: 1 1 12rem;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--panel);
+  color: var(--text);
+  font-size: 0.9rem;
+}
+.abx-strip-list { list-style: none; padding: 0; margin: 0.6rem 0 0; font-size: 0.9rem; }
+.abx-strip-list li { display: flex; align-items: center; gap: 0.6rem; padding: 0.2rem 0; }
+
+/* The projector */
+.abx-monitor-page { max-width: none; }
+.abx-monitor-head {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+.abx-monitor-head .abacus-lang { margin-left: auto; }
+.abx-stale { font-size: 0.85rem; }
+.abx-waiting { padding: 2rem 0; }
+/* Four teams side by side is the design target; a fifth wraps rather than
+   shrinking the type, because this is read from the back of a room. */
+.abx-teams {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.abx-team {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
+  background: var(--panel);
+}
+.abx-team-head { display: flex; align-items: center; gap: 0.5rem; }
+.abx-rank { color: var(--muted); font-variant-numeric: tabular-nums; }
+.abx-team-name {
+  font-weight: 700;
+  font-size: 1.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.abx-team-level { margin-left: auto; }
+.abx-score {
+  font-size: 2.6rem;
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.abx-score-unit { font-size: 0.8rem; font-weight: 400; color: var(--muted); margin-left: 0.35rem; }
+.abx-score-inline { font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+.abx-grid { width: 100%; border-collapse: collapse; margin-top: 0.5rem; }
+.abx-grid th {
+  text-align: left;
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--muted);
+  padding-right: 0.5rem;
+}
+.abx-cell {
+  width: 2.6rem;
+  text-align: center;
+  padding: 0.25rem 0;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.abx-cell[data-state="ok"] {
+  color: var(--easy);
+  font-weight: 700;
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 12%, var(--panel));
+}
+.abx-cell[data-state="bad"] { color: var(--hard); border-color: var(--hard); }
+.abx-monitor.is-compact .abx-score { font-size: 1.8rem; }
+.abx-monitor.is-compact .abx-team-name { font-size: 1.05rem; }
+/* The dedicated page is read from the back of a room, so everything on it is a
+   size up from the copy embedded under a team's own board. */
+.abx-monitor:not(.is-compact) .abx-team-name { font-size: 1.5rem; }
+.abx-monitor:not(.is-compact) .abx-score { font-size: 3.4rem; }
+.abx-monitor:not(.is-compact) .abx-cell { font-size: 1.1rem; padding: 0.35rem 0; }
+.abx-monitor:not(.is-compact) .abx-grid th { font-size: 0.95rem; }
+.abx-monitor:not(.is-compact) .abx-teams { grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr)); }
+
+/* A team's own screen */
+.abx-team-bar { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; margin: 0.75rem 0; }
+.abx-views { margin: 0; }
+.abacus-cell[data-state="wrong"] {
+  border-color: var(--hard);
+  background: color-mix(in srgb, var(--hard) 10%, var(--panel));
+}
+.abacus-cell[data-state="wrong"] .abacus-mark { color: var(--hard); }
+
+/* The jury's grid */
+.abx-mark { display: flex; flex-direction: column; gap: 1rem; margin-top: 1rem; }
+.abx-mark-team {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  background: var(--panel);
+}
+.abx-mark-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.abx-mark-score {
+  margin-left: auto;
+  font-weight: 700;
+  font-size: 1.2rem;
+  font-variant-numeric: tabular-nums;
+}
+.abx-mark-row { display: flex; align-items: center; gap: 0.5rem; padding: 0.2rem 0; }
+.abx-mark-theme { flex: 0 0 8rem; font-size: 0.9rem; color: var(--muted); }
+.abx-mark-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  min-width: 5.5rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+.abx-mark-cell[data-state="later"] { opacity: 0.45; }
+.abx-mark-cell[data-state="next"] { border-color: var(--accent); }
+.abx-mark-cell[data-state="ok"] { border-color: var(--easy); }
+.abx-mark-cell[data-state="bad"] { border-color: var(--hard); }
+.abx-mark-points { font-weight: 700; font-variant-numeric: tabular-nums; }
+.abx-mark-verdict { font-weight: 700; }
+.abx-mark-cell[data-state="ok"] .abx-mark-verdict { color: var(--easy); }
+.abx-mark-cell[data-state="bad"] .abx-mark-verdict { color: var(--hard); }
+.abx-mark-wait { color: var(--muted); }
+.abx-mark-btn {
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--panel-2);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 0.95rem;
+  line-height: 1;
+  padding: 0.15rem 0.4rem;
+}
+.abx-mark-btn:hover:not(:disabled) { border-color: var(--accent); }
+.abx-mark-btn.is-ok:hover:not(:disabled) { border-color: var(--easy); color: var(--easy); }
+.abx-mark-btn.is-bad:hover:not(:disabled) { border-color: var(--hard); color: var(--hard); }
+
 /* ── Printable statement sheet ───────────────────────────────────────────── */
 
 .abacus-print { max-width: 760px; }

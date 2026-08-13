@@ -360,6 +360,40 @@ them.
 `--check` compares the **sha256 of each .tex** recorded in the generated file, so
 CI catches a source edited without a rebuild while only this machine needs LaTeX.
 
+### Live abacus sessions
+
+An event is a code, some teams and a jury: `AbacusSession` / `AbacusTeam` /
+`AbacusVerdict` in Postgres, `web/src/lib/abacus-session.ts` (server: cookie,
+board read, code generation) over `web/src/lib/abacus.ts` (client-safe: the DTOs
+and the rule). Pages: `join` → `team` → `m/<code>` (projector, public) and
+`s/<code>` (jury, `ADMIN_EMAILS`); API under `/api/abacus/`.
+
+- **Teams have no accounts.** Join mints a token in an httpOnly `mlp_abacus_team`
+  cookie, and that cookie is the team. Losing it means joining again under
+  another name (or the jury deleting the old team) — the price of a room being
+  in the game within a minute, which is the whole point of the Kahoot shape.
+- **The board is public by code.** The projector is meant to be openable by
+  anyone in the room and shows nothing but team names. The session pages
+  deliberately **do not** consult `teaserAccess`: an event can run while the
+  practice board is still a draft, because the code is the invitation.
+- **Verdicts go in order, server-side**: only the cheapest un-ruled cell of a
+  theme can be ruled, and only the dearest ruled one undone. Otherwise a
+  mis-click leaves standings the game has no state for. Each verdict stores the
+  cell's `points` as a **snapshot**, so re-pricing a board later cannot rewrite a
+  finished event.
+- Three screens poll `/board` every 3 s. Two races were real and are fixed in
+  code that must stay: the jury's `busy` guard is **per cell** (a global one
+  silently dropped the second of two quick clicks), and the jury's grid keeps an
+  **optimistic patch** per cell until a polled board agrees with it. A board read
+  can be older than its own timestamp — the query and the clock are separate
+  round trips — so ordering responses by time is not enough on the page where a
+  verdict must never blink out. `readBoard` stamps `now` *before* the query for
+  the same reason.
+- `abacusSession()` in `tests/e2e/support/session.ts` is the fixture: a scratch
+  game coded `E2E-<pid>`, and `dispose()` refuses to delete anything not starting
+  with `E2E-`, because the suite runs against the database a real event may be
+  using at that moment.
+
 The e2e suite reads the draft board by **signing in as an editor**
 (`e2e-admin@example.test`, listed in the local `ADMIN_EMAILS`), so the board tests
 write nothing. Only the publish test flips the real row, and `teaserState()` in

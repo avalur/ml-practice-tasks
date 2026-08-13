@@ -77,3 +77,72 @@ export function isOpen(
 export function totalProblems(variant: { themes: { problems: unknown[] }[] }): number {
   return variant.themes.reduce((n, t) => n + t.problems.length, 0);
 }
+
+// ── live sessions ────────────────────────────────────────────────────────────
+//
+// Shared by the monitor, the team's screen and the jury's grid, so the shapes
+// and the rule live on this (client-safe) side; the database and the cookie are
+// in lib/abacus-session.ts.
+
+export type VerdictDTO = {
+  themeId: string;
+  index: number;
+  correct: boolean;
+  /** What the cell was worth when it was ruled — a snapshot, not a lookup. */
+  points: number;
+};
+
+export type TeamDTO = {
+  id: string;
+  name: string;
+  level: Level;
+  score: number;
+  verdicts: VerdictDTO[];
+};
+
+export type BoardDTO = {
+  code: string;
+  title: string | null;
+  closed: boolean;
+  /** Server clock, so a screen can say "as of …" without trusting its own. */
+  now: string;
+  teams: TeamDTO[];
+};
+
+/** The game's rule, in the one place both the grid and the API ask about it: a
+ *  verdict goes on the cheapest un-ruled cell of a theme, and only the dearest
+ *  ruled one can be taken back. */
+export function markable(
+  verdicts: readonly VerdictDTO[],
+  themeId: string,
+  cells: number,
+): { next: number | null; undo: number | null } {
+  const ruled = new Set(verdicts.filter((v) => v.themeId === themeId).map((v) => v.index));
+  let next: number | null = null;
+  for (let i = 0; i < cells; i++) {
+    if (!ruled.has(i)) {
+      next = i;
+      break;
+    }
+  }
+  let undo: number | null = null;
+  for (let i = cells - 1; i >= 0; i--) {
+    if (ruled.has(i)) {
+      undo = i;
+      break;
+    }
+  }
+  return { next, undo };
+}
+
+export function verdictAt(
+  verdicts: readonly VerdictDTO[],
+  themeId: string,
+  index: number,
+): VerdictDTO | undefined {
+  return verdicts.find((v) => v.themeId === themeId && v.index === index);
+}
+
+export function scoreOf(verdicts: readonly VerdictDTO[]): number {
+  return verdicts.reduce((sum, v) => sum + (v.correct ? v.points : 0), 0);
+}

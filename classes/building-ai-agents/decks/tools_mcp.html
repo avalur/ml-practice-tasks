@@ -1004,6 +1004,445 @@ ul.custom-list li.lamp::before {
 	top: 310px;
 	width: 65%;
 }
+
+/* "How Tool-Calling Works" schematic (tcw-*) */
+.tcw-slide {
+	--tcw-cyan: #57c7ff;
+	--tcw-violet: #9b8cff;
+	--tcw-green: #5fe0a8;
+	background: radial-gradient(120% 95% at 32% -5%, #163a82 0%, #0d2458 42%, #061230 100%);
+	color: #eaf2ff;
+	height: 100%;
+	min-height: 640px;
+	overflow: hidden;
+	position: relative;
+	text-align: left;
+}
+.tcw-slide h3.tcw-title {
+	color: #eaf2ff;
+	font-size: 1.3em;
+	font-weight: 600;
+	letter-spacing: 0;
+	margin: 0 0 2px;
+	text-align: left;
+	text-transform: none;
+}
+.tcw-stage {
+	height: 480px;
+	margin: 12px auto 0;
+	max-width: 100%;
+	position: relative;
+	width: 1200px;
+}
+.tcw-stage > *:not(.tcw-wires) {
+	position: absolute;
+	z-index: 2;
+}
+.tcw-wires {
+	height: 100%;
+	inset: 0;
+	pointer-events: none;
+	position: absolute;
+	width: 100%;
+	z-index: 0;
+}
+.tcw-node {
+	align-items: center;
+	backdrop-filter: blur(2px);
+	border-radius: 16px;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+	height: 100%;
+	justify-content: center;
+	width: 100%;
+}
+.tcw-icon {
+	font-size: 46px;
+	line-height: 1;
+}
+.tcw-node-label {
+	font-size: 20px;
+	font-weight: 800;
+	letter-spacing: 1px;
+}
+.tcw-llm {
+	height: 122px;
+	left: 525px;
+	top: 30px;
+	width: 150px;
+}
+.tcw-llm .tcw-node {
+	background: rgba(87, 199, 255, 0.10);
+	border: 1px solid rgba(87, 199, 255, 0.45);
+	box-shadow: 0 0 34px rgba(87, 199, 255, 0.35), inset 0 0 20px rgba(87, 199, 255, 0.12);
+}
+.tcw-llm .tcw-icon {
+	filter: drop-shadow(0 0 10px rgba(87, 199, 255, 0.65));
+}
+.tcw-llm .tcw-node-label {
+	color: var(--tcw-cyan);
+}
+.tcw-agent {
+	height: 120px;
+	left: 525px;
+	top: 335px;
+	width: 150px;
+}
+.tcw-agent .tcw-node {
+	background: rgba(155, 140, 255, 0.10);
+	border: 1px solid rgba(155, 140, 255, 0.45);
+	box-shadow: 0 0 34px rgba(155, 140, 255, 0.32), inset 0 0 20px rgba(155, 140, 255, 0.12);
+}
+.tcw-agent .tcw-icon {
+	filter: drop-shadow(0 0 10px rgba(155, 140, 255, 0.65));
+}
+.tcw-agent .tcw-node-label {
+	color: var(--tcw-violet);
+}
+.tcw-user-avatar {
+	align-items: center;
+	background: rgba(87, 199, 255, 0.12);
+	border: 1px solid rgba(87, 199, 255, 0.4);
+	border-radius: 50%;
+	display: flex;
+	font-size: 32px;
+	height: 60px;
+	justify-content: center;
+	left: 6px;
+	top: 62px;
+	width: 60px;
+}
+.tcw-bubble {
+	background: #f4f8ff;
+	border-radius: 12px;
+	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
+	color: #0e2140;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.28;
+	padding: 10px 14px;
+}
+.tcw-bubble::after {
+	border: 8px solid transparent;
+	border-right-color: #f4f8ff;
+	content: "";
+	left: -14px;
+	position: absolute;
+	top: 16px;
+}
+.tcw-user-bubble {
+	left: 78px;
+	top: 60px;
+	width: 166px;
+}
+.tcw-user-bubble .tcw-bubble {
+	background: #d8efff;
+}
+.tcw-user-bubble .tcw-bubble::after {
+	border-right-color: #d8efff;
+}
+.tcw-answer {
+	left: 853px;
+	top: 26px;
+	width: 337px;
+}
+.tcw-call {
+	align-items: center;
+	background: rgba(7, 18, 48, 0.72);
+	border: 1px solid rgba(87, 199, 255, 0.5);
+	border-radius: 10px;
+	box-shadow: 0 0 24px rgba(87, 199, 255, 0.22);
+	box-sizing: border-box;
+	display: flex;
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+	font-size: 20px;
+	font-weight: 700;
+	gap: 8px;
+	height: 54px;
+	justify-content: center;
+	left: 410px;
+	top: 213px;
+	width: 420px;
+}
+.tcw-call .kw { color: var(--tcw-cyan); }
+.tcw-call .fn { color: #ffffff; }
+.tcw-call .arg { color: var(--tcw-green); }
+.tcw-db {
+	align-items: center;
+	background: linear-gradient(180deg, #3a5cb0, #223570);
+	border: 1px solid rgba(120, 160, 255, 0.6);
+	border-radius: 63px / 16px;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+	box-sizing: border-box;
+	color: #eef4ff;
+	display: flex;
+	flex-direction: column;
+	font-size: 12.5px;
+	font-weight: 700;
+	height: 92px;
+	justify-content: center;
+	left: 700px;
+	line-height: 1.45;
+	padding-top: 14px;
+	text-align: center;
+	top: 352px;
+	width: 126px;
+}
+.tcw-db::before {
+	background: #4767c0;
+	border-bottom: 1px solid rgba(120, 160, 255, 0.6);
+	border-radius: 50%;
+	content: "";
+	height: 18px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 0;
+}
+.tcw-steps {
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid rgba(155, 140, 255, 0.3);
+	border-left: 4px solid var(--tcw-violet);
+	border-radius: 12px;
+	box-sizing: border-box;
+	left: 853px;
+	list-style: none;
+	margin: 0;
+	padding: 16px 18px 16px 22px;
+	top: 200px;
+	width: 337px;
+}
+.tcw-steps li {
+	font-size: 16px;
+	line-height: 1.3;
+	padding-left: 26px;
+	position: relative;
+}
+.tcw-steps li + li {
+	margin-top: 13px;
+}
+.tcw-steps li::before {
+	color: var(--tcw-green);
+	content: "▸";
+	font-weight: 900;
+	left: 0;
+	position: absolute;
+}
+.tcw-footnote {
+	bottom: 18px;
+	color: #cfe0ff;
+	font-size: 17px;
+	font-weight: 600;
+	left: 0;
+	position: absolute;
+	right: 0;
+	text-align: center;
+}
+.tcw-footnote strong {
+	color: var(--tcw-cyan);
+}
+
+/* --- MCP Flow sequence diagram --- */
+.mcpf-slide {
+	color: #294a43;
+	height: 100%;
+	min-height: 640px;
+	position: relative;
+	text-align: left;
+}
+.mcpf-slide h3 {
+	color: #294a43;
+	font-size: 1.32em;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 1.05;
+	margin: 0;
+	text-align: left;
+	text-transform: none;
+}
+.mcpf-stage {
+	margin-top: 6px;
+}
+.mcpf-stage svg {
+	display: block;
+	height: auto;
+	max-width: 100%;
+	width: 1124px;
+}
+.mcpf-stage text {
+	font-family: "Trebuchet MS", Verdana, Arial, sans-serif;
+	text-shadow: none;
+}
+.mcpf-part {
+	fill: #333;
+	font-size: 13.5px;
+}
+.mcpf-host-label {
+	fill: #444;
+	font-size: 13.5px;
+}
+.mcpf-msg {
+	fill: #333;
+	font-size: 12.5px;
+	paint-order: stroke;
+	stroke: #fff;
+	stroke-linejoin: round;
+	stroke-width: 4px;
+}
+.mcpf-note-text {
+	fill: #333;
+	font-size: 11.5px;
+}
+.mcpf-life {
+	stroke: #333;
+	stroke-dasharray: 4 4;
+	stroke-width: 1.4;
+}
+.mcpf-solid {
+	fill: none;
+	stroke: #555;
+	stroke-width: 1.5;
+}
+.mcpf-dashed {
+	fill: none;
+	stroke: #777;
+	stroke-dasharray: 7 5;
+	stroke-width: 1.5;
+}
+.mcpf-dot {
+	fill: none;
+	stroke: #666;
+	stroke-width: 1.4;
+}
+
+/* --- Recap: problems solved --- */
+.recap-slide {
+	color: #294a43;
+	height: 100%;
+	min-height: 640px;
+	position: relative;
+	text-align: left;
+}
+.recap-slide h3 {
+	color: #294a43;
+	font-size: 1.32em;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 1.05;
+	margin: 0;
+	text-align: left;
+	text-transform: none;
+}
+.reveal .recap-table {
+	border-collapse: collapse;
+	font-size: 19px;
+	line-height: 1.34;
+	margin: 58px 0 0;
+	table-layout: fixed;
+	width: 100%;
+}
+.reveal .recap-table th,
+.reveal .recap-table td {
+	border: 0;
+	padding: 18px;
+	text-align: left;
+	vertical-align: middle;
+}
+.reveal .recap-table thead th {
+	background: #4227e0;
+	color: #fff;
+	font-weight: 700;
+	padding-bottom: 14px;
+	padding-top: 14px;
+	text-shadow: none;
+}
+.reveal .recap-table tbody tr:nth-child(even) {
+	background: #c9d1d1;
+}
+.reveal .recap-table .recap-problem {
+	font-weight: 700;
+}
+.reveal .recap-table col.recap-c1 { width: 26%; }
+.reveal .recap-table col.recap-c2 { width: 29%; }
+.reveal .recap-table col.recap-c3 { width: 45%; }
+.reveal .recap-table td.recap-meme-cell {
+	text-align: center;
+}
+/* --- But: start simple --- */
+.but-slide {
+	color: #294a43;
+	height: 100%;
+	min-height: 640px;
+	position: relative;
+	text-align: left;
+}
+.but-slide h3 {
+	color: #294a43;
+	font-size: 1.32em;
+	font-weight: 500;
+	letter-spacing: 0;
+	line-height: 1.05;
+	margin: 0;
+	text-align: left;
+	text-transform: none;
+}
+.but-body {
+	font-size: 23px;
+	line-height: 1.45;
+	margin-top: 92px;
+}
+.but-body p {
+	margin: 0 0 34px;
+}
+.but-body p.but-lead-in {
+	margin-bottom: 4px;
+}
+.reveal .but-body ul {
+	margin: 0 0 0 34px;
+}
+.reveal .but-body li {
+	margin: 0;
+}
+.but-tools {
+	margin-top: 40px;
+}
+.but-tools-title {
+	color: #294a43;
+	font-size: 27px;
+	font-weight: 500;
+	line-height: 1.05;
+	margin: 0 0 10px;
+}
+.reveal .but-tools ul {
+	font-size: 23px;
+	line-height: 1.4;
+	margin: 0 0 0 34px;
+}
+.reveal .but-tools a {
+	color: #3b3bd6;
+	text-decoration: underline;
+}
+.but-source {
+	bottom: 8px;
+	font-size: 13px;
+	left: 0;
+	position: absolute;
+}
+.reveal .but-source a {
+	color: #294a43;
+	text-decoration: underline;
+}
+.reveal .recap-table .recap-meme {
+	border: 0;
+	border-radius: 4px;
+	box-shadow: none;
+	display: inline-block;
+	height: 148px;
+	margin: 0;
+	vertical-align: middle;
+	width: auto;
+}
 </style>
 <div class="slides">
                 <section>
@@ -1017,7 +1456,7 @@ ul.custom-list li.lamp::before {
                                 <h3>Tools and MCP</h3>
                                 <br />
                                 Alex Avdiushenko<br />
-                                October, 2026
+                                October 15, 2026
                             </div>
                         </div>
                     </section>
@@ -1065,1297 +1504,541 @@ ul.custom-list li.lamp::before {
                             <img src="assets/AI_agent_diagram.webp" alt="AI_agent_diagram">
                         </div>
                     </section>
-                </section>
-                <section>
-                    <section class="agent-app-slide" data-background-color="white">
-                        <h3>AI Agent Applications</h3>
-                        <div class="agent-app-content">
-                            <div class="agent-app-cards">
-                                <div class="agent-app-card knowledge fragment">
-                                    <h4>Knowledge & Productivity</h4>
-                                    <ul>
-                                        <li>Personal assistants for research and decisions</li>
-                                        <li>ChatGPT, Perplexity, Google</li>
-                                    </ul>
-                                </div>
-                                <div class="agent-app-card action fragment">
-                                    <h4>Action & Execution</h4>
-                                    <ul>
-                                        <li>Browser agents that navigate, click, fill forms</li>
-                                        <li>Developer agents such as Claude Code and Codex</li>
-                                    </ul>
-                                </div>
-                                <div class="agent-app-card business fragment">
-                                    <h4>Business & Interaction</h4>
-                                    <ul>
-                                        <li>Customer support across channels</li>
-                                        <li>Operations automation and follow-up</li>
-                                    </ul>
-                                </div>
-                                <div class="agent-app-card worlds fragment">
-                                    <h4>Interactive Worlds</h4>
-                                    <ul>
-                                        <li>Game NPCs with adaptive behavior</li>
-                                        <li>Context-aware dialogue and quests</li>
-                                    </ul>
+                    <section class="tcw-slide" data-background-color="#061230">
+                        <h3 class="tcw-title">How Tool-Calling Works</h3>
+                        <p>LLMs can only generate text, don't execute code.</p>
+                        <div class="tcw-stage">
+                            <svg class="tcw-wires" viewBox="0 0 1200 480" preserveAspectRatio="none" aria-hidden="true">
+                                <defs>
+                                    <marker id="tcw-cy" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#57c7ff"></path>
+                                    </marker>
+                                    <marker id="tcw-vi" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
+                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#9b8cff"></path>
+                                    </marker>
+                                </defs>
+                                <path d="M248 92 L516 92" stroke="#57c7ff" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
+                                <path d="M678 74 C 748 74, 786 66, 848 66" stroke="#57c7ff" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
+                                <path d="M600 154 L600 206" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                                <path d="M600 269 L600 328" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                                <path d="M676 396 L695 396" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                            </svg>
+
+                            <div class="tcw-user-avatar" role="img" aria-label="User">🧑‍💼</div>
+                            <div class="tcw-user-bubble">
+                                <div class="tcw-bubble">Airports in London?</div>
+                            </div>
+
+                            <div class="tcw-llm">
+                                <div class="tcw-node">
+                                    <span class="tcw-icon">🧠</span>
+                                    <span class="tcw-node-label">LLM</span>
                                 </div>
                             </div>
 
-	                            <div class="agent-company-logos fragment" aria-label="AI agent application companies">
-	                                <div class="agent-company-logo">
-	                                    <img src="assets/openai_logo.svg" alt="OpenAI logo">
-	                                    <span>OpenAI</span>
-	                                </div>
-	                                <div class="agent-company-logo">
-	                                    <img src="assets/perplexity_logo.svg" alt="Perplexity logo">
-	                                    <span>Perplexity</span>
-	                                </div>
-	                                <div class="agent-company-logo">
-	                                    <img src="assets/google_logo.svg" alt="Google logo">
-	                                    <span>Google</span>
-	                                </div>
-	                                <div class="agent-company-logo">
-	                                    <img src="assets/anthropic_logo.svg" alt="Anthropic logo">
-	                                    <span>Anthropic</span>
-	                                </div>
-	                                <div class="agent-company-logo">
-	                                    <img src="assets/unity_logo.svg" alt="Unity logo">
-	                                    <span>Unity</span>
-	                                </div>
-	                            </div>
-	                        </div>
-	                    </section>
-                    <section data-background-color="white">
-                        <h3 style="color: #2d5d39; text-align: left">The Evolution of Human–LLM Interaction</h3>
-                        <table style="font-size: 0.75em; border-collapse: collapse; width: 100%;">
-                            <thead>
-                                <tr style="background-color: #4a47a3; color: white;">
-                                    <th style="padding: 10px;">Interaction</th>
-                                    <th style="padding: 10px;">Description</th>
-                                    <th style="padding: 10px;">Pattern example</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr class="fragment">
-                                    <td style="padding: 10px;">Prompting</td>
-                                    <td style="padding: 10px;">LLM output has no impact on program flow</td>
-                                    <td style="padding: 10px;"><code>process_llm_output(llm_response)</code></td>
-                                </tr>
-                                <tr style="background-color: #f2f2f2;" class="fragment">
-                                    <td style="padding: 10px;">Router</td>
-                                    <td style="padding: 10px;">LLM determines the basic control flow</td>
-                                    <td style="padding: 10px;"><code>if llm_decision(): path_a() else: path_b()</code></td>
-                                </tr>
-                                <tr class="fragment">
-                                    <td style="padding: 10px;">Tool Calling</td>
-                                    <td style="padding: 10px;">LLM selects the function and arguments</td>
-                                    <td style="padding: 10px;"><code>run_function(llm_chosen_tool, llm_chosen_args)</code></td>
-                                </tr>
-                                <tr style="background-color: #f2f2f2;" class="fragment">
-                                    <td style="padding: 10px;">Multi-step Agent (Autonomous Agent)</td>
-                                    <td style="padding: 10px;">LLM output controls iterations and continuation of program execution</td>
-                                    <td style="padding: 10px;"><code>while llm_should_continue(): execute_next_step()</code></td>
-                                </tr>
-                                <tr class="fragment">
-                                    <td style="padding: 10px;">Multi-Agent System</td>
-                                    <td style="padding: 10px;">One agent process can trigger another agent process</td>
-                                    <td style="padding: 10px;"><code>if llm_trigger(): execute_agent()</code></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="color: #2d5d39; text-align: left">What Is an AI Agent?</h3>
-                        <div class="fragment" style="text-align: left; border: 1px solid #ddd; padding: 20px; margin-bottom: 20px; border-radius: 5px;">
-                            <p style="font-size: 0.7em; color: #666;">OpenAI Agents SDK presentation:</p>
-                            <p style="font-size: 0.85em; margin-top: 10px;">An agent is an AI application consisting of</p>
-                            <ul style="font-size: 0.8em; margin-left: 40px; list-style-type: disc;">
-                                <li>a <span style="color: #5b56a1; font-weight: bold;">model</span> equipped with</li>
-                                <li><span style="color: #5b56a1; font-weight: bold;">instructions</span> that guide its behavior,</li>
-                                <li>access to <span style="color: #5b56a1; font-weight: bold;">tools</span> that extend its capabilities,</li>
-                                <li>encapsulated in a <span style="color: #5b56a1; font-weight: bold;">runtime</span> with a dynamic lifecycle.</li>
+                            <div class="tcw-answer">
+                                <div class="tcw-bubble">"The airports are Heathrow, Gatwick, and City."</div>
+                            </div>
+
+                            <div class="tcw-call">
+                                <span class="kw">call</span><span class="fn">list_all_airports(</span><span class="arg">"London"</span><span class="fn">)</span>
+                            </div>
+
+                            <div class="tcw-agent">
+                                <div class="tcw-node">
+                                    <span class="tcw-icon">🤖</span>
+                                    <span class="tcw-node-label">Agent</span>
+                                </div>
+                            </div>
+                            <div class="tcw-db">Heathrow,<br>Gatwick,<br>City</div>
+
+                            <ul class="tcw-steps">
+                                <li>Detects the tool call</li>
+                                <li>Executes the tool</li>
+                                <li>Gets real data</li>
+                                <li>Returns it to the model</li>
                             </ul>
                         </div>
-                        <div class="fragment" style="text-align: left; border: 1px solid #ddd; padding: 20px; border-radius: 5px;">
-                            <p style="font-size: 0.7em; color: #666;">Lilian Weng, LLM Powered Autonomous Agents [1]:</p>
-                            <p style="font-size: 0.9em; margin-top: 10px; color: #5b56a1; font-weight: bold;">
-                                Agent = LLM + memory + planning skills + tool use
-                            </p>
-                        </div>
-                        <div style="margin-top: 40px; font-size: 0.35em; color: #888; text-align: right;">
-                            [1] <a href="https://lilianweng.github.io/posts/2023-06-23-agent/">https://lilianweng.github.io/posts/2023-06-23-agent/</a>
-                        </div>
+                        <p class="tcw-footnote">To the user, it looks like the LLM used the tool — but <strong>the agent did the actual work</strong>.</p>
                     </section>
-                    <section data-background-color="white">
-                        <h3 style="color: #2d5d39; text-align: left">What Is an AI Agent?</h3>
-                        <p style="text-align: left; font-size: 0.6em; margin-bottom: 20px;">
-                            Agent = runtime(<span style="color: #5b56a1;">
-                                    AI model + prompts + tools + memory + guardrails + planning skills
-                                </span>)
-                        </p>
-                        <div class="diagram-container" style="position: relative; width: 900px; margin: 0 auto;">
-                            <!-- Agent runtime label -->
-                            <div style="position: absolute; top: 40px; left: 0; font-size: 0.5em; color: #666;">Agent runtime</div>
-
-                            <!-- Memory Section -->
-                            <div class="diagram-box memory-box" style="top: 10px; left: 200px; width: 100px;">Short-term</div>
-                            <div class="diagram-box memory-box" style="top: 6px; left: 370px; width: 100px;">Context</div>
-                            <div class="diagram-box memory-box" style="top: 10px; left: 560px; width: 100px;">Long-term</div>
-
-                            <!-- Memory Lines -->
-                            <div class="connector-line" style="top: 60px; left: 250px; width: 360px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 60px; left: 250px; width: 1px; height: 15px;"></div>
-                            <div class="connector-line" style="top: 55px; left: 430px; width: 1px; height: 37px;"></div>
-                            <div class="connector-line" style="top: 60px; left: 610px; width: 1px; height: 15px;"></div>
-
-                            <div class="diagram-box memory-box" style="top: 95px; left: 370px; width: 100px;">Memory</div>
-                            <div class="connector-line" style="top: 135px; left: 430px; width: 1px; height: 40px;"></div>
-
-                            <!-- Guardrails -->
-                            <div class="guardrails-oval" style="top: 115px; left: 660px;">Guardrails</div>
-
-                            <!-- Tools Section -->
-                            <div class="diagram-box tools-box" style="top: 250px; left: 0; width: 100px;">Calendar()</div>
-                            <div class="diagram-box tools-box" style="top: 310px; left: 0; width: 100px;">Search()</div>
-                            <div class="diagram-box tools-box" style="top: 370px; left: 0; width: 100px;">... more</div>
-
-                            <div class="connector-line" style="top: 275px; left: 105px; width: 35px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 335px; left: 105px; width: 35px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 395px; left: 105px; width: 35px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 275px; left: 140px; width: 1px; height: 120px;"></div>
-                            <div class="connector-line" style="top: 335px; left: 140px; width: 40px; height: 1px;"></div>
-
-                            <div class="diagram-box tools-box" style="top: 300px; left: 180px; width: 80px; height: 50px; font-size: 0.7em;">Tools</div>
-                            <div class="connector-line" style="top: 335px; left: 260px; width: 70px; height: 1px;"></div>
-
-                            <!-- Center: AI Model -->
-                            <div class="diagram-box model-box" style="top: 175px; left: 330px; width: 200px; height: 320px; display: block; padding-top: 10px;">
-                                <div style="margin-bottom: 15px;">AI model</div>
-                                <div class="prompts-box" style="margin: 0 15px; padding: 10px;">
-                                    <div style="font-size: 0.9em; margin-bottom: 8px;">Prompts</div>
-                                    <div class="prompt-item">System</div>
-                                    <div class="prompt-item">User</div>
-                                    <div class="prompt-item">Assistant</div>
-                                </div>
-                            </div>
-
-                            <!-- Planning Section -->
-                            <div class="connector-line" style="top: 335px; left: 530px; width: 70px; height: 1px;"></div>
-                            <div class="diagram-box planning-box" style="top: 300px; left: 590px; width: 110px; height: 50px; font-size: 0.7em;">Planning</div>
-
-                            <div class="connector-line" style="top: 335px; left: 700px; width: 50px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 255px; left: 750px; width: 1px; height: 160px;"></div>
-                            <div class="connector-line" style="top: 255px; left: 750px; width: 30px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 335px; left: 750px; width: 30px; height: 1px;"></div>
-                            <div class="connector-line" style="top: 415px; left: 750px; width: 30px; height: 1px;"></div>
-
-                            <div class="diagram-box planning-box" style="top: 230px; left: 780px; width: 120px;">Reflection</div>
-                            <div class="diagram-box planning-box" style="top: 310px; left: 780px; width: 120px;">Reasoning</div>
-                            <div class="diagram-box planning-box" style="top: 380px; left: 780px; width: 150px;">Subgoal decomposition</div>
-                        </div>
-                    </section>
-                    <section class="os-slide" data-background-color="white">
-                        <h3>LLM as an Operating System</h3>
-                        <div class="os-system-map" aria-label="LLM operating system analogy">
-                            <div class="os-panel os-io">
-                                <div class="os-panel-title">Peripheral devices I/O</div>
-                                <div class="os-panel-main">Multimodal input and output</div>
-                                <div class="os-items">
-                                    <div class="os-item"><span class="os-icon">V</span>video</div>
-                                    <div class="os-item"><span class="os-icon">A</span>audio</div>
-                                    <div class="os-item"><span class="os-icon">T</span>text</div>
-                                </div>
-                            </div>
-
-                            <div class="os-panel os-tools">
-                                <div class="os-panel-title">Software 1.0 tools</div>
-                                <div class="os-panel-main">Classical computer tools</div>
-                                <div class="os-items">
-                                    <div class="os-item"><span class="os-icon">123</span>Calculator</div>
-                                    <div class="os-item"><span class="os-icon">Py</span>Python interpreter</div>
-                                    <div class="os-item"><span class="os-icon">sh</span>Terminal</div>
-                                </div>
-                            </div>
-
-                            <div class="os-connector os-left-connector"><span>&#8644;</span></div>
-
-                            <div class="os-core-wrap">
-                                <div class="os-core">
-                                    <div class="os-axis-label">CPU</div>
-                                    <div class="os-core-title">LLM</div>
-                                    <div class="os-core-subtitle">Interprets goals, selects actions, and coordinates tools</div>
-                                    <div class="os-core-badges">
-                                        <span class="os-core-badge">reasoning</span>
-                                        <span class="os-core-badge">planning</span>
-                                        <span class="os-core-badge">policy</span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="os-connector os-right-connector"><span>&#8644;</span></div>
-
-                            <div class="os-panel os-network">
-                                <div class="os-panel-title">Network</div>
-                                <div class="os-panel-main">External systems</div>
-                                <div class="os-items">
-                                    <div class="os-item"><span class="os-icon">Web</span>browser</div>
-                                    <div class="os-item"><span class="os-icon">API</span>services</div>
-                                    <div class="os-item"><span class="os-icon">LLM</span>other models</div>
-                                </div>
-                            </div>
-
-                            <div class="os-panel os-disk">
-                                <div class="os-panel-title">Disk</div>
-                                <div class="os-panel-main">Persistent state</div>
-                                <div class="os-items">
-                                    <div class="os-item"><span class="os-icon">FS</span>file system</div>
-                                    <div class="os-item"><span class="os-icon">Emb</span>embeddings</div>
-                                    <div class="os-item"><span class="os-icon">DB</span>vector store</div>
-                                </div>
-                            </div>
-
-                            <div class="os-connector os-disk-connector"><span>&#8644;</span></div>
-
-                            <div class="os-context">
-                                <div>
-                                    <div class="os-axis-label">RAM</div>
-                                    <strong>Context window</strong>
-                                    <span>Working memory for the current task</span>
-                                </div>
-                                <span class="os-chip os-memory-chip">limited size</span>
-                            </div>
-                        </div>
-                        <br>
-
-                        <div class="os-legend fragment">
-                            <div class="os-legend-group">
-                                <div class="os-chip-row">
-                                    <span class="os-chip green">Windows</span>
-                                    <span class="os-chip green">macOS</span>
-                                    <span class="os-chip green">Linux</span>
-                                </div>
-                                <div class="os-legend-label">Traditional OS analogy</div>
-                            </div>
-
-                            <div class="os-legend-group">
-                                <div class="os-chip-row">
-                                    <span class="os-chip violet">GPT</span>
-                                    <span class="os-chip violet">Claude</span>
-                                    <span class="os-chip violet">Gemini</span>
-                                </div>
-                                <div class="os-legend-label">AI model ecosystem</div>
-                            </div>
-
-                            <div class="os-source">
-                                Source: Andrej Karpathy, Intro to Large Language Models<br>
-                                <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g">youtube.com/watch?v=zjkBMFhNj_g</a>
-                            </div>
-                        </div>
-                    </section>
-                </section>
-                <section>
-                    <section class="llm-slide" data-background-color="white">
-                        <h3>What Is an LLM</h3>
-                        <p class="llm-definition">
-                            <span style="color: #5b56a1; font-weight: bold;">Large Language Model (LLM)</span> 
-                            is a neural network model trained on a large corpora of text data that
-                            <span style="color: #5b56a1; font-weight: bold;">predicts the next token based on the context</span>
-                        </p>
-
-                        <div class="llm-diagram" aria-label="Large language model training data, files, and neural network">
-                            <div class="llm-corpus">
-                                <svg class="llm-corpus-art" viewBox="0 0 140 140" role="img" aria-label="Chunk of internet text data">
-                                    <defs>
-                                        <radialGradient id="llm-internet-glow" cx="50%" cy="50%" r="58%">
-                                            <stop offset="0%" stop-color="#b9fff5" stop-opacity="0.95"></stop>
-                                            <stop offset="45%" stop-color="#4f88ff" stop-opacity="0.45"></stop>
-                                            <stop offset="100%" stop-color="#050608" stop-opacity="0"></stop>
-                                        </radialGradient>
-                                    </defs>
-                                    <rect width="140" height="140" fill="#050608"></rect>
-                                    <circle cx="70" cy="70" r="67" fill="url(#llm-internet-glow)"></circle>
-                                    <g stroke-width="0.9" stroke-opacity="0.74">
-                                        <line x1="20" y1="31" x2="72" y2="49" stroke="#5be7d3"></line>
-                                        <line x1="72" y1="49" x2="116" y2="35" stroke="#f06cae"></line>
-                                        <line x1="32" y1="95" x2="72" y2="49" stroke="#73b7ff"></line>
-                                        <line x1="32" y1="95" x2="96" y2="105" stroke="#ffcd61"></line>
-                                        <line x1="96" y1="105" x2="116" y2="35" stroke="#5be7d3"></line>
-                                        <line x1="42" y1="24" x2="99" y2="58" stroke="#b69bff"></line>
-                                        <line x1="18" y1="72" x2="99" y2="58" stroke="#5be7d3"></line>
-                                        <line x1="99" y1="58" x2="122" y2="88" stroke="#ffcd61"></line>
-                                        <line x1="55" y1="116" x2="99" y2="58" stroke="#73b7ff"></line>
-                                        <line x1="28" y1="47" x2="122" y2="88" stroke="#f06cae"></line>
-                                        <line x1="28" y1="47" x2="55" y2="116" stroke="#5be7d3"></line>
-                                        <line x1="58" y1="18" x2="18" y2="72" stroke="#ffcd61"></line>
-                                        <line x1="58" y1="18" x2="122" y2="88" stroke="#73b7ff"></line>
-                                        <line x1="74" y1="124" x2="21" y2="107" stroke="#b69bff"></line>
-                                        <line x1="21" y1="107" x2="85" y2="82" stroke="#5be7d3"></line>
-                                        <line x1="85" y1="82" x2="116" y2="35" stroke="#f06cae"></line>
-                                    </g>
-                                    <g>
-                                        <circle cx="20" cy="31" r="3.3" fill="#5be7d3"></circle>
-                                        <circle cx="72" cy="49" r="4" fill="#f6fbff"></circle>
-                                        <circle cx="116" cy="35" r="3.6" fill="#f06cae"></circle>
-                                        <circle cx="32" cy="95" r="3.5" fill="#73b7ff"></circle>
-                                        <circle cx="96" cy="105" r="4.1" fill="#ffcd61"></circle>
-                                        <circle cx="42" cy="24" r="3" fill="#b69bff"></circle>
-                                        <circle cx="99" cy="58" r="3.7" fill="#5be7d3"></circle>
-                                        <circle cx="18" cy="72" r="3.2" fill="#f6fbff"></circle>
-                                        <circle cx="122" cy="88" r="3.8" fill="#73b7ff"></circle>
-                                        <circle cx="55" cy="116" r="3.5" fill="#f06cae"></circle>
-                                        <circle cx="28" cy="47" r="2.9" fill="#ffcd61"></circle>
-                                        <circle cx="58" cy="18" r="3.4" fill="#73b7ff"></circle>
-                                        <circle cx="74" cy="124" r="3.1" fill="#5be7d3"></circle>
-                                        <circle cx="21" cy="107" r="3.3" fill="#f6fbff"></circle>
-                                        <circle cx="85" cy="82" r="4" fill="#b69bff"></circle>
-                                    </g>
-                                </svg>
-                                <div class="llm-caption">Chunk of the internet,<br>~10TB of text</div>
-                            </div>
-
-                            <svg class="llm-flow-arrow" viewBox="0 0 88 28" aria-hidden="true">
-                                <line x1="-10" y1="14" x2="66" y2="14"></line>
-                                <path d="M66 8 L75 14 L66 20 Z"></path>
-                            </svg>
-
-                            <div class="llm-folder-wrap">
-                                <div class="llm-folder">
-                                    <div class="llm-folder-header">
-                                        <span class="llm-folder-nav">&lt; &gt;</span>
-                                        <span class="llm-folder-title">llama-2-70b</span>
-                                    </div>
-
-                                    <div class="llm-files">
-                                        <div class="llm-file">
-                                            <div class="file-icon">
-                                                <div class="file-corner"></div>
-                                            </div>
-                                            <div class="llm-file-label">parameters</div>
-                                        </div>
-
-                                        <div class="llm-file">
-                                            <div class="file-icon">
-                                                <div class="file-corner"></div>
-                                                <span class="llm-file-code">.c</span>
-                                            </div>
-                                            <div class="llm-file-label">run.c</div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="fragment size-callout llm-param-callout">
-                                    <div class="line"></div>
-                                    <div class="size-label">140GB</div>
-                                </div>
-
-                                <div class="fragment size-callout llm-code-callout">
-                                    <div class="line"></div>
-                                    <div class="size-label">~500 lines<br>of C code</div>
-                                </div>
-                            </div>
-
-                            <svg class="llm-flow-arrow" viewBox="0 0 78 28" aria-hidden="true">
-                                <line x1="3" y1="14" x2="68" y2="14"></line>
-                                <path d="M66 8 L75 14 L66 20 Z"></path>
-                            </svg>
-
-                            <div class="llm-network-card" aria-label="Neural network">
-                                <svg viewBox="0 0 260 130" role="img" aria-label="Neural network diagram">
-                                    <g stroke="#aeb8c2" stroke-width="1.7">
-                                        <line x1="25" y1="32" x2="70" y2="20"></line>
-                                        <line x1="25" y1="32" x2="70" y2="48"></line>
-                                        <line x1="25" y1="32" x2="70" y2="76"></line>
-                                        <line x1="25" y1="58" x2="70" y2="20"></line>
-                                        <line x1="25" y1="58" x2="70" y2="48"></line>
-	                                        <line x1="25" y1="58" x2="70" y2="76"></line>
-	                                        <line x1="25" y1="84" x2="70" y2="48"></line>
-	                                        <line x1="25" y1="84" x2="70" y2="76"></line>
-	                                        <line x1="25" y1="84" x2="70" y2="104"></line>
-	                                        <line x1="70" y1="20" x2="112" y2="20"></line>
-	                                        <line x1="70" y1="20" x2="112" y2="48"></line>
-	                                        <line x1="70" y1="48" x2="112" y2="20"></line>
-	                                        <line x1="70" y1="48" x2="112" y2="76"></line>
-	                                        <line x1="70" y1="76" x2="112" y2="48"></line>
-	                                        <line x1="70" y1="104" x2="112" y2="76"></line>
-	                                        <line x1="70" y1="76" x2="112" y2="104"></line>
-	                                        <line x1="70" y1="104" x2="112" y2="104"></line>
-	                                        <line x1="112" y1="20" x2="154" y2="20"></line>
-	                                        <line x1="112" y1="20" x2="154" y2="48"></line>
-	                                        <line x1="112" y1="48" x2="154" y2="20"></line>
-	                                        <line x1="112" y1="48" x2="154" y2="76"></line>
-	                                        <line x1="112" y1="76" x2="154" y2="48"></line>
-	                                        <line x1="112" y1="76" x2="154" y2="76"></line>
-	                                        <line x1="112" y1="104" x2="154" y2="76"></line>
-                                        <line x1="154" y1="20" x2="196" y2="20"></line>
-                                        <line x1="154" y1="48" x2="196" y2="20"></line>
-                                        <line x1="154" y1="48" x2="196" y2="76"></line>
-                                        <line x1="154" y1="76" x2="196" y2="48"></line>
-                                        <line x1="196" y1="20" x2="237" y2="65"></line>
-                                        <line x1="196" y1="48" x2="237" y2="65"></line>
-                                        <line x1="196" y1="76" x2="237" y2="65"></line>
-                                    </g>
-                                    <g>
-                                        <circle cx="25" cy="32" r="8" fill="#ffb566"></circle>
-                                        <circle cx="25" cy="58" r="8" fill="#ffb566"></circle>
-                                        <circle cx="25" cy="84" r="8" fill="#ffb566"></circle>
-                                        <circle cx="70" cy="20" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="70" cy="48" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="70" cy="76" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="70" cy="104" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="112" cy="20" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="112" cy="48" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="112" cy="76" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="112" cy="104" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="154" cy="20" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="154" cy="48" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="154" cy="76" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="196" cy="20" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="196" cy="48" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="196" cy="76" r="8" fill="#48b7ec"></circle>
-                                        <circle cx="237" cy="65" r="8" fill="#008bd2"></circle>
-                                    </g>
-                                    <g transform="translate(218 80)">
-                                        <rect x="0" y="0" width="26" height="36" fill="#fff" stroke="#d9d9d9"></rect>
-                                        <path d="M18 0 L26 8 H18 Z" fill="#ededed" stroke="#d9d9d9"></path>
-                                        <line x1="7" y1="16" x2="19" y2="16" stroke="#c7c7c7" stroke-width="1.4"></line>
-                                        <line x1="7" y1="22" x2="18" y2="22" stroke="#c7c7c7" stroke-width="1.4"></line>
-                                        <line x1="7" y1="28" x2="14" y2="28" stroke="#c7c7c7" stroke-width="1.4"></line>
-	                                    </g>
-                                </svg>
-	                            </div>
-	                        </div>
-	                    </section>
-	                    <section class="next-token-slide" data-background-color="white">
-	                        <h3>What is an LLM: Next Token Prediction</h3>
-	                        <p class="next-token-definition">
-	                            <strong>Large Language Model (LLM)</strong> is a neural network model trained
-                                on a large corpora of text data
-	                            that <strong>predicts the next token based on the context</strong>
-	                        </p>
-                            <br>
-
-	                        <div class="next-token-flow" aria-label="Next token prediction diagram">
-	                            <div class="next-token-input">
-	                                <div class="next-token-input-title">Start with words</div>
-	                                <div class="next-token-word">cat</div>
-	                                <svg class="next-token-word-arrow" viewBox="0 0 54 18" aria-hidden="true">
-	                                    <line x1="0" y1="9" x2="43" y2="9"></line>
-	                                    <path d="M42 4 L52 9 L42 14 Z"></path>
-	                                </svg>
-	                                <div class="next-token-word">sat</div>
-	                                <svg class="next-token-word-arrow" viewBox="0 0 54 18" aria-hidden="true">
-	                                    <line x1="0" y1="9" x2="43" y2="9"></line>
-	                                    <path d="M42 4 L52 9 L42 14 Z"></path>
-	                                </svg>
-	                                <div class="next-token-word">on</div>
-	                                <svg class="next-token-word-arrow" viewBox="0 0 54 18" aria-hidden="true">
-	                                    <line x1="0" y1="9" x2="43" y2="9"></line>
-	                                    <path d="M42 4 L52 9 L42 14 Z"></path>
-	                                </svg>
-	                                <div class="next-token-word">a</div>
-	                                <svg class="next-token-word-arrow" viewBox="0 0 54 18" aria-hidden="true">
-	                                    <line x1="0" y1="9" x2="43" y2="9"></line>
-	                                    <path d="M42 4 L52 9 L42 14 Z"></path>
-	                                </svg>
-	                            </div>
-
-	                            <div></div>
-
-	                            <div class="next-token-network" aria-label="Neural network predicts next token">
-	                                <svg viewBox="0 0 430 188" role="img" aria-label="Neural network">
-	                                    <g stroke="#aeb8c2" stroke-width="2">
-	                                        <line x1="28" y1="36" x2="82" y2="20"></line>
-	                                        <line x1="28" y1="36" x2="82" y2="62"></line>
-	                                        <line x1="28" y1="36" x2="82" y2="104"></line>
-	                                        <line x1="28" y1="68" x2="82" y2="20"></line>
-	                                        <line x1="28" y1="68" x2="82" y2="62"></line>
-	                                        <line x1="28" y1="68" x2="82" y2="104"></line>
-	                                        <line x1="28" y1="100" x2="82" y2="62"></line>
-	                                        <line x1="28" y1="100" x2="82" y2="104"></line>
-	                                        <line x1="28" y1="132" x2="82" y2="104"></line>
-	                                        <line x1="28" y1="132" x2="82" y2="146"></line>
-
-	                                        <line x1="82" y1="20" x2="134" y2="20"></line>
-	                                        <line x1="82" y1="20" x2="134" y2="62"></line>
-	                                        <line x1="82" y1="62" x2="134" y2="20"></line>
-	                                        <line x1="82" y1="62" x2="134" y2="62"></line>
-	                                        <line x1="82" y1="62" x2="134" y2="104"></line>
-	                                        <line x1="82" y1="104" x2="134" y2="62"></line>
-	                                        <line x1="82" y1="104" x2="134" y2="104"></line>
-	                                        <line x1="82" y1="146" x2="134" y2="104"></line>
-	                                        <line x1="82" y1="146" x2="134" y2="146"></line>
-
-	                                        <line x1="134" y1="20" x2="186" y2="20"></line>
-	                                        <line x1="134" y1="20" x2="186" y2="62"></line>
-	                                        <line x1="134" y1="62" x2="186" y2="20"></line>
-	                                        <line x1="134" y1="62" x2="186" y2="62"></line>
-	                                        <line x1="134" y1="62" x2="186" y2="104"></line>
-	                                        <line x1="134" y1="104" x2="186" y2="62"></line>
-	                                        <line x1="134" y1="104" x2="186" y2="104"></line>
-	                                        <line x1="134" y1="146" x2="186" y2="104"></line>
-	                                        <line x1="134" y1="146" x2="186" y2="146"></line>
-
-	                                        <line x1="186" y1="20" x2="238" y2="20"></line>
-	                                        <line x1="186" y1="20" x2="238" y2="62"></line>
-	                                        <line x1="186" y1="62" x2="238" y2="20"></line>
-	                                        <line x1="186" y1="62" x2="238" y2="62"></line>
-	                                        <line x1="186" y1="62" x2="238" y2="104"></line>
-	                                        <line x1="186" y1="104" x2="238" y2="62"></line>
-	                                        <line x1="186" y1="104" x2="238" y2="104"></line>
-	                                        <line x1="186" y1="146" x2="238" y2="104"></line>
-	                                        <line x1="186" y1="146" x2="238" y2="146"></line>
-
-	                                        <line x1="238" y1="20" x2="292" y2="20"></line>
-	                                        <line x1="238" y1="20" x2="292" y2="62"></line>
-	                                        <line x1="238" y1="62" x2="292" y2="20"></line>
-	                                        <line x1="238" y1="62" x2="292" y2="62"></line>
-	                                        <line x1="238" y1="104" x2="292" y2="62"></line>
-	                                        <line x1="238" y1="104" x2="292" y2="104"></line>
-	                                        <line x1="238" y1="146" x2="292" y2="104"></line>
-
-	                                        <line x1="292" y1="20" x2="374" y2="94"></line>
-	                                        <line x1="292" y1="62" x2="374" y2="94"></line>
-	                                        <line x1="292" y1="104" x2="374" y2="94"></line>
-	                                    </g>
-
-	                                    <g>
-	                                        <circle cx="28" cy="36" r="12" fill="#ffb566"></circle>
-	                                        <circle cx="28" cy="68" r="12" fill="#ffb566"></circle>
-	                                        <circle cx="28" cy="100" r="12" fill="#ffb566"></circle>
-	                                        <circle cx="28" cy="132" r="12" fill="#ffb566"></circle>
-
-	                                        <circle cx="82" cy="20" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="82" cy="62" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="82" cy="104" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="82" cy="146" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="134" cy="20" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="134" cy="62" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="134" cy="104" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="134" cy="146" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="186" cy="20" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="186" cy="62" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="186" cy="104" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="186" cy="146" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="238" cy="20" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="238" cy="62" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="238" cy="104" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="238" cy="146" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="292" cy="20" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="292" cy="62" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="292" cy="104" r="12" fill="#48b7ec"></circle>
-	                                        <circle cx="374" cy="94" r="13" fill="#008bd2"></circle>
-	                                    </g>
-
-	                                    <g transform="translate(386 104)">
-	                                        <rect x="0" y="0" width="34" height="50" fill="#fff" stroke="#d9d9d9"></rect>
-	                                        <path d="M24 0 L34 10 H24 Z" fill="#ededed" stroke="#d9d9d9"></path>
-	                                        <line x1="9" y1="22" x2="24" y2="22" stroke="#c7c7c7" stroke-width="1.8"></line>
-	                                        <line x1="9" y1="30" x2="23" y2="30" stroke="#c7c7c7" stroke-width="1.8"></line>
-	                                        <line x1="9" y1="38" x2="18" y2="38" stroke="#c7c7c7" stroke-width="1.8"></line>
-	                                    </g>
-	                                </svg>
-	                            </div>
-
-	                            <svg class="next-token-output-arrow" viewBox="0 0 62 24" aria-hidden="true">
-	                                <line x1="0" y1="12" x2="49" y2="12"></line>
-	                                <path d="M48 6 L60 12 L48 18 Z"></path>
-	                            </svg>
-
-		                            <div class="next-token-output">mat (97%)</div>
-		                        </div>
-		                    </section>
-	                    <section class="token-origin-slide" data-background-color="white">
-	                        <h3>Tokens: Where Do They Come From</h3>
-	                        <p class="token-origin-subtitle">
-	                            How to encode <span>"I was reading an interesting book in New York"</span>
-	                        </p>
-
-	                        <div class="token-origin-grid">
-	                            <div class="token-origin-card">
-	                                <h4>Character encoding</h4>
-	                                <ul>
-	                                    <li>
-	                                        <span class="token-origin-map">I=1, _=2, w=3, a=4, s=5, r=6,<br>
-	                                        e=7, d=8, i=9, n=10, g=11, t=12,<br>
-	                                        b=13, o=14, k=15, N=16, Y=17</span>
-	                                    </li>
-	                                    <li>
-	                                        <span class="token-origin-seq">1 2 3 4 5 2 6 7 4 8 9 10 11 2 4<br>
-	                                        10 2 9 10 12 7 6 7 5 12 9 10 11<br>
-	                                        2 13 14 14 15 2 9 10 2 16 7 3 2<br>
-	                                        17 14 6 15</span>
-	                                    </li>
-	                                </ul>
-	                                <div class="token-origin-note warn">
-	                                    <span class="token-origin-mark">!</span>
-	                                    <span>
-	                                        <strong>Long sequences</strong>
-	                                        <span class="token-origin-detail">Every character becomes a step for the model.</span>
-	                                    </span>
-	                                </div>
-	                            </div>
-
-	                            <div class="token-origin-card">
-	                                <h4>Word encoding</h4>
-	                                <ul>
-	                                    <li>
-	                                        <span class="token-origin-map">I=1, was=2, reading=3, an=4,<br>
-	                                        interesting=5, book=6, in=7,<br>
-	                                        New=8, York=9</span>
-	                                    </li>
-	                                    <li>
-	                                        <span class="token-origin-seq">1 2 3 4 5 6 7 8 9</span>
-	                                    </li>
-	                                </ul>
-	                                <div class="token-origin-note neutral">
-	                                    <span class="token-origin-mark">?</span>
-	                                    <span>
-	                                        <strong>Huge vocabulary</strong>
-	                                        <span class="token-origin-detail">New words, names, and typos need new ids.</span>
-	                                    </span>
-	                                </div>
-	                            </div>
-
-	                            <div class="token-origin-card">
-	                                <h4>Tokenization</h4>
-	                                <ul>
-	                                    <li>
-	                                        <span class="token-origin-map">I=1, was=2, read=3, ing=4,<br>
-	                                        an=5, interest=6, book=7, in=8,<br>
-	                                        New_York=9</span>
-	                                    </li>
-	                                    <li>
-	                                        <span class="token-origin-seq">1 2 3 4 5 6 4 7 8 9</span>
-	                                    </li>
-	                                </ul>
-	                                <div class="token-origin-note good">
-	                                    <span class="token-origin-mark">OK</span>
-	                                    <span>
-	                                        <strong>Balanced units</strong>
-	                                        <span class="token-origin-detail">Common chunks stay compact, rare words can split.</span>
-	                                    </span>
-	                                </div>
-	                            </div>
-	                        </div>
-	                    </section>
-	                    <section data-background-color="white">
-	                        <h3 style="color: #2d5d39; text-align: left">Autoregression</h3>
-	                        <img src="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/AutoregressionSchema.gif" alt="Autoregression Schema" width="80%">
-	                        <p style="font-size: 0.5em; text-align: left;">Source: <a href="https://huggingface.co/datasets/agents-course/course-images/resolve/main/en/unit1/AutoregressionSchema.gif">Hugging Face Agents Course</a></p>
-	                    </section>
-	                    <section class="special-tokens-slide" data-background-color="white">
-	                        <h3 style="color: #2d5d39; text-align: left">Tokens: Special Tokens</h3>
-	                        <ul style="font-size: 0.85em; text-align: left">
-	                            <li>Reserved tokens with predefined functions</li>
-	                            <li>Do not represent normal text</li>
-	                            <li>Control model behavior and structure inputs/outputs</li>
-	                        </ul>
-	                        <br>
-                            <h3 style="color: #2d5d39; text-align: left">Examples</h3>
-                            <ul style="font-size: 0.85em; text-align: left">
-	                            <li>EOS tokens: <code>&lt;eos&gt;</code>, <code>&lt;|endoftext|&gt;</code> — stop generation</li>
-	                            <li>Chat roles: <code>&lt;|user|&gt;</code>, <code>&lt;|assistant|&gt;</code>, <code>&lt;|system|&gt;</code></li>
-	                            <li>Control tokens: <code>&lt;translate&gt;</code>, <code>&lt;summarize&gt;</code>, <code>&lt;formal&gt;</code></li>
-	                        </ul>
-                        </section>
-	                    <section data-background-color="white">
-	                        <h3 style="color: #2d5d39; text-align: left">Softmax Temperature</h3>
-	                        <div style="display: flex; justify-content: center; align-items: flex-start; gap: 10px;">
-	                            <img src="https://miro.medium.com/v2/resize:fit:700/0*J8gIAZofl6MlfLUK.jpeg" alt="Softmax Logits" width="45%">
-	                            <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; width: 38%;">
-                                    <img src="https://miro.medium.com/v2/resize:fit:700/0*7xj72SjtNHvCMQlV.jpeg" alt="Temperature Effects" width="100%">
-	                                <img src="https://miro.medium.com/v2/resize:fit:400/1*p1iKxUJcXDlSEZCpMCwNgg.gif" alt="Temperature Scaling GIF" width="90%">
-	                            </div>
-	                        </div>
-	                        <p style="font-size: 0.5em; text-align: left;">Source: <a href="https://medium.com/@harshit158/softmax-temperature-5492e4007f71">Medium: Softmax Temperature by Harshit Sharma</a></p>
-	                    </section>
-	                    <section class="llm-training-slide" data-background-color="white">
-	                        <h3 style="color: #2d5d39; text-align: left; font-size: 1.5em; margin-bottom: 28px;">How LLMs Are Trained</h3>
-	                        <div style="display: grid; grid-template-columns: 120px 1fr 42px 1fr 42px 1fr; grid-template-rows: 74px 42px 86px 52px 112px; gap: 10px 14px; align-items: center; color: #285548;">
-	                            <div style="grid-column: 1; grid-row: 1; font-weight: bold; font-size: 0.64em; text-align: left;">Training<br>Steps</div>
-	                            <div style="grid-column: 2; grid-row: 1; background: #8fb0bd; color: white; min-height: 74px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.56em; line-height: 1.12; text-align: center;">
-	                                Self-supervised<br>Pre-training
-	                            </div>
-	                            <div style="grid-column: 4; grid-row: 1; background: #8fb0bd; color: white; min-height: 74px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.54em; line-height: 1.12; text-align: center;">
-	                                Supervised<br>Instruction<br>Fine-tuning
-	                            </div>
-	                            <div style="grid-column: 6; grid-row: 1; background: #8fb0bd; color: white; min-height: 74px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.52em; line-height: 1.12; text-align: center;">
-	                                Reinforcement learning<br>from human feedback<br>(RLHF)
-	                            </div>
-
-	                            <div style="grid-column: 1; grid-row: 3; font-weight: bold; font-size: 0.64em; text-align: left;">Models</div>
-	                            <div style="grid-column: 2; grid-row: 3; border: 3px solid #8aa8ae; background: white; min-height: 72px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.56em; line-height: 1.15; text-align: center;">
-	                                Foundational<br>LLM Model
-	                            </div>
-	                            <div style="grid-column: 3; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #285548; font-size: 0.38em; line-height: 1.1;">
-	                                <span>Next</span>
-	                                <span style="font-size: 2.2em; line-height: 0.9;">&rarr;</span>
-	                            </div>
-	                            <div style="grid-column: 4; grid-row: 3; border: 3px solid #8aa8ae; background: white; min-height: 72px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.56em; line-height: 1.15; text-align: center;">
-	                                SFT LLM Model
-	                            </div>
-	                            <div style="grid-column: 5; grid-row: 3; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #285548; font-size: 0.38em; line-height: 1.1;">
-	                                <span>Next</span>
-	                                <span style="font-size: 2.2em; line-height: 0.9;">&rarr;</span>
-	                            </div>
-	                            <div style="grid-column: 6; grid-row: 3; border: 3px solid #8aa8ae; background: white; min-height: 72px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.56em; line-height: 1.15; text-align: center;">
-	                                RLHF LLM Model
-	                            </div>
-
-	                            <div style="grid-column: 2; grid-row: 4; display: flex; align-items: center; justify-content: center; color: #285548; font-size: 0.46em; line-height: 1;">
-	                                <span>Train</span>
-	                                <span style="font-size: 1.4em; margin-left: 10px;">&uarr;</span>
-	                            </div>
-	                            <div style="grid-column: 4; grid-row: 4; display: flex; align-items: center; justify-content: center; color: #285548; font-size: 0.46em; line-height: 1;">
-	                                <span>Train</span>
-	                                <span style="font-size: 1.4em; margin-left: 10px;">&uarr;</span>
-	                            </div>
-	                            <div style="grid-column: 6; grid-row: 4; display: flex; align-items: center; justify-content: center; color: #285548; font-size: 0.46em; line-height: 1;">
-	                                <span>Train</span>
-	                                <span style="font-size: 1.4em; margin-left: 10px;">&uarr;</span>
-	                            </div>
-
-	                            <div style="grid-column: 1; grid-row: 6; font-weight: bold; font-size: 0.64em; text-align: left;">Datasets</div>
-	                            <div style="grid-column: 2; grid-row: 6; border: 3px solid #0f4f67; background: white; min-height: 82px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.5em; line-height: 1.15; text-align: center;">
-	                                Wiki, Articles, Books,<br>Web sites…
-	                            </div>
-	                            <div style="grid-column: 4; grid-row: 6; border: 3px solid #0f4f67; background: white; min-height: 82px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.5em; line-height: 1.15; text-align: center;">
-	                                Human instructions<br>&amp; responses
-	                            </div>
-	                            <div style="grid-column: 6; grid-row: 6; border: 3px solid #0f4f67; background: white; min-height: 82px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; padding: 10px 12px; font-size: 0.5em; line-height: 1.15; text-align: center;">
-	                                Human annotated<br>scores of LLM outputs
-	                            </div>
-	                            <div style="grid-column: 6; grid-row: 5; display: grid; grid-template-rows: auto 10px auto; gap: 0; align-items: center;">
-	                                <div style="border: 3px solid #f6a6c6; background: white; box-sizing: border-box; padding: 9px 10px; font-size: 0.5em; line-height: 1.15; text-align: center;">
-	                                    Reward Model<br>(RM)
-	                                </div>
-	                            </div>
-	                        </div>
-	                    </section>
-	                    <section data-background-color="white">
-	                        <h3 style="color: #2d5d39; text-align: left">LLMs: Key Takeaways</h3>
-	                        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 40px; text-align: left; font-size: 0.55em;">
-	                            <div>
-	                                <p style="margin-bottom: 10px;">LLMs operate on <span style="color: #5b56a1;">tokens (including special ones)</span>, not words or meaning</p>
-	                                <ul style="margin-bottom: 20px;">
-	                                    <li>Billing and context limits</li>
-	                                    <li>Prompt structure and context formatting matter</li>
-	                                </ul>
-	                                <p style="margin-bottom: 10px;">LLMs predict the <span style="color: #5b56a1;">next token based on probabilities</span></p>
-	                                <ul style="margin-bottom: 20px;">
-	                                    <li>temperature</li>
-	                                    <li>hallucinations
-	                                        <ul style="list-style-type: circle; margin-top: 5px;">
-	                                            <li style="color: #5b56a1;">We automate everything that can be automated</li>
-	                                            <li style="color: #5b56a1;">And we AI-ify everything that can't</li>
-	                                        </ul>
-	                                    </li>
-	                                </ul>
-	                                <p style="margin-bottom: 10px;">Strengths:</p>
-	                                <ul style="margin-bottom: 20px;">
-	                                    <li>Language tasks (summarization, paraphrasing, text/code generation)</li>
-	                                    <li>Structured reasoning patterns, tool use, file/table processing</li>
-	                                </ul>
-	                                <p style="margin-bottom: 10px;">Limitations:</p>
-	                                <ul>
-	                                    <li>Precise algorithmic/symbolic tasks</li>
-	                                    <li>Up-to-date knowledge (post-training events)</li>
-	                                    <li>Long multi-step planning and persistent memory</li>
-	                                </ul>
-	                            </div>
-	                            <div>
-	                                <div style="background-color: #f0f7ff; border: 1px solid #c2e0ff; padding: 15px; border-radius: 5px; display: flex; align-items: flex-start; gap: 12px; margin-bottom: 25px;">
-	                                    <span style="background-color: #5b56a1; color: white; padding: 0px 6px; border-radius: 4px; font-size: 1.2em; line-height: 1.2;">&#10145;</span>
-	                                    <p style="margin: 0; line-height: 1.3; color: #333;">Many limitations can be mitigated in agents using tools and memory.</p>
-	                                </div>
-	                                <div style="text-align: center;">
-	                                    <img src="https://media.makeameme.org/created/spoilers-spoilers-everywhere-rkfxwc.jpg" alt="Spoilers Everywhere Meme" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.15);">
-	                                </div>
-	                            </div>
-	                        </div>
-	                    </section>
-                </section>
-                <section>
-                    <section data-background-color="white">
-                        <h3>What is "agent"?</h3>
+                    <section>
+                        <h3>How to Provide Tools to LLM</h3>
+                        <p style="text-align: left"><strong>Providing tools to an LLM means:</strong></p>
                         <ul>
-                            <li class="fragment">
-                                <strong>An "intelligent" system that interacts with some "environment"</strong>
+                            <li>The model is informed about available tools - <strong>via the system prompt</strong></li>
+                            <li>The model learns to generate tool calls when needed through:
                                 <ul>
-                                    <li>Physical environments: robot, autonomous car, ...</li>
-                                    <li>Digital environments: DQN for Atari, Siri, AlphaGo, ...</li>
-                                    <li>Humans as environments: chatbot</li>
-                                </ul>
-                            </li>
-                            <li class="fragment"><strong>Define "agent" by defining "intelligent" and "environment"</strong>
-                                <ul>
-                                    <li>It changes over time!</li>
-                                    <li>Exercise question: how would you define "intelligent"?</li>
+                                    <li>Models that support tool calling are <strong>trained on tool-usage examples</strong>,
+                                        using the required format (e.g., special tokens)
+                                    </li>
+                                    <li>Understanding your tool descriptions - that's why it must be clear, precise, and consistent
+                                    </li>
                                 </ul>
                             </li>
                         </ul>
                     </section>
+                    <section>
+                        <h3>Tool Design Principles</h3>
+                        <table style="border-collapse:collapse; width:100%; text-align:left; font-size:0.42em; line-height:1.3;">
+                            <tr style="vertical-align:top;">
+                                <td style="border-right:2px solid #b0b0b0; padding-right:16px;">
+                                    <strong>Handling Partial Failures</strong>
+                                    <p>Tools must handle partial failures while keeping the system consistent</p>
+                                    <p>charge payment &rarr; reserve inventory &rarr; create delivery</p>
+                                </td>
+                                <td style="border-right:2px solid #b0b0b0; padding:0 16px;">
+                                    <strong>Idempotency &amp; Safe Retries</strong>
+                                    <p>Tools must safely handle repeated calls (after crashes, timeouts, agent restarts)</p>
+                                    <p>Sending an email &rarr; gets timeout &rarr; retry must not send it twice</p>
+                                </td>
+                                <td>
+                                    <strong>Clear Error Messages</strong>
+                                    <p>Errors must be understandable for LLMs so the agent can decide what to do next</p>
+                                    <p>Good errors enable the agent to:</p>
+                                    <ul>
+                                        <li>Ask the user for missing parameters</li>
+                                        <li>Retry or offer alternatives during temporary outages</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                            <tr style="vertical-align:top;">
+                                <td style="border-right:2px solid #b0b0b0; padding-right:16px;">
+                                    <strong>Guidance for Next Steps</strong>
+                                    <p>Tools can return guidance that helps the agent continue the conversation properly.</p>
+                                    <p>Examples</p>
+                                    <ul>
+                                        <li>Ask the user for a delivery date</li>
+                                        <li>Request a phone number in the correct format</li>
+                                    </ul>
+                                </td>
+                                <td style="border-right:2px solid #b0b0b0; padding:0 16px;">
+                                    <strong>Structured Outputs</strong>
+                                    <p>Return structured, machine-readable outputs instead of free-form text.</p>
+                                    <p>Examples</p>
+                                    <ul>
+                                        <li>{status, order_id, delivery_window}</li>
+                                        <li>Analytics returning aggregates instead of prose</li>
+                                    </ul>
+                                </td>
+                                <td>
+                                    <strong>Key Takeaway</strong>
+                                    <p>A good tool for an AI agent is not just a function</p>
+                                    <p>It is a reliable contract between the LLM and external systems, designed to withstand failures, retries, and changing environments.</p>
+                                </td>
+                            </tr>
+                        </table>
+                        <p style="text-align: right;font-size: small"><a href="https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FvrfOWmWjMF41hKo8lmus%2B61fGg%2BXK9KVCFdM45l0gLTx5l2ahqSTrnYk9HJKOhBvq%2FJ6bpmRyOJonT3VoXnDag%3D%3D%3A%2F1%20%D0%B4%D0%B5%D0%BD%D1%8C%2FAgents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP%2FAgents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP.pdf&name=Agents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP.pdf">Source: Yandex Lavka on Agents Week 2026, Slide 7</a></p>
+                    </section>
+                </section>
+                <section>
                     <section data-background-color="white">
-                        <h3>What is "LLM agent"?</h3>
-                        <div style="display: flex; justify-content: space-between;">
-                            <div style="align-content: center">
-                                <br>
-                                <img src="assets/agents_world.webp" alt="Agents Diagram" style="width: 600px;padding-left: 40px">
-                            </div>
-                            <div>
-                                <ul>
-                                    <li><strong>Level 1: Text agent</strong>
-                                        <ul>
-                                            <li>Uses text action and observation</li>
-                                            <li>Examples: ELIZA, LSTM-DQN</li>
-                                        </ul>
-                                    </li>
-                                    <li><strong>Level 2: LLM agent</strong>
-                                        <ul>
-                                            <li>Uses LLM to act</li>
-                                            <li>Examples: SayCan, Language Planner</li>
-                                        </ul>
-                                    </li>
-                                    <li><strong>Level 3: Reasoning agent</strong>
-                                        <ul>
-                                            <li>Uses LLM to reason and act</li>
-                                            <li>Examples: ReAct, AutoGPT</li>
-                                            <li><strong>The key focus of the field and the talk</strong></li>
-                                        </ul>
-                                    </li>
-                                </ul>
-                            </div>
+                        <h3>When is Protocol Needed</h3>
+                        <table style="width:100%; text-align:left; font-size:0.5em; line-height:1.32; vertical-align:top;">
+                            <tr style="vertical-align:top;">
+                                <td style="width:30%; padding-right:24px;">
+                                    <p><strong>Yes,</strong></p>
+                                    <p>Tools have significantly expanded the capabilities of LLMs and enabled them to act as agents</p>
+                                </td>
+                                <td style="width:36%; padding-right:24px;">
+                                    <p><strong>But</strong></p>
+                                    <ul>
+                                        <li>Tools are embedded inside each agent</li>
+                                        <li>APIs change over time</li>
+                                        <li>Different models expect tools/invoke them in different formats</li>
+                                    </ul>
+                                </td>
+                                <td style="width:34%;">
+                                    <p style="font-size:1.5em; color:#888; margin:0 0 8px;">&rarr;</p>
+                                    <ul>
+                                        <li>Tool reusability remains low</li>
+                                        <li>Any API change requires updating multiple agents</li>
+                                        <li>Systems become fragile and hard to scale</li>
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                        <div style="margin-top:24px; display:flex; align-items:center; justify-content:left; gap:32px;">
+                            <img src="assets/doge-sad.webp" alt="sad doge" style="height:170px;">
+                            <span style="font-size:2.2em; color:#888;">&rarr;</span>
+                            <img src="assets/doge-meme-med.jpg" alt="buff doge" style="height:170px;">
                         </div>
                     </section>
                     <section data-background-color="white">
-                      <h3>A brief history of LLM agents</h3>
-                        <div class="column">
-                          <ul>
-                            <li class="fragment" data-fragment-index="0"><strong>Reasoning</strong>
-                              <ul>
-                                <li>CoT (Chain of Thought)</li>
-                                <li>Zero-shot CoT</li>
-                                <li>Self-consistency</li>
-                                <li>...</li>
-                              </ul>
-                            </li>
-                            <li class="fragment" data-fragment-index="1"><strong>Acting</strong> (Grounding, tool use, etc.)
-                              <ul>
-                                <li>Game</li>
-                                <li>Robotics</li>
-                                <li>RAG (Retrieval-Augmented Generation)</li>
-                                <li>...</li>
-                              </ul>
-                            </li>
-                          </ul>
+                        <h3>What is MCP</h3>
+                        <p style="color:#2d5d39; font-size:0.62em; margin:18px 0 12px;text-align: left">
+                            On November 25, 2024, Anthropic open-sourced the Model Context Protocol (MCP)</p>
+                        <p style="font-size:0.62em; line-height:1.35; margin:0;text-align: left">
+                            <span style="color:#2d5d39;">Model Context Protocol (MCP)</span> is an open standard that enables secure, bidirectional connections between AI models and external systems (APIs, tools, data sources)
+                        </p>
+
+                        <div style="display:flex; align-items:center; gap:28px; margin-top:22px;">
+                            <img src="assets/doge-buffed.webp"
+                                 alt="a very buff doge with cybernetic gauntlets"
+                                 style="flex:0 0 250px; height:300px; object-fit:contain; margin:0;">
+
+                            <div style="flex:1;">
+                                <p style="text-align:center; font-style:italic; color:#2d5d39; font-size:0.5em; margin:0 0 14px;">MCP is the &ldquo;USB-C port&rdquo; or &ldquo;HTTP layer&rdquo; of the AI ecosystem.</p>
+                                <div style="display:flex; align-items:center; justify-content:center; gap:12px; font-size:0.34em; text-align:left;">
+                                    <!-- AI applications -->
+                                    <div style="display:flex; flex-direction:column; gap:10px;">
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>Chat interface</strong><br>Claude Desktop, LibreChat</div>
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>IDEs and code editors</strong><br>IntelliJ, Visual Studio Code</div>
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>Other AI applications</strong><br>Sire, SuperInterface</div>
+                                        <div style="text-align:center; color:#888; margin-top:2px;">AI applications</div>
+                                    </div>
+                                    <!-- left connector -->
+                                    <div style="text-align:center; color:#888; white-space:nowrap;">&harr;<br>Bidirectional<br>data flow</div>
+                                    <!-- MCP hub -->
+                                    <div style="border:2px solid #4a7cb5; background:#eaf2fb; border-radius:8px; padding:16px 14px; text-align:center;"><strong>MCP</strong><br>Standardized protocol</div>
+                                    <!-- right connector -->
+                                    <div style="text-align:center; color:#888; white-space:nowrap;">&harr;<br>Bidirectional<br>data flow</div>
+                                    <!-- Data sources and tools -->
+                                    <div style="display:flex; flex-direction:column; gap:10px;">
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>Data and file systems</strong><br>PostgreSQL, SQLite, GDrive</div>
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>Development tools</strong><br>Git, Sentry, etc.</div>
+                                        <div style="border:1px solid #999; border-radius:6px; padding:8px 10px;"><strong>Productivity tools</strong><br>Slack, Google Maps, etc.</div>
+                                        <div style="text-align:center; color:#888; margin-top:2px;">Data sources and tools</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="column">
-                          <ul>
-                            <li class="fragment" data-fragment-index="2">
-                                $\to$ LLM agent (but not reasoning agent) evolves
-                                into <strong class="important">ReAct</strong> (Reasoning + Acting)</li>
+
+                        <p style="text-align:left; font-size:small; margin-top:16px;">
+                            <a href="https://www.anthropic.com/news/model-context-protocol">https://www.anthropic.com/news/model-context-protocol</a><br>
+                            <a href="https://modelcontextprotocol.io/docs/getting-started/intro">https://modelcontextprotocol.io/docs/getting-started/intro</a>
+                        </p>
+                    </section>
+                    <section>
+                    <h3>Architecture &amp; Roles</h3>
+                    <p style="font-size:0.56em; margin:16px 0 10px;text-align: left">
+                        <span style="color:orange;">Client&ndash;server architecture</span> with three roles
+                    </p>
+
+                    <div style="display:grid; grid-template-columns:1fr 150px 1fr; align-items:center; justify-items:center; row-gap:6px; font-size:0.44em; max-width:1080px; margin:0 auto;">
+                        <!-- MCP Host -->
+                        <div style="justify-self:end; display:flex; align-items:center; gap:14px; text-align:left;">
+                            <div><strong>MCP Host</strong><br><strong>Role</strong>: Handles UI and connects to servers</div>
+                            <div style="width:70px; height:2px; background:#bbb;"></div>
+                        </div>
+                        <div style="width:74px; height:66px; background:#20262c; color:#fff; border-radius:10px; display:flex; align-items:center; justify-content:center; font-weight:800; letter-spacing:1px;">AI</div>
+                        <div></div>
+
+                        <!-- connector host -> client -->
+                        <div></div>
+                        <div style="width:2px; height:26px; background:#6a3fb5;"></div>
+                        <div></div>
+
+                        <!-- MCP Client -->
+                        <div style="justify-self:end; display:flex; align-items:center; gap:14px; text-align:left;">
+                            <div><strong>MCP Client</strong><br><strong>Role</strong>: Sends prompts and returns model responses</div>
+                            <div style="width:70px; height:2px; background:#bbb;"></div>
+                        </div>
+                        <div style="width:64px; height:70px; border:2px solid #333; border-radius:6px; display:flex; align-items:center; justify-content:center; font-weight:800; color:#333;">APP</div>
+                        <div></div>
+
+                        <!-- connector client -> server -->
+                        <div></div>
+                        <div style="width:2px; height:26px; background:#6a3fb5;"></div>
+                        <div></div>
+
+                        <!-- MCP Server -->
+                        <div></div>
+                        <div style="width:84px; height:58px; border:2px solid #333; border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:4px; color:#333;">
+                            <div style="width:60px; height:3px; background:#333;"></div>
+                            <div style="width:60px; height:3px; background:#333;"></div>
+                            <div style="width:60px; height:3px; background:#333;"></div>
+                        </div>
+                        <div style="justify-self:start; display:flex; align-items:center; gap:14px; text-align:left;">
+                            <div style="width:70px; height:2px; background:#e08a3c;"></div>
+                            <div><strong>MCP Server</strong><br><strong>Role</strong>: Serves tools, data, prompt templates</div>
+                        </div>
+
+                        <!-- connector server -> tools -->
+                        <div></div>
+                        <div style="width:2px; height:26px; background:#6a3fb5;"></div>
+                        <div></div>
+
+                        <!-- MCP Tools -->
+                        <div></div>
+                        <div style="display:flex; gap:14px; font-size:1.7em;">
+                            <span>🌐</span><span>🧮</span><span>📁</span><span>🛢️</span>
+                        </div>
+                        <div style="justify-self:start; display:flex; align-items:center; gap:14px; text-align:left;">
+                            <div style="width:70px; height:2px; background:#e08a3c;"></div>
+                            <div><strong>MCP Tools</strong></div>
+                        </div>
+                    </div>
+                </section>
+                    <section>
+                        <h3 style="text-align: left">Roles: Host</h3>
+                        <table style="width:100%; border-collapse:separate; border-spacing:20px; font-size:0.5em; text-align:left;">
+                            <tr style="vertical-align:middle;">
+                                <td style="border:1px solid #cccccc; padding:22px; width:33%; height:150px;">Orchestrates LLMs and AI workflows</td>
+                                <td style="border:1px solid #cccccc; padding:22px; width:33%; height:150px;">Manages connections: one MCP client per MCP server</td>
+                                <td style="border:1px solid #cccccc; padding:22px; width:33%; height:150px;">Controls UI: User-facing application (e.g., Cursor, custom agents)</td>
+                            </tr>
+                            <tr style="vertical-align:middle;">
+                                <td style="border:1px solid #cccccc; padding:22px; height:150px;">Security &amp; permissions: auth, limits, policies</td>
+                                <td style="border:1px solid #cccccc; padding:22px; height:150px;">User consent: approvals for data sharing &amp; tool use</td>
+                                <td style="padding:22px; height:150px;">
+                                    <!-- schematic AI chat UI -->
+                                    <div style="width:100%; height:100%; border:1px solid #cccccc; border-radius:8px; overflow:hidden; display:flex; flex-direction:column; background:#ffffff;">
+                                        <div style="display:flex; align-items:center; gap:5px; padding:6px 9px; background:#f2f2f4; border-bottom:1px solid #e2e2e6;">
+                                            <span style="width:8px; height:8px; border-radius:50%; background:#e0554e; display:inline-block;"></span>
+                                            <span style="width:8px; height:8px; border-radius:50%; background:#e8b73a; display:inline-block;"></span>
+                                            <span style="width:8px; height:8px; border-radius:50%; background:#4ca94c; display:inline-block;"></span>
+                                            <span style="margin-left:8px; color:#888; font-size:0.7em;">AI Chat</span>
+                                        </div>
+                                        <div style="flex:1; display:flex; flex-direction:column; gap:8px; padding:12px;">
+                                            <div style="align-self:flex-start; background:#eef0f3; border-radius:10px 10px 10px 2px; padding:6px 10px; width:70%; height:16px;"></div>
+                                            <div style="align-self:flex-end; background:#d6e6fb; border-radius:10px 10px 2px 10px; padding:6px 10px; width:55%; height:16px;"></div>
+                                            <div style="align-self:flex-start; background:#eef0f3; border-radius:10px 10px 10px 2px; padding:6px 10px; width:60%; height:16px;"></div>
+                                        </div>
+                                        <div style="display:flex; align-items:center; gap:8px; padding:9px 10px; border-top:1px solid #e2e2e6;">
+                                            <div style="flex:1; height:16px; background:#f2f2f4; border:1px solid #dcdce0; border-radius:8px;"></div>
+                                            <div style="width:26px; height:22px; background:#4a7cb5; border-radius:6px;"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </section>
+                    <section>
+                        <h3 style="text-align: left">Roles: Server</h3>
+                        <p style="font-size:0.62em; margin:18px 0 6px;text-align: left"><strong>Server = provider of context and capabilities</strong></p>
+                        <ul style="font-size:0.6em;">
+                            <li><span style="color:orange;">A lightweight program</span> exposing tools, context, and capabilities</li>
+                            <li>Can run locally or remotely</li>
+                        </ul>
+                        <p style="font-size:0.6em; margin:14px 0 6px;text-align: left">Tasks:</p>
+                        <ul style="font-size:0.6em;">
+                            <li><span style="color:orange;">Registers capabilities</span></li>
+                            <li><span style="color:orange;">Processes requests</span></li>
+                            <li><span style="color:orange;">Providing context</span></li>
+                            <li><span style="color:orange;">Client connection handling</span></li>
+                            <li><span style="color:orange;">Sends updates/notifications to clients</span></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3 style="text-align: left">Roles: Client</h3>
+                        <p style="font-size:0.62em; margin:18px 0 40px;text-align: left">
+                            <strong>Client = connector between Host and Server</strong></p>
+                        <ul style="font-size:0.6em; line-height:1.4;">
+                            <li><span style="color:orange;">Protocol communication</span>: JSON-RPC 2.0 requests, secure communication channels</li>
+                            <li><span style="color:orange;">Capability negotiation</span>: features &amp; versions during initialization</li>
+                            <li><span style="color:orange;">Tool execution</span>: sends tool calls, returns results</li>
+                            <li><span style="color:orange;">Real-time updates</span>: handles server notifications</li>
+                        </ul>
+                    </section>
+                    <section class="mcpf-slide" data-background-color="white">
+                        <h3>MCP Flow</h3>
+                        <div class="mcpf-stage">
+                            <svg viewBox="-60 0 1180 640" role="img"
+                                 aria-label="Sequence diagram of an MCP session: the app creates two MCP clients, each fetches a tool list from its server, the LLM selects a tool, the client executes it and the answer goes back to the user">
+                                <defs>
+                                    <marker id="mcpf-tip" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+                                        <path d="M0 0 L10 4 L0 8 Z" fill="#555"></path>
+                                    </marker>
+                                    <marker id="mcpf-tip-open" markerWidth="11" markerHeight="9" refX="10" refY="4.5" orient="auto" markerUnits="userSpaceOnUse">
+                                        <path d="M0 0 L10 4.5 L0 9" fill="none" stroke="#777" stroke-width="1.4"></path>
+                                    </marker>
+                                </defs>
+
+                                <!-- MCP host frame -->
+                                <rect x="212" y="12" width="550" height="110" rx="14" ry="14" fill="#fff" stroke="#333" stroke-width="1.6"></rect>
+                                <text class="mcpf-host-label" x="487" y="32" text-anchor="middle">MCP-host</text>
+
+                                <!-- participants -->
+                                <rect x="31" y="54" width="131" height="61" rx="3" fill="#9e9e9e" stroke="#a5822a" stroke-width="1.6"></rect>
+                                <text class="mcpf-part" x="96" y="89" text-anchor="middle">👤 User</text>
+
+                                <rect x="224" y="54" width="132" height="61" rx="3" fill="#aadcf5" stroke="#1e88e5" stroke-width="1.8"></rect>
+                                <text class="mcpf-part" x="290" y="89" text-anchor="middle">🖥 App</text>
+
+                                <rect x="380" y="54" width="92" height="61" rx="3" fill="#d7f0c0" stroke="#5fa845" stroke-width="1.8" stroke-dasharray="6 4"></rect>
+                                <text class="mcpf-part" x="426" y="79" text-anchor="middle">🔧 MCP</text>
+                                <text class="mcpf-part" x="426" y="95" text-anchor="middle">Client 1</text>
+
+                                <rect x="492" y="54" width="92" height="61" rx="3" fill="#f0c9a8" stroke="#a5673f" stroke-width="1.8" stroke-dasharray="6 4"></rect>
+                                <text class="mcpf-part" x="538" y="79" text-anchor="middle">📚 MCP</text>
+                                <text class="mcpf-part" x="538" y="95" text-anchor="middle">Client 2</text>
+
+                                <rect x="617" y="54" width="133" height="61" rx="3" fill="#f8cde0" stroke="#8e24aa" stroke-width="1.8"></rect>
+                                <text class="mcpf-part" x="683" y="89" text-anchor="middle">🧠 Client LLM</text>
+
+                                <rect x="787" y="54" width="131" height="61" rx="3" fill="#c8e6a0" stroke="#5fa845" stroke-width="1.6"></rect>
+                                <text class="mcpf-part" x="852" y="89" text-anchor="middle">🔧 MCP Server 1</text>
+
+                                <rect x="954" y="54" width="132" height="61" rx="3" fill="#f0b183" stroke="#c9762f" stroke-width="1.6"></rect>
+                                <text class="mcpf-part" x="1020" y="89" text-anchor="middle">📚 MCP Server 2</text>
+
+                                <!-- lifelines -->
+                                <path class="mcpf-life" d="M96 115 V628"></path>
+                                <path class="mcpf-life" d="M290 115 V628"></path>
+                                <path class="mcpf-life" d="M426 115 V628"></path>
+                                <path class="mcpf-life" d="M538 115 V628"></path>
+                                <path class="mcpf-life" d="M683 115 V628"></path>
+                                <path class="mcpf-life" d="M852 115 V628"></path>
+                                <path class="mcpf-life" d="M1020 115 V628"></path>
+
+                                <!-- 1. App creates client 1, client 1 asks server 1 -->
+                                <path class="mcpf-solid" d="M290 140 H425" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="358" y="136" text-anchor="middle">Create</text>
+
+                                <path class="mcpf-solid" d="M426 154 H851" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="639" y="150" text-anchor="middle">Request available tools/resources</text>
+
+                                <path class="mcpf-dashed" d="M852 173 H427" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="639" y="169" text-anchor="middle">Return tool list</text>
+
+                                <path class="mcpf-dashed" d="M426 193 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="358" y="189" text-anchor="middle">Return tool list</text>
+
+                                <!-- 2. App creates client 2, client 2 asks server 2 -->
+                                <path class="mcpf-solid" d="M290 223 H537" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="414" y="219" text-anchor="middle">Create</text>
+
+                                <path class="mcpf-solid" d="M538 237 H1019" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="779" y="233" text-anchor="middle">Request available tools/resources</text>
+
+                                <path class="mcpf-dashed" d="M1020 259 H539" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="779" y="255" text-anchor="middle">Return tool list</text>
+
+                                <path class="mcpf-dashed" d="M538 277 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="414" y="273" text-anchor="middle">Return tool list</text>
+
+                                <!-- note over the app -->
+                                <rect x="236" y="287" width="112" height="33" fill="#ffffcc" stroke="#d9d98a" stroke-width="1"></rect>
+                                <text class="mcpf-note-text" x="241" y="300">Store combined</text>
+                                <text class="mcpf-note-text" x="241" y="314">toolcatalog locally</text>
+
+                                <!-- 3. prompt in, LLM picks a tool -->
+                                <path class="mcpf-solid" d="M96 329 H289" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="193" y="325" text-anchor="middle">Enter natural language prompt</text>
+
+                                <path class="mcpf-solid" d="M290 333 H682" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="329" text-anchor="middle">Forward prompt + tool catalog</text>
+
+                                <text class="mcpf-msg" x="695" y="365" text-anchor="middle">Analyze prompt &amp; select tools</text>
+                                <circle class="mcpf-dot" cx="683" cy="372" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M683 372 H712 Q722 372 722 382 V393 Q722 403 712 403 H690"
+                                      marker-end="url(#mcpf-tip)"></path>
+
+                                <path class="mcpf-solid" d="M683 421 H291" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="417" text-anchor="middle">Request tool execution</text>
+
+                                <!-- 4. user confirms, the tool runs -->
+                                <path class="mcpf-solid" d="M290 453 H425" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="358" y="449" text-anchor="middle">Choose, provide info</text>
+
+                                <path class="mcpf-solid" d="M426 459 H851" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="639" y="455" text-anchor="middle">Execute tool</text>
+
+                                <path class="mcpf-dashed" d="M852 500 H427" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="639" y="496" text-anchor="middle">Return results</text>
+
+                                <path class="mcpf-dashed" d="M426 517 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="358" y="513" text-anchor="middle">Return results</text>
+
+                                <!-- 5. answer back to the user -->
+                                <circle class="mcpf-dot" cx="683" cy="523" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M290 546 H682" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="542" text-anchor="middle">Process results</text>
+
+                                <path class="mcpf-dashed" d="M683 574 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="486" y="570" text-anchor="middle">Generate response</text>
+
+                                <circle class="mcpf-dot" cx="96" cy="603" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M290 603 H97" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="193" y="599" text-anchor="middle">Display final answer</text>
+                            </svg>
+                        </div>
+                    </section>
+                    <section class="recap-slide" data-background-color="white">
+                        <h3>Recap: problems solved</h3>
+                        <table class="recap-table">
+                            <colgroup>
+                                <col class="recap-c1">
+                                <col class="recap-c2">
+                                <col class="recap-c3">
+                            </colgroup>
+                            <thead>
+                                <tr>
+                                    <th>Problem</th>
+                                    <th>Without MCP</th>
+                                    <th>With MCP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="recap-problem">Tool reusability</td>
+                                    <td>Each team reimplemented the same tools independently.</td>
+                                    <td>Tools live in MCP servers &mdash; standalone infrastructure components (like microservices).<br>
+                                        Write once &rarr; reuse across many agents and products.</td>
+                                </tr>
+                                <tr>
+                                    <td class="recap-problem">API updates &amp; maintenance</td>
+                                    <td>All agent teams had to update their integrations manually.</td>
+                                    <td>Responsibility shifts to MCP server maintainers. Agents automatically discover updated capabilities during initialization.</td>
+                                </tr>
+                                <tr>
+                                    <td class="recap-problem">Scaling and modifications</td>
+                                    <td>Components were tightly coupled. Changing one component required rewriting many parts in each agent</td>
+                                    <td>Separation of responsibilities. Changes are localized to individual components.</td>
+                                </tr>
+                                <tr>
+                                    <td class="recap-problem">Vibe</td>
+                                    <td class="recap-meme-cell">
+                                        <img class="recap-meme" src="assets/spaghetti-enemy.jpg" alt="spaghetti code as the final boss">
+                                    </td>
+                                    <td class="recap-meme-cell">
+                                        <img class="recap-meme" src="assets/oop_meme.jpg" alt="OOP meme">
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </section>
+                    <section class="but-slide" data-background-color="white">
+                        <h3>But</h3>
+                        <div class="but-body">
+                            <p>Do not over-engineer. Start simple. Add MCP when complexity forces you.</p>
+                            <p class="but-lead-in">In the middle ground you can use lightweight tool ecosystems<br>
+                                (e.g., AgentSkills) that provide:</p>
                             <ul>
-                              <li class="fragment" data-fragment-index="3">New apps/tasks/benchmarks:
-                                <ul>
-                                  <li>Web browsing</li>
-                                  <li>Software engineering (Junie)</li>
-                                  <li>Scientific discovery (Deep Research)</li>
-                                  <li>...</li>
-                                </ul>
-                              </li>
-                              <li class="fragment" data-fragment-index="4">New methods:
-                                <ul>
-                                  <li>Memory, learning, planning, multi-agent...</li>
-                                </ul>
-                              </li>
+                                <li>Ready-to-use skills</li>
+                                <li>Standardized interfaces</li>
+                                <li>Faster development without heavy infrastructure</li>
+                                <li>A stepping stone toward more structured architectures like MCP</li>
                             </ul>
-                          </ul>
+                        </div>
+                        <div class="but-tools">
+                            <p class="but-tools-title">Ready-to-use Tools</p>
+                            <ul>
+                                <li><a href="https://agentskills.io/home">https://agentskills.io/home</a></li>
+                                <li><a href="https://docs.langchain.com/oss/python/integrations/tools">https://docs.langchain.com/oss/python/integrations/tools</a></li>
+                                <li><a href="https://github.com/punkpeye/awesome-mcp-servers">https://github.com/punkpeye/awesome-mcp-servers</a></li>
+                                <li><a href="https://www.tavily.com/">https://www.tavily.com/</a></li>
+                            </ul>
                         </div>
                     </section>
-                    <section data-background-color="white">
-                        <h3>RAGs</h3>
-                        <img src="assets/RAGs_scheme.webp" alt="RAGs_scheme">
-                    </section>
-                    <section data-background-color="white">
-                      <h3>Reasoning OR Acting</h3>
-                      <div class="row">
-                        <div class="column">
-                            <p>CoT</p>
-                            <p>Reasoning Traces $\rightleftarrows$ LM</p>
-                          <ul>
-                            <li>Flexible and general to augment
-                                <strong class="important">test-time compute</strong></li>
-                            <li style="color: red;">Lack of external knowledge and tools</li>
-                          </ul>
-                        </div>
-                        <div class="column fragment">
-                          <p>RAG/Retrieval/Code/Tool use</p>
-                          <p>Actions $\rightleftarrows$ LM $\rightleftarrows$ Env</p>
-                          <ul>
-                            <li>Retrieval</li>
-                            <li>Search engine</li>
-                            <li>Calculator</li>
-                            <li>Weather API</li>
-                            <li>Python</li>
-                            <li>...</li>
-                          </ul>
-                          <ul>
-                            <li style="color: red;">Lack of reasoning</li>
-                            <li>Flexible and general to augment <strong>knowledge, computation, feedback, etc.</strong></li>
-                          </ul>
-                        </div>
-                      </div>
-                    </section>
-                    <section data-background-color="white">
-                        <img src="assets/ReAct.webp" alt="ReAct" width="80%">
-                        <p>Source: <a href="https://llmagents-learning.org/slides/llm_agent_history.pdf">
-                            LLM Agents MOOC, Fall 2024</a></p>
-                    </section>
-                    <section data-background-color="white">
-                      <h3>Let's watch the video</h3>
-                      <div style="text-align: center;">
-                        <iframe width="80%" height="700" src="https://www.youtube.com/embed/XZuwlXNMm04"
-                          frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media;
-                          gyroscope; picture-in-picture" allowfullscreen>
-                        </iframe>
-                      </div>
-                    </section>
-                    <section data-background-color="white">
-                        <img src="assets/ReActSpace.webp" alt="ReActSpace" width="80%">
-                        <p>Source: <a href="https://llmagents-learning.org/slides/llm_agent_history.pdf">
-                            LLM Agents MOOC, Fall 2024</a></p>
-                    </section>
-                    <section data-background-color="white">
-                        <h3>ReAct is general and effective</h3>
-                        <table>
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>(NLP tasks)</th>
-                                    <th colspan="2" style="text-align: center">(RL tasks)</th>
-                                </tr>
-                                <tr style="background-color: lightgray">
-                                    <th>PaLM-540B</th>
-                                    <th>HotpotQA <br> (QA)</th>
-                                    <th>FEVER <br> (fact check)</th>
-                                    <th>ALFWorld <br> (Text game)</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td style="background-color: lightgray">Reason</td>
-                                    <td>29.4</td>
-                                    <td>56.3</td>
-                                    <td>N/A</td>
-                                </tr>
-                                <tr>
-                                    <td style="background-color: lightgray">Act</td>
-                                    <td>25.7</td>
-                                    <td>58.9</td>
-                                    <td>45</td>
-                                </tr>
-                                <tr>
-                                    <td style="background-color: lightgray"><strong>ReAct</strong></td>
-                                    <td><strong>35.1</strong></td>
-                                    <td><strong>64.6</strong></td>
-                                    <td><strong>71</strong></td>
-                                </tr>
-                                <tr>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left;">Let's talk about..</h3>
-
-                        <div class="row">
-                            <div class="column">
-                                <img src="assets/fish-memory-comic.webp" alt="Fish Memory Comic" style="width: 55%;">
-                                <p style="text-align: left">So we need a long-term memory</p>
-                                <ul>
-                                    <li>Read and write</li>
-                                    <li>Stores experience, knowledge, skills, ...</li>
-                                    <li>Persists over new experience</li>
-                                </ul>
-                            </div>
-                            <div class="column">
-                                <p>Code-based controller</p>
-                                <div class="r-frame">
-                                    <p>Instruction: ...</p>
-                                    <p>Thought: ...</p>
-                                    <p>Action: ...</p>
-                                    <p>Observation: ...</p>
-                                    <p>Thought: ...</p>
-                                    <p>...</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <div class="row">
-                            <div class="column">
-                              <h3>Programming Task Reflection</h3>
-                              <ul>
-                                <li><strong>Task:</strong> Given two strings of parentheses,
-                                    determine if they are balanced</li>
-                                <li><strong>Trajectory:</strong>
-                                  <code>def match_parens(lst): ... </code>
-                                </li>
-                                <li><strong>Evaluation:</strong>
-                                  <ul>
-                                    <li>Internal or external evaluation:
-                                    <em>Self-generated unit tests fail:</em>
-                                        the function only checks if the counts of parentheses are equal but ignores their order</li>
-                                  </ul>
-                                </li>
-                                <li><strong>Reflection:</strong>
-                                    The function is wrong because it only counts the parentheses, but the order matters for valid balancing</li>
-                              </ul>
-                            </div>
-                            <div class="column">
-                                <br><br>
-                                <img src="assets/GPT-4-reflexion.webp" alt="GPT-4-reflexion">
-                                <br><br>
-                                <ul style="text-align: left">
-                                    <li>$\to$ <strong>Next Trajectory</strong></li>
-                                </ul>
-                            </div>
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <img src="assets/reflexion_learning.webp" alt="reflexion_learning" width="80%">
-                        <p>Source: <a href="https://llmagents-learning.org/slides/llm_agent_history.pdf">
-                            LLM Agents MOOC, Fall 2024</a></p>
-                    </section>
-                    <section data-background-color="white">
-                        <h3>Semantic memory of (reflective) knowledge</h3>
-                        <img src="assets/semantic_memory.webp" alt="semantic_memory" width="70%">
-                    </section>
-                    <section data-background-color="white">
-                      <h3 style="text-align: left">Cognitive Architectures for Language Agents (CoALA)</h3>
-                      <ul>
-                        <li>Memory</li>
-                        <li>Action space</li>
-                        <li>Decision making</li>
-                      </ul>
-                      <div class="fragment">
-                        <h3 style="text-align: left">Exercise Questions</h3>
-                          <ul>
-                            <li>What distinguishes external environment VS internal memory?</li>
-                            <li>What distinguishes long VS short term memory?</li>
-                          </ul>
-                      </div>
-                    </section>
-                </section>
-                <section>
-                    <section data-background-color="white">
-                          <h3 style="text-align: center">Observation $\to$ (what "language"?) $\to$ Action</h3>
-                          <div style="display: flex; align-items: center; justify-content: center;">
-                            <div class="r-frame" style="margin-right: 50px; text-align: center;">
-                              <h3>Symbolic AI Agent: 1960 - 1990</h3>
-                              <p>
-                                sp {blocks-world*opsub*proposal*clear} <br>
-                                (state &lt;s&gt; ^name blocks-world ^desired &lt;d*1&gt; ^clear &lt;dobject&gt;
-                                &lt;ontop2&gt;) <br>^bottom-block &lt;object&gt;
-                              </p>
-                            </div>
-                            <div class="r-frame" style="margin-left: 50px; text-align: center;">
-                              <h3>(Deep) RL Agent: 1990 - 2020</h3>
-                              <p>
-                                [-0.3432, 2.444, 0.34342, ... <br> 0.4545, 0.443, 3.34234]
-                              </p>
-                            </div>
-                          </div>
-                        <img src="assets/timeline.webp" alt="timeline.png">
-                        <div class="row">
-                            <div class="column fragment r-frame" style="margin-left: 800px">
-                              <h3>LLM Agent: 2020 - now</h3>
-                              <p style="text-align: left;margin-left: 20px">
-                                  Let’s think step by step… <br>
-                                  The room is dark, so I need a <br>
-                                  lamp, the lamp is in <br>
-                                  bedroom, so I should ...
-                              </p>
-                            </div>
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">Symbolic state or neural embedding</h3>
-                        <ul>
-                            <li>Intensive efforts to design or train</li>
-                            <li>Task-specific, hard to generalize</li>
-                        </ul><br><br>
-                        <h3 style="text-align: left">Open-ended natural language</h3>
-                        <ul>
-                            <li>Rich priors from LLMs</li>
-                            <li>Inference-time scalable</li>
-                            <li>General and generalizable</li>
-                        </ul>
-                    </section>
-                </section>
-                <section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">
-                            How to evaluate LLM agents?</h3>
-                        <h4>WebShop (2022)</h4>
-                          <div style="text-align: center;">
-                            <img src="assets/WebShop.webp" alt="WebShop Interface">
-                          </div>
-                          <ul>
-                            <li><strong>Large-scale complex environment</strong> based on 1.16M Amazon products</li>
-                            <li><strong>Automatic reward</strong> based on instruction and product attribute matching</li>
-                            <li><strong>Challenges</strong> language and visual understanding, and decision-making</li>
-                          </ul>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">Web Arena (2023)</h3>
-                        <img src="assets/WebArena.webp" alt="WebArena.png" width="80%">
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">SWE-Bench (2023)</h3>
-                        <img src="assets/SWE-Bench.webp" alt="SWE-Bench" width="80%">
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">
-                            <a href="https://arxiv.org/abs/2304.05376">
-                                ChemCrow: ReAct enables discovery of a novel chromophore</a></h3>
-                        <img src="assets/ChemCrow.webp" alt="ChemCrow.png" width="80%">
-                    </section>
-                </section>
-                <section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">What's Next?</h3>
-                        <div style="display: flex; justify-content: space-between;">
-                            <div>
-                                <h4>Training</h4>
-                                <p class="fragment r-frame">FireAct: Toward Language Agent Fine-tuning</p>
-                            </div>
-                            <div>
-                                <h4>Interface</h4>
-                                <p class="fragment r-frame">SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering</p>
-                            </div>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; margin-top: 20px;">
-                            <div>
-                                <h4>Robustness</h4>
-                            </div>
-                            <div>
-                                <h4>Human</h4>
-                                <p class="fragment r-frame">$\tau$-bench: A Benchmark for Tool-Agent-User Interaction in Real-World Domains</p>
-                            </div>
-                            <div>
-                                <h4>Benchmark</h4>
-                            </div>
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left"><a href="https://arxiv.org/abs/2310.05915">FireAct</a>: Training LLM for agents</h3>
-                        <div class="column">
-                            <br><br>
-                          <h4>Establish model-agent synergy:</h4>
-                          <ul>
-                            <li>Improve "agent capabilities" like planning, self-evaluation, calibration</li>
-                            <li>Open-source agent backbone model</li>
-                            <li>Next trillion tokens for model training</li>
-                          </ul>
-                        </div>
-                        <div class="column">
-                            <img src="assets/ReActFT.webp" alt="ReActFT.png" width="80%">
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left"><a href="https://arxiv.org/abs/2405.15793">SWE-agent</a>:
-                            Agent-Computer Interfaces Enable Automated Software Engineering</h3>
-                        <div class="column">
-                          <h4>LLMs and Humans are Different, So Should Their Interfaces</h4>
-                          <ul>
-                            <li>e.g., humans have smaller short-term memory, so they have to trade off time for space</li>
-                          </ul>
-                            <br><br>
-                          <h4>ACI Design Can Help Us</h4>
-                          <ul>
-                            <li>Better <strong>solve</strong> tasks (without changing the agent)</li>
-                            <li>Better <strong>understand</strong> agents (vs. humans)</li>
-                          </ul>
-                        </div>
-                        <div class="column">
-                            <img src="assets/SummarizedSearch.webp" alt="SummarizedSearch.png" width="80%">
-                            <img src="assets/SWEresults.webp" alt="SWEresults.png" width="80%">
-                        </div>
-                    </section>
-                    <section data-background-color="white">
-                        <h3 style="text-align: left">Human in the loop needs robustness</h3>
-                        <ul>
-                            <li>You need to solve Riemann hypothesis once (one time out of millions)</li>
-                            <li>But you always need to buy tickets correctly</li>
-                        </ul>
-                        <img src="assets/t-bench.webp" alt="t-bench.png">
-                        <p><a href="https://arxiv.org/pdf/2406.12045">
-                            TAU-bench: A Benchmark for <u>T</u>ool-<u>A</u>gent-<u>U</u>ser</a></p>
-                    </section>
-                    <section data-background-color="white">
-                        <img src="assets/job-automation-ladder.webp" alt="job-automation-ladder" width="70%">
-                        <p><a href="https://princeton-nlp.github.io/language-agent-impact/">
-                            Language Agents in the Digital World</a></p>
-                    </section>
-                </section>
-                <section>
-                    <section data-background-color="white">
+                    <section data-background-color="#fdf6e3">
                         <h3 style="text-align: left">Practice</h3>
-                        <p>Notebooks for this intensive:</p>
+                        <p style="text-align: left">A few tasks to solve (15-20 min)</p>
+						<ol style="display: block; text-align: left">
+							<li><a class="practice" href="/problems/py_functional/lru_cache" target="_blank" rel="noopener noreferrer">LRU Cache Decorator</a>
+                            </li>
+							<li><a class="practice" href="/problems/py_functional/context_manager" target="_blank" rel="noopener noreferrer">Context Managers</a>
+                            </li>
+						</ol>
+                        <p style="text-align: left">Notebooks for this intensive:</p>
                         <ul>
                             <li>
-                                <a href="intro_practice/Intro_AI_Agents_part1.ipynb">
-                                    Part 1: LLMs (Local Inference, External APIs, Strengths & Weaknesses)
-                                </a>
-                            </li>
-                            <li>
-                                <a href="intro_practice/Intro_AI_Agents_part2.ipynb">
-                                    Part 2: First Agent (τ²-bench, Airline Agent Task, Agent Development)
+                                <a href="https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Tools.MCP.ipynb"
+                                   target="_blank" rel="noopener noreferrer">
+                                    Tools and MCPs
                                 </a>
                             </li>
                         </ul>
                     </section>
                 </section>
-                <section>
-                    <section>
-                        <h3 style="text-align: left">Summary</h3>
-                        <ol>
-                            <li class="fragment">
-                                <strong>LLM Agents Overview</strong>
-                                <ul class="custom-list">
-                                    <li>LLM agents are goal-oriented systems using language models for reasoning and acting</li>
-                                    <li>ReAct combines reasoning and action, improving performance across multiple tasks</li>
-                                    <li class="minus">Challenges: Tool integration and improving autonomous planning</li>
-                                </ul>
-                            </li>
-                            <li class="fragment">
-                                <strong>CoT vs RAG</strong>
-                                <ul class="custom-list">
-                                    <li>Chain of Thought (CoT) focuses on internal reasoning traces, lacking external tools</li>
-                                    <li>RAG augments LLMs by connecting them with external knowledge, feedback, and computation tools</li>
-                                </ul>
-                            </li>
-                        </ol>
-                    </section>
-                    <section>
-                        <ol start="3">
-                            <li class="fragment">
-                                <strong>Reflection & Long-term Memory</strong>
-                                <ul class="custom-list">
-                                    <li>Reflection and self-evaluation improve task-solving abilities over iterations</li>
-                                    <li>LLM agents need long-term memory to store and update experience persistently</li>
-                                </ul>
-                            </li>
-                            <li class="fragment">
-                                <strong>Future of LLM Agents</strong>
-                                <ul class="custom-list">
-                                    <li>Training improvements via models like FireAct</li>
-                                    <li>Interfaces tailored for human-agent collaboration (SWE-agent)</li>
-                                    <li>Robustness and evaluation benchmarks such as TAU-bench and WebShop</li>
-                                </ul>
-                            </li>
-                        </ol>
-                    </section>
-                </section>
-            </div>
+</div>

@@ -498,6 +498,14 @@
           "deck": "intro_ai_agents",
           "practice": [
             {
+              "type": "problem",
+              "id": "py_functional/warm_up"
+            },
+            {
+              "type": "problem",
+              "id": "py_functional/profiler"
+            },
+            {
               "type": "link",
               "title": "Practice 1 — How to use LLMs (Colab)",
               "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Intro_AI_Agents_part1.ipynb"
@@ -515,7 +523,21 @@
           "title": "Lecture 2. Tools and MCP",
           "date": "2026-10-15",
           "deck": "tools_mcp",
-          "practice": [],
+          "practice": [
+            {
+              "type": "problem",
+              "id": "py_functional/lru_cache"
+            },
+            {
+              "type": "problem",
+              "id": "py_functional/context_manager"
+            },
+            {
+              "type": "link",
+              "title": "Practice — Tools and MCP (Colab)",
+              "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Tools.MCP.ipynb"
+            }
+          ],
           "homework": null
         }
       ]

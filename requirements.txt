@@ -4,3 +4,5 @@ pytest>=7.4
 # Only used by tools/import_decks.py to re-encode lecture images; the import is
 # guarded, so the rest of the pipeline works without it.
 Pillow>=10
+
+python-dotenv

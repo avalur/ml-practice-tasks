@@ -4,7 +4,7 @@ META = {
     "difficulty": "easy",
     "entry": "merge_iterative",
     "order": 5,
-    "py_deps": [],
+    "py_deps": ["numpy"],
     "banned": {
         "names": ["sorted"],
         "slicing": True,

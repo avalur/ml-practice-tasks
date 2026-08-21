@@ -4,7 +4,7 @@ META = {
     "difficulty": "easy",
     "entry": "get_fizz_buzz",
     "order": 2,
-    "py_deps": [],
+    "py_deps": ["numpy"],
     "banned": {},
     "next": ["py_basics/iterate_me"],
     "hints": [

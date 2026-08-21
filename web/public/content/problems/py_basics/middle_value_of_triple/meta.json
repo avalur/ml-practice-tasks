@@ -12,7 +12,9 @@
   },
   "statementMd": "Implement `get_middle_value(a, b, c)`.\n\nReturn the middle (median) of three integers — the one that is neither the\nsmallest nor the largest. `sorted` is **not** allowed; use arithmetic with\n`min`/`max` instead. For example `get_middle_value(3, 1, 2) == 2`.",
   "bundlePath": "/content/problems/py_basics/middle_value_of_triple",
-  "pyDeps": [],
+  "pyDeps": [
+    "numpy"
+  ],
   "webRunnable": true,
   "hidden": false,
   "hints": [
@@ -20,5 +22,5 @@
   ],
   "prereqs": [],
   "next": [],
-  "contentHash": "0e3f225dd2fdf34e8311ef015c93e2e10305a4d96c7ecb891f328f7ede147f2b"
+  "contentHash": "c80afcbc104b8ccfbabe5ee55405600245fee07fdf2a5bd32b938fd499cf2a47"
 }

@@ -43,7 +43,9 @@
       },
       "statementMd": "Implement `find_value(nums, value)`.\n\n`nums` is a list (or `range`) of integers sorted in non-decreasing order; it may\nbe empty. Return `True` if `value` is present, otherwise `False`. Use **binary\nsearch** — O(log n) time, O(1) extra space.\n\nThe `in` operator, the `bisect` module, and `.index()` are not allowed: write\nthe search yourself. (One test runs on a huge range where a linear scan would\ntime out.)",
       "bundlePath": "/content/problems/py_basics/bin_basic",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -54,7 +56,7 @@
       "next": [
         "py_basics/bin_tricky"
       ],
-      "contentHash": "451058ff56b55979d95bedbc4a2c3083ab5227bdc11a2bc00c2ec8ddb23c2322"
+      "contentHash": "97cdf2b861db7542ee6f649bd84327321be82b6a628c459619715200f62889d4"
     },
     {
       "id": "py_basics/fizz_buzz",
@@ -66,7 +68,9 @@
       "banned": {},
       "statementMd": "Implement `get_fizz_buzz(n)`.\n\nReturn a list of length `n`. Position `i` (0-based) describes the number\n`i + 1`: `\"FizzBuzz\"` if it is divisible by 15, `\"Fizz\"` if divisible by 3,\n`\"Buzz\"` if divisible by 5, otherwise the number itself. For example\n`get_fizz_buzz(5) == [1, 2, \"Fizz\", 4, \"Buzz\"]`.",
       "bundlePath": "/content/problems/py_basics/fizz_buzz",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -76,7 +80,7 @@
       "next": [
         "py_basics/iterate_me"
       ],
-      "contentHash": "88ea251a96da2cb59691427d41798e9d5110db2e5505b638b1fab8369c949e3a"
+      "contentHash": "48e78b8c16d4d729cb7b99d3dacc09a75c2a184f6cad2673eb68f7b5224ee5a0"
     },
     {
       "id": "py_basics/middle_value_of_triple",
@@ -92,7 +96,9 @@
       },
       "statementMd": "Implement `get_middle_value(a, b, c)`.\n\nReturn the middle (median) of three integers — the one that is neither the\nsmallest nor the largest. `sorted` is **not** allowed; use arithmetic with\n`min`/`max` instead. For example `get_middle_value(3, 1, 2) == 2`.",
       "bundlePath": "/content/problems/py_basics/middle_value_of_triple",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -100,7 +106,7 @@
       ],
       "prereqs": [],
       "next": [],
-      "contentHash": "0e3f225dd2fdf34e8311ef015c93e2e10305a4d96c7ecb891f328f7ede147f2b"
+      "contentHash": "c80afcbc104b8ccfbabe5ee55405600245fee07fdf2a5bd32b938fd499cf2a47"
     },
     {
       "id": "py_basics/filter_list_by_list",
@@ -116,7 +122,9 @@
       },
       "statementMd": "Implement `filter_list_by_list(lst_a, lst_b)`.\n\nBoth inputs are sorted in non-decreasing order. Return a **new** list with the\nelements of `lst_a` that do **not** appear in `lst_b`, preserving order and\nduplicates; leave the inputs unchanged. For example\n`filter_list_by_list([2, 3], [1, 2]) == [3]`.\n\n`set` is not allowed — use the fact that both lists are sorted and walk them\nwith two pointers in O(len(a) + len(b)).",
       "bundlePath": "/content/problems/py_basics/filter_list_by_list",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -127,7 +135,7 @@
       "next": [
         "py_datastructures/comprehensions"
       ],
-      "contentHash": "9830bd67e4e6c4a81b5b2422e3d06ed08373403f613d74d690b2a80075775ebc"
+      "contentHash": "644678a586ef17505d9b91002f7f686709912aa96bf5dbb16dbd08eab4e4ca5c"
     },
     {
       "id": "py_basics/merge_iterative",
@@ -144,7 +152,9 @@
       },
       "statementMd": "Implement `merge_iterative(lst_a, lst_b)`.\n\nBoth inputs are sorted in non-decreasing order. Return one merged sorted list —\nthe classic merge step of merge sort, done **by hand**. Leave the inputs\nunchanged. For example `merge_iterative([1, 3], [2, 4]) == [1, 2, 3, 4]`.\n\n`sorted` and slicing (`seq[a:b]`) are not allowed — use two pointers,\nO(len(a) + len(b)).",
       "bundlePath": "/content/problems/py_basics/merge_iterative",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -155,7 +165,7 @@
       "next": [
         "py_datastructures/merge_kway"
       ],
-      "contentHash": "ac9f24da2917b67c2f7aeba828d5399da8506729d6fc26359e4e25953dfa50a7"
+      "contentHash": "0b0ceed45da539c9530081bed78412fd4dbf969560dd125ea1ae4ab5ddabd092"
     },
     {
       "id": "py_basics/reverse_iterative",
@@ -172,7 +182,9 @@
       },
       "statementMd": "Implement `reverse_iterative(lst)`.\n\nReturn a **new** list with the elements of `lst` in reverse order; leave the\ninput unchanged. For example `reverse_iterative([1, 2, 3]) == [3, 2, 1]`.\n\nUse **iteration only**: the `reversed` builtin and slicing (`lst[::-1]`) are not\nallowed.",
       "bundlePath": "/content/problems/py_basics/reverse_iterative",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -180,7 +192,7 @@
       ],
       "prereqs": [],
       "next": [],
-      "contentHash": "3ec1c99257a8fab9514ba6c738f0c06a426aa6889eb7d05234751a740da1ee87"
+      "contentHash": "4e176ad42392c717fd856450eda6895d558cb30d5343126f52392011ed088ca9"
     },
     {
       "id": "py_basics/common_type",
@@ -192,7 +204,9 @@
       "banned": {},
       "statementMd": "Implement `get_common_type(type1, type2)`.\n\nGiven two of the types `bool, int, float, complex, list, range, tuple, str`,\nreturn the most specific type that **both** values can be converted to, so that\n`result(value1)` and `result(value2)` both succeed and make sense.\n\nRules (two ladders of increasing generality):\n- numbers: `bool` → `int` → `float` → `complex`\n- sequences: `range` → `tuple` → `list`\n\nWithin one ladder, return the more general of the two. Mixing a number with a\nsequence — or anything with `str` — returns `str`. Note `range` is never a\ncommon type (you can't build a `range` from arbitrary elements), so two ranges\nshare `tuple`. The result must be the same regardless of argument order.",
       "bundlePath": "/content/problems/py_basics/common_type",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -201,7 +215,7 @@
       ],
       "prereqs": [],
       "next": [],
-      "contentHash": "3b375cb45240e5420d77b70c4817ba1b761cba922a32a1ad7eee6aa0b8726f8d"
+      "contentHash": "cc3adc4b48bb21b79305ab3ad72f2d7980c93a74f60f6eb0d2e776ab676cfba5"
     },
     {
       "id": "py_basics/iterate_me",
@@ -215,7 +229,9 @@
       },
       "statementMd": "A warm-up of nine small list functions — solve each **without** a `for`/`while`\nloop (use comprehensions, slicing, and builtins):\n\n- `get_squares(elements)` — the squares.\n- `get_indices_from_one(elements)` — `[1, 2, ..., len]`.\n- `get_max_element_index(elements)` — index of the max (None if empty).\n- `get_every_second_element(elements)` — every second element from index 1.\n- `get_first_three_index(elements)` / `get_last_three_index(elements)` — index of\n  the first / last `3` (None if absent).\n- `get_sum(elements)` — the sum.\n- `get_min_max(elements, default)` — `(min, max)`, or `(default, default)` if empty.\n- `get_by_index(elements, i, boundary)` — `elements[i]` if it exceeds `boundary`,\n  else None.",
       "bundlePath": "/content/problems/py_basics/iterate_me",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -228,7 +244,7 @@
       "next": [
         "py_functional/flat_it"
       ],
-      "contentHash": "27d766efb1579e7f8104290717f3081ccd5af0dcac85741013e327639be8c82b"
+      "contentHash": "0120e9be56cdca7f8290ff2ec46a60a57cec8855e286371859fdb2d20ce37925"
     },
     {
       "id": "py_basics/bin_tricky",
@@ -249,7 +265,9 @@
       },
       "statementMd": "Implement `find_median(nums1, nums2)`.\n\nBoth inputs are sorted in non-decreasing order (at least one is non-empty).\nReturn their combined median as a `float`: the middle value if the total length\nis odd, otherwise the average of the two middle values.\n\nRun in **O(log(min(m, n)))** — a binary search over the partition, not a merge\n(some tests use sequences of hundreds of millions of elements, where scanning\nwould never finish). `sorted`, `.index()`, and the `in` operator are not allowed.",
       "bundlePath": "/content/problems/py_basics/bin_tricky",
-      "pyDeps": [],
+      "pyDeps": [
+        "numpy"
+      ],
       "webRunnable": true,
       "hidden": false,
       "hints": [
@@ -260,7 +278,7 @@
         "py_basics/bin_basic"
       ],
       "next": [],
-      "contentHash": "b2136dcd8cfa9c3e7355a7f746d1691865b8a392132881f8bc6680f7fbe747f0"
+      "contentHash": "7202cce4fc2a6c71325b260b8720619400e9240a109cc19427e1ed887665bd60"
     },
     {
       "id": "py_classes/range",

@@ -4,7 +4,7 @@ META = {
     "difficulty": "easy",
     "entry": "get_middle_value",
     "order": 3,
-    "py_deps": [],
+    "py_deps": ["numpy"],
     "banned": {
         "names": ["sorted"],
     },

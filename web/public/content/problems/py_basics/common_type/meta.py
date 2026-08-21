@@ -4,7 +4,7 @@ META = {
     "difficulty": "medium",
     "entry": "get_common_type",
     "order": 7,
-    "py_deps": [],
+    "py_deps": ["numpy"],
     "banned": {},
     "hints": [
         "Two ladders of increasing generality: numbers bool→int→float→complex, sequences range→tuple→list. Within a ladder, pick the more general.",

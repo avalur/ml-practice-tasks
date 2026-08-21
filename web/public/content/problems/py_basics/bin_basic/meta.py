@@ -4,7 +4,7 @@ META = {
     "difficulty": "easy",
     "entry": "find_value",
     "order": 1,
-    "py_deps": [],
+    "py_deps": ["numpy"],
     "banned": {
         "modules": ["bisect"],
         "names": ["index"],

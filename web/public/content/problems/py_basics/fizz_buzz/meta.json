@@ -8,7 +8,9 @@
   "banned": {},
   "statementMd": "Implement `get_fizz_buzz(n)`.\n\nReturn a list of length `n`. Position `i` (0-based) describes the number\n`i + 1`: `\"FizzBuzz\"` if it is divisible by 15, `\"Fizz\"` if divisible by 3,\n`\"Buzz\"` if divisible by 5, otherwise the number itself. For example\n`get_fizz_buzz(5) == [1, 2, \"Fizz\", 4, \"Buzz\"]`.",
   "bundlePath": "/content/problems/py_basics/fizz_buzz",
-  "pyDeps": [],
+  "pyDeps": [
+    "numpy"
+  ],
   "webRunnable": true,
   "hidden": false,
   "hints": [
@@ -18,5 +20,5 @@
   "next": [
     "py_basics/iterate_me"
   ],
-  "contentHash": "88ea251a96da2cb59691427d41798e9d5110db2e5505b638b1fab8369c949e3a"
+  "contentHash": "48e78b8c16d4d729cb7b99d3dacc09a75c2a184f6cad2673eb68f7b5224ee5a0"
 }

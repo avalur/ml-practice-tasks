@@ -539,6 +539,14 @@
             }
           ],
           "homework": null
+        },
+        {
+          "slug": "l03-memory-guardrails",
+          "title": "Lecture 3. Memory and Guardrails",
+          "date": "2026-10-22",
+          "deck": "memory_and_guardrails",
+          "practice": [],
+          "homework": null
         }
       ]
     }

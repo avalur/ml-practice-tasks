@@ -38,6 +38,13 @@
           "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Tools.MCP.ipynb"
         }
       ]
+    },
+    {
+      "slug": "l03-memory-guardrails",
+      "title": "Lecture 3. Memory and Guardrails",
+      "date": "2026-10-22",
+      "deck": "memory_and_guardrails",
+      "practice": []
     }
   ]
 }

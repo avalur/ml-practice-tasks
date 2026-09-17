@@ -11,8 +11,9 @@ at https://avalur.github.io/mlcourse. Author/owner: Alexander Avdiushenko
 (`avalur`). He chats in Russian but **all repo artifacts are in English**, and
 he likes to brainstorm design tradeoffs before I build.
 
-There are now **two task families** (the sidebar groups by the `topic` prefix
-before `_`):
+There are now **three task families** (the sidebar groups by the `topic` prefix
+before `_`, in the order `_FAMILY_ORDER` in `content_pipeline.py` lists —
+a family missing from it sorts after the listed ones):
 - **`numpy_*`** — the original ML/numpy track.
 - **`py_*`** — Python fundamentals (binary search, comprehensions, decorators,
   generators, OOP), **re-authored** (our own solutions, English statements,
@@ -23,6 +24,14 @@ before `_`):
   fixture. Where the source bundles several functions with *different*
   per-function bans (our `banned` is file-level), distill to the single by-hand
   variant.
+- **`agents_*`** — practice for the *Building AI Agents* club, one topic per
+  lecture theme (`agents_retrieval`, `agents_training`, … — lecture 3 alone
+  feeds two of them), so `py_deps` varies per task rather than per family:
+  retrieval is pure Python, the training tasks want numpy. Unlike either older
+  family these are **in-lecture** work, linked from the deck's own Practice
+  slide with `<a class="practice">`, which `export_decks.py` validates — so a
+  renamed slug fails the class build too, and a task with no slide yet is a
+  lesson that has no break in it.
 
 ## Architecture (don't break these invariants)
 

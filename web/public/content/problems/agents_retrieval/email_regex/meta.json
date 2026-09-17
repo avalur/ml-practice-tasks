@@ -1,0 +1,30 @@
+{
+  "id": "agents_retrieval/email_regex",
+  "topic": "agents_retrieval",
+  "slug": "email_regex",
+  "title": "Email Regex",
+  "difficulty": "medium",
+  "entry": "email_pattern",
+  "banned": {
+    "modules": [
+      "email",
+      "email_validator",
+      "validators",
+      "pydantic"
+    ]
+  },
+  "statementMd": "Write the regex that finds email addresses — the metadata step of a retrieval\npipeline, where you pull the entities out of a chunk before indexing it. A\nkeyword index is no help here: the tokenizer from\n[BM25 Index](/problems/agents_retrieval/bm25_index) shreds `alice@example.com`\ninto three unrelated terms, so an address has to be recognized by its shape.\n\n`email_pattern()` returns the pattern **source** as a string; `is_email` is\ngiven and just runs it with `fullmatch`. \"Valid\" is not RFC 5322 — nobody wants\nthat regex — it is exactly this:\n\n- **local part** — one or more *chunks* joined by single dots, each chunk one or\n  more of `A-Za-z0-9_%+-`. So `a.b@…` passes; `.a@…`, `a.@…` and `a..b@…` do not.\n- **domain** — two or more *labels* joined by single dots. A label starts and\n  ends with a letter or digit and may carry hyphens inside: `my-host` yes,\n  `-host` and `host-` no. The last label is the TLD: letters only, at least two.\n  So `example.com` and `sub.example.co.uk` pass; `example`, `example.c` and\n  `example.c0m` do not.\n- Upper case is allowed wherever a letter is.\n\nThen `find_emails(text)` returns every address in a document, **lower-cased**,\nwithout duplicates, in order of first appearance — addresses are\ncase-insensitive in practice, and what you want on a chunk is the set of\ncontacts it mentions.\n\nThat second function is why the pattern needs one more rule, and why this is a\ntask rather than a one-liner: an address may not be followed immediately by a\nletter, digit or hyphen. Without that, scanning `alice@example.com123` reports\n`alice@example.com` — an address that is *not* in that text. A pattern that\nlooks perfect under `fullmatch` is still wrong under `finditer` until it refuses\nto end in the middle of a token.",
+  "bundlePath": "/content/problems/agents_retrieval/email_regex",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Build the pattern from named pieces instead of one long string: a chunk class, `chunk(?:\\.chunk)*` for the local part, a label, `(?:label\\.)+` and then the TLD. An f-string keeps it readable — remember `{2,}` has to be written `{{2,}}` inside one.",
+    "A label that may not start or end with a hyphen is the two-part idiom `[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?` — the middle is optional, so a single character still matches. And the scanning rule is a negative lookahead `(?![A-Za-z0-9-])` at the very end."
+  ],
+  "prereqs": [
+    "agents_retrieval/bm25_index"
+  ],
+  "next": [],
+  "contentHash": "87cd89eedbfdd4662a608c0352b11a4d1e9ae9b2cf5f17d22acbcf7d6ab44d44"
+}

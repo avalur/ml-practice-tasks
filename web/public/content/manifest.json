@@ -1,5 +1,7 @@
 {
   "topics": [
+    "agents_retrieval",
+    "agents_training",
     "numpy_basics",
     "numpy_combine",
     "numpy_indexing",
@@ -2370,6 +2372,101 @@
       ],
       "next": [],
       "contentHash": "acf6222e814cbe17ea45a43eace9942f2f63d01d96063f0d8799371f04414bdf"
+    },
+    {
+      "id": "agents_retrieval/bm25_index",
+      "topic": "agents_retrieval",
+      "slug": "bm25_index",
+      "title": "BM25 Index",
+      "difficulty": "medium",
+      "entry": "BM25Index",
+      "banned": {
+        "modules": [
+          "rank_bm25",
+          "bm25s",
+          "sklearn",
+          "gensim",
+          "nltk",
+          "whoosh"
+        ]
+      },
+      "statementMd": "Build a **BM25 index** — the keyword retriever behind the lexical half of a RAG\npipeline, the part that answers \"which documents mention this?\".\n\n`BM25Index(documents, k1=1.5, b=0.75)` indexes a collection once; a document is\nidentified by its position in `documents`. `search(query, top_k)` then returns\nat most `top_k` `(doc_id, score)` pairs, highest score first, ties broken by the\nsmaller `doc_id`, and **only** documents scoring above 0 — a document that\nshares no term with the query is not a result.\n\nThe score of document `D` for a query is a sum over the query's tokens\n(duplicates included — \"cat cat\" counts twice):\n\n```\n                                    tf(t, D) * (k1 + 1)\nscore(D) = SUM  idf(t) * -----------------------------------------\n           t in q        tf(t, D) + k1 * (1 - b + b * |D| / avgdl)\n\n                   N - df(t) + 0.5\nidf(t) = ln( 1 + ------------------- )\n                     df(t) + 0.5\n```\n\n`tf(t, D)` is how often `t` occurs in `D`, `df(t)` how many documents contain\n`t` at all, `N` the number of documents, `|D|` the token count of `D` and\n`avgdl` the mean document length. That `1 +` in the idf is the Lucene variant:\nit keeps the idf positive even for a term present in every document, which is\nwhat makes \"score above 0\" mean exactly \"contains a query term\".\n\n`tokenize` is given — use it, so your terms and the tests' agree. The\ncollection is non-empty and at least one document has a token, but a single\ndocument may well be empty. The split between the two halves of the pipeline is\npart of the task: **`__init__` tokenizes the collection, `search` may only\ntokenize the query** — so the per-document scoring lives in `_score_tokens`,\nwhich both entry points share.",
+      "bundlePath": "/content/problems/agents_retrieval/bm25_index",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "__init__ is the offline half: per document keep its token count and a Counter of its terms, plus one dict term -> [doc ids containing it] (the inverted index) and the idf of every term you saw.",
+        "search is the online half: tokenize the query once, take the union of the query terms' posting lists as the candidates, score only those, then sort by (-score, doc_id) and cut to top_k."
+      ],
+      "prereqs": [],
+      "next": [
+        "agents_retrieval/email_regex"
+      ],
+      "contentHash": "6a2d9ffcbf4815151afabe07f93f67d9f3d146a87ad321dcac3793c692fd0b16"
+    },
+    {
+      "id": "agents_retrieval/email_regex",
+      "topic": "agents_retrieval",
+      "slug": "email_regex",
+      "title": "Email Regex",
+      "difficulty": "medium",
+      "entry": "email_pattern",
+      "banned": {
+        "modules": [
+          "email",
+          "email_validator",
+          "validators",
+          "pydantic"
+        ]
+      },
+      "statementMd": "Write the regex that finds email addresses — the metadata step of a retrieval\npipeline, where you pull the entities out of a chunk before indexing it. A\nkeyword index is no help here: the tokenizer from\n[BM25 Index](/problems/agents_retrieval/bm25_index) shreds `alice@example.com`\ninto three unrelated terms, so an address has to be recognized by its shape.\n\n`email_pattern()` returns the pattern **source** as a string; `is_email` is\ngiven and just runs it with `fullmatch`. \"Valid\" is not RFC 5322 — nobody wants\nthat regex — it is exactly this:\n\n- **local part** — one or more *chunks* joined by single dots, each chunk one or\n  more of `A-Za-z0-9_%+-`. So `a.b@…` passes; `.a@…`, `a.@…` and `a..b@…` do not.\n- **domain** — two or more *labels* joined by single dots. A label starts and\n  ends with a letter or digit and may carry hyphens inside: `my-host` yes,\n  `-host` and `host-` no. The last label is the TLD: letters only, at least two.\n  So `example.com` and `sub.example.co.uk` pass; `example`, `example.c` and\n  `example.c0m` do not.\n- Upper case is allowed wherever a letter is.\n\nThen `find_emails(text)` returns every address in a document, **lower-cased**,\nwithout duplicates, in order of first appearance — addresses are\ncase-insensitive in practice, and what you want on a chunk is the set of\ncontacts it mentions.\n\nThat second function is why the pattern needs one more rule, and why this is a\ntask rather than a one-liner: an address may not be followed immediately by a\nletter, digit or hyphen. Without that, scanning `alice@example.com123` reports\n`alice@example.com` — an address that is *not* in that text. A pattern that\nlooks perfect under `fullmatch` is still wrong under `finditer` until it refuses\nto end in the middle of a token.",
+      "bundlePath": "/content/problems/agents_retrieval/email_regex",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Build the pattern from named pieces instead of one long string: a chunk class, `chunk(?:\\.chunk)*` for the local part, a label, `(?:label\\.)+` and then the TLD. An f-string keeps it readable — remember `{2,}` has to be written `{{2,}}` inside one.",
+        "A label that may not start or end with a hyphen is the two-part idiom `[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?` — the middle is optional, so a single character still matches. And the scanning rule is a negative lookahead `(?![A-Za-z0-9-])` at the very end."
+      ],
+      "prereqs": [
+        "agents_retrieval/bm25_index"
+      ],
+      "next": [],
+      "contentHash": "87cd89eedbfdd4662a608c0352b11a4d1e9ae9b2cf5f17d22acbcf7d6ab44d44"
+    },
+    {
+      "id": "agents_training/lora_adapter",
+      "topic": "agents_training",
+      "slug": "lora_adapter",
+      "title": "LoRA Adapter",
+      "difficulty": "medium",
+      "entry": "LoRALinear",
+      "banned": {
+        "modules": [
+          "torch",
+          "peft",
+          "transformers",
+          "loralib"
+        ],
+        "loops": true
+      },
+      "statementMd": "Implement `LoRALinear` — a frozen linear layer with a trainable **low-rank\nadapter**. This is LoRA, the cheap way to bake knowledge into an agent's\nweights: instead of fine-tuning `W`, you train a small correction beside it.\n\nA plain layer computes `x @ W.T` for a base weight `W` of shape\n`(out_features, in_features)`. LoRA leaves `W` alone and adds:\n\n```\nW_eff = W + (alpha / rank) * B @ A      A: (rank, in_features)\n                                        B: (out_features, rank)\n```\n\nso the update is `rank * (in_features + out_features)` numbers instead of\n`in_features * out_features`. The `alpha / rank` factor keeps the size of the\nupdate roughly independent of the rank you picked, so changing the rank does not\nforce you to retune the learning rate.\n\n`__init__(weight, rank, alpha, rng)` stores `weight` (the array as given — it is\n**frozen**, never write into it), `rank`, `alpha`, and builds the two adapter\nmatrices: `A` from `rng.standard_normal(...) / sqrt(in_features)`, and `B` as\n**all zeros**. That zero is the point: it makes the adapter a no-op, so training\nstarts at exactly the base model rather than at a randomly damaged one — while\n`A` must be random, or no gradient could ever flow into either matrix.\n\nThen three methods:\n\n- `forward(x)` — output for a batch `x` of shape `(batch, in_features)`. Group\n  the products as `(x @ A.T) @ B.T`, which never builds the full\n  `out_features x in_features` correction; that is why the adapter is cheap.\n- `merged_weight()` — `W_eff` as a **new** array. Fold it in and inference costs\n  what it always did: one linear layer.\n- `trainable_fraction()` — `(A.size + B.size) / weight.size`, the number that\n  sells LoRA. (Try `rank` equal to the full width to see it stop selling.)",
+      "bundlePath": "/content/problems/agents_training/lora_adapter",
+      "pyDeps": [
+        "numpy"
+      ],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Shapes first: W is (out, in), A is (rank, in), B is (out, rank). The only grouping that type-checks for the update is B @ A, and the only one for a batch is (x @ A.T) @ B.T.",
+        "B starts as np.zeros, so a fresh layer returns exactly x @ W.T — that is the property the tests lean on hardest. And build the merged weight with `self.weight + …`, never `+=`: the base is frozen."
+      ],
+      "prereqs": [
+        "numpy_basics/matrix_product"
+      ],
+      "next": [],
+      "contentHash": "8723fd6814a46ede709ecb22d57d5e12b8ea67a09bfc5c62efa0fdceec459a92"
     }
   ]
 }

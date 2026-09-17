@@ -1,0 +1,32 @@
+{
+  "id": "agents_retrieval/bm25_index",
+  "topic": "agents_retrieval",
+  "slug": "bm25_index",
+  "title": "BM25 Index",
+  "difficulty": "medium",
+  "entry": "BM25Index",
+  "banned": {
+    "modules": [
+      "rank_bm25",
+      "bm25s",
+      "sklearn",
+      "gensim",
+      "nltk",
+      "whoosh"
+    ]
+  },
+  "statementMd": "Build a **BM25 index** — the keyword retriever behind the lexical half of a RAG\npipeline, the part that answers \"which documents mention this?\".\n\n`BM25Index(documents, k1=1.5, b=0.75)` indexes a collection once; a document is\nidentified by its position in `documents`. `search(query, top_k)` then returns\nat most `top_k` `(doc_id, score)` pairs, highest score first, ties broken by the\nsmaller `doc_id`, and **only** documents scoring above 0 — a document that\nshares no term with the query is not a result.\n\nThe score of document `D` for a query is a sum over the query's tokens\n(duplicates included — \"cat cat\" counts twice):\n\n```\n                                    tf(t, D) * (k1 + 1)\nscore(D) = SUM  idf(t) * -----------------------------------------\n           t in q        tf(t, D) + k1 * (1 - b + b * |D| / avgdl)\n\n                   N - df(t) + 0.5\nidf(t) = ln( 1 + ------------------- )\n                     df(t) + 0.5\n```\n\n`tf(t, D)` is how often `t` occurs in `D`, `df(t)` how many documents contain\n`t` at all, `N` the number of documents, `|D|` the token count of `D` and\n`avgdl` the mean document length. That `1 +` in the idf is the Lucene variant:\nit keeps the idf positive even for a term present in every document, which is\nwhat makes \"score above 0\" mean exactly \"contains a query term\".\n\n`tokenize` is given — use it, so your terms and the tests' agree. The\ncollection is non-empty and at least one document has a token, but a single\ndocument may well be empty. The split between the two halves of the pipeline is\npart of the task: **`__init__` tokenizes the collection, `search` may only\ntokenize the query** — so the per-document scoring lives in `_score_tokens`,\nwhich both entry points share.",
+  "bundlePath": "/content/problems/agents_retrieval/bm25_index",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "__init__ is the offline half: per document keep its token count and a Counter of its terms, plus one dict term -> [doc ids containing it] (the inverted index) and the idf of every term you saw.",
+    "search is the online half: tokenize the query once, take the union of the query terms' posting lists as the candidates, score only those, then sort by (-score, doc_id) and cut to top_k."
+  ],
+  "prereqs": [],
+  "next": [
+    "agents_retrieval/email_regex"
+  ],
+  "contentHash": "6a2d9ffcbf4815151afabe07f93f67d9f3d146a87ad321dcac3793c692fd0b16"
+}

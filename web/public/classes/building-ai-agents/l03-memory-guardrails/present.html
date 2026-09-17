@@ -289,7 +289,7 @@ ul.custom-list li.lamp::before {
 }
 .reveal .mem-vs-table col.mem-vs-c1 { width: 49%; }
 .reveal .mem-vs-table col.mem-vs-c2 { width: 51%; }
-.mem-vs-closing {
+.reveal .mem-vs-closing {
 	font-size: 21px;
 	margin: 40px 0 0 14px;
 }
@@ -452,11 +452,14 @@ ul.custom-list li.lamp::before {
 }
 
 /* --- A lead line above a panel or table: the long-term flow, the entity
-   example, the RAG pipeline's index preparation --- */
-.mem-flow-lead,
-.mem-example-lead,
-.mem-pipe-lead,
-.mem-runtime-lead {
+   example, the RAG pipeline's index preparation. These and the two closing
+   lines below need the `.reveal` prefix: a bare `.mem-…` class loses to the
+   theme's own `.reveal p`, which is more specific, and the margins written
+   here are then silently ignored --- */
+.reveal .mem-flow-lead,
+.reveal .mem-example-lead,
+.reveal .mem-pipe-lead,
+.reveal .mem-runtime-lead {
 	font-size: 21px;
 	margin: 62px 0 22px 14px;
 }
@@ -823,6 +826,50 @@ ul.custom-list li.lamp::before {
 	margin-top: 26px;
 }
 
+/* --- Practice: a task link on a cream slide — both breaks in this lecture, and
+   the same break every other lecture in this course takes. The link is an `a.practice`, so export_decks.py checks it
+   against the problem manifest and a typo fails the build. Margins need the
+   `.reveal` prefix to outrank the theme's own `.reveal p` / `.reveal ul` --- */
+.reveal .mem-practice-lead {
+	font-size: 22px;
+	margin: 54px 0 32px 14px;
+}
+.mem-practice-task {
+	align-items: baseline;
+	display: flex;
+	gap: 18px;
+	margin-left: 14px;
+}
+.reveal .mem-practice-task a {
+	color: #4227e0;
+	font-size: 30px;
+}
+.mem-practice-tag {
+	background: #294a43;
+	border-radius: 4px;
+	color: #fdf6e3;
+	font-size: 15px;
+	letter-spacing: 0.04em;
+	padding: 3px 10px;
+	text-transform: uppercase;
+}
+.mem-practice-body {
+	font-size: 21px;
+	line-height: 1.45;
+	margin: 40px 0 0 14px;
+}
+.reveal .mem-practice-body ul {
+	margin: 0;
+	padding-left: 34px;
+}
+.reveal .mem-practice-body li {
+	margin: 10px 0;
+}
+.reveal .mem-practice-note {
+	font-size: 21px;
+	margin: 44px 0 0 14px;
+}
+
 /* --- Query transformations: two labelled lines, then the table --- */
 .mem-qt-body {
 	font-size: 22px;
@@ -840,7 +887,7 @@ ul.custom-list li.lamp::before {
 	margin: 38px 0 26px;
 	text-transform: none;
 }
-.mem-qt-closing {
+.reveal .mem-qt-closing {
 	font-size: 21px;
 	margin: 26px 0 0 14px;
 }
@@ -1086,7 +1133,7 @@ ul.custom-list li.lamp::before {
 }
 </style>
 </head>
-<body data-class="building-ai-agents" data-lesson="l03-memory-guardrails" data-deck-hash="c3fddf875f6e36ef" onload="totalWrapper();">
+<body data-class="building-ai-agents" data-lesson="l03-memory-guardrails" data-deck-hash="aade55aafa3c37e9" onload="totalWrapper();">
 <div class="reveal">
 <div class="slides">
                 <section>
@@ -1256,12 +1303,14 @@ ul.custom-list li.lamp::before {
                         <div class="mem-long-body">
                             <p class="mem-accent">Stored outside the current session/task.</p>
                             <p>Allows the agent to <span class="mem-accent">accumulate knowledge over time.</span></p>
-                            <h4 class="fragment">Examples:</h4>
-                            <ul>
-                                <li class="fragment">User preferences are saved after a conversation</li>
-                                <li class="fragment">Facts learned about entities (people, products)</li>
-                                <li class="fragment">Historical interaction summaries</li>
-                            </ul>
+                            <div class="fragment">
+                                <h4>Examples:</h4>
+                                <ul>
+                                    <li>User preferences are saved after a conversation</li>
+                                    <li>Facts learned about entities (people, products)</li>
+                                    <li>Historical interaction summaries</li>
+                                </ul>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-flow-slide" data-background-color="white">
@@ -1301,9 +1350,9 @@ ul.custom-list li.lamp::before {
                         <h3>Entity Memory</h3>
                         <p class="mem-example-lead">Example:</p>
                         <div class="mem-example-panel">
-                            <div class="fragment">User: "I'm vegetarian, prefer window seats."</div>
-                            <div class="fragment">&rarr; saved: { meal: "vegetarian", seat: "window" }</div>
-                            <div class="mem-example-next fragment">Next session: agent pre-fills booking with saved preferences.</div>
+                            <div>User: "I'm vegetarian, prefer window seats."</div>
+                            <div>&rarr; saved: { meal: "vegetarian", seat: "window" }</div>
+                            <div class="mem-example-next">Next session: agent pre-fills booking with saved preferences.</div>
                         </div>
                     </section>
                     <section class="mem-slide mem-ctx-slide" data-background-color="white">
@@ -1390,20 +1439,41 @@ ul.custom-list li.lamp::before {
                         <h3>RAG Pipeline</h3>
                         <p class="mem-runtime-lead">Runtime (online)</p>
                         <div class="mem-runtime-panel">
-                            <div class="fragment">User query</div>
-                            <div class="fragment">
+                            <div>User query</div>
+                            <div>
                                 <div class="mem-runtime-arrow">&darr;</div>
                                 <div>1. Search prepared index/store</div>
                             </div>
-                            <div class="fragment">
+                            <div>
                                 <div class="mem-runtime-arrow">&darr;</div>
                                 <div>2. Enrich prompt with retrieved documents</div>
                             </div>
-                            <div class="fragment">
+                            <div>
                                 <div class="mem-runtime-arrow">&darr;</div>
                                 <div>3. Generate answer from enriched context</div>
                             </div>
                         </div>
+                    </section>
+                    <section class="mem-slide mem-practice-slide" data-background-color="#fdf6e3">
+                        <h3>Practice</h3>
+                        <p class="mem-practice-lead">Build the keyword half of that pipeline yourself (15&ndash;20 min)</p>
+                        <div class="mem-practice-task">
+                            <a class="practice" href="/problems/agents_retrieval/bm25_index"
+                               target="_blank" rel="noopener noreferrer">BM25 Index</a>
+                            <span class="mem-practice-tag">medium</span>
+                        </div>
+                        <div class="mem-practice-body">
+                            <ul>
+                                <li><span class="mem-mono">__init__</span> &mdash; tokenize every document once; keep the
+                                    term &rarr; documents postings and each term's idf</li>
+                                <li><span class="mem-mono">_score_tokens</span> &mdash; the BM25 score itself, with its
+                                    <span class="mem-mono">k1</span> and <span class="mem-mono">b</span> knobs</li>
+                                <li><span class="mem-mono">search</span> &mdash; score the candidates, rank them,
+                                    cut to <span class="mem-mono">top_k</span></li>
+                            </ul>
+                        </div>
+                        <p class="mem-practice-note fragment">Offline and online &mdash; the two halves you have just
+                            seen, in about thirty lines of Python.</p>
                     </section>
                     <section class="mem-slide mem-qt-slide" data-background-color="white">
                         <h3>RAG Query Transformations</h3>
@@ -1583,6 +1653,31 @@ ul.custom-list li.lamp::before {
                             </div>
                         </div>
                     </section>
+                    <section class="mem-slide mem-practice-slide" data-background-color="#fdf6e3">
+                        <h3>Practice</h3>
+                        <p class="mem-practice-lead">Build that efficiency method yourself (15&ndash;20 min)</p>
+                        <div class="mem-practice-task">
+                            <a class="practice" href="/problems/agents_training/lora_adapter"
+                               target="_blank" rel="noopener noreferrer">LoRA Adapter</a>
+                            <span class="mem-practice-tag">medium</span>
+                        </div>
+                        <div class="mem-practice-body">
+                            <ul>
+                                <li><span class="mem-mono">__init__</span> &mdash; <span class="mem-mono">A</span> random,
+                                    <span class="mem-mono">B</span> all zeros, so the fresh adapter changes nothing and
+                                    training starts at the base model</li>
+                                <li><span class="mem-mono">forward</span> &mdash; grouped as
+                                    <span class="mem-mono">(x @ A.T) @ B.T</span>, so the full
+                                    out &times; in correction is never built</li>
+                                <li><span class="mem-mono">merged_weight</span>,
+                                    <span class="mem-mono">trainable_fraction</span> &mdash; free at inference, and the
+                                    number that sells the method</li>
+                            </ul>
+                        </div>
+                        <p class="mem-practice-note fragment">A 1024&times;1024 layer at rank 8 trains
+                            <span class="mem-accent">1.6%</span> of the weights &mdash; and at full rank,
+                            <span class="mem-accent">200%</span>. The rank is the whole trade.</p>
+                    </section>
                     <section class="mem-slide mem-vs-slide" data-background-color="white">
                         <h3>RAG vs Training</h3>
                         <table class="mem-vs-table">
@@ -1750,8 +1845,8 @@ ul.custom-list li.lamp::before {
                                     <div>[New query]</div>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead fragment"><span class="mem-verdict-icon">&#9989;</span>Simple &mdash; no extra LLM calls</p>
-                            <p class="fragment"><span class="mem-verdict-icon">&#10060;</span>Loses old context completely</p>
+                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Simple &mdash; no extra LLM calls</p>
+                            <p><span class="mem-verdict-icon">&#10060;</span>Loses old context completely</p>
                         </div>
                     </section>
                     <section class="mem-slide mem-summ-slide" data-background-color="white">
@@ -1767,8 +1862,8 @@ ul.custom-list li.lamp::before {
                                     <div>[New query]</div>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead fragment"><span class="mem-verdict-icon">&#9989;</span>Preserves key facts from old context</p>
-                            <p class="fragment"><span class="mem-verdict-icon">&#10060;</span>Extra LLM call; details may be lost</p>
+                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Preserves key facts from old context</p>
+                            <p><span class="mem-verdict-icon">&#10060;</span>Extra LLM call; details may be lost</p>
                         </div>
                     </section>
                     <section class="mem-slide mem-vec-slide" data-background-color="white">
@@ -1789,8 +1884,8 @@ ul.custom-list li.lamp::before {
                                     <div class="mem-vec-note-cont">from vector store of all messages</div>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead fragment"><span class="mem-verdict-icon">&#9989;</span>Keeps only relevant context</p>
-                            <p class="fragment"><span class="mem-verdict-icon">&#10060;</span>May miss important sequential context</p>
+                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Keeps only relevant context</p>
+                            <p><span class="mem-verdict-icon">&#10060;</span>May miss important sequential context</p>
                         </div>
                     </section>
                     <section class="mem-slide mem-lctx-slide" data-background-color="white">
@@ -1807,8 +1902,8 @@ ul.custom-list li.lamp::before {
                                     <div>[New query]</div>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead fragment"><span class="mem-verdict-icon">&#9989;</span>Nothing lost &mdash; full history always available</p>
-                            <p class="fragment"><span class="mem-verdict-icon">&#10060;</span>Higher cost and latency</p>
+                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Nothing lost &mdash; full history always available</p>
+                            <p><span class="mem-verdict-icon">&#10060;</span>Higher cost and latency</p>
                         </div>
                     </section>
                 </section>
@@ -2312,6 +2407,28 @@ ul.custom-list li.lamp::before {
                             </table>
                             <p class="mem-tool-closing fragment">In production: <span class="mem-hl">combine layers</span> &mdash; regex for obvious cases, ML/DSSM/BERT for nuance, LLM for hard cases</p>
                         </div>
+                    </section>
+                    <section class="mem-slide mem-practice-slide" data-background-color="#fdf6e3">
+                        <h3>Practice</h3>
+                        <p class="mem-practice-lead">Row one of that table &mdash; the fastest, most basic guard (15&ndash;20 min)</p>
+                        <div class="mem-practice-task">
+                            <a class="practice" href="/problems/agents_retrieval/email_regex"
+                               target="_blank" rel="noopener noreferrer">Email Regex</a>
+                            <span class="mem-practice-tag">medium</span>
+                        </div>
+                        <div class="mem-practice-body">
+                            <ul>
+                                <li><span class="mem-mono">email_pattern</span> &mdash; dot-joined chunks in the local
+                                    part, domain labels with no hyphen on the edges, a letters-only TLD</li>
+                                <li><span class="mem-mono">find_emails</span> &mdash; every contact in a chunk,
+                                    lower-cased and deduplicated</li>
+                            </ul>
+                        </div>
+                        <p class="mem-practice-note fragment">One pattern, two jobs. Perfect under
+                            <span class="mem-mono">fullmatch</span> and still wrong under
+                            <span class="mem-mono">finditer</span>: scanning
+                            <span class="mem-mono">alice@example.com123</span> must find
+                            <span class="mem-accent">nothing</span>.</p>
                     </section>
                 </section>
                 <section>

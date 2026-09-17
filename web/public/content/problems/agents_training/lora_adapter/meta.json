@@ -1,0 +1,33 @@
+{
+  "id": "agents_training/lora_adapter",
+  "topic": "agents_training",
+  "slug": "lora_adapter",
+  "title": "LoRA Adapter",
+  "difficulty": "medium",
+  "entry": "LoRALinear",
+  "banned": {
+    "modules": [
+      "torch",
+      "peft",
+      "transformers",
+      "loralib"
+    ],
+    "loops": true
+  },
+  "statementMd": "Implement `LoRALinear` — a frozen linear layer with a trainable **low-rank\nadapter**. This is LoRA, the cheap way to bake knowledge into an agent's\nweights: instead of fine-tuning `W`, you train a small correction beside it.\n\nA plain layer computes `x @ W.T` for a base weight `W` of shape\n`(out_features, in_features)`. LoRA leaves `W` alone and adds:\n\n```\nW_eff = W + (alpha / rank) * B @ A      A: (rank, in_features)\n                                        B: (out_features, rank)\n```\n\nso the update is `rank * (in_features + out_features)` numbers instead of\n`in_features * out_features`. The `alpha / rank` factor keeps the size of the\nupdate roughly independent of the rank you picked, so changing the rank does not\nforce you to retune the learning rate.\n\n`__init__(weight, rank, alpha, rng)` stores `weight` (the array as given — it is\n**frozen**, never write into it), `rank`, `alpha`, and builds the two adapter\nmatrices: `A` from `rng.standard_normal(...) / sqrt(in_features)`, and `B` as\n**all zeros**. That zero is the point: it makes the adapter a no-op, so training\nstarts at exactly the base model rather than at a randomly damaged one — while\n`A` must be random, or no gradient could ever flow into either matrix.\n\nThen three methods:\n\n- `forward(x)` — output for a batch `x` of shape `(batch, in_features)`. Group\n  the products as `(x @ A.T) @ B.T`, which never builds the full\n  `out_features x in_features` correction; that is why the adapter is cheap.\n- `merged_weight()` — `W_eff` as a **new** array. Fold it in and inference costs\n  what it always did: one linear layer.\n- `trainable_fraction()` — `(A.size + B.size) / weight.size`, the number that\n  sells LoRA. (Try `rank` equal to the full width to see it stop selling.)",
+  "bundlePath": "/content/problems/agents_training/lora_adapter",
+  "pyDeps": [
+    "numpy"
+  ],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Shapes first: W is (out, in), A is (rank, in), B is (out, rank). The only grouping that type-checks for the update is B @ A, and the only one for a batch is (x @ A.T) @ B.T.",
+    "B starts as np.zeros, so a fresh layer returns exactly x @ W.T — that is the property the tests lean on hardest. And build the merged weight with `self.weight + …`, never `+=`: the base is frozen."
+  ],
+  "prereqs": [
+    "numpy_basics/matrix_product"
+  ],
+  "next": [],
+  "contentHash": "8723fd6814a46ede709ecb22d57d5e12b8ea67a09bfc5c62efa0fdceec459a92"
+}

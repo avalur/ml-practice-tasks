@@ -44,7 +44,11 @@
       "title": "Lecture 3. Memory and Guardrails",
       "date": "2026-10-22",
       "deck": "memory_and_guardrails",
-      "practice": []
+      "practice": [
+        { "type": "problem", "id": "agents_retrieval/bm25_index" },
+        { "type": "problem", "id": "agents_training/lora_adapter" },
+        { "type": "problem", "id": "agents_retrieval/email_regex" }
+      ]
     }
   ]
 }

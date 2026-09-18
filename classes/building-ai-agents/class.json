@@ -47,7 +47,12 @@
       "practice": [
         { "type": "problem", "id": "agents_retrieval/bm25_index" },
         { "type": "problem", "id": "agents_training/lora_adapter" },
-        { "type": "problem", "id": "agents_retrieval/email_regex" }
+        { "type": "problem", "id": "agents_retrieval/email_regex" },
+        {
+          "type": "link",
+          "title": "Practice — Memory and Guardrails (Colab)",
+          "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Memory_Guardrails_in_AI_Agents.ipynb"
+        }
       ]
     }
   ]

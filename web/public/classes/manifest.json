@@ -565,6 +565,14 @@
             }
           ],
           "homework": null
+        },
+        {
+          "slug": "l04-multimodality",
+          "title": "Lecture 4. Multimodality",
+          "date": "2026-10-29",
+          "deck": "multimodality",
+          "practice": [],
+          "homework": null
         }
       ]
     }

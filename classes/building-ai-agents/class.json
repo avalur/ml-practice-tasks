@@ -54,6 +54,13 @@
           "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Memory_Guardrails_in_AI_Agents.ipynb"
         }
       ]
+    },
+    {
+      "slug": "l04-multimodality",
+      "title": "Lecture 4. Multimodality",
+      "date": "2026-10-29",
+      "deck": "multimodality",
+      "practice": []
     }
   ]
 }

@@ -575,6 +575,11 @@
             {
               "type": "problem",
               "id": "py_classes/range"
+            },
+            {
+              "type": "link",
+              "title": "Practice — Multi-Agent Systems and Multimodality (Colab)",
+              "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Multi_Agent_Systems_Multimodality.ipynb"
             }
           ],
           "homework": null

@@ -583,6 +583,14 @@
             }
           ],
           "homework": null
+        },
+        {
+          "slug": "l05-agent-eval",
+          "title": "Lecture 5. Agent Evaluation: From Metrics to Managed Quality",
+          "date": "2026-11-05",
+          "deck": "agent_eval",
+          "practice": [],
+          "homework": null
         }
       ]
     }

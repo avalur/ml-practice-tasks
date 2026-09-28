@@ -1302,6 +1302,57 @@ ul.custom-list li.lamp::before {
 	font-weight: 700;
 }
 
+/* --- Practice: In-lecture Break Slide --- */
+.reveal .eval-practice-lead {
+	color: #2a322e;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 22px;
+	margin: 54px 0 32px 14px;
+}
+.eval-practice-task-box {
+	align-items: baseline;
+	display: flex;
+	gap: 18px;
+	margin-left: 14px;
+}
+.reveal .eval-practice-task-box a {
+	color: #4227e0;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 30px;
+	font-weight: 700;
+}
+.eval-practice-tag {
+	background: #294a43;
+	border-radius: 4px;
+	color: #fdf6e3;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 15px;
+	letter-spacing: 0.04em;
+	padding: 3px 10px;
+	text-transform: uppercase;
+}
+.eval-practice-body {
+	color: #2a322e;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	line-height: 1.45;
+	margin: 40px 0 0 14px;
+}
+.reveal .eval-practice-body ul {
+	margin: 0;
+	padding-left: 34px;
+}
+.reveal .eval-practice-body li {
+	margin: 10px 0;
+}
+.reveal .eval-practice-note {
+	color: #294a43;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-style: italic;
+	margin: 44px 0 0 14px;
+}
+
 /* --- Practice Overview Slide --- */
 .eval-practice-list {
 	display: flex;
@@ -2736,6 +2787,23 @@ Reply JSON: {"usefulness": "...",
                         <div class="eval-takeaway" style="margin-top: 20px;">
                             Rebuild entire codebases from binary + docs: frontier benchmark where SOTA resolves &lt; 5% (Claude Opus 5: 4.5%).
                         </div>
+                    </section>
+                    <section class="eval-slide eval-practice-slide" data-background-color="#fdf6e3">
+                        <h3 class="eval-title">Practice</h3>
+                        <p class="eval-practice-lead">Pick the champion by ROI &mdash; cost-efficiency on leaderboard (15&ndash;20 min)</p>
+                        <div class="eval-practice-task-box">
+                            <a class="practice" href="/problems/agents_eval/best_value_model"
+                               target="_blank" rel="noopener noreferrer">Best Value Model</a>
+                            <span class="eval-practice-tag">easy</span>
+                        </div>
+                        <div class="eval-practice-body">
+                            <ul>
+                                <li>Compute token cost in dollars from <span class="eval-mono">input_tokens</span>, <span class="eval-mono">output_tokens</span> and price per 1M tokens</li>
+                                <li>Score / cost ratio &mdash; measure quality delivered per dollar spent on the benchmark</li>
+                                <li>Filter candidates by <span class="eval-mono">min_score</span> and positive cost; break ties stably</li>
+                            </ul>
+                        </div>
+                        <p class="eval-practice-note fragment">SOTA isn't just accuracy &mdash; in production, 10&times; cheaper at 95% quality often wins.</p>
                     </section>
                     <section class="eval-slide" data-background-color="white">
                         <h3 class="eval-title">Research Agents</h3>

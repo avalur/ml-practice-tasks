@@ -589,7 +589,17 @@
           "title": "Lecture 5. Agent Evaluation: From Metrics to Managed Quality",
           "date": "2026-11-05",
           "deck": "agent_eval",
-          "practice": [],
+          "practice": [
+            {
+              "type": "problem",
+              "id": "agents_eval/best_value_model"
+            },
+            {
+              "type": "link",
+              "title": "Practice — Metrics to Managed Quality (Colab)",
+              "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Metrics_to_Managed_Quality.ipynb"
+            }
+          ],
           "homework": null
         }
       ]

@@ -1,0 +1,31 @@
+{
+  "id": "agents_eval/best_value_model",
+  "topic": "agents_eval",
+  "slug": "best_value_model",
+  "title": "Best Value Model",
+  "difficulty": "easy",
+  "entry": "best_value_model",
+  "banned": {
+    "modules": [
+      "anthropic",
+      "openai",
+      "langchain",
+      "requests",
+      "httpx",
+      "aiohttp"
+    ]
+  },
+  "statementMd": "Find the **best value model** on an evaluation leaderboard — the model that\nmaximizes the benchmark quality score per dollar of token cost.\n\nWhen evaluating AI agents on coding benchmarks like **ProgramBench** or\n**SWE-bench**, the top-performing frontier models often achieve slightly higher\naccuracy at an exorbitant price. In production engineering, selecting the right\nbackbone requires optimizing for **return on investment (ROI)**: quality delivered\nper dollar spent on API tokens.\n\nImplement `best_value_model(leaderboard, min_score=0.0)`.\n\nEach entry in `leaderboard` is a dictionary describing a model evaluated on the\nbenchmark:\n\n```python\n{\n    \"name\": \"Claude 3.5 Sonnet\",\n    \"score\": 40.0,             # benchmark solve rate (% or points, >= 0)\n    \"input_tokens\": 12_500_000, # prompt tokens used across the benchmark\n    \"output_tokens\": 1_200_000, # generated tokens across the benchmark\n    \"input_cost_per_m\": 3.0,    # USD per 1,000,000 input tokens\n    \"output_cost_per_m\": 15.0,  # USD per 1,000,000 output tokens\n}\n```\n\nThe total cost in USD to run the model across the benchmark is:\n\n```\n        input_tokens * input_cost_per_m + output_tokens * output_cost_per_m\ncost = -------------------------------------------------------------------\n                                    1,000,000\n```\n\nThe model's **cost efficiency** (quality points per dollar) is:\n\n```\nefficiency = score / cost\n```\n\n### Rules\n\n1. **Filtering:** A model is eligible only if `cost > 0` and `score >= min_score`.\n   Models that do not meet both conditions are ignored.\n2. **Best model:** Pick the candidate with the highest `efficiency`.\n3. **Tie-breaking:** If multiple candidates achieve the exact same efficiency,\n   prefer the one with the higher benchmark `score`. If scores are also tied,\n   pick the one that appears earlier in `leaderboard`.\n4. **Empty or no candidates:** If `leaderboard` is empty or no model meets the\n   criteria, return `None`.",
+  "bundlePath": "/content/problems/agents_eval/best_value_model",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "First filter out models that do not qualify: discard any model with score < min_score or non-positive total cost.",
+    "Total token cost in dollars: (input_tokens * input_cost_per_m + output_tokens * output_cost_per_m) / 1_000_000.",
+    "Efficiency is score / cost. Select the candidate maximizing efficiency. To break ties by higher score and preserve first occurrence, track (efficiency, score) or only update when strictly greater."
+  ],
+  "prereqs": [],
+  "next": [],
+  "contentHash": "c1a11be6b5458f8bc0fb93d564377f377ddf4783de3998afedc87c0e16914b15"
+}

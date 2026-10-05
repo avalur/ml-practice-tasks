@@ -494,7 +494,7 @@
         {
           "slug": "l01-intro-agents",
           "title": "Lecture 1. From LLM to AI Agents",
-          "date": "2026-10-08",
+          "date": "2026-10-06",
           "deck": "intro_ai_agents",
           "practice": [
             {
@@ -521,7 +521,7 @@
         {
           "slug": "l02-tools-mcp",
           "title": "Lecture 2. Tools and MCP",
-          "date": "2026-10-15",
+          "date": "2026-10-13",
           "deck": "tools_mcp",
           "practice": [
             {
@@ -543,7 +543,7 @@
         {
           "slug": "l03-memory-guardrails",
           "title": "Lecture 3. Memory and Guardrails",
-          "date": "2026-10-22",
+          "date": "2026-10-20",
           "deck": "memory_and_guardrails",
           "practice": [
             {
@@ -569,7 +569,7 @@
         {
           "slug": "l04-multimodality",
           "title": "Lecture 4. Multimodality",
-          "date": "2026-10-29",
+          "date": "2026-10-27",
           "deck": "multimodality",
           "practice": [
             {
@@ -587,7 +587,7 @@
         {
           "slug": "l05-agent-eval",
           "title": "Lecture 5. Agent Evaluation: From Metrics to Managed Quality",
-          "date": "2026-11-05",
+          "date": "2026-11-03",
           "deck": "agent_eval",
           "practice": [
             {

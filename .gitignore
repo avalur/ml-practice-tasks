@@ -19,3 +19,4 @@ node_modules/
 # Written by the lecture-3 practice notebook itself (save_profile); load_profile
 # returns an empty profile when it is missing, so it is a local run artifact.
 /classes/building-ai-agents/practice/data/passenger_profile.json
+/classes/building-ai-agents/practice/tau2-bench/

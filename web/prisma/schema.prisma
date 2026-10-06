@@ -43,6 +43,7 @@ model User {
   favorites        Favorite[]
   notebookProgress UserNotebookProgress[]
   enrollments      ClassEnrollment[]
+  attendances      LessonAttendance[]
   createdAt        DateTime               @default(now())
 }
 
@@ -186,6 +187,7 @@ model Class {
   invites     ClassInvite[]
   enrollments ClassEnrollment[]
   sessions    LessonSession[]
+  attendances LessonAttendance[]
 }
 
 // One invite code, handed out to one group of students. A class can have several
@@ -260,6 +262,23 @@ model LessonAnnotation {
   session LessonSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@unique([sessionId, pageKey])
+}
+
+model LessonAttendance {
+  id         String   @id @default(cuid())
+  classId    String
+  lessonSlug String
+  userId     String
+  attended   Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, lessonSlug, userId])
+  @@index([classId, lessonSlug])
+  @@index([userId])
 }
 
 // Whether a brain teaser is on the site yet. Everything else about a teaser is

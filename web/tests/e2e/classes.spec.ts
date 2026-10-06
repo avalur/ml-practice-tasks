@@ -327,6 +327,60 @@ test("teacher: writes a group code, and its student appears in the homework tabl
   }
 });
 
+// Attendance tracking: teacher toggles attendance directly in the UI,
+// it persists in the database across page reloads.
+test("teacher: marks attendance for a student, updates and persists", async ({
+  page,
+  context,
+  browser,
+}) => {
+  const teacher = await signInAs(context, {
+    email: "e2e-teacher-att@example.test",
+    name: "E2E Teacher Att",
+    classSlug: CLASS,
+    teacher: true,
+  });
+  const studentCtx = await browser.newContext();
+  const student = await signInAs(studentCtx, {
+    email: "e2e-att-student@example.test",
+    name: "E2E Att Student",
+  });
+  let code = "";
+  try {
+    code = await teacher.createInvite(CLASS, "Stream Attendance");
+
+    const studentPage = await studentCtx.newPage();
+    await studentPage.goto(`/classes/${CLASS}`);
+    await studentPage.locator("#class-code").fill(code);
+    await studentPage.getByRole("button", { name: "Join" }).click();
+    await expect(studentPage.getByText(/You are in this class as/)).toBeVisible();
+
+    // Teacher opens the lesson homework/attendance view
+    await page.goto(`/classes/${CLASS}/homework?lesson=${LESSON}`);
+    const attCheckbox = page.getByTestId(`att-${student.userId}-${LESSON}`);
+    await expect(attCheckbox).toBeVisible();
+    await expect(attCheckbox).not.toBeChecked();
+
+    // Check attendance
+    await attCheckbox.click();
+    await expect(attCheckbox).toBeChecked();
+
+    // Reload and verify persistence
+    await page.reload();
+    const attCheckboxAfter = page.getByTestId(`att-${student.userId}-${LESSON}`);
+    await expect(attCheckboxAfter).toBeChecked();
+
+    // Batch clear
+    await page.getByRole("button", { name: "Снять отметки" }).click();
+    await expect(attCheckboxAfter).not.toBeChecked();
+  } finally {
+    await student.dispose();
+    await studentCtx.close();
+    await teacher.deleteInviteByCode(code);
+    await teacher.dispose();
+  }
+});
+
 // "Finish lesson" downloads the annotated PDF to the teacher and uploads a copy
 // to Vercel Blob; once that copy lands, every member gets a download link.
 test("member: a published lecture PDF is offered on the lesson and class pages", async ({

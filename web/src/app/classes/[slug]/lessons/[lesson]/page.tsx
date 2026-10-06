@@ -134,13 +134,25 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   if (!access.classRow || !access.visible) notFound();
 
   const refs = flatten([...lesson.practice, ...(lesson.homework?.items ?? [])]);
-  const [solved, delivered] = await Promise.all([
+  const [solved, delivered, attendance] = await Promise.all([
     access.userId ? solvedKeys([access.userId], refs) : Promise.resolve(new Set<string>()),
     prisma.lessonSession.findFirst({
       where: { classId: access.classRow.id, lessonSlug, endedAt: { not: null } },
       orderBy: { endedAt: "desc" },
       select: { pdfBytes: true, pdfUrl: true, endedAt: true },
     }),
+    access.userId
+      ? prisma.lessonAttendance.findUnique({
+          where: {
+            classId_lessonSlug_userId: {
+              classId: access.classRow.id,
+              lessonSlug,
+              userId: access.userId,
+            },
+          },
+          select: { attended: true },
+        })
+      : Promise.resolve(null),
   ]);
 
   const done = (r: ContentRef) =>
@@ -163,6 +175,19 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
           Open slides
         </a>
         {access.isTeacher && <PresentButton classSlug={slug} lessonSlug={lessonSlug} />}
+        {access.isTeacher && (
+          <Link
+            className="bt-clear-btn"
+            href={`/classes/${slug}/homework?lesson=${lessonSlug}`}
+          >
+            Посещаемость
+          </Link>
+        )}
+        {attendance?.attended && (
+          <span className="badge easy" style={{ alignSelf: "center" }}>
+            ✓ Attended
+          </span>
+        )}
         {/* "Finish lesson" saves the annotated PDF to the teacher's machine and
             uploads a copy to Blob storage; this appears once that copy lands.
             The store is private, so the link goes through our own route, which

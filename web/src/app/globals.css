@@ -1762,3 +1762,49 @@ pre.code {
 .hw-none      { color: var(--muted); }
 .hw-none-late { color: var(--hard); }
 .hw-na        { color: var(--border); }
+
+.hw-view-tabs { display: flex; gap: 0.5rem; margin: 1rem 0 0.5rem; }
+.hw-view-tabs .bt-clear-btn.active {
+  background: var(--panel-2);
+  border-color: var(--accent);
+  color: var(--text);
+  font-weight: 600;
+}
+.hw-lesson-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+.att-batch-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.hw-att { min-width: 6rem; }
+.hw-att-cell {
+  text-align: center;
+  padding: 0.2rem 0.4rem !important;
+}
+.att-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+}
+.att-checkbox {
+  cursor: pointer;
+  width: 1.15rem;
+  height: 1.15rem;
+  accent-color: var(--easy);
+}
+.att-label {
+  display: none;
+}
+.att-toggle.att-busy {
+  opacity: 0.5;
+  pointer-events: none;
+}

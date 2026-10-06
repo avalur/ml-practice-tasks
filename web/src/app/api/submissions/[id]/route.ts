@@ -14,10 +14,23 @@ export async function GET(
 
   const sub = await prisma.submission.findUnique({
     where: { id },
-    select: { userId: true, code: true, problemId: true },
+    select: {
+      userId: true,
+      code: true,
+      problemId: true,
+      clientStatus: true,
+      passed: true,
+      total: true,
+    },
   });
   if (!sub || sub.userId !== userId) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
-  return NextResponse.json({ code: sub.code, problemId: sub.problemId });
+  const solved =
+    sub.clientStatus === "passed" || (sub.total > 0 && sub.passed === sub.total);
+  return NextResponse.json({
+    code: sub.code,
+    problemId: sub.problemId,
+    solved,
+  });
 }

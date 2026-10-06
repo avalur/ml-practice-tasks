@@ -75,10 +75,28 @@ export function SolveWorkspace({
   const hydratedRef = useRef(false);
   useEffect(() => {
     let alive = true;
-    const finish = (value?: string) => {
+    const finish = (value?: string, solved?: boolean) => {
       if (!alive) return;
       if (typeof value === "string") setCode(value);
+      if (solved) {
+        setAllPassed(true);
+        onSolve?.();
+      }
       hydratedRef.current = true; // enable the autosave below
+    };
+
+    const isLocalSolved = () => {
+      try {
+        return localStorage.getItem(`mlp:solved:${meta.id}`) === "1";
+      } catch {
+        return false;
+      }
+    };
+
+    const markSolvedLocally = () => {
+      try {
+        localStorage.setItem(`mlp:solved:${meta.id}`, "1");
+      } catch {}
     };
 
     const subId = new URLSearchParams(window.location.search).get("submission");
@@ -89,34 +107,46 @@ export function SolveWorkspace({
         .then((r) => (r.ok ? r.json() : null))
         .then((d) => {
           if (typeof d?.code === "string") {
-            finish(d.code);
+            const passed = Boolean(d.solved || isLocalSolved());
+            if (passed) markSolvedLocally();
+            finish(d.code, passed);
             window.history.replaceState(null, "", window.location.pathname);
-          } else finish();
+          } else {
+            finish(undefined, isLocalSolved());
+          }
         })
-        .catch(() => finish());
+        .catch(() => finish(undefined, isLocalSolved()));
       return () => {
         alive = false;
       };
     }
 
     const draft = localStorage.getItem(storageKey);
-    if (draft != null && draft !== starter) {
-      finish(draft); // unsaved local edits win
-      return () => {
-        alive = false;
-      };
-    }
+    const locallySolved = isLocalSolved();
 
-    // No local edits → prefill from the user's last submission (the API returns
-    // null when logged out or never submitted), else keep the stub.
+    // Check remote solved state if user is logged in
     fetch(`/api/submissions/latest?problemId=${encodeURIComponent(meta.id)}`)
       .then((r) => (r.ok ? r.json() : null))
-      .then((d) => finish(typeof d?.code === "string" ? d.code : undefined))
-      .catch(() => finish());
+      .then((d) => {
+        const passed = Boolean(d?.solved || locallySolved);
+        if (passed) markSolvedLocally();
+        if (draft != null && draft !== starter) {
+          finish(draft, passed); // unsaved local edits win
+        } else {
+          finish(typeof d?.code === "string" ? d.code : undefined, passed);
+        }
+      })
+      .catch(() => {
+        if (draft != null && draft !== starter) {
+          finish(draft, locallySolved);
+        } else {
+          finish(undefined, locallySolved);
+        }
+      });
     return () => {
       alive = false;
     };
-  }, [storageKey, starter, meta.id]);
+  }, [storageKey, starter, meta.id, onSolve]);
 
   // Persist edits locally so a reload keeps your work. Gated on hydration so the
   // initial stub never overwrites a restored draft or last-submission code.
@@ -142,12 +172,15 @@ export function SolveWorkspace({
     if (runner.status !== "done" || runner.mode !== "test" || !r || postedRef.current === r)
       return;
     postedRef.current = r;
-    if (!session?.user) return;
     const allPass = r.total > 0 && r.passed === r.total;
     if (allPass) {
       setAllPassed(true);
       onSolve?.();
+      try {
+        localStorage.setItem(`mlp:solved:${meta.id}`, "1");
+      } catch {}
     }
+    if (!session?.user) return;
     // On a win, ask the sidebar to pulse this task's bullet while we persist —
     // it stays pulsing until the save settles and the green ✓ is set.
     if (allPass) {
@@ -185,7 +218,7 @@ export function SolveWorkspace({
         setSaveState("error");
         settle(false);
       });
-  }, [runner.status, runner.mode, runner.result, session, meta.id, code]);
+  }, [runner.status, runner.mode, runner.result, session, meta.id, code, onSolve]);
 
   const busy = runner.status === "running" || runner.status === "loading";
 
@@ -208,24 +241,29 @@ export function SolveWorkspace({
   };
 
   const handleShowRef = async () => {
-    if (!showRef && refCode === null) {
+    if (refCode === null) {
       setRefLoading(true);
       try {
         const src = await fetchReferenceSolution(meta.bundlePath);
         setRefCode(src);
       } catch {
         // silently ignore — button stays disabled if fetch fails
+        return;
       } finally {
         setRefLoading(false);
       }
     }
-    setShowRef((v) => !v);
+    setShowRef(true);
   };
 
   const onReset = () => {
     setCode(starter);
     localStorage.removeItem(storageKey);
+    try {
+      localStorage.removeItem(`mlp:solved:${meta.id}`);
+    } catch {}
     setAllPassed(false);
+    setShowRef(false);
     postedRef.current = null; // allow re-saving after a fresh solve
     if (!session?.user) return;
     // Wipe submissions + progress, THEN tell the sidebar to drop the ✓. We fire

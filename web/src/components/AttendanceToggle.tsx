@@ -52,7 +52,7 @@ export function AttendanceToggle({
   return (
     <label
       className={`att-toggle ${attended ? "att-present" : "att-absent"} ${busy ? "att-busy" : ""}`}
-      title={`${studentName ? `${studentName}: ` : ""}${attended ? "Присутствовал (нажмите чтобы снять)" : "Отсутствовал (нажмите чтобы отметить)"}`}
+      title={`${studentName ? `${studentName}: ` : ""}${attended ? "Present (click to clear)" : "Absent (click to mark)"}`}
     >
       <input
         type="checkbox"
@@ -61,7 +61,7 @@ export function AttendanceToggle({
         disabled={busy}
         onChange={toggle}
         data-testid={`att-${userId}-${lessonSlug}`}
-        aria-label={`Посещаемость: ${studentName ?? userId}`}
+        aria-label={`Attendance: ${studentName ?? userId}`}
       />
       <span className="att-label">{attended ? "✓" : "·"}</span>
     </label>

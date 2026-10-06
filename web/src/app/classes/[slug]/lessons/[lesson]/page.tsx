@@ -180,7 +180,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             className="bt-clear-btn"
             href={`/classes/${slug}/homework?lesson=${lessonSlug}`}
           >
-            Посещаемость
+            Attendance
           </Link>
         )}
         {attendance?.attended && (

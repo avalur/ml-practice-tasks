@@ -128,7 +128,7 @@ export default async function HomeworkPage({
                       <th className="hw-name">Student</th>
                       <th className="hw-group">Group</th>
                       <th className="hw-att" title="Attendance on this lecture">
-                        Посещаемость
+                        Attendance
                       </th>
                       {items.map((item) =>
                         isGroup(item) ? (
@@ -206,13 +206,13 @@ export default async function HomeworkPage({
                 href={`/classes/${slug}/homework?tab=attendance`}
                 className={`bt-clear-btn ${currentTab === "attendance" ? "active" : ""}`}
               >
-                Посещаемость
+                Attendance
               </Link>
               <Link
                 href={`/classes/${slug}/homework?tab=homework`}
                 className={`bt-clear-btn ${currentTab === "homework" ? "active" : ""}`}
               >
-                Домашние задания
+                Homework
               </Link>
             </div>
           )}
@@ -269,7 +269,7 @@ export default async function HomeworkPage({
                 <tfoot>
                   <tr>
                     <td className="hw-name">
-                      <strong>Присутствовали</strong>
+                      <strong>Attended</strong>
                     </td>
                     <td className="hw-group"></td>
                     {cls.lessons.map((l) => {

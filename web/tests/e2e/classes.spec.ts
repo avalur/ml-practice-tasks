@@ -371,7 +371,7 @@ test("teacher: marks attendance for a student, updates and persists", async ({
     await expect(attCheckboxAfter).toBeChecked();
 
     // Batch clear
-    await page.getByRole("button", { name: "Снять отметки" }).click();
+    await page.getByRole("button", { name: "Clear all" }).click();
     await expect(attCheckboxAfter).not.toBeChecked();
   } finally {
     await student.dispose();

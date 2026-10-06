@@ -46,18 +46,18 @@ export function AttendanceBatchButtons({
         className="bt-clear-btn"
         disabled={busy || userIds.length === 0}
         onClick={() => setAll(true)}
-        title="Отметить всех студентов группы присутствующими"
+        title="Mark all students in the group as present"
       >
-        {busy ? "Сохранение…" : "Отметить всех"}
+        {busy ? "Saving…" : "Mark all"}
       </button>
       <button
         type="button"
         className="bt-clear-btn"
         disabled={busy || userIds.length === 0}
         onClick={() => setAll(false)}
-        title="Снять отметку присутствия со всех студентов"
+        title="Clear attendance for all students"
       >
-        {busy ? "Сохранение…" : "Снять отметки"}
+        {busy ? "Saving…" : "Clear all"}
       </button>
     </div>
   );

@@ -601,6 +601,14 @@
             }
           ],
           "homework": null
+        },
+        {
+          "slug": "l06-production-engineering",
+          "title": "Lecture 6. Production Engineering for LLM Agents",
+          "date": "2026-11-10",
+          "deck": "production_engineering",
+          "practice": [],
+          "homework": null
         }
       ]
     }

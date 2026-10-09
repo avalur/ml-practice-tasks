@@ -111,6 +111,13 @@
           "href": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/Metrics_to_Managed_Quality.ipynb"
         }
       ]
+    },
+    {
+      "slug": "l06-production-engineering",
+      "title": "Lecture 6. Production Engineering for LLM Agents",
+      "date": "2026-11-10",
+      "deck": "production_engineering",
+      "practice": []
     }
   ]
 }

@@ -1007,29 +1007,33 @@ ul.custom-list li.lamp::before {
 
 /* "How Tool-Calling Works" schematic (tcw-*) */
 .tcw-slide {
-	--tcw-cyan: #57c7ff;
-	--tcw-violet: #9b8cff;
-	--tcw-green: #5fe0a8;
-	background: radial-gradient(120% 95% at 32% -5%, #163a82 0%, #0d2458 42%, #061230 100%);
-	color: #eaf2ff;
+	color: #294a43;
 	height: 100%;
 	min-height: 640px;
-	overflow: hidden;
 	position: relative;
 	text-align: left;
 }
-.tcw-slide h3.tcw-title {
-	color: #eaf2ff;
-	font-size: 1.3em;
-	font-weight: 600;
+.tcw-slide h3 {
+	color: #294a43;
+	font-size: 1.32em;
+	font-weight: 500;
 	letter-spacing: 0;
-	margin: 0 0 2px;
+	line-height: 1.05;
+	margin: 0;
 	text-align: left;
 	text-transform: none;
 }
+.tcw-subtitle {
+	color: #2d5d39;
+	font-size: 0.65em;
+	font-weight: 500;
+	line-height: 1.3;
+	margin: 8px 0 0;
+	text-align: left;
+}
 .tcw-stage {
 	height: 480px;
-	margin: 12px auto 0;
+	margin: 10px auto 0;
 	max-width: 100%;
 	position: relative;
 	width: 1200px;
@@ -1048,7 +1052,6 @@ ul.custom-list li.lamp::before {
 }
 .tcw-node {
 	align-items: center;
-	backdrop-filter: blur(2px);
 	border-radius: 16px;
 	display: flex;
 	flex-direction: column;
@@ -1073,15 +1076,12 @@ ul.custom-list li.lamp::before {
 	width: 150px;
 }
 .tcw-llm .tcw-node {
-	background: rgba(87, 199, 255, 0.10);
-	border: 1px solid rgba(87, 199, 255, 0.45);
-	box-shadow: 0 0 34px rgba(87, 199, 255, 0.35), inset 0 0 20px rgba(87, 199, 255, 0.12);
-}
-.tcw-llm .tcw-icon {
-	filter: drop-shadow(0 0 10px rgba(87, 199, 255, 0.65));
+	background: #f0f9ff;
+	border: 2px solid #38bdf8;
+	box-shadow: 0 4px 14px rgba(56, 189, 248, 0.2);
 }
 .tcw-llm .tcw-node-label {
-	color: var(--tcw-cyan);
+	color: #0284c7;
 }
 .tcw-agent {
 	height: 120px;
@@ -1090,21 +1090,19 @@ ul.custom-list li.lamp::before {
 	width: 150px;
 }
 .tcw-agent .tcw-node {
-	background: rgba(155, 140, 255, 0.10);
-	border: 1px solid rgba(155, 140, 255, 0.45);
-	box-shadow: 0 0 34px rgba(155, 140, 255, 0.32), inset 0 0 20px rgba(155, 140, 255, 0.12);
-}
-.tcw-agent .tcw-icon {
-	filter: drop-shadow(0 0 10px rgba(155, 140, 255, 0.65));
+	background: #f5f3ff;
+	border: 2px solid #a855f7;
+	box-shadow: 0 4px 14px rgba(168, 85, 247, 0.2);
 }
 .tcw-agent .tcw-node-label {
-	color: var(--tcw-violet);
+	color: #7c3aed;
 }
 .tcw-user-avatar {
 	align-items: center;
-	background: rgba(87, 199, 255, 0.12);
-	border: 1px solid rgba(87, 199, 255, 0.4);
+	background: #f0f7ff;
+	border: 1.5px solid #90caf9;
 	border-radius: 50%;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
 	display: flex;
 	font-size: 32px;
 	height: 60px;
@@ -1114,10 +1112,11 @@ ul.custom-list li.lamp::before {
 	width: 60px;
 }
 .tcw-bubble {
-	background: #f4f8ff;
+	background: #f8fafc;
+	border: 1px solid #cbd5e1;
 	border-radius: 12px;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.3);
-	color: #0e2140;
+	box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+	color: #1e293b;
 	font-size: 15px;
 	font-weight: 600;
 	line-height: 1.28;
@@ -1125,7 +1124,7 @@ ul.custom-list li.lamp::before {
 }
 .tcw-bubble::after {
 	border: 8px solid transparent;
-	border-right-color: #f4f8ff;
+	border-right-color: #f8fafc;
 	content: "";
 	left: -14px;
 	position: absolute;
@@ -1137,26 +1136,36 @@ ul.custom-list li.lamp::before {
 	width: 166px;
 }
 .tcw-user-bubble .tcw-bubble {
-	background: #d8efff;
+	background: #e0f2fe;
+	border: 1px solid #bae6fd;
+	color: #0369a1;
 }
 .tcw-user-bubble .tcw-bubble::after {
-	border-right-color: #d8efff;
+	border-right-color: #e0f2fe;
 }
 .tcw-answer {
 	left: 853px;
 	top: 26px;
 	width: 337px;
 }
+.tcw-answer .tcw-bubble {
+	background: #ecfdf5;
+	border: 1px solid #a7f3d0;
+	color: #065f46;
+}
+.tcw-answer .tcw-bubble::after {
+	border-right-color: #ecfdf5;
+}
 .tcw-call {
 	align-items: center;
-	background: rgba(7, 18, 48, 0.72);
-	border: 1px solid rgba(87, 199, 255, 0.5);
+	background: #f8fafc;
+	border: 1.5px solid #cbd5e1;
 	border-radius: 10px;
-	box-shadow: 0 0 24px rgba(87, 199, 255, 0.22);
+	box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
 	box-sizing: border-box;
 	display: flex;
 	font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
-	font-size: 20px;
+	font-size: 19px;
 	font-weight: 700;
 	gap: 8px;
 	height: 54px;
@@ -1165,17 +1174,17 @@ ul.custom-list li.lamp::before {
 	top: 213px;
 	width: 420px;
 }
-.tcw-call .kw { color: var(--tcw-cyan); }
-.tcw-call .fn { color: #ffffff; }
-.tcw-call .arg { color: var(--tcw-green); }
+.tcw-call .kw { color: #7c3aed; }
+.tcw-call .fn { color: #0f172a; }
+.tcw-call .arg { color: #059669; }
 .tcw-db {
 	align-items: center;
-	background: linear-gradient(180deg, #3a5cb0, #223570);
-	border: 1px solid rgba(120, 160, 255, 0.6);
+	background: linear-gradient(180deg, #ede9fe, #ddd6fe);
+	border: 1.5px solid #a78bfa;
 	border-radius: 63px / 16px;
-	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+	box-shadow: 0 3px 10px rgba(167, 139, 250, 0.25);
 	box-sizing: border-box;
-	color: #eef4ff;
+	color: #4c1d95;
 	display: flex;
 	flex-direction: column;
 	font-size: 12.5px;
@@ -1190,8 +1199,8 @@ ul.custom-list li.lamp::before {
 	width: 126px;
 }
 .tcw-db::before {
-	background: #4767c0;
-	border-bottom: 1px solid rgba(120, 160, 255, 0.6);
+	background: #f3f0ff;
+	border-bottom: 1.5px solid #a78bfa;
 	border-radius: 50%;
 	content: "";
 	height: 18px;
@@ -1201,11 +1210,13 @@ ul.custom-list li.lamp::before {
 	top: 0;
 }
 .tcw-steps {
-	background: rgba(255, 255, 255, 0.05);
-	border: 1px solid rgba(155, 140, 255, 0.3);
-	border-left: 4px solid var(--tcw-violet);
+	background: #faf5ff;
+	border: 1px solid #e9d5ff;
+	border-left: 4px solid #7c3aed;
 	border-radius: 12px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 	box-sizing: border-box;
+	color: #3b0764;
 	left: 853px;
 	list-style: none;
 	margin: 0;
@@ -1222,25 +1233,19 @@ ul.custom-list li.lamp::before {
 .tcw-steps li + li {
 	margin-top: 13px;
 }
-.tcw-steps li::before {
-	color: var(--tcw-green);
-	content: "▸";
-	font-weight: 900;
-	left: 0;
-	position: absolute;
-}
 .tcw-footnote {
 	bottom: 18px;
-	color: #cfe0ff;
+	color: #475569;
 	font-size: 17px;
-	font-weight: 600;
+	font-weight: 500;
 	left: 0;
 	position: absolute;
 	right: 0;
 	text-align: center;
 }
 .tcw-footnote strong {
-	color: var(--tcw-cyan);
+	color: #294a43;
+	font-weight: 700;
 }
 
 /* --- MCP Flow sequence diagram --- */
@@ -1504,24 +1509,24 @@ ul.custom-list li.lamp::before {
                             <img src="assets/AI_agent_diagram.webp" alt="AI_agent_diagram">
                         </div>
                     </section>
-                    <section class="tcw-slide" data-background-color="#061230">
-                        <h3 class="tcw-title">How Tool-Calling Works</h3>
-                        <p>LLMs can only generate text, don't execute code.</p>
+                    <section class="tcw-slide" data-background-color="white">
+                        <h3>How Tool-Calling Works</h3>
+                        <p class="tcw-subtitle">LLMs can only generate text, don't execute code.</p>
                         <div class="tcw-stage">
                             <svg class="tcw-wires" viewBox="0 0 1200 480" preserveAspectRatio="none" aria-hidden="true">
                                 <defs>
                                     <marker id="tcw-cy" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#57c7ff"></path>
+                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#0284c7"></path>
                                     </marker>
                                     <marker id="tcw-vi" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto">
-                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#9b8cff"></path>
+                                        <path d="M0 0 L9 4.5 L0 9 Z" fill="#7c3aed"></path>
                                     </marker>
                                 </defs>
-                                <path d="M248 92 L516 92" stroke="#57c7ff" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
-                                <path d="M678 74 C 748 74, 786 66, 848 66" stroke="#57c7ff" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
-                                <path d="M600 154 L600 206" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
-                                <path d="M600 269 L600 328" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
-                                <path d="M676 396 L695 396" stroke="#9b8cff" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                                <path d="M248 92 L516 92" stroke="#0284c7" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
+                                <path d="M678 74 C 748 74, 786 66, 848 66" stroke="#0284c7" stroke-width="2.5" fill="none" marker-end="url(#tcw-cy)"></path>
+                                <path d="M600 154 L600 206" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                                <path d="M600 269 L600 328" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
+                                <path d="M676 396 L695 396" stroke="#7c3aed" stroke-width="2.5" fill="none" marker-end="url(#tcw-vi)"></path>
                             </svg>
 
                             <div class="tcw-user-avatar" role="img" aria-label="User">🧑‍💼</div>
@@ -1627,7 +1632,6 @@ ul.custom-list li.lamp::before {
                                 </td>
                             </tr>
                         </table>
-                        <p style="text-align: right;font-size: small"><a href="https://docs.yandex.ru/docs/view?url=ya-disk-public%3A%2F%2FvrfOWmWjMF41hKo8lmus%2B61fGg%2BXK9KVCFdM45l0gLTx5l2ahqSTrnYk9HJKOhBvq%2FJ6bpmRyOJonT3VoXnDag%3D%3D%3A%2F1%20%D0%B4%D0%B5%D0%BD%D1%8C%2FAgents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP%2FAgents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP.pdf&name=Agents%20Week%202026%20%7C%20%D0%9B%D0%B5%D0%BA%D1%86%D0%B8%D1%8F%201.2%20Tools.%20MCP.pdf">Source: Yandex Lavka on Agents Week 2026, Slide 7</a></p>
                     </section>
                 </section>
                 <section>
@@ -1908,49 +1912,49 @@ ul.custom-list li.lamp::before {
                                 <text class="mcpf-msg" x="414" y="273" text-anchor="middle">Return tool list</text>
 
                                 <!-- note over the app -->
-                                <rect x="236" y="287" width="112" height="33" fill="#ffffcc" stroke="#d9d98a" stroke-width="1"></rect>
-                                <text class="mcpf-note-text" x="241" y="300">Store combined</text>
-                                <text class="mcpf-note-text" x="241" y="314">toolcatalog locally</text>
+                                <rect x="226" y="291" width="128" height="34" rx="4" ry="4" fill="#ffffcc" stroke="#d9d98a" stroke-width="1"></rect>
+                                <text class="mcpf-note-text" x="290" y="304" text-anchor="middle">Store combined</text>
+                                <text class="mcpf-note-text" x="290" y="318" text-anchor="middle">tool catalog locally</text>
 
                                 <!-- 3. prompt in, LLM picks a tool -->
-                                <path class="mcpf-solid" d="M96 329 H289" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="193" y="325" text-anchor="middle">Enter natural language prompt</text>
+                                <path class="mcpf-solid" d="M96 352 H289" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="193" y="348" text-anchor="middle">Enter natural language prompt</text>
 
-                                <path class="mcpf-solid" d="M290 333 H682" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="486" y="329" text-anchor="middle">Forward prompt + tool catalog</text>
+                                <path class="mcpf-solid" d="M290 375 H682" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="371" text-anchor="middle">Forward prompt + tool catalog</text>
 
-                                <text class="mcpf-msg" x="695" y="365" text-anchor="middle">Analyze prompt &amp; select tools</text>
-                                <circle class="mcpf-dot" cx="683" cy="372" r="2.6"></circle>
-                                <path class="mcpf-solid" d="M683 372 H712 Q722 372 722 382 V393 Q722 403 712 403 H690"
+                                <text class="mcpf-msg" x="695" y="396" text-anchor="middle">Analyze prompt &amp; select tools</text>
+                                <circle class="mcpf-dot" cx="683" cy="403" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M683 403 H712 Q722 403 722 413 V424 Q722 434 712 434 H690"
                                       marker-end="url(#mcpf-tip)"></path>
 
-                                <path class="mcpf-solid" d="M683 421 H291" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="486" y="417" text-anchor="middle">Request tool execution</text>
+                                <path class="mcpf-solid" d="M683 452 H291" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="448" text-anchor="middle">Request tool execution</text>
 
                                 <!-- 4. user confirms, the tool runs -->
-                                <path class="mcpf-solid" d="M290 453 H425" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="358" y="449" text-anchor="middle">Choose, provide info</text>
+                                <path class="mcpf-solid" d="M290 477 H425" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="358" y="473" text-anchor="middle">Choose, provide info</text>
 
-                                <path class="mcpf-solid" d="M426 459 H851" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="639" y="455" text-anchor="middle">Execute tool</text>
+                                <path class="mcpf-solid" d="M426 483 H851" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="639" y="479" text-anchor="middle">Execute tool</text>
 
-                                <path class="mcpf-dashed" d="M852 500 H427" marker-end="url(#mcpf-tip-open)"></path>
-                                <text class="mcpf-msg" x="639" y="496" text-anchor="middle">Return results</text>
+                                <path class="mcpf-dashed" d="M852 513 H427" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="639" y="509" text-anchor="middle">Return results</text>
 
-                                <path class="mcpf-dashed" d="M426 517 H291" marker-end="url(#mcpf-tip-open)"></path>
-                                <text class="mcpf-msg" x="358" y="513" text-anchor="middle">Return results</text>
+                                <path class="mcpf-dashed" d="M426 530 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="358" y="526" text-anchor="middle">Return results</text>
 
                                 <!-- 5. answer back to the user -->
-                                <circle class="mcpf-dot" cx="683" cy="523" r="2.6"></circle>
-                                <path class="mcpf-solid" d="M290 546 H682" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="486" y="542" text-anchor="middle">Process results</text>
+                                <circle class="mcpf-dot" cx="683" cy="536" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M290 557 H682" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="486" y="553" text-anchor="middle">Process results</text>
 
-                                <path class="mcpf-dashed" d="M683 574 H291" marker-end="url(#mcpf-tip-open)"></path>
-                                <text class="mcpf-msg" x="486" y="570" text-anchor="middle">Generate response</text>
+                                <path class="mcpf-dashed" d="M683 583 H291" marker-end="url(#mcpf-tip-open)"></path>
+                                <text class="mcpf-msg" x="486" y="579" text-anchor="middle">Generate response</text>
 
-                                <circle class="mcpf-dot" cx="96" cy="603" r="2.6"></circle>
-                                <path class="mcpf-solid" d="M290 603 H97" marker-end="url(#mcpf-tip)"></path>
-                                <text class="mcpf-msg" x="193" y="599" text-anchor="middle">Display final answer</text>
+                                <circle class="mcpf-dot" cx="96" cy="610" r="2.6"></circle>
+                                <path class="mcpf-solid" d="M290 610 H97" marker-end="url(#mcpf-tip)"></path>
+                                <text class="mcpf-msg" x="193" y="606" text-anchor="middle">Display final answer</text>
                             </svg>
                         </div>
                     </section>

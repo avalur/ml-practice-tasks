@@ -1030,11 +1030,13 @@ ul.custom-list li.lamp::before {
 .reveal .prod-slide .speed-title,
 .reveal .prod-slide .security-title,
 .reveal .prod-slide .act3-title,
-.reveal .prod-slide .wrapup-title {
+.reveal .prod-slide .wrapup-title,
+.reveal .prod-slide .need-agent-title {
 	font-size: 78px;
 	margin: 8px 0 0 -23px;
 }
-.reveal .prod-slide .security-title {
+.reveal .prod-slide .security-title,
+.reveal .prod-slide .need-agent-title {
 	line-height: 1.05;
 }
 .obs-footer,
@@ -4439,6 +4441,1103 @@ ul.custom-list li.lamp::before {
 .homework-link:hover {
 	color: #203832;
 }
+
+/* AI Agents ≠ Software slide */
+.ai-vs-grid {
+	display: flex;
+	gap: 140px;
+	margin: 60px 0 0 10px;
+	width: 1200px;
+}
+.ai-vs-col {
+	flex: 1;
+	text-align: left;
+}
+.ai-vs-header {
+	color: #4042ee;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 28px;
+	font-weight: 600;
+	line-height: 1.25;
+	margin-bottom: 28px;
+}
+.ai-vs-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.6;
+	list-style-type: disc;
+	margin: 0;
+	padding-left: 24px;
+}
+.ai-vs-list li {
+	margin-bottom: 8px;
+}
+.ai-vs-list strong {
+	font-weight: 700;
+}
+.ai-vs-footer {
+	color: #294a43;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 52px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.1;
+	margin: 95px 0 0 10px;
+	text-align: left;
+}
+
+/* Formalize Before You Code slide */
+.reveal .prod-slide .formalize-title {
+	color: #203832;
+	font-family: var(--r-heading-font, "League Spartan", "Open Sans", sans-serif);
+	font-size: 56px;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+	line-height: 1.05;
+	margin: 10px 0 0 10px;
+	text-align: left;
+	text-transform: none;
+}
+.formalize-sub {
+	color: #4042ee;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 28px 0 0 10px;
+	text-align: left;
+}
+.formalize-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-weight: 400;
+	line-height: 1.45;
+	list-style-type: disc;
+	margin: 18px 0 0 10px;
+	padding-left: 28px;
+	text-align: left;
+}
+.formalize-list li {
+	margin-bottom: 7px;
+}
+.formalize-list strong {
+	font-weight: 700;
+}
+.formalize-footer {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 32px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	margin: 45px 0 0 10px;
+	text-align: left;
+}
+
+/* Agent Economics slide */
+.econ-grid {
+	display: flex;
+	gap: 85px;
+	margin: 44px 0 0 10px;
+	width: 1180px;
+}
+.econ-col-left {
+	text-align: left;
+	width: 480px;
+}
+.econ-col-right {
+	text-align: left;
+	width: 550px;
+}
+.econ-subtitle {
+	color: #4042ee;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 24px;
+	font-weight: 600;
+	line-height: 1.25;
+	margin-bottom: 22px;
+}
+.econ-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 400;
+	line-height: 1.45;
+	list-style-type: disc;
+	margin: 0;
+	padding-left: 24px;
+}
+.econ-list li {
+	margin-bottom: 14px;
+}
+.econ-list strong {
+	font-weight: 700;
+}
+.econ-heading {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	font-weight: 600;
+	line-height: 1.25;
+	margin: 24px 0 10px 0;
+}
+.econ-code-box {
+	background-color: #d2dcdc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	color: #203832;
+	font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+	font-size: 16px;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.45;
+	padding: 10px 18px;
+	text-align: left;
+	white-space: pre;
+	width: 100%;
+}
+
+/* Agent Economics (Example) slide */
+.econ-ex-container {
+	display: flex;
+	gap: 60px;
+	margin: 28px 0 0 10px;
+	position: relative;
+	width: 1220px;
+}
+.econ-ex-left {
+	text-align: left;
+	width: 710px;
+}
+.econ-ex-header {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-weight: 700;
+	line-height: 1.25;
+	margin-bottom: 12px;
+}
+.econ-ex-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 17px;
+	font-weight: 400;
+	line-height: 1.45;
+	list-style-type: disc;
+	margin: 0 0 18px 0;
+	padding-left: 24px;
+}
+.econ-ex-list li {
+	margin-bottom: 3px;
+}
+.econ-ex-list strong {
+	font-weight: 700;
+}
+.econ-comp-header {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin: 0 0 4px 0;
+}
+.econ-comp-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.4;
+	list-style-type: disc;
+	margin: 0 0 6px 0;
+	padding-left: 24px;
+}
+.econ-comp-list li {
+	margin-bottom: 3px;
+}
+.econ-comp-list strong {
+	font-weight: 700;
+}
+.econ-comp-text {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.35;
+	margin: 5px 0 7px 0;
+}
+.econ-comp-text strong {
+	font-weight: 700;
+}
+.econ-comp-footer {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 15px;
+	font-weight: 400;
+	line-height: 1.35;
+	margin-top: 6px;
+}
+.econ-payoff-box {
+	background: #ffffff;
+	border: 2px solid #4042ee;
+	box-sizing: border-box;
+	padding: 20px 24px;
+	position: absolute;
+	right: 48px;
+	text-align: left;
+	top: 8px;
+	width: 410px;
+}
+.econ-payoff-title {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.25;
+	margin-bottom: 18px;
+}
+.econ-payoff-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 17px;
+	font-weight: 400;
+	line-height: 1.4;
+	list-style-type: disc;
+	margin: 0;
+	padding-left: 24px;
+}
+.econ-payoff-list li {
+	margin-bottom: 14px;
+}
+.econ-sunburst-wrap {
+	bottom: 0;
+	height: 250px;
+	overflow: hidden;
+	pointer-events: none;
+	position: absolute;
+	right: 0;
+	width: 350px;
+}
+.econ-sunburst {
+	bottom: -210px;
+	position: absolute;
+	right: -39px;
+}
+
+/* Quality — Three Pillars slide */
+.pillars-container {
+	border: 1.5px solid #203832;
+	box-sizing: border-box;
+	display: flex;
+	height: 550px;
+	margin: 25px 0 0 10px;
+	width: 1220px;
+}
+.pillar-col {
+	border-right: 1.5px solid #203832;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	padding: 28px 24px;
+	position: relative;
+	text-align: left;
+	width: 406.66px;
+}
+.pillar-col:last-child {
+	border-right: none;
+}
+.pillar-header {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 28px;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	margin-bottom: 24px;
+}
+.pillar-body {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 18.5px;
+	font-weight: 400;
+	line-height: 1.45;
+}
+.pillar-body p {
+	margin: 0 0 20px 0;
+}
+.pillar-decor-1 {
+	bottom: 25px;
+	position: absolute;
+	right: 28px;
+}
+.pillar-decor-2 {
+	bottom: 25px;
+	position: absolute;
+	right: 42px;
+}
+.pillar-decor-3 {
+	bottom: 25px;
+	position: absolute;
+	right: 24px;
+}
+
+/* Offline vs Online Eval slide */
+.reveal .eval-compare-table {
+	border-collapse: collapse;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	line-height: 1.35;
+	margin: 25px 0 0 10px;
+	table-layout: fixed;
+	width: 1140px;
+}
+.reveal .eval-compare-table th,
+.reveal .eval-compare-table td {
+	border: 0;
+	box-sizing: border-box;
+	padding: 12px 24px;
+	text-align: left;
+	vertical-align: middle;
+}
+.reveal .eval-compare-table thead th {
+	background-color: #4042ee;
+	color: #ffffff;
+	font-size: 21px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	padding: 12px 24px;
+	text-shadow: none;
+}
+.reveal .eval-compare-table th:first-child,
+.reveal .eval-compare-table td:first-child {
+	width: 230px;
+}
+.reveal .eval-compare-table th:nth-child(2),
+.reveal .eval-compare-table td:nth-child(2) {
+	width: 380px;
+}
+.reveal .eval-compare-table th:nth-child(3),
+.reveal .eval-compare-table td:nth-child(3) {
+	width: 530px;
+}
+.reveal .eval-compare-table tbody tr:nth-child(odd) {
+	background-color: #ffffff;
+}
+.reveal .eval-compare-table tbody tr:nth-child(even) {
+	background-color: #d2dcdc;
+}
+.reveal .eval-compare-table tbody td {
+	color: #203832;
+	font-weight: 400;
+}
+.eval-measure-title {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 36px 0 16px 10px;
+	text-align: left;
+}
+.eval-bullets-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 19px;
+	font-weight: 400;
+	line-height: 1.5;
+	list-style-type: disc;
+	margin: 0 0 0 10px;
+	padding-left: 28px;
+	text-align: left;
+}
+.eval-bullets-list li {
+	margin-bottom: 8px;
+}
+.eval-bullets-list strong {
+	font-weight: 700;
+}
+.eval-punchline {
+	color: #4042ee;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	font-weight: 600;
+	line-height: 1.3;
+	margin: 36px 0 0 10px;
+	text-align: left;
+}
+
+/* Tracing Platforms: Feature Matrix slide */
+.reveal .matrix-table {
+	border-collapse: collapse;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 14.5px;
+	line-height: 1.25;
+	margin: 20px 0 0 10px;
+	table-layout: fixed;
+	width: 1220px;
+}
+.reveal .matrix-table th,
+.reveal .matrix-table td {
+	border: 0;
+	box-sizing: border-box;
+	padding: 8px 12px;
+	text-align: left;
+	vertical-align: middle;
+}
+.reveal .matrix-table thead th {
+	background-color: #4042ee;
+	color: #ffffff;
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	padding: 10px 12px;
+	text-shadow: none;
+}
+.reveal .matrix-table thead th:first-child {
+	background-color: transparent;
+	width: 100px;
+}
+.reveal .matrix-table thead th:not(:first-child) {
+	width: 224px;
+}
+.reveal .matrix-table tbody td:first-child {
+	background-color: #87a0af;
+	color: #ffffff;
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.2;
+}
+.reveal .matrix-table tbody td:not(:first-child) {
+	color: #203832;
+	font-size: 14.5px;
+	font-weight: 400;
+}
+.reveal .matrix-table tbody tr:nth-child(odd) td:not(:first-child) {
+	background-color: #ffffff;
+}
+.reveal .matrix-table tbody tr:nth-child(even) td:not(:first-child) {
+	background-color: #d2dcdc;
+}
+.matrix-dt-title {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 19px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin: 26px 0 12px 10px;
+	text-align: left;
+}
+.matrix-dt-grid {
+	display: flex;
+	gap: 70px;
+	margin: 0 0 0 10px;
+	text-align: left;
+	width: 1220px;
+}
+.matrix-dt-col:first-child {
+	flex: none;
+	width: 490px;
+}
+.matrix-dt-col:last-child {
+	flex: 1;
+}
+.matrix-dt-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 17px;
+	font-weight: 400;
+	line-height: 1.55;
+	list-style-type: disc;
+	margin: 0;
+	padding-left: 24px;
+}
+.matrix-dt-list li {
+	margin-bottom: 8px;
+}
+.matrix-dt-list strong {
+	font-weight: 700;
+}
+
+/* Latency vs Quality vs Cost slide */
+.tradeoff-container {
+	height: 580px;
+	margin: 20px auto 0;
+	position: relative;
+	width: 1140px;
+}
+.tradeoff-svg {
+	height: 100%;
+	left: 0;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+.tradeoff-circle {
+	align-items: center;
+	border-radius: 50%;
+	box-sizing: border-box;
+	color: #ffffff;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-weight: 500;
+	height: 236px;
+	justify-content: center;
+	position: absolute;
+	width: 236px;
+}
+.tradeoff-latency {
+	background-color: #4042ee;
+	left: 162px;
+	top: 80px;
+}
+.tradeoff-quality {
+	background-color: #87a0af;
+	left: 742px;
+	top: 95px;
+}
+.tradeoff-cost {
+	background-color: #15181f;
+	left: 472px;
+	top: 330px;
+}
+
+/* Acceptance Pipeline slide */
+.pipe-container {
+	height: 560px;
+	margin: 20px 0 0 10px;
+	position: relative;
+	width: 1220px;
+}
+.pipe-svg {
+	height: 100%;
+	left: 0;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+.pipe-pill {
+	align-items: center;
+	background-color: #ffffff;
+	border: 2px solid #5f61f1;
+	border-radius: 999px;
+	box-sizing: border-box;
+	color: #203832;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 500;
+	height: 62px;
+	justify-content: center;
+	position: absolute;
+	width: 420px;
+}
+.pipe-pill-offline {
+	left: 30px;
+	top: 50px;
+}
+.pipe-pill-shadow {
+	left: 740px;
+	top: 50px;
+}
+.pipe-pill-canary {
+	left: 740px;
+	top: 240px;
+}
+.pipe-pill-rollout {
+	left: 30px;
+	top: 240px;
+}
+.pipe-pill-continuous {
+	left: 30px;
+	top: 430px;
+}
+
+/* Agent Stack slide */
+.reveal .agent-stack-container {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 24px;
+	line-height: 1.5;
+	margin: 55px 0 0 10px;
+	text-align: left;
+	width: 1200px;
+}
+.reveal .stack-layer {
+	margin-bottom: 30px;
+}
+.reveal .stack-layer strong {
+	color: #203832;
+	font-weight: 700;
+}
+
+/* Control Plane for Agents slide */
+.reveal .plane-intro {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 25px;
+	line-height: 1.45;
+	margin: 25px 0 35px 10px;
+	text-align: left;
+}
+.reveal .plane-components-title {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 25px;
+	font-weight: 700;
+	margin: 0 0 20px 10px;
+	text-align: left;
+}
+.reveal .plane-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	line-height: 1.5;
+	list-style-type: disc;
+	margin: 0 0 0 10px;
+	padding-left: 36px;
+	text-align: left;
+	width: 1180px;
+}
+.reveal .plane-list li {
+	margin-bottom: 22px;
+}
+.reveal .plane-term {
+	color: #5f61f1;
+	font-weight: 600;
+}
+
+/* Decomposition — How to Split Into Agents slide */
+.reveal .decomp-sub {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	line-height: 1.45;
+	margin: 25px 0 25px 10px;
+	text-align: left;
+}
+.reveal .decomp-highlight {
+	color: #4042ee;
+	font-weight: 600;
+}
+.reveal .decomp-table {
+	border-collapse: collapse;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	line-height: 1.35;
+	margin: 0 0 0 10px;
+	table-layout: fixed;
+	width: 1200px;
+}
+.reveal .decomp-table th,
+.reveal .decomp-table td {
+	border: 0;
+	box-sizing: border-box;
+	padding: 14px 18px;
+	text-align: left;
+	vertical-align: middle;
+}
+.reveal .decomp-table thead th {
+	background-color: #4042ee;
+	color: #ffffff;
+	font-size: 20px;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+	padding: 14px 18px;
+	text-shadow: none;
+}
+.reveal .decomp-th-num,
+.reveal .decomp-td-num {
+	text-align: center;
+	width: 55px;
+}
+.reveal .decomp-th-rule {
+	width: 425px;
+}
+.reveal .decomp-th-example {
+	width: 380px;
+}
+.reveal .decomp-th-antipattern {
+	width: 340px;
+}
+.reveal .decomp-table tbody tr:nth-child(odd) {
+	background-color: #ffffff;
+}
+.reveal .decomp-table tbody tr:nth-child(even) {
+	background-color: #d2dcdc;
+}
+.reveal .decomp-table tbody td {
+	color: #203832;
+	font-weight: 400;
+}
+.reveal .decomp-table code {
+	background: transparent;
+	color: #203832;
+	font-family: var(--r-code-font, monospace);
+	font-size: 19px;
+}
+
+/* Anthropic: Building effective agents slide */
+.reveal .anthropic-sub {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 24px;
+	margin: 20px 0 0 10px;
+	text-align: left;
+}
+.reveal .anthropic-diagram-container {
+	height: 400px;
+	margin: 25px 0 0 10px;
+	position: relative;
+	width: 1200px;
+}
+.reveal .anthropic-svg {
+	height: 100%;
+	left: 0;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	width: 100%;
+}
+.reveal .anthropic-circle {
+	align-items: center;
+	background-color: #ffffff;
+	border: 2px solid #9fb0bb;
+	border-radius: 50%;
+	box-sizing: border-box;
+	color: #203832;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 500;
+	height: 76px;
+	justify-content: center;
+	position: absolute;
+	width: 76px;
+}
+.reveal .anthropic-box-llm {
+	align-items: center;
+	background-color: #4042ee;
+	border-radius: 8px;
+	box-sizing: border-box;
+	color: #ffffff;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 500;
+	height: 56px;
+	justify-content: center;
+	position: absolute;
+	width: 144px;
+}
+.reveal .anthropic-box-gate {
+	align-items: center;
+	background-color: #87a0af;
+	border-radius: 0;
+	box-sizing: border-box;
+	color: #ffffff;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 500;
+	height: 56px;
+	justify-content: center;
+	position: absolute;
+	width: 144px;
+}
+.reveal .anthropic-footer {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	line-height: 1.5;
+	margin: 25px 0 0 10px;
+	text-align: left;
+}
+.reveal .anthropic-footer a {
+	color: #203832;
+	text-decoration: underline;
+}
+
+/* Google Patterns — Agents as Composable Units slide */
+.reveal .gpatterns-container {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin: 45px 0 0 20px;
+	position: relative;
+	width: 1220px;
+}
+.reveal .gpatterns-left-col {
+	box-sizing: border-box;
+	text-align: left;
+	width: 930px;
+}
+.reveal .gpatterns-subtitle {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1.35;
+	margin-bottom: 16px;
+}
+.reveal .gpatterns-list {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 19.5px;
+	line-height: 1.45;
+	list-style-type: disc;
+	margin: 0;
+	padding-left: 28px;
+}
+.reveal .gpatterns-list li {
+	margin-bottom: 16px;
+}
+.reveal .gpatterns-list strong {
+	color: #203832;
+	font-weight: 700;
+}
+.reveal .gpatterns-code {
+	background: transparent;
+	color: #5f61f1;
+	font-family: var(--r-code-font, monospace);
+	font-size: 18px;
+	font-weight: 600;
+}
+.reveal .gpatterns-book-col {
+	align-items: flex-start;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	margin-right: 15px;
+	text-align: left;
+	width: 230px;
+}
+.reveal .gpatterns-book-img {
+	box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+	display: block;
+	height: auto;
+	width: 220px;
+}
+.reveal .gpatterns-book-caption {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 15px;
+	line-height: 1.35;
+	margin-top: 12px;
+}
+.reveal .gpatterns-book-caption i {
+	font-style: italic;
+}
+.reveal .gpatterns-book-caption a {
+	color: #4042ee;
+	text-decoration: underline;
+}
+.reveal .gpatterns-footer {
+	bottom: 20px;
+	color: #576e68;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 13.5px;
+	left: 20px;
+	line-height: 1.45;
+	position: absolute;
+	text-align: left;
+}
+.reveal .gpatterns-footer a {
+	color: #576e68;
+	text-decoration: underline;
+}
+
+/* Choosing a Framework (ADK) slide */
+.reveal .adk-sub {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 24px;
+	font-weight: 600;
+	margin: 15px 0 0 20px;
+	text-align: left;
+}
+.reveal .adk-grid-row1 {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+	margin: 46px 0 0 16px;
+	width: 1215px;
+}
+.reveal .adk-col-row1 {
+	box-sizing: border-box;
+	text-align: left;
+	width: 376px;
+}
+.reveal .adk-grid-row2 {
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: row;
+	gap: 164px;
+	justify-content: flex-start;
+	margin: 62px 0 0 141px;
+	width: 1215px;
+}
+.reveal .adk-col-row2 {
+	box-sizing: border-box;
+	text-align: left;
+	width: 376px;
+}
+.reveal .adk-pill {
+	align-items: center;
+	border: 2px solid #5f61f1;
+	border-radius: 9999px;
+	box-sizing: border-box;
+	color: #203832;
+	display: flex;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 17.5px;
+	font-weight: 600;
+	height: 58px;
+	justify-content: center;
+	letter-spacing: 0.5px;
+	margin-bottom: 16px;
+	text-transform: uppercase;
+	width: 100%;
+}
+.reveal .adk-card-header {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 18.5px;
+	font-weight: 700;
+	line-height: 1.3;
+	margin-bottom: 6px;
+}
+.reveal .adk-card-tagline {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	line-height: 1.35;
+	margin-bottom: 8px;
+}
+.reveal .adk-card-body {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	line-height: 1.35;
+}
+
+/* Timeline slide */
+.reveal .timeline-container {
+	box-sizing: border-box;
+	height: 480px;
+	margin: 95px 0 0 40px;
+	position: relative;
+	width: 1200px;
+}
+.reveal .timeline-track {
+	background-color: #4042ee;
+	height: 3px;
+	left: 0;
+	position: absolute;
+	right: 0;
+	top: 136.5px;
+	transform: translateY(-50%);
+	z-index: 1;
+}
+.reveal .timeline-col {
+	bottom: 0;
+	box-sizing: border-box;
+	position: absolute;
+	text-align: left;
+	top: 0;
+}
+.reveal .timeline-col-23 {
+	left: 0;
+	width: 280px;
+}
+.reveal .timeline-col-24 {
+	left: 320px;
+	width: 280px;
+}
+.reveal .timeline-col-25 {
+	left: 640px;
+	width: 290px;
+}
+.reveal .timeline-col-26 {
+	left: 960px;
+	width: 240px;
+}
+.reveal .timeline-year {
+	color: #4042ee;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 60px;
+	font-weight: 500;
+	line-height: 1;
+	margin-bottom: 0;
+}
+.reveal .timeline-marker {
+	align-items: center;
+	display: flex;
+	position: absolute;
+	top: 136.5px;
+	transform: translateY(-50%);
+	z-index: 2;
+}
+.reveal .timeline-marker-pill {
+	background-color: #4042ee;
+	border-radius: 9999px;
+	height: 18px;
+	width: 76px;
+}
+.reveal .timeline-marker-dots {
+	display: flex;
+	flex-direction: row;
+	gap: 7px;
+}
+.reveal .timeline-marker-dots span {
+	background-color: #4042ee;
+	border-radius: 50%;
+	display: block;
+	height: 16px;
+	width: 16px;
+}
+.reveal .timeline-marker-dot {
+	background-color: #4042ee;
+	border-radius: 50%;
+	height: 16px;
+	width: 16px;
+}
+.reveal .timeline-marker-square {
+	background-color: #4042ee;
+	height: 16px;
+	width: 16px;
+}
+.reveal .timeline-models {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	line-height: 1.5;
+	position: absolute;
+	top: 180px;
+}
+.reveal .timeline-inference {
+	color: #203832;
+	font-size: 19px;
+	margin-top: 26px;
+}
+.reveal .timeline-value {
+	bottom: 25px;
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 17.5px;
+	line-height: 1.35;
+	position: absolute;
+}
+.reveal .timeline-value strong {
+	color: #203832;
+	font-weight: 700;
+}
 </style>
 
 <div class="slides">
@@ -7459,6 +8558,1107 @@ compiled = opt.compile(
             <div class="homework-links">
                 <a class="homework-link" href="https://langfuse.com" target="_blank" rel="noopener noreferrer">langfuse.com</a>
                 <a class="homework-link" href="https://dspy.ai" target="_blank" rel="noopener noreferrer">dspy.ai</a>
+            </div>
+        </section>
+    </section>
+
+    <!-- SECTION 10: DO YOU ACTUALLY NEED AN AGENT? -->
+    <section>
+        <!-- 10.1 Do You Actually Need an Agent? -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title need-agent-title">Do You<br>Actually<br>Need<br>an Agent?</h3>
+        </section>
+
+        <!-- 10.2 AI Agents ≠ Software -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">AI Agents &ne; Software</h3>
+
+            <div class="ai-vs-grid">
+                <div class="ai-vs-col">
+                    <div class="ai-vs-header">Software Developing</div>
+                    <ul class="ai-vs-list">
+                        <li>Same input &rarr; same output</li>
+                        <li>Unit tests, binary pass/fail</li>
+                        <li>Bugs are reproducible</li>
+                        <li>Ship it &rarr; it works</li>
+                        <li>Engineer programs <strong>behavior</strong></li>
+                    </ul>
+                </div>
+
+                <div class="ai-vs-col">
+                    <div class="ai-vs-header">AI Agents</div>
+                    <ul class="ai-vs-list">
+                        <li>Same input &rarr; different output</li>
+                        <li>Statistical testing (94% success rate)</li>
+                        <li>Errors may not reproduce</li>
+                        <li>Ship &rarr; monitor &rarr; iterate</li>
+                        <li>Engineer designs <strong>environment</strong></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="ai-vs-footer fragment">AI Agents = ML + BackEnd</div>
+        </section>
+
+        <!-- 10.3 Formalize Before You Code -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="formalize-title">Formalize<br>Before You<br>Code</h3>
+
+            <div class="formalize-sub">
+                Before writing a single line &mdash; lock these down:
+            </div>
+
+            <ul class="formalize-list">
+                <li><strong>Input</strong> &mdash; What comes in? (text / voice / document / structured data)</li>
+                <li><strong>Output</strong> &mdash; What comes out? (answer / action / document / API call)</li>
+                <li><strong>Scope</strong> &mdash; What the agent does and does NOT do</li>
+                <li><strong>Success criteria</strong> &mdash; How do you know it works? (metric, not &ldquo;seems ok&rdquo;)</li>
+                <li><strong>Edge cases</strong> &mdash; What if input is garbage? Tool is down?</li>
+                <li><strong>Human fallback</strong> &mdash; When does it hand off to a person?</li>
+            </ul>
+
+            <div class="formalize-footer">
+                No formalization &rarr; no eval &rarr; no production. Just a demo
+            </div>
+        </section>
+
+        <!-- 10.4 Agent Economics -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Agent Economics</h3>
+
+            <div class="econ-grid">
+                <div class="econ-col-left">
+                    <div class="econ-subtitle">Define Value first:</div>
+                    <ul class="econ-list">
+                        <li>What does a human do today? How much does it cost? How long does it take?</li>
+                        <li>What changes with an agent? (speed / cost / quality / scale)</li>
+                        <li>What KPI does this improve?</li>
+                    </ul>
+                </div>
+
+                <div class="econ-col-right">
+                    <div class="econ-subtitle">Then count Costs:</div>
+                    <ul class="econ-list">
+                        <li><strong>Inference:</strong> tokens &times; price &times; steps</li>
+                        <li><strong>Infrastructure:</strong> storage, RAG, compute</li>
+                        <li><strong>Hidden:</strong> human verification, prompt<br>engineering time, incident response</li>
+                    </ul>
+
+                    <div class="econ-heading">Cost per Session:</div>
+                    <div class="econ-code-box">CPS = (tokens &times; price_per_token) &times; avg_steps
+    + tool_call_costs
+    + infra_per_session
+    + human_review_cost &times; escalation_rate</div>
+
+                    <div class="econ-heading">Cost per Successful Resolution:</div>
+                    <div class="econ-code-box">CPR = CPS / success_rate</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.5 Agent Economics (Example) -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Agent Economics</h3>
+
+            <div class="econ-ex-container">
+                <div class="econ-ex-left">
+                    <div class="econ-ex-header">Example: Customer Support Agent</div>
+                    <ul class="econ-ex-list">
+                        <li>Average: 5 steps, ~1,000 tokens per step</li>
+                        <li>GPT-4o: <span>$</span>2.50/1M input, <span>$</span>10/1M output</li>
+                        <li>5 steps &times; 1,000 tokens &asymp; 5,000 in + 2,500 out</li>
+                        <li>LLM cost: ~<span>$</span>0.04 per session</li>
+                        <li>Tool costs (API, DB): ~<span>$</span>0.005</li>
+                        <li>Infrastructure: ~<span>$</span>0.005</li>
+                        <li>Human review (10% escalation, <span>$</span>30/hr, 5 min): <span>$</span>0.25</li>
+                        <li><strong>Total CPS: ~<span>$</span>0.30</strong></li>
+                    </ul>
+
+                    <div class="econ-comp-header">Compare:</div>
+                    <ul class="econ-comp-list">
+                        <li>Human support: <span>$</span>15&ndash;25/hr, handles 4&ndash;8 tickets/hr = <strong><span>$</span>2&ndash;6 per resolution</strong></li>
+                        <li>Agent: <strong><span>$</span>0.30 per session</strong> &mdash; 13x cheaper</li>
+                    </ul>
+
+                    <div class="econ-comp-text"><strong>BUT:</strong> only for requests the agent solves correctly.</div>
+
+                    <div class="econ-comp-header">Cost per Successful Resolution:</div>
+                    <ul class="econ-comp-list">
+                        <li>CPR = CPS / success_rate</li>
+                        <li>At 70% success: <span>$</span>0.30 / 0.70 = <strong><span>$</span>0.43</strong></li>
+                        <li>At 50% success: <span>$</span>0.30 / 0.50 = <strong><span>$</span>0.60 + rework cost</strong></li>
+                    </ul>
+
+                    <div class="econ-comp-footer">If 30% of answers are wrong and need rework &mdash; the economics change.</div>
+                </div>
+
+                <div class="econ-payoff-box">
+                    <div class="econ-payoff-title">When an agent does NOT pay off:</div>
+                    <ul class="econ-payoff-list">
+                        <li>Success rate below 60% (too much rework)</li>
+                        <li>Volume under 100 tasks/month (won't recoup dev cost)</li>
+                        <li>Tasks too diverse (need 50 prompts instead of 1)</li>
+                        <li>Cost of error is high (human verification eats all savings)</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="econ-sunburst-wrap">
+                <div class="econ-sunburst">
+                <svg width="460" height="460" viewBox="0 0 460 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <line x1="253.9" y1="227.5" x2="448.8" y2="207.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="253.2" y1="223.8" x2="442.5" y2="173.1" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="251.9" y1="220.2" x2="431.0" y2="140.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="250.1" y1="216.9" x2="414.5" y2="110.2" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="247.8" y1="213.9" x2="393.5" y2="82.8" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="245.1" y1="211.3" x2="368.5" y2="59.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="242.0" y1="209.2" x2="340.0" y2="39.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="238.6" y1="207.6" x2="308.8" y2="24.6" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="235.0" y1="206.5" x2="275.7" y2="14.8" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="231.3" y1="206.0" x2="241.5" y2="10.3" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="227.5" y1="206.1" x2="207.0" y2="11.2" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="223.8" y1="206.8" x2="173.1" y2="17.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="220.2" y1="208.1" x2="140.5" y2="29.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="216.9" y1="209.9" x2="110.2" y2="45.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="213.9" y1="212.2" x2="82.8" y2="66.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="211.3" y1="214.9" x2="59.0" y2="91.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="209.2" y1="218.0" x2="39.5" y2="120.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="207.6" y1="221.4" x2="24.6" y2="151.2" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="206.5" y1="225.0" x2="14.8" y2="184.3" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="206.0" y1="228.7" x2="10.3" y2="218.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="206.1" y1="232.5" x2="11.2" y2="253.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="206.8" y1="236.2" x2="17.5" y2="286.9" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="208.1" y1="239.8" x2="29.0" y2="319.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="209.9" y1="243.1" x2="45.5" y2="349.8" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="212.2" y1="246.1" x2="66.5" y2="377.2" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="214.9" y1="248.7" x2="91.5" y2="401.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="218.0" y1="250.8" x2="120.0" y2="420.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="221.4" y1="252.4" x2="151.2" y2="435.4" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="225.0" y1="253.5" x2="184.3" y2="445.2" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="228.7" y1="254.0" x2="218.5" y2="449.7" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="232.5" y1="253.9" x2="253.0" y2="448.8" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="236.2" y1="253.2" x2="286.9" y2="442.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="239.8" y1="251.9" x2="319.5" y2="431.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="243.1" y1="250.1" x2="349.8" y2="414.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="246.1" y1="247.8" x2="377.2" y2="393.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="248.7" y1="245.1" x2="401.0" y2="368.5" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="250.8" y1="242.0" x2="420.5" y2="340.0" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="252.4" y1="238.6" x2="435.4" y2="308.8" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="253.5" y1="235.0" x2="445.2" y2="275.7" stroke="#8587f4" stroke-width="1.2" />
+                    <line x1="254.0" y1="231.3" x2="449.7" y2="241.5" stroke="#8587f4" stroke-width="1.2" />
+                    <circle cx="230" cy="230" r="24" stroke="#4042ee" stroke-width="1.5" fill="none" />
+                    <circle cx="230" cy="230" r="10.5" fill="#4042ee" />
+                </svg>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.6 Quality — Three Pillars -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Quality &mdash; Three Pillars</h3>
+
+            <div class="pillars-container">
+                <div class="pillar-col">
+                    <div class="pillar-header">Prompt Engineering</div>
+                    <div class="pillar-body">
+                        <p>Your prompt is the API contract between you and the model. Structure it: role, context, instructions, constraints, tools, output format, examples.</p>
+                        <p>Version it and test every change.</p>
+                    </div>
+                    <div class="pillar-decor-1">
+                        <svg width="260" height="96" viewBox="0 0 260 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="0" x2="12" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="70" y1="0" x2="70" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="126" y1="0" x2="126" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="162" y1="0" x2="162" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="185" y1="0" x2="185" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="202" y1="0" x2="202" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="216" y1="0" x2="216" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="226" y1="0" x2="226" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="234" y1="0" x2="234" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="240" y1="0" x2="240" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="246" y1="0" x2="246" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="250" y1="0" x2="250" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="254" y1="0" x2="254" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="257" y1="0" x2="257" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                            <line x1="259" y1="0" x2="259" y2="96" stroke="#9b9cf2" stroke-width="1.5" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="pillar-col">
+                    <div class="pillar-header">Evals</div>
+                    <div class="pillar-body">
+                        <p>Systematic measurement of whether your agent actually works. A test suite that runs automatically, scores outputs, and gates deployments.</p>
+                    </div>
+                    <div class="pillar-decor-2">
+                        <svg width="130" height="130" viewBox="0 0 140 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 118.3 82.9 A 50 50 0 1 1 82.9 118.3" stroke="#4042ee" stroke-width="2" stroke-dasharray="7 4" fill="none" />
+                            <path d="M 124.1 84.5 A 56 56 0 1 1 84.5 124.1" stroke="#4042ee" stroke-width="2" stroke-dasharray="7 4" fill="none" />
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="pillar-col">
+                    <div class="pillar-header">Tracing</div>
+                    <div class="pillar-body">
+                        <p>Without traces you don't know what happened between input and output. Log every LLM call, every tool call, every reasoning step.</p>
+                    </div>
+                    <div class="pillar-decor-3">
+                        <svg width="330" height="130" viewBox="0 0 330 130" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 140 18 H 320 V 120 H 270" stroke="#4042ee" stroke-width="1.8" fill="none" />
+                            <line x1="10" y1="75" x2="300" y2="75" stroke="#4042ee" stroke-width="1.8" />
+                            <circle cx="185" cy="75" r="5" fill="#4042ee" />
+                            <rect x="202" y="70" width="10" height="10" rx="1.5" fill="#4042ee" />
+                            <rect x="224" y="70" width="10" height="10" rx="1.5" fill="#4042ee" />
+                            <rect x="246" y="69" width="32" height="12" rx="1.5" fill="#4042ee" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.7 Offline vs Online Eval -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Offline vs Online Eval</h3>
+
+            <table class="eval-compare-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Offline</th>
+                        <th>Online</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Inputs</td>
+                        <td>Your test suite</td>
+                        <td>Real traffic</td>
+                    </tr>
+                    <tr>
+                        <td>Expected output</td>
+                        <td>Known</td>
+                        <td>Unknown</td>
+                    </tr>
+                    <tr>
+                        <td>When</td>
+                        <td>Before deploy (CI/CD)</td>
+                        <td>After deploy (continuous)</td>
+                    </tr>
+                    <tr>
+                        <td>Catches</td>
+                        <td>Regressions, known failures</td>
+                        <td>Drift, edge cases, real-world distribution</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="eval-measure-title">Online eval &mdash; how to measure without expected outputs:</div>
+
+            <ul class="eval-bullets-list">
+                <li><strong>LLM-as-judge:</strong> sample production traces &rarr; separate model scores quality, safety, correctness</li>
+                <li><strong>User signals:</strong> thumbs up/down, repeat contacts (= failed resolution), escalation rate</li>
+                <li><strong>Proxy metrics:</strong> task completion rate, time to resolution, cost per session</li>
+                <li><strong>A/B testing:</strong> new prompt vs old on 5% traffic + shadow mode</li>
+            </ul>
+
+            <div class="eval-punchline">"Agent can solve these tasks" &ne; "Agent solves real user tasks"</div>
+        </section>
+
+        <!-- 10.8 Tracing Platforms: Feature Matrix -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Tracing Platforms: Feature Matrix</h3>
+
+            <table class="matrix-table">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Langfuse</th>
+                        <th>LangSmith</th>
+                        <th>Arize Phoenix</th>
+                        <th>Braintrust</th>
+                        <th>Helicone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Focus</td>
+                        <td>Tracing + prompt mgmt</td>
+                        <td>Tracing + eval (LangChain)</td>
+                        <td>ML monitoring + LLM</td>
+                        <td>Eval-first + tracing</td>
+                        <td>Gateway + cost tracking</td>
+                    </tr>
+                    <tr>
+                        <td>Open<br>source</td>
+                        <td>MIT, self-host, no limits</td>
+                        <td>No (SaaS, self-host Enterprise)</td>
+                        <td>Yes (OpenInference)</td>
+                        <td>No (SaaS)</td>
+                        <td>Partially</td>
+                    </tr>
+                    <tr>
+                        <td>Agent<br>tracing</td>
+                        <td>Multi-step, nested spans</td>
+                        <td>Deep for LangChain/LangGraph</td>
+                        <td>Session &rarr; trace &rarr; span</td>
+                        <td>Nested spans, timeline replay</td>
+                        <td>Basic (no chain-of-thought)</td>
+                    </tr>
+                    <tr>
+                        <td>Online<br>eval</td>
+                        <td>LLM-as-judge, custom scorers</td>
+                        <td>LLM-as-judge, datasets</td>
+                        <td>Drift detection, alerts</td>
+                        <td>Scorers in CI (GitHub Action)</td>
+                        <td>No</td>
+                    </tr>
+                    <tr>
+                        <td>Lock-in</td>
+                        <td>Minimal</td>
+                        <td>High (LangChain ecosystem)</td>
+                        <td>Minimal</td>
+                        <td>Medium</td>
+                        <td>Minimal</td>
+                    </tr>
+                    <tr>
+                        <td>Best for</td>
+                        <td>Custom stack, self-host</td>
+                        <td>LangChain teams</td>
+                        <td>Production monitoring, drift</td>
+                        <td>Eval in CI/CD, regression testing</td>
+                        <td>Quick start, cost tracking</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div class="matrix-dt-title">Decision tree:</div>
+
+            <div class="matrix-dt-grid">
+                <div class="matrix-dt-col">
+                    <ul class="matrix-dt-list">
+                        <li>Already on LangChain? &rarr; <strong>LangSmith</strong></li>
+                        <li>Need self-host / data control? &rarr; <strong>Langfuse</strong></li>
+                        <li>Focus on production drift? &rarr; <strong>Arize Phoenix</strong></li>
+                    </ul>
+                </div>
+                <div class="matrix-dt-col">
+                    <ul class="matrix-dt-list">
+                        <li>Eval gates in CI/CD? &rarr; <strong>Braintrust</strong></li>
+                        <li>Just need cost tracking fast? &rarr; <strong>Helicone</strong></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.9 Latency vs Quality vs Cost -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Latency vs Quality vs Cost</h3>
+
+            <div class="tradeoff-container">
+                <svg class="tradeoff-svg" viewBox="0 0 1140 580" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Latency (280, 198) to Quality (860, 213) -->
+                    <line x1="280" y1="198" x2="860" y2="213" stroke="#74757a" stroke-width="1.5" stroke-dasharray="3 3" />
+                    <!-- Latency (280, 198) to Cost (590, 448) -->
+                    <line x1="280" y1="198" x2="590" y2="448" stroke="#74757a" stroke-width="1.5" stroke-dasharray="3 3" />
+                    <!-- Cost (590, 448) to Quality (860, 213) -->
+                    <line x1="590" y1="448" x2="860" y2="213" stroke="#74757a" stroke-width="1.5" stroke-dasharray="3 3" />
+                </svg>
+
+                <div class="tradeoff-circle tradeoff-latency">Latency</div>
+                <div class="tradeoff-circle tradeoff-quality">Quality</div>
+                <div class="tradeoff-circle tradeoff-cost">Cost</div>
+            </div>
+        </section>
+
+        <!-- 10.10 Acceptance Pipeline -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Acceptance Pipeline</h3>
+
+            <div class="pipe-container">
+                <svg class="pipe-svg" viewBox="0 0 1220 560" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Arrow 1: Offline eval -> Shadow mode -->
+                    <line x1="450" y1="81" x2="728" y2="81" stroke="#576d68" stroke-width="1.5" />
+                    <polygon points="740,81 726,75 726,87" fill="#576d68" />
+                    <text x="595" y="65" text-anchor="middle" font-family="var(--r-main-font, 'Open Sans', sans-serif)" font-size="19px" fill="#203832">Pass or fail?</text>
+
+                    <!-- Arrow 2: Shadow mode -> Canary (5%) -->
+                    <path d="M 1160 81 H 1195 V 271 H 1172" fill="none" stroke="#576d68" stroke-width="1.5" />
+                    <polygon points="1160,271 1174,265 1174,277" fill="#576d68" />
+                    <text x="1180" y="181" text-anchor="end" font-family="var(--r-main-font, 'Open Sans', sans-serif)" font-size="19px" fill="#203832">Metrics OK?</text>
+
+                    <!-- Arrow 3: Canary (5%) -> Rollout (100%) -->
+                    <line x1="740" y1="271" x2="462" y2="271" stroke="#576d68" stroke-width="1.5" />
+                    <polygon points="450,271 464,265 464,277" fill="#576d68" />
+                    <text x="595" y="255" text-anchor="middle" font-family="var(--r-main-font, 'Open Sans', sans-serif)" font-size="19px" fill="#203832">Degradation?</text>
+
+                    <!-- Arrow 4: Rollout (100%) -> Continuous online eval -->
+                    <line x1="240" y1="302" x2="240" y2="418" stroke="#576d68" stroke-width="1.5" />
+                    <polygon points="240,430 234,416 246,416" fill="#576d68" />
+                </svg>
+
+                <div class="pipe-pill pipe-pill-offline">Offline eval</div>
+                <div class="pipe-pill pipe-pill-shadow">Shadow mode</div>
+                <div class="pipe-pill pipe-pill-canary">Canary (5%)</div>
+                <div class="pipe-pill pipe-pill-rollout">Rollout (100%)</div>
+                <div class="pipe-pill pipe-pill-continuous">Continuous online eval + alerting</div>
+            </div>
+        </section>
+
+        <!-- 10.11 Agent Stack -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Agent Stack</h3>
+
+            <div class="agent-stack-container">
+                <div class="stack-layer">
+                    <strong>Layer 5: UX &amp; Trust:</strong> what the user sees
+                </div>
+                <div class="stack-layer">
+                    <strong>Layer 4: Orchestration:</strong> how agents and steps coordinate
+                </div>
+                <div class="stack-layer">
+                    <strong>Layer 3: Tools &amp; Integrations:</strong> how agents act on the world (MCP, APIs, databases)
+                </div>
+                <div class="stack-layer">
+                    <strong>Layer 2: Memory &amp; State:</strong> conversation history, RAG, long-term memory, session state
+                </div>
+                <div class="stack-layer">
+                    <strong>Layer 1: Model &amp; Inference:</strong> LLM, routing, caching
+                </div>
+                <div class="stack-layer">
+                    <strong>Layer 0: Infrastructure:</strong> compute, networking, monitoring
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.12 Control Plane for Agents -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Control Plane for Agents</h3>
+
+            <div class="plane-intro">
+                Kubernetes has a control plane to manage clusters.<br>
+                Agents, especially multi-agent systems, need one too.
+            </div>
+
+            <div class="plane-components-title">Components:</div>
+
+            <ul class="plane-list">
+                <li><span class="plane-term">Registry:</span> which agents exist, their tools, permissions, and access scope</li>
+                <li><span class="plane-term">Router:</span> which agent handles which request (incl. model routing)</li>
+                <li><span class="plane-term">Rate limiting &amp; budgets:</span> max tokens per session, max cost per user, circuit breakers</li>
+                <li><span class="plane-term">Observability:</span> traces, logs, metrics, fleet-level, not per-agent</li>
+                <li><span class="plane-term">Governance:</span> audit trail, approval workflows, compliance checks</li>
+            </ul>
+        </section>
+
+        <!-- 10.13 Decomposition — How to Split Into Agents -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Decomposition &mdash; How to Split Into Agents</h3>
+
+            <div class="decomp-sub">
+                Same as software engineering: <span class="decomp-highlight">high cohesion, low coupling</span>. But with nuances for stochastic systems.
+            </div>
+
+            <table class="decomp-table">
+                <thead>
+                    <tr>
+                        <th class="decomp-th-num">#</th>
+                        <th class="decomp-th-rule">Rule</th>
+                        <th class="decomp-th-example">Example</th>
+                        <th class="decomp-th-antipattern">Anti-pattern</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="decomp-td-num">1</td>
+                        <td>One agent = one domain</td>
+                        <td>FlightAgent &ne; BaggageAgent</td>
+                        <td>God Agent: one agent knows<br>everything, 5-page prompt</td>
+                    </tr>
+                    <tr>
+                        <td class="decomp-td-num">2</td>
+                        <td>Couple through interfaces, not state</td>
+                        <td>Handoff with contract: <code>{flights:<br>[...], intent: "..."}</code></td>
+                        <td>Agents reading each other's<br>internals</td>
+                    </tr>
+                    <tr>
+                        <td class="decomp-td-num">3</td>
+                        <td>One is better than two when context is<br>shared</td>
+                        <td>Search + booking tightly coupled &rarr;<br>one agent, two tools</td>
+                        <td>Two agents constantly passing<br>context back and forth</td>
+                    </tr>
+                    <tr>
+                        <td class="decomp-td-num">4</td>
+                        <td>Each agent testable in isolation</td>
+                        <td>PolicyAgent works without<br>FlightAgent (mock inputs)</td>
+                        <td>Can only test agents together</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 10.14 Anthropic: Building effective agents -->
+        <section class="prod-slide" data-background-color="white" data-auto-animate>
+            <h3 class="prod-title" data-id="anthropic-title">Anthropic: Building effective agents</h3>
+
+            <div class="anthropic-sub" data-id="anthropic-sub">The prompt chaining workflow</div>
+
+            <div class="anthropic-diagram-container" data-id="anthropic-container">
+                <svg class="anthropic-svg" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Arrow: In -> LLM Call 1 -->
+                    <line x1="98" y1="200" x2="146" y2="200" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="158,200 146,195 146,205" fill="#576e68" />
+
+                    <!-- Arrow: LLM Call 1 -> Gate -->
+                    <line x1="302" y1="200" x2="346" y2="200" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="358,200 346,195 346,205" fill="#576e68" />
+
+                    <!-- Arrow: Gate -> LLM Call 2 (curved up) -->
+                    <path d="M 430 172 C 430 75, 520 75, 606 75" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="618,75 606,70 606,80" fill="#576e68" />
+
+                    <!-- Arrow: LLM Call 2 -> LLM Call 3 -->
+                    <line x1="762" y1="75" x2="806" y2="75" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="818,75 806,70 806,80" fill="#576e68" />
+
+                    <!-- Arrow: LLM Call 3 -> Out -->
+                    <line x1="962" y1="75" x2="1030" y2="75" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="1042,75 1030,70 1030,80" fill="#576e68" />
+
+                    <!-- Arrow: Gate -> Exit (curved down dashed) -->
+                    <path d="M 430 228 C 430 325, 520 325, 630 325" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="642,325 630,320 630,330" fill="#576e68" />
+                </svg>
+
+                <!-- Middle row: In, LLM Call 1, Gate -->
+                <div class="anthropic-circle" data-id="anthropic-in" style="left: 22px; top: 162px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm1" style="left: 158px; top: 172px;">LLM Call 1</div>
+                <div class="anthropic-box-gate" data-id="anthropic-gate" style="left: 358px; top: 172px;">Gate</div>
+
+                <!-- Top row: LLM Call 2, LLM Call 3, Out -->
+                <div class="anthropic-box-llm" data-id="anthropic-llm2" style="left: 618px; top: 47px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm3" style="left: 818px; top: 47px;">LLM Call 3</div>
+                <div class="anthropic-circle" data-id="anthropic-out" style="left: 1042px; top: 37px;">Out</div>
+
+                <!-- Bottom row: Exit -->
+                <div class="anthropic-circle" data-id="anthropic-exit" style="left: 642px; top: 287px;">Exit</div>
+            </div>
+
+            <div class="anthropic-footer" data-id="anthropic-footer">
+                Source: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a><br>
+                Examples: <a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank">https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents</a>
+            </div>
+        </section>
+
+        <!-- 10.15 Anthropic: Building effective agents (Routing) -->
+        <section class="prod-slide" data-background-color="white" data-auto-animate>
+            <h3 class="prod-title" data-id="anthropic-title">Anthropic: Building effective agents</h3>
+
+            <div class="anthropic-sub" data-id="anthropic-sub">The routing workflow</div>
+
+            <div class="anthropic-diagram-container" data-id="anthropic-container">
+                <svg class="anthropic-svg" viewBox="0 0 1200 400" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Arrow: In -> LLM Call Router -->
+                    <line x1="98" y1="200" x2="138" y2="200" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="150,200 138,195 138,205" fill="#576e68" />
+
+                    <!-- Arrow: LLM Call Router -> Gate -->
+                    <line x1="314" y1="200" x2="346" y2="200" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="358,200 346,195 346,205" fill="#576e68" />
+
+                    <!-- Top branch: Gate -> LLM Call 1 (solid curve) -->
+                    <path d="M 430 172 C 430 75, 530 75, 648 75" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="660,75 648,70 648,80" fill="#576e68" />
+
+                    <!-- Top branch: LLM Call 1 -> Out (solid curve) -->
+                    <path d="M 804 75 C 900 75, 1000 75, 1000 150" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="1000,162 995,150 1005,150" fill="#576e68" />
+
+                    <!-- Middle branch: Gate -> LLM Call 2 (dashed straight line) -->
+                    <line x1="502" y1="200" x2="648" y2="200" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="660,200 648,195 648,205" fill="#576e68" />
+
+                    <!-- Middle branch: LLM Call 2 -> Out (dashed straight line) -->
+                    <line x1="804" y1="200" x2="950" y2="200" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="962,200 950,195 950,205" fill="#576e68" />
+
+                    <!-- Bottom branch: Gate -> LLM Call 3 (dashed curve) -->
+                    <path d="M 430 228 C 430 325, 530 325, 648 325" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="660,325 648,320 648,330" fill="#576e68" />
+
+                    <!-- Bottom branch: LLM Call 3 -> Out (dashed curve) -->
+                    <path d="M 804 325 C 900 325, 1000 325, 1000 250" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="1000,238 995,250 1005,250" fill="#576e68" />
+                </svg>
+
+                <!-- Input and Router -->
+                <div class="anthropic-circle" data-id="anthropic-in" style="left: 22px; top: 162px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-router" style="left: 150px; top: 172px; width: 164px;">LLM Call Router</div>
+                <div class="anthropic-box-gate" data-id="anthropic-gate" style="left: 358px; top: 172px;">Gate</div>
+
+                <!-- 3 Branches: LLM Call 1, 2, 3 -->
+                <div class="anthropic-box-llm" data-id="anthropic-llm1" style="left: 660px; top: 47px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm2" style="left: 660px; top: 172px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm3" style="left: 660px; top: 297px;">LLM Call 3</div>
+
+                <!-- Output -->
+                <div class="anthropic-circle" data-id="anthropic-out" style="left: 962px; top: 162px;">Out</div>
+            </div>
+
+            <div class="anthropic-footer" data-id="anthropic-footer">
+                Source: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a><br>
+                Examples: <a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank">https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents</a>
+            </div>
+        </section>
+
+        <!-- 10.16 Anthropic: Building effective agents (Routing + Parallelization) -->
+        <section class="prod-slide" data-background-color="white" data-auto-animate>
+            <h3 class="prod-title" data-id="anthropic-title">Anthropic: Building effective agents</h3>
+
+            <div class="anthropic-sub" data-id="anthropic-sub" style="margin: 20px 0 0 10px;">The routing workflow</div>
+
+            <div class="anthropic-diagram-container" data-id="anthropic-container" style="height: 480px; margin: 15px 0 0 10px; position: relative; width: 1220px;">
+                <!-- Right subtitle -->
+                <div class="anthropic-sub" data-id="anthropic-sub-parallel" style="position: absolute; right: 20px; top: 60px; margin: 0;">The parallelization workflow</div>
+
+                <svg class="anthropic-svg" viewBox="0 0 1220 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- === LEFT: ROUTING WORKFLOW === -->
+                    <!-- Arrow: In -> LLM Call Router -->
+                    <line x1="68" y1="116" x2="88" y2="116" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="100,116 88,111 88,121" fill="#576e68" />
+
+                    <!-- Arrow: LLM Call Router -> Gate -->
+                    <line x1="210" y1="116" x2="228" y2="116" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="240,116 228,111 228,121" fill="#576e68" />
+
+                    <!-- Top branch: Gate -> LLM Call 1 (solid curve) -->
+                    <path d="M 285 96 C 285 40, 320 40, 358 40" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="370,40 358,35 358,45" fill="#576e68" />
+
+                    <!-- Top branch: LLM Call 1 -> Out (solid curve) -->
+                    <path d="M 460 40 C 490 40, 520 40, 520 80" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="520,92 515,80 525,80" fill="#576e68" />
+
+                    <!-- Middle branch: Gate -> LLM Call 2 (dashed straight line) -->
+                    <line x1="330" y1="116" x2="358" y2="116" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="370,116 358,111 358,121" fill="#576e68" />
+
+                    <!-- Middle branch: LLM Call 2 -> Out (dashed straight line) -->
+                    <line x1="460" y1="116" x2="484" y2="116" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="496,116 484,111 484,121" fill="#576e68" />
+
+                    <!-- Bottom branch: Gate -> LLM Call 3 (dashed curve) -->
+                    <path d="M 285 136 C 285 192, 320 192, 358 192" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="370,192 358,187 358,197" fill="#576e68" />
+
+                    <!-- Bottom branch: LLM Call 3 -> Out (dashed curve) -->
+                    <path d="M 460 192 C 490 192, 520 192, 520 152" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="520,140 515,152 525,152" fill="#576e68" />
+
+
+                    <!-- === RIGHT: PARALLELIZATION WORKFLOW === -->
+                    <!-- In -> LLM Call 1 (curve) -->
+                    <path d="M 590 258 C 590 170, 640 170, 698 170" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="710,170 698,165 698,175" fill="#576e68" />
+
+                    <!-- In -> LLM Call 2 (straight line) -->
+                    <line x1="626" y1="294" x2="698" y2="294" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="710,294 698,289 698,299" fill="#576e68" />
+
+                    <!-- In -> LLM Call 3 (curve) -->
+                    <path d="M 590 330 C 590 418, 640 418, 698 418" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="710,418 698,413 698,423" fill="#576e68" />
+
+                    <!-- LLM Call 1 -> Aggregator (curve down) -->
+                    <path d="M 845 170 C 915 170, 965 170, 965 255" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="965,267 960,255 970,255" fill="#576e68" />
+
+                    <!-- LLM Call 2 -> Aggregator (straight line) -->
+                    <line x1="845" y1="294" x2="888" y2="294" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="900,294 888,289 888,299" fill="#576e68" />
+
+                    <!-- LLM Call 3 -> Aggregator (curve up) -->
+                    <path d="M 845 418 C 915 418, 965 418, 965 333" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="965,321 960,333 970,333" fill="#576e68" />
+
+                    <!-- Aggregator -> Out (straight line) -->
+                    <line x1="1035" y1="294" x2="1082" y2="294" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="1094,294 1082,289 1082,299" fill="#576e68" />
+                </svg>
+
+                <!-- LEFT: Routing elements (scaled down) -->
+                <div class="anthropic-circle" data-id="anthropic-in" style="left: 20px; top: 92px; width: 48px; height: 48px; font-size: 14px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-router" style="left: 100px; top: 96px; width: 110px; height: 40px; font-size: 13px;">LLM Call Router</div>
+                <div class="anthropic-box-gate" data-id="anthropic-gate" style="left: 240px; top: 96px; width: 90px; height: 40px; font-size: 14px;">Gate</div>
+
+                <div class="anthropic-box-llm" data-id="anthropic-llm1" style="left: 370px; top: 20px; width: 90px; height: 40px; font-size: 14px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm2" style="left: 370px; top: 96px; width: 90px; height: 40px; font-size: 14px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm3" style="left: 370px; top: 172px; width: 90px; height: 40px; font-size: 14px;">LLM Call 3</div>
+                <div class="anthropic-circle" data-id="anthropic-out" style="left: 496px; top: 92px; width: 48px; height: 48px; font-size: 14px;">Out</div>
+
+                <!-- RIGHT: Parallelization elements -->
+                <div class="anthropic-circle" data-id="anthropic-p-in" style="left: 554px; top: 258px; width: 72px; height: 72px; font-size: 19px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm1" style="left: 710px; top: 143px; width: 135px; height: 54px; font-size: 18px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm2" style="left: 710px; top: 267px; width: 135px; height: 54px; font-size: 18px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm3" style="left: 710px; top: 391px; width: 135px; height: 54px; font-size: 18px;">LLM Call 3</div>
+                <div class="anthropic-box-gate" data-id="anthropic-p-agg" style="left: 900px; top: 267px; width: 135px; height: 54px; font-size: 18px;">Aggregator</div>
+                <div class="anthropic-circle" data-id="anthropic-p-out" style="left: 1094px; top: 258px; width: 72px; height: 72px; font-size: 19px;">Out</div>
+            </div>
+
+            <div class="anthropic-footer" data-id="anthropic-footer">
+                Source: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a><br>
+                Examples: <a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank">https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents</a>
+            </div>
+        </section>
+
+        <!-- 10.17 Anthropic: Building effective agents (Routing + Parallelization + Orchestrator-workers) -->
+        <section class="prod-slide" data-background-color="white" data-auto-animate>
+            <h3 class="prod-title" data-id="anthropic-title">Anthropic: Building effective agents</h3>
+
+            <div class="anthropic-diagram-container" data-id="anthropic-container" style="height: 490px; margin: 15px 0 0 10px; position: relative; width: 1220px;">
+                <!-- Subtitles -->
+                <div class="anthropic-sub" data-id="anthropic-sub" style="position: absolute; left: 10px; top: 0px; margin: 0;">The routing workflow</div>
+                <div class="anthropic-sub" data-id="anthropic-sub-parallel" style="position: absolute; right: 20px; top: 0px; margin: 0;">The parallelization workflow</div>
+                <div class="anthropic-sub" data-id="anthropic-sub-orch" style="position: absolute; left: 10px; top: 240px; margin: 0;">The orchestrator-workers workflow</div>
+
+                <svg class="anthropic-svg" viewBox="0 0 1220 490" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- === 1. TOP-LEFT: ROUTING WORKFLOW === -->
+                    <!-- In -> LLM Call Router -->
+                    <line x1="68" y1="102" x2="88" y2="102" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="100,102 88,97 88,107" fill="#576e68" />
+
+                    <!-- LLM Call Router -> Gate -->
+                    <line x1="210" y1="102" x2="228" y2="102" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="240,102 228,97 228,107" fill="#576e68" />
+
+                    <!-- Gate -> LLM Call 1 (solid curve) -->
+                    <path d="M 285 82 C 285 26, 320 26, 358 26" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="370,26 358,21 358,31" fill="#576e68" />
+
+                    <!-- LLM Call 1 -> Out (solid curve) -->
+                    <path d="M 460 26 C 490 26, 520 26, 520 66" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="520,78 515,66 525,66" fill="#576e68" />
+
+                    <!-- Gate -> LLM Call 2 (dashed straight line) -->
+                    <line x1="330" y1="102" x2="358" y2="102" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="370,102 358,97 358,107" fill="#576e68" />
+
+                    <!-- LLM Call 2 -> Out (dashed straight line) -->
+                    <line x1="460" y1="102" x2="484" y2="102" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="496,102 484,97 484,107" fill="#576e68" />
+
+                    <!-- Gate -> LLM Call 3 (dashed curve) -->
+                    <path d="M 285 122 C 285 178, 320 178, 358 178" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="370,178 358,173 358,183" fill="#576e68" />
+
+                    <!-- LLM Call 3 -> Out (dashed curve) -->
+                    <path d="M 460 178 C 490 178, 520 178, 520 138" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="520,126 515,138 525,138" fill="#576e68" />
+
+
+                    <!-- === 2. TOP-RIGHT: PARALLELIZATION WORKFLOW === -->
+                    <!-- In -> LLM Call 1 (curve) -->
+                    <path d="M 694 78 C 694 26, 730 26, 758 26" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="770,26 758,21 758,31" fill="#576e68" />
+
+                    <!-- In -> LLM Call 2 (straight line) -->
+                    <line x1="718" y1="102" x2="758" y2="102" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="770,102 758,97 758,107" fill="#576e68" />
+
+                    <!-- In -> LLM Call 3 (curve) -->
+                    <path d="M 694 126 C 694 178, 730 178, 758 178" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="770,178 758,173 758,183" fill="#576e68" />
+
+                    <!-- LLM Call 1 -> Aggregator (curve down) -->
+                    <path d="M 860 26 C 925 26, 955 26, 955 70" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="955,82 950,70 960,70" fill="#576e68" />
+
+                    <!-- LLM Call 2 -> Aggregator (straight line) -->
+                    <line x1="860" y1="102" x2="898" y2="102" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="910,102 898,97 898,107" fill="#576e68" />
+
+                    <!-- LLM Call 3 -> Aggregator (curve up) -->
+                    <path d="M 860 178 C 925 178, 955 178, 955 134" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="955,122 950,134 960,134" fill="#576e68" />
+
+                    <!-- Aggregator -> Out (straight line) -->
+                    <line x1="1005" y1="102" x2="1043" y2="102" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="1055,102 1043,97 1043,107" fill="#576e68" />
+
+
+                    <!-- === 3. BOTTOM: ORCHESTRATOR-WORKERS WORKFLOW === -->
+                    <!-- In -> Gate 1 (solid straight line) -->
+                    <line x1="422" y1="365" x2="458" y2="365" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="470,365 458,360 458,370" fill="#576e68" />
+
+                    <!-- Gate 1 -> LLM Call 1 (dashed curve up) -->
+                    <path d="M 522 340 C 522 285, 570 285, 638 285" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="650,285 638,280 638,290" fill="#576e68" />
+
+                    <!-- Gate 1 -> LLM Call 2 (dashed straight line) -->
+                    <line x1="575" y1="365" x2="638" y2="365" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="650,365 638,360 638,370" fill="#576e68" />
+
+                    <!-- Gate 1 -> LLM Call 3 (dashed curve down) -->
+                    <path d="M 522 390 C 522 445, 570 445, 638 445" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="650,445 638,440 638,450" fill="#576e68" />
+
+                    <!-- LLM Call 1 -> Gate 2 (dashed curve down) -->
+                    <path d="M 755 285 C 820 285, 872 285, 872 328" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="872,340 867,328 877,328" fill="#576e68" />
+
+                    <!-- LLM Call 2 -> Gate 2 (dashed straight line) -->
+                    <line x1="755" y1="365" x2="808" y2="365" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="820,365 808,360 808,370" fill="#576e68" />
+
+                    <!-- LLM Call 3 -> Gate 2 (dashed curve up) -->
+                    <path d="M 755 445 C 820 445, 872 445, 872 402" fill="none" stroke="#576e68" stroke-width="1.5" stroke-dasharray="6 4" />
+                    <polygon points="872,390 867,402 877,402" fill="#576e68" />
+
+                    <!-- Gate 2 -> Out (solid straight line) -->
+                    <line x1="925" y1="365" x2="978" y2="365" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="990,365 978,360 978,370" fill="#576e68" />
+                </svg>
+
+                <!-- TOP-LEFT: Routing elements -->
+                <div class="anthropic-circle" data-id="anthropic-in" style="left: 20px; top: 78px; width: 48px; height: 48px; font-size: 14px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-router" style="left: 100px; top: 82px; width: 110px; height: 40px; font-size: 13px;">LLM Call Router</div>
+                <div class="anthropic-box-gate" data-id="anthropic-gate" style="left: 240px; top: 82px; width: 90px; height: 40px; font-size: 14px;">Gate</div>
+
+                <div class="anthropic-box-llm" data-id="anthropic-llm1" style="left: 370px; top: 6px; width: 90px; height: 40px; font-size: 14px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm2" style="left: 370px; top: 82px; width: 90px; height: 40px; font-size: 14px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-llm3" style="left: 370px; top: 158px; width: 90px; height: 40px; font-size: 14px;">LLM Call 3</div>
+                <div class="anthropic-circle" data-id="anthropic-out" style="left: 496px; top: 78px; width: 48px; height: 48px; font-size: 14px;">Out</div>
+
+                <!-- TOP-RIGHT: Parallelization elements -->
+                <div class="anthropic-circle" data-id="anthropic-p-in" style="left: 670px; top: 78px; width: 48px; height: 48px; font-size: 14px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm1" style="left: 770px; top: 6px; width: 90px; height: 40px; font-size: 14px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm2" style="left: 770px; top: 82px; width: 90px; height: 40px; font-size: 14px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-p-llm3" style="left: 770px; top: 158px; width: 90px; height: 40px; font-size: 14px;">LLM Call 3</div>
+                <div class="anthropic-box-gate" data-id="anthropic-p-agg" style="left: 910px; top: 82px; width: 95px; height: 40px; font-size: 14px;">Aggregator</div>
+                <div class="anthropic-circle" data-id="anthropic-p-out" style="left: 1055px; top: 78px; width: 48px; height: 48px; font-size: 14px;">Out</div>
+
+                <!-- BOTTOM: Orchestrator-workers elements -->
+                <div class="anthropic-circle" data-id="anthropic-o-in" style="left: 360px; top: 334px; width: 62px; height: 62px; font-size: 18px;">In</div>
+                <div class="anthropic-box-llm" data-id="anthropic-o-gate1" style="left: 470px; top: 339px; width: 105px; height: 52px; font-size: 18px;">Gate</div>
+
+                <div class="anthropic-box-llm" data-id="anthropic-o-llm1" style="left: 650px; top: 259px; width: 105px; height: 52px; font-size: 18px;">LLM Call 1</div>
+                <div class="anthropic-box-llm" data-id="anthropic-o-llm2" style="left: 650px; top: 339px; width: 105px; height: 52px; font-size: 18px;">LLM Call 2</div>
+                <div class="anthropic-box-llm" data-id="anthropic-o-llm3" style="left: 650px; top: 419px; width: 105px; height: 52px; font-size: 18px;">LLM Call 3</div>
+
+                <div class="anthropic-box-llm" data-id="anthropic-o-gate2" style="left: 820px; top: 339px; width: 105px; height: 52px; font-size: 18px;">Gate</div>
+                <div class="anthropic-circle" data-id="anthropic-o-out" style="left: 990px; top: 334px; width: 62px; height: 62px; font-size: 18px;">Out</div>
+            </div>
+
+            <div class="anthropic-footer" data-id="anthropic-footer">
+                Source: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a><br>
+                Examples: <a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank">https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents</a>
+            </div>
+        </section>
+
+        <!-- 10.18 Anthropic: Building effective agents (Evaluator-optimizer) -->
+        <section class="prod-slide" data-background-color="white" data-auto-animate>
+            <h3 class="prod-title" data-id="anthropic-title">Anthropic: Building effective agents</h3>
+
+            <div class="anthropic-sub" data-id="anthropic-sub" style="margin: 20px 0 0 10px;">The evaluator-optimizer workflow</div>
+
+            <div class="anthropic-diagram-container" data-id="anthropic-container" style="height: 480px; margin: 15px 0 0 10px; position: relative; width: 1220px;">
+                <!-- Labels -->
+                <div style="color: #203832; font-family: var(--r-main-font, 'Open Sans', sans-serif); font-size: 20px; font-weight: 500; position: absolute; left: 475px; top: 50px; width: 150px; text-align: center;">Solution</div>
+                <div style="color: #203832; font-family: var(--r-main-font, 'Open Sans', sans-serif); font-size: 20px; font-weight: 500; position: absolute; left: 400px; top: 410px; width: 300px; text-align: center;">Rejected + Feedback</div>
+                <div style="color: #203832; font-family: var(--r-main-font, 'Open Sans', sans-serif); font-size: 20px; font-weight: 500; position: absolute; left: 800px; top: 275px; width: 140px; text-align: center;">Accepted</div>
+
+                <svg class="anthropic-svg" viewBox="0 0 1220 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Arrow: In -> Generator -->
+                    <line x1="202" y1="240" x2="319" y2="240" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="331,240 319,235 319,245" fill="#576e68" />
+
+                    <!-- Top arc: Generator -> Evaluator (clockwise) -->
+                    <path d="M 403 210 A 150 150 0 0 1 694.4 198.3" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="697,210 689.5,199.4 699.3,197.2" fill="#576e68" />
+
+                    <!-- Bottom arc: Evaluator -> Generator (clockwise) -->
+                    <path d="M 697 270 A 150 150 0 0 1 405.6 281.7" fill="none" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="403,270 410.5,280.6 400.7,282.8" fill="#576e68" />
+
+                    <!-- Arrow: Evaluator -> Out -->
+                    <line x1="769" y1="240" x2="958" y2="240" stroke="#576e68" stroke-width="1.5" />
+                    <polygon points="970,240 958,235 958,245" fill="#576e68" />
+                </svg>
+
+                <!-- Circle In -->
+                <div class="anthropic-circle" data-id="anthropic-in" style="left: 130px; top: 204px; width: 72px; height: 72px; font-size: 19px;">In</div>
+
+                <!-- LLM Call Generator -->
+                <div class="anthropic-box-llm" data-id="anthropic-llm1" style="left: 331px; top: 210px; width: 144px; height: 60px; font-size: 17px; line-height: 1.2; text-align: center;">LLM Call<br>Generator</div>
+
+                <!-- LLM Call Evaluator -->
+                <div class="anthropic-box-llm" data-id="anthropic-llm2" style="left: 625px; top: 210px; width: 144px; height: 60px; font-size: 17px; line-height: 1.2; text-align: center;">LLM Call<br>Evaluator</div>
+
+                <!-- Circle Out -->
+                <div class="anthropic-circle" data-id="anthropic-out" style="left: 970px; top: 204px; width: 72px; height: 72px; font-size: 19px;">Out</div>
+            </div>
+
+            <div class="anthropic-footer" data-id="anthropic-footer">
+                Source: <a href="https://www.anthropic.com/engineering/building-effective-agents" target="_blank">https://www.anthropic.com/engineering/building-effective-agents</a><br>
+                Examples: <a href="https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents" target="_blank">https://github.com/anthropics/claude-cookbooks/tree/main/patterns/agents</a>
+            </div>
+        </section>
+
+        <!-- 10.19 Google Patterns — Agents as Composable Units -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Google Patterns — Agents as Composable Units</h3>
+
+            <div class="gpatterns-container">
+                <div class="gpatterns-left-col">
+                    <div class="gpatterns-subtitle">Three levels of composition:</div>
+                    <ul class="gpatterns-list">
+                        <li><strong>Single Agent</strong> &mdash; one agent + N tools. 80% of tasks are solved here. Don't overcomplicate until it breaks.</li>
+                        <li><strong>Multi-Agent</strong> &mdash; specialized agents with roles. Coordinator decides who handles what (LLM-driven delegation or explicit routing).</li>
+                        <li><strong>Agent-as-Tool</strong> &mdash; Agent B is wrapped as a tool for Agent A. A calls <code class="gpatterns-code">check_policy()</code> and gets <code class="gpatterns-code">&#123;allowed: true, fee: 3000&#125;</code>. Doesn't know there's a full RAG + LLM pipeline inside. Encapsulation at agent level.</li>
+                    </ul>
+
+                    <div class="gpatterns-subtitle" style="margin-top: 24px;">Two delegation mechanisms in Google ADK:</div>
+                    <ul class="gpatterns-list">
+                        <li><strong>LLM-Driven Delegation</strong>: model reads sub-agent descriptions, picks who to delegate to. Flexible, but model can pick wrong.</li>
+                        <li><strong>AgentTool (Explicit)</strong>: agent B is wrapped as a callable function. Predictable, clear contract, but rigid.</li>
+                    </ul>
+                </div>
+
+                <div class="gpatterns-book-col">
+                    <img src="assets/agentic_design_patterns_gulli.webp" alt="Agentic Design Patterns by Antonio Gulli" class="gpatterns-book-img" />
+                    <div class="gpatterns-book-caption">
+                        <i>A Hands-On Guide<br />to Building Intelligent Systems,</i><br />
+                        <a href="https://www.amazon.com/Agentic-Design-Patterns-Hands-Intelligent/dp/3032014018" target="_blank">Antonio Gulli</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="gpatterns-footer">
+                <a href="https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system" target="_blank">https://docs.cloud.google.com/architecture/choose-design-pattern-agentic-ai-system</a><br />
+                <a href="https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/" target="_blank">https://developers.googleblog.com/developers-guide-to-multi-agent-patterns-in-adk/</a>
+            </div>
+        </section>
+
+        <!-- 10.20 Choosing a Framework (ADK) -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Choosing a Framework (ADK)</h3>
+
+            <div class="adk-sub">Paradigms and Comparison:</div>
+
+            <div class="adk-grid-row1">
+                <!-- Card 1: GRAPH -->
+                <div class="adk-col-row1">
+                    <div class="adk-pill">GRAPH</div>
+                    <div class="adk-card-header">LangGraph</div>
+                    <div class="adk-card-tagline">Nodes &rarr; Edges.</div>
+                    <div class="adk-card-body">
+                        You draw the blueprint. Max control, max boilerplate. Stateful graphs with checkpointing. Most mature (80K+ stars, 2+ years in production).
+                    </div>
+                </div>
+
+                <!-- Card 2: CONVERSATION -->
+                <div class="adk-col-row1">
+                    <div class="adk-pill">CONVERSATION</div>
+                    <div class="adk-card-header">CrewAI, AutoGen</div>
+                    <div class="adk-card-body" style="margin-top: 14px;">
+                        You assemble a team. Agents talk to each other. CrewAI: roles + tasks, fast prototyping. AutoGen: GroupChat, debate, consensus. Most intuitive, least predictable.
+                    </div>
+                </div>
+
+                <!-- Card 3: COMPUTER -->
+                <div class="adk-col-row1">
+                    <div class="adk-pill">COMPUTER</div>
+                    <div class="adk-card-header">Claude Agent SDK</div>
+                    <div class="adk-card-tagline">bash + files. You provide an environment.</div>
+                    <div class="adk-card-body">
+                        Model decides how to act. Subagents, MCP tools, Computer Use. Minimal orchestration, maximum autonomy. Powers Claude Code.
+                    </div>
+                </div>
+            </div>
+
+            <div class="adk-grid-row2">
+                <!-- Card 4: HIERARCHY -->
+                <div class="adk-col-row2">
+                    <div class="adk-pill">HIERARCHY</div>
+                    <div class="adk-card-header">Google ADK, OpenAI SDK</div>
+                    <div class="adk-card-tagline">Boss &rarr; Workers.</div>
+                    <div class="adk-card-body">
+                        You build a company. Coordinator delegates to specialists. ADK: workflow agents (Sequential/Parallel/Loop) + A2A protocol. OpenAI SDK: 4 primitives, fast start, OpenAI lock-in.
+                    </div>
+                </div>
+
+                <!-- Card 5: MCP-NATIVE -->
+                <div class="adk-col-row2">
+                    <div class="adk-pill">MCP-NATIVE</div>
+                    <div class="adk-card-header">Strands (AWS)</div>
+                    <div class="adk-card-tagline">MCP &rarr; everything.</div>
+                    <div class="adk-card-body">
+                        One connector for all: tools, integrations, other agents. Deep AWS integration. Youngest framework, strongest bet on MCP as the universal standard.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10.21 Timeline -->
+        <section class="prod-slide" data-background-color="white">
+            <h3 class="prod-title">Timeline</h3>
+
+            <div class="timeline-container">
+                <div class="timeline-track"></div>
+
+                <!-- Column 23 -->
+                <div class="timeline-col timeline-col-23">
+                    <div class="timeline-year">23</div>
+                    <div class="timeline-marker timeline-marker-pill"></div>
+                    <div class="timeline-models">
+                        <div>GPT-4: $60/1M tokens</div>
+                    </div>
+                    <div class="timeline-value">
+                        Value = <strong>MODEL</strong>
+                    </div>
+                </div>
+
+                <!-- Column 24 -->
+                <div class="timeline-col timeline-col-24">
+                    <div class="timeline-year">24</div>
+                    <div class="timeline-marker timeline-marker-dots">
+                        <span></span><span></span><span></span><span></span>
+                    </div>
+                    <div class="timeline-models">
+                        <div>GPT-4o: $10/1M</div>
+                        <div>Claude 3: $15/1M</div>
+                    </div>
+                    <div class="timeline-value">
+                        Value = <strong>MODEL + PROMPT</strong>
+                    </div>
+                </div>
+
+                <!-- Column 25 -->
+                <div class="timeline-col timeline-col-25">
+                    <div class="timeline-year">25</div>
+                    <div class="timeline-marker timeline-marker-dot"></div>
+                    <div class="timeline-models">
+                        <div>GPT-4o-mini: $0.15/1M</div>
+                        <div>DeepSeek: $0.14/1M</div>
+                        <div class="timeline-inference">Inference: -78% per year</div>
+                    </div>
+                    <div class="timeline-value">
+                        Value = <strong>The SYSTEM</strong><br />
+                        <strong>Around the Model</strong>
+                    </div>
+                </div>
+
+                <!-- Column 26 -->
+                <div class="timeline-col timeline-col-26">
+                    <div class="timeline-year">26</div>
+                    <div class="timeline-marker timeline-marker-square"></div>
+                    <div class="timeline-models">
+                        <div style="font-size: 26px; font-weight: 500;">?</div>
+                    </div>
+                    <div class="timeline-value">
+                    </div>
+                </div>
             </div>
         </section>
     </section>

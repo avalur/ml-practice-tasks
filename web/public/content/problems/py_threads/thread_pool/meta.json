@@ -1,0 +1,31 @@
+{
+  "id": "py_threads/thread_pool",
+  "topic": "py_threads",
+  "slug": "thread_pool",
+  "title": "Thread Pool",
+  "difficulty": "hard",
+  "entry": "ThreadPool",
+  "banned": {
+    "modules": [
+      "concurrent",
+      "multiprocessing"
+    ]
+  },
+  "statementMd": "Implement a reusable `ThreadPool` that executes submitted callables across a fixed number of background worker threads, returning `Future` handles for asynchronous result retrieval.\n\nThe `concurrent` and `multiprocessing` modules are off-limits.\n\n### Interface\n\n- `Future`:\n  - `result(timeout: float | None = None) -> Any`:\n    Block until the computation finishes and return its return value. If the task raised an exception, re-raise that exception here. If `timeout` is given and expires before completion, raise `TimeoutError`.\n  - `exception(timeout: float | None = None) -> BaseException | None`:\n    Block until the computation finishes and return the exception raised, or `None` if it succeeded. If `timeout` expires, raise `TimeoutError`.\n  - `done() -> bool`:\n    Return `True` if the computation has finished (succeeded or raised).\n- `ThreadPool(num_workers: int)`:\n  - `submit(fn: Callable[..., Any], *args: Any, **kwargs: Any) -> Future`:\n    Submit a task to be executed by a worker. Return a `Future` representing the pending result.\n    If called after `shutdown()`, raise `RuntimeError`.\n  - `shutdown(wait: bool = True) -> None`:\n    Signal workers to shut down. No further tasks can be submitted. If `wait=True`, block until all pending tasks and worker threads have finished.\n  - Context manager:\n    Can be used in a `with ThreadPool(...) as pool:` block; calls `shutdown(wait=True)` on exit.",
+  "bundlePath": "/content/problems/py_threads/thread_pool",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Create worker threads that loop pulling tasks from a work queue until a sentinel object (e.g. None) is received.",
+    "Future can use threading.Event to signal when the task has produced a result or raised an exception.",
+    "When a worker encounters an exception from a task, catch BaseException and store it in the Future so future.result() can re-raise it.",
+    "submit() should check if the pool is shutdown and raise RuntimeError if so.",
+    "shutdown(wait=True) should enqueue one sentinel per worker thread and join all worker threads."
+  ],
+  "prereqs": [
+    "py_threads/bounded_queue"
+  ],
+  "next": [],
+  "contentHash": "3aff6693db5dd13af5d357fbe2a3e2ac5ae81adaf0e772b022c53c811df51d1a"
+}

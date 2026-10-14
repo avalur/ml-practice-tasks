@@ -1,0 +1,28 @@
+{
+  "id": "py_threads/bounded_queue",
+  "topic": "py_threads",
+  "slug": "bounded_queue",
+  "title": "Thread-Safe Bounded Queue",
+  "difficulty": "easy",
+  "entry": "BoundedQueue",
+  "banned": {
+    "modules": [
+      "queue",
+      "multiprocessing"
+    ]
+  },
+  "statementMd": "Implement a thread-safe bounded FIFO queue `BoundedQueue` coordinating concurrent producers and consumers without busy waiting.\n\nThe ready-made `queue` and `multiprocessing` modules are off-limits; use `threading.Lock` and `threading.Condition`.\n\n### Interface\n\n- `QueueEmpty(Exception)`: Exception raised when `get` times out.\n- `QueueFull(Exception)`: Exception raised when `put` times out.\n- `BoundedQueue(capacity: int)`:\n  - `put(item: Any, timeout: float | None = None) -> None`:\n    Add an item to the queue. If the queue is full, block until space is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueFull`. If `timeout` is `None`, block indefinitely.\n  - `get(timeout: float | None = None) -> Any`:\n    Remove and return an item in FIFO order. If the queue is empty, block until an item is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueEmpty`. If `timeout` is `None`, block indefinitely.\n  - `qsize() -> int`:\n    Return the current number of items in the queue (thread-safe).\n  - `empty() -> bool`:\n    Return `True` if the queue is empty, `False` otherwise.\n  - `full() -> bool`:\n    Return `True` if the queue is full, `False` otherwise.",
+  "bundlePath": "/content/problems/py_threads/bounded_queue",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Use a threading.Lock and two threading.Condition variables (or one Condition associated with the lock): not_empty and not_full.",
+    "When putting an item, wait on not_full while the queue is full; notify not_empty after appending.",
+    "When getting an item, wait on not_empty while the queue is empty; notify not_full after popping.",
+    "To handle timeouts accurately, compute deadline = time.monotonic() + timeout and wait for the remaining time in a loop."
+  ],
+  "prereqs": [],
+  "next": [],
+  "contentHash": "dc0fcf860cbda98db1e85aa1c9b9e990eed14142cb7dfbae6be31f1a932a6970"
+}

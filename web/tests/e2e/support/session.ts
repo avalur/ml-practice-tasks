@@ -25,6 +25,22 @@ function databaseUrl(): string {
   return line.slice(line.indexOf("=") + 1).trim().replace(/^["']|["']$/g, "");
 }
 
+/** True only when DATABASE_URL points at this machine (or a CI service container
+ * on localhost). Decided by the parsed host, never by NODE_ENV: a production
+ * server can run locally against the live database. Anything unparsable is
+ * treated as not isolated. */
+export function isIsolatedDb(): boolean {
+  try {
+    const host = new URL(databaseUrl()).hostname.replace(/^\[|\]$/g, "");
+    return host === "localhost" || host === "127.0.0.1" || host === "::1";
+  } catch {
+    return false;
+  }
+}
+
+export const PUBLISH_SKIP_REASON =
+  "scratch classes are only published on a local/CI-isolated Postgres (DATABASE_URL host is not localhost); see the local-Postgres recipe in CLAUDE.md";
+
 export type TestSession = {
   userId: string;
   /** Mark a problem solved for this user, as the in-browser runner would. */
@@ -122,14 +138,34 @@ export async function draftClass(opts: {
   lesson?: string;
   /** Practice items for the scratch lesson, in published-manifest shape. */
   practice?: unknown[];
+  /** Homework for the scratch lesson, in published-manifest shape. */
+  homework?: unknown;
+  /** Opt in to a temporary `publishedAt`, so enrolled students and outsiders can
+   * reach the scratch pages (a draft is 404 for everybody but its teachers).
+   * Only allowed for a slug starting `e2e-`, which no real class uses; the row is
+   * deleted by dispose(). The scratch class is listed on /classes while it
+   * exists — seconds, under a unique slug. */
+  publishForStudents?: boolean;
 }) {
+  if (opts.publishForStudents && !/^e2e-[a-z0-9-]+$/.test(opts.slug)) {
+    throw new Error(`draftClass refuses to publish ${opts.slug}: slug must start with e2e-.`);
+  }
+  if (opts.publishForStudents && !isIsolatedDb()) {
+    throw new Error(`draftClass refuses to publish ${opts.slug}: ${PUBLISH_SKIP_REASON}.`);
+  }
   const { PrismaClient } = await import("@prisma/client");
   const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
   const lessonSlug = opts.lesson ?? "l01-scratch";
+  const publishedAt = opts.publishForStudents ? new Date() : null;
 
   const manifestPath = path.join(
     __dirname, "..", "..", "..", "public", "classes", "manifest.json",
   );
+  const removeEntry = async () => {
+    const current = JSON.parse(await fs.promises.readFile(manifestPath, "utf8"));
+    current.classes = current.classes.filter((c: { slug: string }) => c.slug !== opts.slug);
+    await fs.promises.writeFile(manifestPath, JSON.stringify(current, null, 2) + "\n");
+  };
   const parsed = JSON.parse(await fs.promises.readFile(manifestPath, "utf8"));
   parsed.classes.push({
     slug: opts.slug,
@@ -143,17 +179,25 @@ export async function draftClass(opts: {
         date: null,
         deck: "scratch",
         practice: opts.practice ?? [],
-        homework: null,
+        homework: opts.homework ?? null,
       },
     ],
   });
   await fs.promises.writeFile(manifestPath, JSON.stringify(parsed, null, 2) + "\n");
 
-  await prisma.class.upsert({
-    where: { slug: opts.slug },
-    create: { slug: opts.slug, title: opts.title, teacherEmails: [], publishedAt: null },
-    update: { publishedAt: null },
-  });
+  try {
+    await prisma.class.upsert({
+      where: { slug: opts.slug },
+      create: { slug: opts.slug, title: opts.title, teacherEmails: [], publishedAt },
+      update: { publishedAt },
+    });
+  } catch (e) {
+    // Partial setup: undo the manifest entry so nothing is left behind.
+    await removeEntry().catch(() => {});
+    await prisma.class.deleteMany({ where: { slug: opts.slug } }).catch(() => {});
+    await prisma.$disconnect().catch(() => {});
+    throw e;
+  }
 
   return {
     slug: opts.slug,

@@ -1918,9 +1918,9 @@ ul.custom-list li.lamp::before {
 /* DSPy: FlightAgent — Real Code slide */
 .realcode-grid {
 	display: grid;
-	gap: 20px;
+	gap: 16px;
 	grid-template-columns: repeat(4, 1fr);
-	margin: 60px 0 0 10px;
+	margin: 50px 0 0 10px;
 	width: 1220px;
 }
 .realcode-col {
@@ -1942,21 +1942,65 @@ ul.custom-list li.lamp::before {
 .realcode-header-sub {
 	color: #2d4942;
 	font-family: var(--r-main-font, "Open Sans", sans-serif);
-	font-size: 21px;
+	font-size: 20px;
 	font-weight: 400;
 	line-height: 1.25;
 }
+.reveal pre.realcode-box,
 .realcode-box {
-	background-color: #1d2326;
+	background-color: #f8fafc;
+	border: 1px solid #d0d7de;
+	border-radius: 8px;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
 	box-sizing: border-box;
-	color: #ffffff;
-	font-family: var(--r-main-font, "Open Sans", sans-serif);
-	font-size: 19px;
-	height: 330px;
-	line-height: 1.38;
-	padding: 18px 16px;
+	height: 310px;
+	margin: 0;
+	overflow: hidden;
+	padding: 16px 14px;
 	text-align: left;
+	width: 100%;
+}
+.reveal pre.realcode-box code,
+.realcode-box code {
+	background: transparent !important;
+	color: #1f2328 !important;
+	font-family: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 14px;
+	line-height: 1.52;
+	max-height: none !important;
+	overflow: visible !important;
+	padding: 0 !important;
 	white-space: pre;
+}
+.reveal .realcode-box .hljs-keyword,
+.reveal .realcode-box .hljs-selector-tag {
+	color: #cf222e !important;
+	font-weight: 600;
+}
+.reveal .realcode-box .hljs-title,
+.reveal .realcode-box .hljs-title.class_,
+.reveal .realcode-box .hljs-title.function_ {
+	color: #0550ae !important;
+	font-weight: 600;
+}
+.reveal .realcode-box .hljs-type,
+.reveal .realcode-box .hljs-built_in {
+	color: #8250df !important;
+}
+.reveal .realcode-box .hljs-string {
+	color: #116329 !important;
+}
+.reveal .realcode-box .hljs-comment {
+	color: #6e7781 !important;
+	font-style: italic;
+}
+.reveal .realcode-box .hljs-number {
+	color: #0550ae !important;
+}
+.reveal .realcode-box .hljs-attr,
+.reveal .realcode-box .hljs-variable,
+.reveal .realcode-box .hljs-params {
+	color: #1f2328 !important;
 }
 
 /* DSPy: 62% → 91% in 2 Minutes slide */
@@ -2261,13 +2305,12 @@ ul.custom-list li.lamp::before {
 .agent-need-title {
 	color: #203832;
 	font-family: var(--r-main-font, "Open Sans", sans-serif);
-	font-size: 28px;
+	font-size: 24px;
 	font-weight: 500;
-	left: 0;
+	left: 21px;
 	position: absolute;
-	text-align: center;
-	top: 16px;
-	width: 100%;
+	text-align: left;
+	top: 18px;
 }
 .agent-need-blocks {
 	box-sizing: border-box;
@@ -6596,16 +6639,13 @@ ul.custom-list li.lamp::before {
                         <div class="realcode-header-title">Signature</div>
                         <div class="realcode-header-sub">(WHAT)</div>
                     </div>
-                    <div class="realcode-box">class
-FlightSearch(dspy.Sign
-ature):
-    &quot;&quot;&quot;Find best flight&quot;&quot;&quot;
-    query =
-dspy.InputField()
-    flights =
-dspy.InputField()
-    answer =
-dspy.OutputField()</div>
+                    <pre class="realcode-box"><code class="language-python">class FlightSearch(
+    dspy.Signature
+):
+    """Find best flight"""
+    query = dspy.InputField()
+    flights = dspy.InputField()
+    answer = dspy.OutputField()</code></pre>
                 </div>
 
                 <div class="realcode-col">
@@ -6613,13 +6653,13 @@ dspy.OutputField()</div>
                         <div class="realcode-header-title">Module</div>
                         <div class="realcode-header-sub">(HOW to call LLM)</div>
                     </div>
-                    <div class="realcode-box">agent =
-dspy.ChainOfThought(
+                    <pre class="realcode-box"><code class="language-python">agent = dspy.ChainOfThought(
     FlightSearch
 )
-# Adds &quot;Reasoning: ...&quot;
+
+# Adds "Reasoning: ..."
 # before answer
-automatically</div>
+# automatically</code></pre>
                 </div>
 
                 <div class="realcode-col">
@@ -6627,14 +6667,11 @@ automatically</div>
                         <div class="realcode-header-title">Metric</div>
                         <div class="realcode-header-sub">(HOW to score)</div>
                     </div>
-                    <div class="realcode-box">def metric(example,
-pred):
+                    <pre class="realcode-box"><code class="language-python">def metric(example, pred):
     return (
-        pred.answer != &quot;&quot;
-    and
-        &quot;cheapest&quot; in
-pred.answer
-    )</div>
+        pred.answer != "" and
+        "cheapest" in pred.answer
+    )</code></pre>
                 </div>
 
                 <div class="realcode-col">
@@ -6642,13 +6679,13 @@ pred.answer
                         <div class="realcode-header-title">Optimizer</div>
                         <div class="realcode-header-sub">(find best prompt)</div>
                     </div>
-                    <div class="realcode-box">opt =
-BootstrapFewShot(
+                    <pre class="realcode-box"><code class="language-python">opt = BootstrapFewShot(
     metric=metric,
     max_demos=3
 )
 compiled = opt.compile(
-    agent, trainset=data)</div>
+    agent, trainset=data
+)</code></pre>
                 </div>
             </div>
         </section>
@@ -7101,7 +7138,7 @@ compiled = opt.compile(
             </table>
 
             <div class="calc-footer">
-                Large &rarr; Router 80/15/5 = 13&times; savings = $12K/mo = $144K/year
+                Large &rarr; Router 80/15/5 = 13&times; savings = <span>$12K/mo</span> = <span>$144K/year</span>
             </div>
         </section>
 
@@ -7354,7 +7391,7 @@ compiled = opt.compile(
             </table>
 
             <div class="speed-costs-savings">
-                Savings: 2 fewer servers &times; $300/mo = $600/mo
+                Savings: 2 fewer servers &times; <span>$300/mo</span> = <span>$600/mo</span>
             </div>
 
             <div class="speed-costs-grid">
@@ -7395,15 +7432,15 @@ compiled = opt.compile(
                 <tbody>
                     <tr>
                         <td>Tool returns empty &rarr; retry</td>
-                        <td>95% normal: $0.003&ndash;$0.015</td>
+                        <td>95% normal: <span>$0.003</span>&ndash;<span>$0.015</span></td>
                     </tr>
                     <tr>
                         <td>LLM misunderstands &rarr; repeat</td>
-                        <td>4% expensive: $0.05&ndash;$0.15</td>
+                        <td>4% expensive: <span>$0.05</span>&ndash;<span>$0.15</span></td>
                     </tr>
                     <tr>
                         <td>Ambiguous query &rarr; search</td>
-                        <td>1% catastrophic: $0.15&ndash;$0.50</td>
+                        <td>1% catastrophic: <span>$0.15</span>&ndash;<span>$0.50</span></td>
                     </tr>
                     <tr>
                         <td>&rarr; refine &rarr; search &rarr; refine...</td>
@@ -7701,6 +7738,16 @@ compiled = opt.compile(
                 <div>If the tool allows it &mdash; agent will comply</div>
                 <div class="sec-punchline">A prompt is NOT protection. Infrastructure is</div>
             </div>
+        </section>
+
+        <!-- Practice: Parallel Programming in Python -->
+        <section data-background-color="#fdf6e3">
+            <h3 style="text-align: left">Practice</h3>
+            <p style="text-align: left">A few tasks to solve (15-20 min)</p>
+            <ol style="display: block; text-align: left">
+                <li><a class="practice" href="/problems/py_threads/bounded_queue" target="_blank" rel="noopener noreferrer">Thread-Safe Bounded Queue</a></li>
+                <li><a class="practice" href="/problems/py_threads/thread_pool" target="_blank" rel="noopener noreferrer">Thread Pool</a></li>
+            </ol>
         </section>
     </section>
 

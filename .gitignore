@@ -15,6 +15,7 @@ node_modules/
 # Local Codex/MCP config
 .codex/
 .env
+.junie/
 
 # Written by the lecture-3 practice notebook itself (save_profile); load_profile
 # returns an empty profile when it is missing, so it is a local run artifact.

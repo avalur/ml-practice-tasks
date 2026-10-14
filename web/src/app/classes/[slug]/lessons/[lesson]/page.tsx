@@ -8,15 +8,26 @@ import {
   flatten,
   getAccess,
   getClassMeta,
+  isAssignment,
+  isDone,
   isGroup,
   isLink,
   solvedKeys,
+  type AssignmentRef,
   type ContentRef,
   type GroupRef,
   type Item,
   type LinkRef,
+  type TrackableRef,
+  type SolvedKeysResult,
 } from "@/lib/classes";
 import { PresentButton } from "@/components/PresentButton";
+import { NotebookUploader } from "@/components/NotebookUploader";
+import { renderFeedbackMarkdown } from "@/lib/feedback-render";
+import {
+  effectiveMaxScore,
+  type NotebookSubmissionData,
+} from "@/lib/classes-shared";
 
 type Params = { slug: string; lesson: string };
 
@@ -39,7 +50,7 @@ function RefRow({
   done,
 }: {
   content: ContentRef;
-  done: (r: ContentRef) => boolean;
+  done: (r: TrackableRef) => boolean;
 }) {
   return (
     <Link href={contentHref(content)} className="problem-card">
@@ -54,9 +65,142 @@ function RefRow({
   );
 }
 
+function AssignmentCard({
+  assignment,
+  done,
+  classSlug,
+  lessonSlug,
+  userId,
+  isMember,
+  isTeacher,
+  isStudent,
+  submissionsUnavailable,
+  submission,
+}: {
+  assignment: AssignmentRef;
+  done: (r: TrackableRef) => boolean;
+  classSlug: string;
+  lessonSlug: string;
+  userId?: string | null;
+  isMember: boolean;
+  isTeacher: boolean;
+  isStudent: boolean;
+  submissionsUnavailable: boolean;
+  submission: NotebookSubmissionData | null;
+}) {
+  const isCompleted = done(assignment) || submission !== null;
+  const isGraded = submission?.status === "graded" && submission.grade !== null;
+  const renderedFeedback = submission?.feedback
+    ? renderFeedbackMarkdown(submission.feedback)
+    : null;
+  const maxScore = effectiveMaxScore(assignment.maxScore, submission?.maxGrade);
+
+  return (
+    <div
+      className="notebook-assignment-card lesson-assignment-card"
+      data-testid={`assignment-${assignment.id}`}
+    >
+      <div className="notebook-card-header">
+        <div>
+          <span className="title" style={{ fontSize: "1.05rem", fontWeight: 600 }}>
+            {isCompleted ? "✓ " : ""}
+            {assignment.title}
+          </span>
+        </div>
+        <div className="notebook-card-badges">
+          {assignment.maxScore && (
+            <span className="muted" style={{ fontSize: "0.85rem" }}>
+              {assignment.maxScore} pts ·{" "}
+            </span>
+          )}
+          <span className="badge medium">assignment</span>
+          {submissionsUnavailable ? (
+            <span className="badge muted" data-testid="lesson-status-badge">
+              Submissions Unavailable
+            </span>
+          ) : isGraded ? (
+            <span className="badge easy" data-testid="lesson-grade-badge">
+              Graded: {submission.grade}/{maxScore}
+            </span>
+          ) : submission ? (
+            <span className="badge medium" data-testid="lesson-status-badge">
+              Submitted · Awaiting Review
+            </span>
+          ) : (
+            <span className="badge hw-sub-none" data-testid="lesson-status-badge">
+              Not Submitted
+            </span>
+          )}
+        </div>
+      </div>
+
+      <div className="notebook-card-body">
+        {assignment.templateHref && (
+          <div style={{ marginBottom: "0.5rem" }}>
+            <a
+              href={assignment.templateHref}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bt-clear-btn"
+              style={{ fontSize: "0.82rem" }}
+              data-testid="template-link"
+            >
+              Open starter notebook (Colab) ↗
+            </a>
+          </div>
+        )}
+
+        {isTeacher ? (
+          <div
+            className="notebook-teacher-notice muted"
+            style={{ fontSize: "0.85rem", marginTop: "0.35rem" }}
+            data-testid="teacher-assignment-notice"
+          >
+            <span>Instructor view: </span>
+            <Link
+              href={`/classes/${classSlug}/homework?lesson=${lessonSlug}`}
+              className="bt-clear-btn"
+              style={{ fontSize: "0.8rem", marginLeft: "0.5rem" }}
+            >
+              Review submissions in homework matrix →
+            </Link>
+          </div>
+        ) : submissionsUnavailable ? (
+          <div
+            className="notebook-notice muted"
+            style={{ fontSize: "0.85rem", marginTop: "0.35rem" }}
+            data-testid="submissions-unavailable-notice"
+          >
+            Notebook submissions are currently unavailable on this deployment.
+          </div>
+        ) : isStudent && userId ? (
+          <NotebookUploader
+            classSlug={classSlug}
+            lessonSlug={lessonSlug}
+            assignmentId={assignment.id}
+            userId={userId}
+            initialSubmission={submission}
+            maxScore={assignment.maxScore}
+            renderedFeedbackHtml={renderedFeedback}
+            submissionsUnavailable={submissionsUnavailable}
+          />
+        ) : !userId ? (
+          <p className="muted" style={{ fontSize: "0.85rem", margin: "0.35rem 0 0" }}>
+            Sign in to submit your solution notebook.
+          </p>
+        ) : (
+          <p className="muted" style={{ fontSize: "0.85rem", margin: "0.35rem 0 0" }}>
+            Join this class with your teacher&rsquo;s group code to submit homework.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
 /* A whole topic assigned at once stays one row until you open it: a 26-task
    homework should read as "4/26 done", not as a wall of links. */
-function GroupCard({ group, done }: { group: GroupRef; done: (r: ContentRef) => boolean }) {
+function GroupCard({ group, done }: { group: GroupRef; done: (r: TrackableRef) => boolean }) {
   const n = group.items.filter(done).length;
   const total = group.items.length;
   const complete = n === total;
@@ -99,7 +243,29 @@ function LinkRow({ link }: { link: LinkRef }) {
   );
 }
 
-function RefList({ items, done }: { items: Item[]; done: (r: ContentRef) => boolean }) {
+function RefList({
+  items,
+  done,
+  classSlug,
+  lessonSlug,
+  userId,
+  isMember,
+  isTeacher,
+  isStudent,
+  submissionsUnavailable,
+  submissions,
+}: {
+  items: Item[];
+  done: (r: TrackableRef) => boolean;
+  classSlug: string;
+  lessonSlug: string;
+  userId?: string | null;
+  isMember: boolean;
+  isTeacher: boolean;
+  isStudent: boolean;
+  submissionsUnavailable: boolean;
+  submissions?: Map<string, NotebookSubmissionData>;
+}) {
   return (
     <ul className="problem-list">
       {items.map((item) =>
@@ -110,6 +276,21 @@ function RefList({ items, done }: { items: Item[]; done: (r: ContentRef) => bool
         ) : isGroup(item) ? (
           <li key={`group:${item.pattern}`}>
             <GroupCard group={item} done={done} />
+          </li>
+        ) : isAssignment(item) ? (
+          <li key={`assignment:${item.id}`}>
+            <AssignmentCard
+              assignment={item}
+              done={done}
+              classSlug={classSlug}
+              lessonSlug={lessonSlug}
+              userId={userId}
+              isMember={isMember}
+              isTeacher={isTeacher}
+              isStudent={isStudent}
+              submissionsUnavailable={submissionsUnavailable}
+              submission={submissions?.get(item.id) ?? null}
+            />
           </li>
         ) : (
           <li key={`${item.type}:${item.id}`}>
@@ -133,11 +314,20 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   const access = await getAccess(slug);
   if (!access.classRow || !access.visible) notFound();
 
+  const classId = access.classRow.id;
   const refs = flatten([...lesson.practice, ...(lesson.homework?.items ?? [])]);
-  const [solved, delivered, attendance] = await Promise.all([
-    access.userId ? solvedKeys([access.userId], refs) : Promise.resolve(new Set<string>()),
+  const hasAssignments = refs.some(isAssignment);
+
+  let submissionsUnavailable = false;
+  const [solved, delivered, attendance, userSubmissions] = await Promise.all([
+    access.userId
+      ? solvedKeys([access.userId], refs, {
+          classId,
+          lessonSlug,
+        })
+      : Promise.resolve(new Set<string>()),
     prisma.lessonSession.findFirst({
-      where: { classId: access.classRow.id, lessonSlug, endedAt: { not: null } },
+      where: { classId, lessonSlug, endedAt: { not: null } },
       orderBy: { endedAt: "desc" },
       select: { pdfBytes: true, pdfUrl: true, endedAt: true },
     }),
@@ -145,7 +335,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       ? prisma.lessonAttendance.findUnique({
           where: {
             classId_lessonSlug_userId: {
-              classId: access.classRow.id,
+              classId,
               lessonSlug,
               userId: access.userId,
             },
@@ -153,10 +343,56 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
           select: { attended: true },
         })
       : Promise.resolve(null),
+    hasAssignments && access.userId
+      ? prisma.notebookSubmission
+          .findMany({
+            where: {
+              userId: access.userId,
+              classId,
+              lessonSlug,
+            },
+          })
+          .catch((err) => {
+            if (err?.code === "P2021") {
+              submissionsUnavailable = true;
+              return [];
+            }
+            throw err;
+          })
+      : Promise.resolve([]),
   ]);
 
-  const done = (r: ContentRef) =>
-    !!access.userId && solved.has(`${access.userId}|${r.type}:${r.id}`);
+  if ((solved as SolvedKeysResult).unavailable) {
+    submissionsUnavailable = true;
+  }
+
+  const subMap = new Map<string, NotebookSubmissionData>();
+  for (const s of userSubmissions) {
+    subMap.set(s.assignmentId, {
+      id: s.id,
+      userId: s.userId,
+      classId: s.classId,
+      lessonSlug: s.lessonSlug,
+      assignmentId: s.assignmentId,
+      fileUrl: s.fileUrl,
+      fileName: s.fileName,
+      fileBytes: s.fileBytes,
+      submittedAt: s.submittedAt.toISOString(),
+      status: s.status,
+      grade: s.grade,
+      maxGrade: s.maxGrade,
+      feedback: s.feedback,
+      gradedBy: s.gradedBy,
+      gradedAt: s.gradedAt ? s.gradedAt.toISOString() : null,
+    });
+  }
+
+  const done = (r: TrackableRef) =>
+    !!access.userId &&
+    isDone(solved, access.userId, r, {
+      classId,
+      lessonSlug,
+    });
   const hwRefs = flatten(lesson.homework?.items ?? []);
   const slidesUrl = `/classes/${slug}/${lessonSlug}/present.html`;
   const due = lesson.homework ? new Date(lesson.homework.due) : null;
@@ -225,7 +461,18 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       {lesson.practice.length > 0 && (
         <section style={{ marginTop: "2rem" }}>
           <h2>In-class practice</h2>
-          <RefList items={lesson.practice} done={done} />
+          <RefList
+            items={lesson.practice}
+            done={done}
+            classSlug={slug}
+            lessonSlug={lessonSlug}
+            userId={access.userId}
+            isMember={access.isMember}
+            isTeacher={access.isTeacher}
+            isStudent={access.isStudent}
+            submissionsUnavailable={submissionsUnavailable}
+            submissions={subMap}
+          />
         </section>
       )}
 
@@ -237,7 +484,18 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             {" · "}
             {hwRefs.filter(done).length}/{hwRefs.length} done
           </p>
-          <RefList items={lesson.homework.items} done={done} />
+          <RefList
+            items={lesson.homework.items}
+            done={done}
+            classSlug={slug}
+            lessonSlug={lessonSlug}
+            userId={access.userId}
+            isMember={access.isMember}
+            isTeacher={access.isTeacher}
+            isStudent={access.isStudent}
+            submissionsUnavailable={submissionsUnavailable}
+            submissions={subMap}
+          />
         </section>
       )}
     </article>

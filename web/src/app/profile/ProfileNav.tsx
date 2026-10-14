@@ -3,6 +3,7 @@ import Link from "next/link";
 const NAV = [
   { tab: "favorites",   icon: "⭐", label: "Favorites" },
   { tab: "submissions", icon: "📋", label: "Submissions" },
+  { tab: "notebooks",   icon: "📓", label: "Notebooks" },
   { tab: "classes",     icon: "🎓", label: "Classes" },
   { tab: "account",     icon: "⚙️", label: "Account" },
 ] as const;

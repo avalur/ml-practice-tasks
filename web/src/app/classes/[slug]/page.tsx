@@ -8,11 +8,15 @@ import {
   flatten,
   getAccess,
   getClassMeta,
+  isAssignment,
+  isDone,
   isGroup,
   isLink,
   solvedKeys,
   type Item,
   type Lesson,
+  type TrackableRef,
+  type SolvedKeysResult,
 } from "@/lib/classes";
 import { JoinClassForm } from "@/components/JoinClassForm";
 import { PublishToggle } from "@/components/PublishToggle";
@@ -52,11 +56,14 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
   const access = await getAccess(slug);
   if (!access.classRow || !access.visible) notFound();
 
+  const classId = access.classRow.id;
   const refs = allRefs(cls);
   const [solved, endedRows] = await Promise.all([
-    access.userId ? solvedKeys([access.userId], refs) : Promise.resolve(new Set<string>()),
+    access.userId
+      ? solvedKeys([access.userId], refs, { classId })
+      : Promise.resolve(new Set<string>()),
     prisma.lessonSession.findMany({
-      where: { classId: access.classRow.id, endedAt: { not: null } },
+      where: { classId, endedAt: { not: null } },
       orderBy: { endedAt: "desc" },
       select: { lessonSlug: true, pdfUrl: true },
     }),
@@ -69,14 +76,28 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
   const lessonsWithPdf = new Set(
     endedRows.filter((r) => r.pdfUrl).map((r) => r.lessonSlug),
   );
+  const submissionsUnavailable = Boolean((solved as SolvedKeysResult).unavailable);
 
-  const isDone = (type: string, id: string) =>
-    !!access.userId && solved.has(`${access.userId}|${type}:${id}`);
+  const checkDone = (lessonSlug: string, r: TrackableRef) =>
+    !!access.userId &&
+    isDone(solved, access.userId, r, {
+      classId,
+      lessonSlug,
+    });
 
   return (
     <article>
       <h1>{cls.title}</h1>
       <p className="muted">{cls.description}</p>
+      {submissionsUnavailable && (
+        <p
+          className="muted"
+          data-testid="submissions-unavailable-notice"
+          style={{ color: "var(--medium)", marginTop: "0.5rem" }}
+        >
+          ⚠️ Notebook submissions are currently unavailable on this deployment (database table not migrated yet).
+        </p>
+      )}
 
       {access.isTeacher && (
         <>
@@ -119,7 +140,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
       <ul className="class-lessons">
         {cls.lessons.map((lesson) => {
           const hwItems = flatten(lesson.homework?.items ?? []);
-          const hwDone = hwItems.filter((r) => isDone(r.type, r.id)).length;
+          const hwDone = hwItems.filter((r) => checkDone(lesson.slug, r)).length;
           const due = dueState(lesson);
           const delivered = deliveredLessons.has(lesson.slug);
           const hasPdf = lessonsWithPdf.has(lesson.slug);
@@ -171,12 +192,18 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                           `/classes/${slug}/lessons/${lesson.slug}`,
                           `${item.title} (${item.items.length})`,
                         ]
+                      : isAssignment(item)
+                      ? [
+                          `assignment:${item.id}`,
+                          `/classes/${slug}/lessons/${lesson.slug}`,
+                          item.title,
+                        ]
                       : [
                           `${item.type}:${item.id}`,
                           `/${item.type === "problem" ? "problems" : "notebooks"}/${item.id}`,
                           item.id,
                         ];
-                    const solvedAll = flatten([item]).every((r) => isDone(r.type, r.id));
+                    const solvedAll = flatten([item]).every((r) => checkDone(lesson.slug, r));
                     return (
                       <span key={key}>
                         {i > 0 && ", "}
@@ -184,6 +211,14 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                           {solvedAll ? "✓ " : ""}
                           {label}
                         </Link>
+                        {isAssignment(item) && (
+                          <span
+                            className={submissionsUnavailable ? "badge muted" : "badge medium"}
+                            style={{ marginLeft: "0.35rem", fontSize: "0.75rem" }}
+                          >
+                            {submissionsUnavailable ? "assignment (unavailable)" : "assignment"}
+                          </span>
+                        )}
                       </span>
                     );
                   })}

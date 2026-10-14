@@ -44,6 +44,7 @@ model User {
   notebookProgress UserNotebookProgress[]
   enrollments      ClassEnrollment[]
   attendances      LessonAttendance[]
+  notebookSubmissions NotebookSubmission[]
   createdAt        DateTime               @default(now())
 }
 
@@ -188,6 +189,7 @@ model Class {
   enrollments ClassEnrollment[]
   sessions    LessonSession[]
   attendances LessonAttendance[]
+  notebookSubmissions NotebookSubmission[]
 }
 
 // One invite code, handed out to one group of students. A class can have several
@@ -277,6 +279,33 @@ model LessonAttendance {
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([classId, lessonSlug, userId])
+  @@index([classId, lessonSlug])
+  @@index([userId])
+}
+
+model NotebookSubmission {
+  id           String    @id @default(cuid())
+  userId       String
+  classId      String
+  lessonSlug   String
+  assignmentId String
+  fileUrl      String
+  fileName     String
+  fileBytes    Int
+  submittedAt  DateTime  @default(now())
+
+  // Grading
+  status       String    @default("submitted") // "submitted" | "graded"
+  grade        Int?
+  maxGrade     Int?      @default(100)
+  feedback     String?   @db.Text
+  gradedBy     String?
+  gradedAt     DateTime?
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, classId, lessonSlug, assignmentId])
   @@index([classId, lessonSlug])
   @@index([userId])
 }

@@ -117,7 +117,27 @@
       "title": "Lecture 6. Production Engineering for LLM Agents",
       "date": "2026-11-10",
       "deck": "production_engineering",
-      "practice": []
+      "practice": [
+        {
+          "type": "problem",
+          "id": "py_threads/bounded_queue"
+        },
+        {
+          "type": "problem",
+          "id": "py_threads/thread_pool"
+        }
+      ],
+      "homework": {
+        "due": "2026-11-09T23:59",
+        "items": [
+          {
+            "type": "assignment",
+            "id": "intro-react-agent",
+            "title": "Build a ReAct Agent from Scratch",
+            "maxScore": 100
+          }
+        ]
+      }
     }
   ]
 }

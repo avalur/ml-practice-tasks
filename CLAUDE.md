@@ -87,13 +87,16 @@ A third content family, for lecturing from the reveal.js decks in
 - **Source of truth = `classes/<class>/`.**
   - `class.json` — title, `teacherEmails`, and `lessons[]` (slug, title, date,
     `deck`, `practice[]`, `homework{due,items[]}`, optional `revealOverrides`).
-    A practice entry is a `problem`, a `notebook`, or a **`link`** —
+    A practice entry is a `problem`, `notebook`, `assignment`, or a **`link`** —
     `{type, title, href}` for work that lives off-site (a Colab notebook, a
-    dataset). A link is **practice only**: `export_decks.py` refuses one in
-    `homework`, and the TS type says so too (`Homework.items` is `TrackedItem[]`,
-    which excludes `LinkRef`). The homework page is a roster of who handed what
-    in, and an untrackable column would read as a class that all failed. The
-    same asymmetry is the one trap in the UI: `flatten()` drops links, so
+    dataset). An assignment is trackable work declared with a unique lowercase
+    slug `id`, a `title`, and optional `templateHref` / positive integer
+    `maxScore`; it may appear in practice or homework. A link is **practice
+    only**: `export_decks.py` refuses one in `homework`, and the TS type says so
+    too (`Homework.items` is `TrackedItem[]`, which excludes `LinkRef`). The
+    homework page is a roster of who handed what in, and an untrackable column
+    would read as a class that all failed. The same asymmetry is the one trap in
+    the UI: `flatten()` drops links, so
     `flatten([link]).every(done)` is `[].every()` — **`true`** — and a link ticks
     itself as done unless the render branches on `isLink` first. Covered by
     "practice links open off-site and are never ticked" in `classes.spec.ts`.
@@ -120,9 +123,25 @@ A third content family, for lecturing from the reveal.js decks in
   it would create a second row and orphan the existing enrollments, group codes
   and lesson sessions.
 - **Only dynamic state is in Postgres**: `Class` (seeded), `ClassInvite`,
-  `ClassEnrollment`, `LessonSession`, `LessonAnnotation`. Homework completion is
-  *derived* from `UserProblemProgress`/`UserNotebookProgress` — no extra table.
+  `ClassEnrollment`, `LessonSession`, `LessonAnnotation`, and
+  `NotebookSubmission`. Homework completion is derived from
+  `UserProblemProgress`/`UserNotebookProgress`; assignment completion comes from
+  a `NotebookSubmission` scoped by `(classId, lessonSlug)`. A submitted notebook
+  counts as done before it is graded. Focused homework views query
+  `NotebookSubmission` **only when the lesson declares an assignment**, so
+  classes without assignments keep working on an unmigrated database. Lessons
+  that do declare assignments fail visibly until the table exists — run
+  `pnpm db:push` against the target database **before this code ships** (and
+  before publishing a manifest that includes assignments).
   Authorization is `session.user.email ∈ Class.teacherEmails`.
+  Student `.ipynb` notebook submissions are uploaded directly to private Vercel
+  Blob storage via `@vercel/blob/client` (`access: 'private'`, 25 MB max `.ipynb`),
+  scoped to `classes/<class>/<lesson>/submissions/<user>/<assignment>/<filename>`.
+  A single-submission policy locks further uploads once committed. Downloads
+  route through `GET /api/classes/<slug>/lessons/<lesson>/submissions/<id>/download`
+  (10-minute presigned redirect authorized only for author and instructors).
+  Student profile `/profile?tab=notebooks` and lesson pages render submission
+  progress, scores, and instructor feedback with Markdown and KaTeX math.
 - **A class is published or a draft**, and `Class.publishedAt` (null = draft) is
   the only truth. A draft is complete and presentable but belongs to its
   **teachers alone**: absent from `/classes`, 404 on its own pages and lesson
@@ -147,6 +166,15 @@ A third content family, for lecturing from the reveal.js decks in
     `tests/e2e/support/session.ts`, a temporary manifest entry plus a hidden row),
     never by hiding the real course: the suite talks to the live database, and a
     killed run would leave `ml-intensive-tlf` 404ing on the public site.
+    A draft is 404 for students, so a test that needs a *student* on the scratch
+    class passes `publishForStudents: true`: it publishes the row for the length
+    of the test and is only allowed for an `e2e-…` slug. A timed-out test can
+    leave that row (and a manifest entry) behind, listed on `/classes` — look for
+    `e2e-` classes after a run that timed out.
+  - To run the DB-backed submission e2e without touching the live database, point
+    `DATABASE_URL`/`DIRECT_URL` at a throwaway Postgres (`docker run postgres:16`),
+    `prisma db push` there and `node scripts/sync-classes.cjs --publish
+    building-ai-agents`; the suite then runs in ~5 s instead of ~1 min.
 - **Published classes are public.** The course, its lessons, its slides and its
   task lists need no account — the one exception is the annotated lecture notes. A code
   therefore does not unlock anything: it puts a student in a **group**
@@ -498,6 +526,7 @@ python tools/build_figures.py         # rebuild the TikZ figures (needs TeX Live
 python tools/build_figures.py --check # CI: a .tex edited without a rebuild
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
+cd web && pnpm db:push         # apply Prisma schema (required before NotebookSubmission ships)
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
 cd web && pnpm db:sync-classes --unpublish <slug> # take it back off

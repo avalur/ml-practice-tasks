@@ -11,15 +11,19 @@ import {
   flatten,
   getAccess,
   getClassMeta,
+  isAssignment,
+  isDone,
   isGroup,
   isLink,
+  lessonMatrixItems,
   solvedKeys,
-  type TrackedItem,
-  type Item,
+  type SolvedKeysResult,
+  type TrackableRef,
 } from "@/lib/classes";
 import { InviteCodes } from "@/components/InviteCodes";
 import { AttendanceToggle } from "@/components/AttendanceToggle";
 import { AttendanceBatchButtons } from "@/components/AttendanceBatchButtons";
+import { LessonHomeworkTable } from "@/components/LessonHomeworkTable";
 
 type Params = { slug: string };
 type Search = { lesson?: string; tab?: string };
@@ -63,16 +67,87 @@ export default async function HomeworkPage({
       select: { lessonSlug: true, userId: true },
     }),
   ]);
+  const classId = access.classRow.id;
   const ids = roster.map((m) => m.id);
-  const solved = await solvedKeys(ids, allRefs(cls));
-  const done = (userId: string, type: string, id: string) =>
-    solved.has(`${userId}|${type}:${id}`);
+  const solved = await solvedKeys(ids, allRefs(cls), { classId });
+  // The NotebookSubmission table is not pushed yet: assignments cannot be told
+  // apart from "nobody handed it in", so they are left out of every count below
+  // and flagged, instead of reading as a class that all failed.
+  let submissionsUnavailable = Boolean((solved as SolvedKeysResult).unavailable);
+  const done = (userId: string, r: TrackableRef, lessonSlug: string) =>
+    isDone(solved, userId, r, { classId, lessonSlug });
 
   const attendedKeys = new Set(attendances.map((a) => `${a.lessonSlug}|${a.userId}`));
   const isAttended = (lessonSlug: string, userId: string) =>
     attendedKeys.has(`${lessonSlug}|${userId}`);
 
   const focus = focusSlug ? findLesson(cls, focusSlug) : null;
+  const lessonItems = focus ? lessonMatrixItems(focus) : [];
+  let submissions: Array<{
+    id: string;
+    userId: string;
+    classId: string;
+    lessonSlug: string;
+    assignmentId: string;
+    fileUrl: string;
+    fileName: string;
+    fileBytes: number;
+    submittedAt: Date;
+    status: string;
+    grade: number | null;
+    maxGrade: number | null;
+    feedback: string | null;
+    gradedBy: string | null;
+    gradedAt: Date | null;
+  }> = [];
+
+  // Query NotebookSubmission only when this lesson declares an assignment —
+  // the same guard solvedKeys uses. Classes without assignments (the live
+  // course today) keep working before `pnpm db:push` has created the table;
+  // lessons that do declare them show the unavailable banner instead.
+  if (focus && !submissionsUnavailable && lessonItems.some(isAssignment)) {
+    submissions = await prisma.notebookSubmission
+      .findMany({
+      where: {
+        classId: access.classRow.id,
+        lessonSlug: focus.slug,
+      },
+      select: {
+        id: true,
+        userId: true,
+        classId: true,
+        lessonSlug: true,
+        assignmentId: true,
+        fileUrl: true,
+        fileName: true,
+        fileBytes: true,
+        submittedAt: true,
+        status: true,
+        grade: true,
+        maxGrade: true,
+        feedback: true,
+        gradedBy: true,
+        gradedAt: true,
+      },
+    })
+      .catch((err: unknown) => {
+        if ((err as { code?: string } | null)?.code === "P2021") {
+          submissionsUnavailable = true;
+          return [];
+        }
+        throw err;
+      });
+  }
+  const matrixItems = submissionsUnavailable
+    ? lessonItems.filter((i) => !isAssignment(i))
+    : lessonItems;
+
+  const initialSubmissions = submissions.map((s) => ({
+    ...s,
+    submittedAt: s.submittedAt.toISOString(),
+    gradedAt: s.gradedAt ? s.gradedAt.toISOString() : null,
+  }));
+
   const withHomework = cls.lessons.filter((l) => (l.homework?.items.length ?? 0) > 0);
   const currentTab = tab ?? (withHomework.length > 0 ? "homework" : "attendance");
 
@@ -89,6 +164,17 @@ export default async function HomeworkPage({
       </p>
 
       <InviteCodes slug={slug} prefix={codePrefix(slug)} invites={invites} />
+
+      {submissionsUnavailable && (
+        <p
+          className="muted"
+          data-testid="submissions-unavailable-notice"
+          style={{ color: "var(--medium)" }}
+        >
+          ⚠️ Notebook submissions are unavailable (database table not migrated yet), so
+          assignment columns are not counted below — run <code>pnpm db:push</code>.
+        </p>
+      )}
 
       {roster.length === 0 ? (
         <p className="muted">
@@ -116,87 +202,20 @@ export default async function HomeworkPage({
             />
           </div>
           {/* Detailed table for the focused lesson: attendance column + practice/homework items */}
-          {(() => {
-            const items: (TrackedItem | Item)[] = focus.homework
-              ? focus.homework.items
-              : focus.practice;
-            return (
-              <div className="hw-scroll">
-                <table className="hw-table">
-                  <thead>
-                    <tr>
-                      <th className="hw-name">Student</th>
-                      <th className="hw-group">Group</th>
-                      <th className="hw-att" title="Attendance on this lecture">
-                        Attendance
-                      </th>
-                      {items.map((item) =>
-                        isGroup(item) ? (
-                          <th
-                            key={`group:${item.pattern}`}
-                            title={`${item.pattern} — ${item.items.length} tasks`}
-                          >
-                            {item.title}
-                          </th>
-                        ) : isLink(item) ? (
-                          <th key={`link:${item.href}`} title={item.title}>
-                            {item.title}
-                          </th>
-                        ) : (
-                          <th key={`${item.type}:${item.id}`} title={item.id}>
-                            {item.id.split("/")[1] ?? item.id}
-                          </th>
-                        ),
-                      )}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {roster.map((m) => {
-                      const overdue = focus.homework
-                        ? new Date(focus.homework.due).getTime() < Date.now()
-                        : false;
-                      return (
-                        <tr key={m.id}>
-                          <td className="hw-name">{m.name || m.email}</td>
-                          <td className="hw-group" title={m.group?.code}>
-                            {m.group?.label}
-                          </td>
-                          <td className="hw-att-cell">
-                            <AttendanceToggle
-                              classSlug={slug}
-                              lessonSlug={focus.slug}
-                              userId={m.id}
-                              initialAttended={isAttended(focus.slug, m.id)}
-                              studentName={m.name || m.email || undefined}
-                            />
-                          </td>
-                          {items.map((item) => {
-                            if (isLink(item)) {
-                              return (
-                                <td key={`link:${item.href}`} className="hw-na" title="External link">
-                                  —
-                                </td>
-                              );
-                            }
-                            const refs = flatten([item]);
-                            const n = refs.filter((r) => done(m.id, r.type, r.id)).length;
-                            const key = isGroup(item)
-                              ? `group:${item.pattern}`
-                              : `${item.type}:${item.id}`;
-                            return (
-                              <td key={key} className={cellClass(n, refs.length, overdue)}>
-                                {isGroup(item) ? `${n}/${refs.length}` : n ? "✓" : "·"}
-                              </td>
-                            );
-                          })}
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            );
-          })()}
+          <LessonHomeworkTable
+            classSlug={slug}
+            lessonSlug={focus.slug}
+            roster={roster}
+            items={matrixItems}
+            initialSubmissions={initialSubmissions}
+            solvedKeys={Array.from(solved)}
+            classId={classId}
+            due={focus.homework?.due ?? null}
+            attendedUserIds={attendances
+              .filter((a) => a.lessonSlug === focus.slug)
+              .map((a) => a.userId)}
+            teacherEmail={access.email ?? null}
+          />
         </>
       ) : (
         <>
@@ -311,11 +330,25 @@ export default async function HomeworkPage({
                     let allDone = 0;
                     let allTotal = 0;
                     const cells = withHomework.map((l) => {
-                      const items = flatten(l.homework!.items);
-                      const n = items.filter((r) => done(m.id, r.type, r.id)).length;
+                      const all = flatten(l.homework!.items);
+                      const skipped = submissionsUnavailable && all.some(isAssignment);
+                      const items = skipped ? all.filter((r) => !isAssignment(r)) : all;
+                      const n = items.filter((r) => done(m.id, r, l.slug)).length;
                       const overdue = new Date(l.homework!.due).getTime() < Date.now();
                       allDone += n;
                       allTotal += items.length;
+                      if (skipped) {
+                        return (
+                          <td
+                            key={l.slug}
+                            className="hw-unavail"
+                            title="Notebook submissions unavailable — assignments not counted"
+                            data-testid={`hw-unavailable-${l.slug}`}
+                          >
+                            {items.length > 0 ? `${n}/${items.length}` : "—"} ⚠
+                          </td>
+                        );
+                      }
                       return (
                         <td key={l.slug} className={cellClass(n, items.length, overdue)}>
                           {n}/{items.length}

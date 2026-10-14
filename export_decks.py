@@ -97,8 +97,11 @@ def known_content_ids() -> tuple[set[str], set[str]]:
 
 
 def item_href(item: dict) -> str:
-    kind = "problems" if item["type"] == "problem" else "notebooks"
-    return f"/{kind}/{item['id']}"
+    if item["type"] == "problem":
+        return f"/problems/{item['id']}"
+    if item["type"] == "notebook":
+        return f"/notebooks/{item['id']}"
+    raise ValueError(f"No direct URL for item of type {item.get('type')!r}")
 
 
 def group_title(pattern: str, ids: list[str]) -> str:
@@ -113,6 +116,9 @@ def group_title(pattern: str, ids: list[str]) -> str:
         return topics[0]
     prefix = pattern.split("*")[0].rstrip("_/")
     return f"{prefix}_*" if prefix else pattern
+
+
+ASSIGNMENT_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
 
 
 def expand_item(item: dict, problems: set[str], notebooks: set[str],
@@ -146,6 +152,32 @@ def expand_item(item: dict, problems: set[str], notebooks: set[str],
         if not href or not href.startswith(("https://", "http://", "/")):
             return None, [f"{where}: link {title!r} needs an absolute href, got {href!r}"]
         return {"type": "link", "title": title, "href": href}, []
+    if kind == "assignment":
+        aid = item.get("id")
+        title = item.get("title")
+        if not aid or not isinstance(aid, str) or not ASSIGNMENT_ID_RE.match(aid):
+            return None, [
+                f"{where}: assignment id must be a lowercase slug matching "
+                f"{ASSIGNMENT_ID_RE.pattern!r}, got {aid!r}"
+            ]
+        if not title or not isinstance(title, str) or not title.strip():
+            return None, [f"{where}: assignment {aid!r} needs a non-empty title"]
+        res: dict = {
+            "type": "assignment",
+            "id": aid,
+            "title": title.strip(),
+        }
+        if "templateHref" in item:
+            href = item["templateHref"]
+            if not isinstance(href, str) or not href.startswith(("https://", "http://", "/")):
+                return None, [f"{where}: assignment {aid!r} templateHref needs an absolute url or path, got {href!r}"]
+            res["templateHref"] = href
+        if "maxScore" in item:
+            max_score = item["maxScore"]
+            if isinstance(max_score, bool) or not isinstance(max_score, int) or max_score <= 0:
+                return None, [f"{where}: assignment {aid!r} maxScore must be a positive integer, got {max_score!r}"]
+            res["maxScore"] = max_score
+        return res, []
     if kind not in ("problem", "notebook"):
         return None, [f"{where}: unknown item type {kind!r}"]
     pool = problems if kind == "problem" else notebooks
@@ -197,10 +229,20 @@ def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[s
     if "draft" in cls and not isinstance(cls["draft"], bool):
         errors.append(f"{cls['slug']}: \"draft\" must be true or false, "
                       f"got {cls['draft']!r}")
+    seen_assignments: dict[str, str] = {}
     for lesson in cls["lessons"]:
-        _, _, errs = lesson_items(lesson, problems, notebooks,
-                                  f"{cls['slug']}/{lesson['slug']}")
+        practice, homework, errs = lesson_items(lesson, problems, notebooks,
+                                                f"{cls['slug']}/{lesson['slug']}")
         errors += errs
+        for item in practice + homework:
+            if item.get("type") == "assignment":
+                aid = item["id"]
+                loc = f"{cls['slug']}/{lesson['slug']}"
+                if aid in seen_assignments:
+                    errors.append(f"{loc}: duplicate assignment id {aid!r} "
+                                  f"(already defined in {seen_assignments[aid]})")
+                else:
+                    seen_assignments[aid] = loc
     return errors
 
 

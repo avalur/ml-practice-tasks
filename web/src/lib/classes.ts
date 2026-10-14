@@ -4,76 +4,27 @@ import { cache } from "react";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import {
+  assignmentKey,
+  assignmentSubmissionWhere,
+  hasAssignmentSubmission,
+  type AssignmentScope,
+} from "./assignment-completion";
+
+export * from "./classes-shared";
+import {
+  type ContentRef,
+  type TrackableRef,
+  type ClassMeta,
+  type Lesson,
+  flatten,
+} from "./classes-shared";
 
 // Lesson structure is generated content, published to web/public/classes by
 // export_decks.py (classes/ itself lives outside the web/ package and is not
 // deployed). Authorization data — who teaches a class — comes from the DB
 // instead, seeded by scripts/sync-classes.cjs.
 const CLASSES_DIR = path.join(process.cwd(), "public", "classes");
-
-export type ContentRef = { type: "problem" | "notebook"; id: string };
-
-/** An `id` with a `*` in class.json, already expanded by export_decks.py.
- *
- * The point is the UI: "py_* → 26 tasks" is one line with a progress count, not
- * 26 rows. The members are still explicit here, so completion is counted exactly
- * as it is for a hand-listed item. */
-export type GroupRef = {
-  type: "group";
-  of: "problem" | "notebook";
-  pattern: string;
-  title: string;
-  items: ContentRef[];
-};
-
-/** A practice item that lives outside the site — a Colab notebook, a dataset.
- *
- * It carries no progress: nothing here is solved, only opened. Everything that
- * counts completion goes through `flatten()`, which drops these, so a link can
- * never be mistaken for an unsolved task. */
-export type LinkRef = { type: "link"; title: string; href: string };
-
-/** Anything the site can count as done for a student. */
-export type TrackedItem = ContentRef | GroupRef;
-
-export type Item = TrackedItem | LinkRef;
-
-/** Homework is `TrackedItem[]`, not `Item[]`: the homework page is a roster of
- * who handed what in, one column per item. An off-site link has no completion
- * to report, so it would show as a column of "·" for the whole class — a row of
- * dots that means "untracked" but reads as "nobody did it". export_decks.py
- * rejects a link in homework for the same reason. */
-export type Homework = { due: string; items: TrackedItem[] };
-
-export type Lesson = {
-  slug: string;
-  title: string;
-  date: string | null;
-  deck: string;
-  practice: Item[];
-  homework: Homework | null;
-};
-
-export function isGroup(item: Item): item is GroupRef {
-  return item.type === "group";
-}
-
-export function isLink(item: Item): item is LinkRef {
-  return item.type === "link";
-}
-
-/** Flatten groups so counting and DB lookups only ever see real content refs. */
-export function flatten(items: Item[]): ContentRef[] {
-  return items.flatMap((i) => (isGroup(i) ? i.items : isLink(i) ? [] : [i]));
-}
-
-export type ClassMeta = {
-  slug: string;
-  title: string;
-  description: string;
-  order: number;
-  lessons: Lesson[];
-};
 
 export async function getClasses(): Promise<ClassMeta[]> {
   const raw = await fs.readFile(path.join(CLASSES_DIR, "manifest.json"), "utf8");
@@ -86,18 +37,14 @@ export async function getClassMeta(slug: string): Promise<ClassMeta | null> {
   return all.find((c) => c.slug === slug) ?? null;
 }
 
-export function findLesson(cls: ClassMeta, lessonSlug: string): Lesson | null {
-  return cls.lessons.find((l) => l.slug === lessonSlug) ?? null;
-}
-
 export function contentHref(ref: ContentRef): string {
   return `/${ref.type === "problem" ? "problems" : "notebooks"}/${ref.id}`;
 }
 
 /** Ordered list of every practice + homework item across a class, de-duplicated. */
-export function allRefs(cls: ClassMeta): ContentRef[] {
+export function allRefs(cls: ClassMeta): TrackableRef[] {
   const seen = new Set<string>();
-  const out: ContentRef[] = [];
+  const out: TrackableRef[] = [];
   for (const lesson of cls.lessons) {
     for (const ref of flatten([...lesson.practice, ...(lesson.homework?.items ?? [])])) {
       const key = `${ref.type}:${ref.id}`;
@@ -162,6 +109,10 @@ export type Access = {
   /** Enrolled with a code, or teaching. Classes themselves are public; this
    * gates the lecture notes and everything teacher-facing. */
   isMember: boolean;
+  /** A real student enrollment (enrolled in class and not an instructor). */
+  isStudent: boolean;
+  /** Has an enrollment row in ClassEnrollment. */
+  isEnrolled: boolean;
   /** The group the caller joined with, when they joined with a code. */
   myGroup: { code: string; label: string } | null;
 };
@@ -207,6 +158,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
       published: false,
       visible: false,
       isMember: false,
+      isStudent: false,
+      isEnrolled: false,
       myGroup: null,
     };
   }
@@ -222,6 +175,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
     published,
     visible: published || isTeacher,
     isMember: isTeacher || !!enrollment,
+    isStudent: !isTeacher && !!enrollment,
+    isEnrolled: !!enrollment,
     myGroup: enrollment?.invite ?? null,
   };
 });
@@ -285,22 +240,50 @@ export async function myClassSlugs(): Promise<{ member: string[]; teaching: stri
   };
 }
 
-/** Which of `refs` a set of users has solved, as a set of "userId|type:id" keys.
+/** Scope for resolving notebook submissions. Matches DB uniqueness:
+ * (userId, classId, lessonSlug, assignmentId).
+ */
+export type SolvedScope = AssignmentScope;
+
+/** Check whether a trackable ref is solved/submitted. */
+export function isDone(
+  solved: Set<string>,
+  userId: string,
+  ref: TrackableRef,
+  scope?: { classId?: string; lessonSlug?: string },
+): boolean {
+  if (ref.type === "assignment") {
+    return hasAssignmentSubmission(solved, userId, ref.id, scope);
+  }
+  return solved.has(`${userId}|${ref.type}:${ref.id}`);
+}
+
+export type SolvedKeysResult = Set<string> & { unavailable?: boolean };
+
+/** Which of `refs` a set of users has solved, as a set of completion keys.
  *
  * Homework completion is derived rather than stored, so this is the single place
  * that reads it: problems from UserProblemProgress, notebooks from
- * UserNotebookProgress.solvedAt.
+ * UserNotebookProgress.solvedAt, and assignments from NotebookSubmission.
+ *
+ * "Done" for an assignment means a NotebookSubmission row exists (whether or not
+ * it has been graded yet). Assignment completion is scoped to (classId, lessonSlug)
+ * matching DB uniqueness: @@unique([userId, classId, lessonSlug, assignmentId]).
  */
 export async function solvedKeys(
   userIds: string[],
-  refs: ContentRef[],
-): Promise<Set<string>> {
+  refs: TrackableRef[],
+  scope?: SolvedScope,
+): Promise<SolvedKeysResult> {
   const problemIds = refs.filter((r) => r.type === "problem").map((r) => r.id);
   const notebookIds = refs.filter((r) => r.type === "notebook").map((r) => r.id);
-  const out = new Set<string>();
+  const assignmentIds = refs.filter((r) => r.type === "assignment").map((r) => r.id);
+  const out = new Set<string>() as SolvedKeysResult;
   if (userIds.length === 0) return out;
 
-  const [problems, notebooks] = await Promise.all([
+  let assignmentUnavailable = false;
+
+  const [problems, notebooks, submissions] = await Promise.all([
     problemIds.length
       ? prisma.userProblemProgress.findMany({
           where: {
@@ -321,10 +304,44 @@ export async function solvedKeys(
           select: { userId: true, notebookId: true },
         })
       : Promise.resolve([]),
+    assignmentIds.length && scope?.classId
+      ? prisma.notebookSubmission
+          .findMany({
+            where: assignmentSubmissionWhere(userIds, assignmentIds, {
+              classId: scope.classId,
+              lessonSlug: scope.lessonSlug,
+            }),
+            select: {
+              userId: true,
+              classId: true,
+              lessonSlug: true,
+              assignmentId: true,
+            },
+          })
+          .catch((err: unknown) => {
+            if (
+              typeof err === "object" &&
+              err !== null &&
+              "code" in err &&
+              (err as { code: string }).code === "P2021"
+            ) {
+              assignmentUnavailable = true;
+              return [];
+            }
+            throw err;
+          })
+      : Promise.resolve([]),
   ]);
+
+  if (assignmentUnavailable) {
+    out.unavailable = true;
+  }
 
   for (const p of problems) out.add(`${p.userId}|problem:${p.problemId}`);
   for (const n of notebooks) out.add(`${n.userId}|notebook:${n.notebookId}`);
+  for (const s of submissions) {
+    out.add(assignmentKey(s.userId, s.classId, s.lessonSlug, s.assignmentId));
+  }
   return out;
 }
 

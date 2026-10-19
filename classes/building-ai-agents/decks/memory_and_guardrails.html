@@ -1057,7 +1057,7 @@ ul.custom-list li.lamp::before {
 /* --- Sliding window and summarization: the context-window drawing again (the
    same `.mem-ctx-panel` box as the Context Memory slide), then a ✅/❌ pair.
    The icon column keeps both verdict lines starting at the same x. --- */
-.mem-window-body .mem-window-dropped {
+.mem-window-dropped {
 	color: #8a9a97;
 	text-decoration: line-through;
 }
@@ -1070,11 +1070,62 @@ ul.custom-list li.lamp::before {
 }
 /* The vector-store note sits inside the grey panel, under the box it explains. */
 .mem-ctx-panel .mem-vec-note {
-	margin-top: 12px;
-	padding-left: 6ch;
+	font-size: 15px;
+	margin-top: 10px;
+	padding-left: 2ch;
 }
 .mem-ctx-panel .mem-vec-note-cont {
 	padding-left: 2ch;
+}
+
+.mem-strat-cols {
+	display: grid;
+	gap: 36px;
+	grid-template-columns: 1fr 1fr;
+	margin: 24px 0 0 10px;
+	width: 98%;
+}
+.mem-strat-col {
+	display: flex;
+	flex-direction: column;
+}
+.reveal .mem-strat-col h4 {
+	color: #294a43;
+	font-size: 24px;
+	font-weight: 700;
+	letter-spacing: 0;
+	margin: 0 0 8px;
+	text-transform: none;
+}
+.mem-strat-col .mem-strat-desc {
+	color: #203832;
+	font-size: 19px;
+	line-height: 1.35;
+	margin: 0 0 14px;
+	min-height: 50px;
+}
+.mem-strat-col .mem-ctx-panel {
+	box-sizing: border-box;
+	font-size: 16px;
+	line-height: 1.45;
+	margin: 0;
+	padding: 14px 18px;
+	width: 100%;
+}
+.mem-strat-col .mem-ctx-panel .mem-ctx-box {
+	padding: 10px 14px 12px;
+}
+.mem-strat-col .mem-ctx-panel .mem-ctx-title {
+	font-weight: 600;
+	margin-bottom: 0.8em;
+}
+.mem-strat-col .mem-verdict-block {
+	font-size: 19px;
+	line-height: 1.35;
+	margin-top: 14px;
+}
+.mem-strat-col .mem-verdict-block p {
+	margin: 0 0 6px;
 }
 
 /* --- Other context strategies: a 2x2 grid of bordered cards. Equal-height
@@ -1984,78 +2035,88 @@ ul.custom-list li.lamp::before {
                             </div>
                         </div>
                     </section>
-                    <section class="mem-slide mem-window-slide" data-background-color="white">
-                        <h3>Sliding Window / Token Buffer</h3>
-                        <div class="mem-window-body">
-                            <p>Drop the oldest messages when the context limit is reached</p>
-                            <div class="mem-ctx-panel">
-                                <div class="mem-ctx-box">
-                                    <div class="mem-ctx-title">Context Window</div>
-                                    <div>[System Prompt]</div>
-                                    <div><span class="mem-window-dropped">[Msg&#8321;] [Msg&#8322;] [Msg&#8323;]</span> &larr; old messages dropped</div>
-                                    <div>[Msg&#8324;] [Msg&#8325;] [Msg&#8326;]</div>
-                                    <div>[New query]</div>
+                    <section class="mem-slide" data-background-color="white">
+                        <h3>Sliding Window &amp; Summarization</h3>
+                        <div class="mem-strat-cols">
+                            <div class="mem-strat-col">
+                                <h4>Sliding Window / Buffer</h4>
+                                <p class="mem-strat-desc">Drop the oldest messages when the context limit is reached</p>
+                                <div class="mem-ctx-panel">
+                                    <div class="mem-ctx-box">
+                                        <div class="mem-ctx-title">Context Window</div>
+                                        <div>[System Prompt]</div>
+                                        <div><span class="mem-window-dropped">[Msg&#8321;] [Msg&#8322;] [Msg&#8323;]</span> &larr; dropped</div>
+                                        <div>[Msg&#8324;] [Msg&#8325;] [Msg&#8326;]</div>
+                                        <div>[New query]</div>
+                                    </div>
+                                </div>
+                                <div class="mem-verdict-block">
+                                    <p><span class="mem-verdict-icon">&#9989;</span>Simple &mdash; no extra LLM calls</p>
+                                    <p><span class="mem-verdict-icon">&#10060;</span>Loses old context completely</p>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Simple &mdash; no extra LLM calls</p>
-                            <p><span class="mem-verdict-icon">&#10060;</span>Loses old context completely</p>
+                            <div class="mem-strat-col">
+                                <h4>Summarization</h4>
+                                <p class="mem-strat-desc">Periodically compress old dialogue turns with an LLM</p>
+                                <div class="mem-ctx-panel">
+                                    <div class="mem-ctx-box">
+                                        <div class="mem-ctx-title">Context Window</div>
+                                        <div>[System Prompt]</div>
+                                        <div>[Summary of Msg&#8321;&ndash;Msg&#8324;] &larr; LLM</div>
+                                        <div>[Msg&#8325;] [Msg&#8326;] [Msg&#8327;]</div>
+                                        <div>[New query]</div>
+                                    </div>
+                                </div>
+                                <div class="mem-verdict-block">
+                                    <p><span class="mem-verdict-icon">&#9989;</span>Preserves key facts from history</p>
+                                    <p><span class="mem-verdict-icon">&#10060;</span>Extra LLM call; details may be lost</p>
+                                </div>
+                            </div>
                         </div>
                     </section>
-                    <section class="mem-slide mem-summ-slide" data-background-color="white">
-                        <h3>Summarization</h3>
-                        <div class="mem-summ-body">
-                            <p>Periodically compress old dialogue with an LLM</p>
-                            <div class="mem-ctx-panel">
-                                <div class="mem-ctx-box">
-                                    <div class="mem-ctx-title">Context Window</div>
-                                    <div>[System Prompt]</div>
-                                    <div>[Summary of Msg&#8321;&ndash;Msg&#8324;] &larr; LLM</div>
-                                    <div>[Msg&#8325;] [Msg&#8326;] [Msg&#8327;]</div>
-                                    <div>[New query]</div>
+                    <section class="mem-slide" data-background-color="white">
+                        <h3>Vector Memory &amp; Long Context</h3>
+                        <div class="mem-strat-cols">
+                            <div class="mem-strat-col">
+                                <h4>Vector Store-backed Memory</h4>
+                                <p class="mem-strat-desc">Vectorize history; retrieve semantically relevant past messages</p>
+                                <div class="mem-ctx-panel">
+                                    <div class="mem-ctx-box">
+                                        <div class="mem-ctx-title">Context Window</div>
+                                        <div>[System Prompt]</div>
+                                        <div>[Msg&#8322;] &larr; similar to query</div>
+                                        <div>[Msg&#8325;] &larr; similar to query</div>
+                                        <div>[Msg&#8327;]</div>
+                                        <div>[New query]</div>
+                                    </div>
+                                    <div class="mem-vec-note">
+                                        <div>&uarr; retrieved by semantic similarity</div>
+                                        <div class="mem-vec-note-cont">from vector store of history</div>
+                                    </div>
+                                </div>
+                                <div class="mem-verdict-block">
+                                    <p><span class="mem-verdict-icon">&#9989;</span>Keeps only relevant context</p>
+                                    <p><span class="mem-verdict-icon">&#10060;</span>May miss sequential turn context</p>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Preserves key facts from old context</p>
-                            <p><span class="mem-verdict-icon">&#10060;</span>Extra LLM call; details may be lost</p>
-                        </div>
-                    </section>
-                    <section class="mem-slide mem-vec-slide" data-background-color="white">
-                        <h3>Vector Store-backed Memory</h3>
-                        <div class="mem-vec-body">
-                            <p>Vectorize dialogue history; retrieve only semantically relevant past messages</p>
-                            <div class="mem-ctx-panel">
-                                <div class="mem-ctx-box">
-                                    <div class="mem-ctx-title">Context Window</div>
-                                    <div>[System Prompt]</div>
-                                    <div>[Msg&#8322;] &larr; similar to query</div>
-                                    <div>[Msg&#8325;] &larr; similar to query</div>
-                                    <div>[Msg&#8327;]</div>
-                                    <div>[New query]</div>
+                            <div class="mem-strat-col">
+                                <h4>Long Context Models</h4>
+                                <p class="mem-strat-desc">Use models with huge context windows (~1M+ tokens)</p>
+                                <div class="mem-ctx-panel">
+                                    <div class="mem-ctx-box">
+                                        <div class="mem-ctx-title">Context Window</div>
+                                        <div>[System Prompt]</div>
+                                        <div>[Msg&#8321;] [Msg&#8322;] [Msg&#8323;] [Msg&#8324;]</div>
+                                        <div>[Msg&#8325;] [Msg&#8326;] [Msg&#8327;] [Msg&#8328;]</div>
+                                        <div>[Msg&#8329;] ... [Msg&#8329;&#8329;&#8329;]</div>
+                                        <div>[New query]</div>
+                                    </div>
                                 </div>
-                                <div class="mem-vec-note">
-                                    <div>&uarr; retrieved by semantic similarity</div>
-                                    <div class="mem-vec-note-cont">from vector store of all messages</div>
+                                <div class="mem-verdict-block">
+                                    <p><span class="mem-verdict-icon">&#9989;</span>Nothing lost &mdash; full history available</p>
+                                    <p><span class="mem-verdict-icon">&#10060;</span>Higher cost and latency</p>
                                 </div>
                             </div>
-                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Keeps only relevant context</p>
-                            <p><span class="mem-verdict-icon">&#10060;</span>May miss important sequential context</p>
-                        </div>
-                    </section>
-                    <section class="mem-slide mem-lctx-slide" data-background-color="white">
-                        <h3>Long Context Models</h3>
-                        <div class="mem-lctx-body">
-                            <p>Use models with huge context windows (~1M+ tokens)</p>
-                            <div class="mem-ctx-panel">
-                                <div class="mem-ctx-box">
-                                    <div class="mem-ctx-title">Context Window</div>
-                                    <div>[System Prompt]</div>
-                                    <div>[Msg&#8321;] [Msg&#8322;] [Msg&#8323;] [Msg&#8324;]</div>
-                                    <div>[Msg&#8325;] [Msg&#8326;] [Msg&#8327;] [Msg&#8328;]</div>
-                                    <div>[Msg&#8329;] ... [Msg&#8329;&#8329;&#8329;]</div>
-                                    <div>[New query]</div>
-                                </div>
-                            </div>
-                            <p class="mem-verdict-lead"><span class="mem-verdict-icon">&#9989;</span>Nothing lost &mdash; full history always available</p>
-                            <p><span class="mem-verdict-icon">&#10060;</span>Higher cost and latency</p>
                         </div>
                     </section>
                 </section>

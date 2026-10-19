@@ -138,6 +138,13 @@
           }
         ]
       }
+    },
+    {
+      "slug": "l07-case-studies-and-debates",
+      "title": "Case Studies & Tech Debates",
+      "date": "2026-11-17",
+      "deck": "case_studies_debates",
+      "practice": []
     }
   ]
 }

@@ -1,0 +1,911 @@
+<!-- imported from classes/building-ai-agents/decks/part2_case_studies_debates.html -->
+<!-- title: Case Studies & Tech Debates -->
+<style>
+/* Base styles for Part 2 presentation slides */
+.part2-slide {
+	color: #294a43;
+	height: 100%;
+	min-height: 640px;
+	position: relative;
+	text-align: left;
+	box-sizing: border-box;
+}
+.part2-slide h3 {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 1.32em;
+	font-weight: 500;
+	letter-spacing: -0.01em;
+	line-height: 1.05;
+	margin: 0;
+	text-align: left;
+	text-transform: none;
+}
+.reveal .part2-slide .part2-title {
+	color: #203832;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 42px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.12;
+	margin: 10px 0 14px 10px;
+	text-align: left;
+	text-transform: none;
+}
+.part2-subtitle {
+	color: #3b47e0;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 21px;
+	font-weight: 500;
+	margin: 0 0 20px 10px;
+	line-height: 1.3;
+}
+.part2-accent {
+	color: #d97706;
+}
+.part2-hl {
+	color: #3b47e0;
+}
+.part2-success {
+	color: #16a34a;
+}
+.part2-danger {
+	color: #dc2626;
+}
+.part2-mono {
+	font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+	font-size: 0.9em;
+}
+
+/* Callout Box */
+.part2-callout {
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-left: 6px solid #3b47e0;
+	border-radius: 8px;
+	box-sizing: border-box;
+	color: #1e293b;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 18px;
+	line-height: 1.45;
+	margin: 0 0 16px 10px;
+	padding: 12px 18px;
+	width: 1100px;
+}
+.part2-callout-amber {
+	border-left-color: #d97706;
+	background-color: #fffbeb;
+	color: #92400e;
+}
+.part2-callout-purple {
+	border-left-color: #7c3aed;
+	background-color: #faf5ff;
+	color: #581c87;
+}
+
+/* Cards Grids */
+.part2-cards-grid {
+	display: grid;
+	gap: 18px;
+	margin: 12px 0 0 10px;
+	width: 1100px;
+	box-sizing: border-box;
+}
+.part2-cards-2col {
+	grid-template-columns: repeat(2, 1fr);
+}
+.part2-cards-3col {
+	grid-template-columns: repeat(3, 1fr);
+}
+.part2-cards-4col {
+	grid-template-columns: repeat(4, 1fr);
+}
+
+/* Card Styling */
+.part2-card {
+	background-color: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 10px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	padding: 16px 18px;
+	text-align: left;
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+.part2-card-blue {
+	border-left: 6px solid #3b47e0;
+}
+.part2-card-amber {
+	border-left: 6px solid #d97706;
+}
+.part2-card-green {
+	border-left: 6px solid #16a34a;
+}
+.part2-card-purple {
+	border-left: 6px solid #7c3aed;
+}
+.part2-card-red {
+	border-left: 6px solid #dc2626;
+}
+.part2-card-teal {
+	border-left: 6px solid #0d9488;
+}
+
+.part2-card-badge {
+	align-self: flex-start;
+	background-color: #e0e7ff;
+	border-radius: 4px;
+	color: #3730a3;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: 0.05em;
+	padding: 3px 8px;
+	text-transform: uppercase;
+}
+.part2-badge-green {
+	background-color: #dcfce7;
+	color: #166534;
+}
+.part2-badge-amber {
+	background-color: #fef3c7;
+	color: #92400e;
+}
+.part2-badge-purple {
+	background-color: #f3e8ff;
+	color: #6b21a8;
+}
+.part2-badge-red {
+	background-color: #fee2e2;
+	color: #991b1b;
+}
+
+.part2-card-title {
+	color: #1a2238;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 20px;
+	font-weight: 700;
+	line-height: 1.25;
+}
+.part2-card-desc {
+	color: #334155;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16.5px;
+	line-height: 1.42;
+}
+.part2-card-meta {
+	color: #64748b;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 14.5px;
+	line-height: 1.35;
+	margin-top: auto;
+	border-top: 1px dashed #e2e8f0;
+	padding-top: 8px;
+}
+
+/* Bullet list inside cards */
+.part2-list {
+	color: #334155;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	line-height: 1.42;
+	margin: 4px 0 0 16px;
+	padding: 0;
+}
+.part2-list li {
+	margin-bottom: 5px;
+}
+
+/* Bottom summary bar */
+.part2-bottom-bar {
+	background-color: #f1f5f9;
+	border: 1px solid #cbd5e1;
+	border-radius: 8px;
+	box-sizing: border-box;
+	color: #1e293b;
+	display: flex;
+	align-items: center;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 16px;
+	font-weight: 500;
+	gap: 14px;
+	margin: 16px 0 0 10px;
+	padding: 10px 18px;
+	width: 1100px;
+}
+.part2-bottom-bar strong {
+	color: #0f172a;
+}
+.part2-bottom-bar a {
+	color: #3b47e0;
+	text-decoration: underline;
+	text-underline-offset: 3px;
+	transition: color 0.15s ease;
+}
+.part2-bottom-bar a:hover {
+	color: #1d4ed8;
+}
+.part2-bottom-tag {
+	background-color: #3b47e0;
+	border-radius: 4px;
+	color: #ffffff;
+	font-size: 12.5px;
+	font-weight: 700;
+	padding: 3px 7px;
+	text-transform: uppercase;
+}
+
+/* Debate Split Arena */
+.debate-arena {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 20px;
+	margin: 12px 0 0 10px;
+	width: 1100px;
+	box-sizing: border-box;
+}
+.debate-side {
+	background-color: #ffffff;
+	border: 1px solid #e2e8f0;
+	border-radius: 12px;
+	padding: 20px 24px;
+	box-sizing: border-box;
+	display: flex;
+	flex-direction: column;
+	gap: 12px;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+.debate-pro {
+	border-top: 6px solid #16a34a;
+}
+.debate-con {
+	border-top: 6px solid #dc2626;
+}
+.debate-side-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+.debate-side-title {
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 22px;
+	font-weight: 700;
+	line-height: 1.2;
+}
+.debate-pro .debate-side-title {
+	color: #166534;
+}
+.debate-con .debate-side-title {
+	color: #991b1b;
+}
+
+/* Agenda styling */
+.agenda-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-left: 20px;
+}
+.agenda-item {
+	align-items: center;
+	display: flex;
+	gap: 24px;
+}
+.agenda-num {
+	color: #3b47e0;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 34px;
+	font-weight: 600;
+	line-height: 1;
+	min-width: 50px;
+}
+.agenda-text {
+	color: #1e293b;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 22px;
+	font-weight: 500;
+	line-height: 1.25;
+}
+</style>
+
+<div class="slides">
+    <!-- SLIDE 1: Title Slide -->
+    <section>
+        <section>
+            <div>
+                <img src="assets/nup_logo_dark.jpeg" alt="nup_logo" />
+            </div>
+            <h2>Building AI Agents</h2>
+            <div class="fragment" style="margin-bottom:20px;">
+                <div class="typesetting">
+                    <h3>Case Studies &amp; Tech Debates<br />Topics, Formats &amp; Guidelines</h3>
+                    <br />
+                    Alex Avdiushenko<br />
+                    Fall 2026
+                </div>
+            </div>
+        </section>
+    </section>
+
+    <!-- SECTION 2: ROADMAP & STRUCTURE -->
+    <section>
+        <!-- 2.1 Overview & Goals -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Real-World Cases</h3>
+            <p class="part2-subtitle">Industry systems, architecture trade-offs</p>
+
+            <div class="part2-callout">
+                In the foundational sessions we built core primitives from scratch: loops, tools, MCP, memory, and evals. 
+                Now it's time to focus on <strong>understanding real systems in depth</strong>
+                and rigorously defending architectural choices.
+            </div>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-blue">
+                    <span class="part2-card-badge">Task A</span>
+                    <div class="part2-card-title">In-Depth Case Studies</div>
+                    <div class="part2-card-desc">
+                        Deep-dive into a publicly shared agent architecture,
+                        SDK, or production system.
+                        Reverse-engineer or look at GitHub design choices,
+                        problems encountered,
+                        run reproduction benchmarks, and deliver a <strong>45-min long technical presentation</strong>.
+                        Be ready to defend your findings.
+                    </div>
+                    <div class="part2-card-meta">Individual format</div>
+                </div>
+
+                <div class="part2-card part2-card-amber">
+                    <span class="part2-card-badge part2-badge-amber">Task B</span>
+                    <div class="part2-card-title">Technical Debates</div>
+                    <div class="part2-card-desc">
+                        Structured, evidence-based debates on high-stakes
+                        industry questions.
+                        Two opposing teams prepare empirical data,
+                        benchmark citations, and sharp arguments to stress-test
+                        architectural decisions.
+                    </div>
+                    <div class="part2-card-meta">Adversarial format: 2 teams (2-3 students each)</div>
+                </div>
+
+                <div class="part2-card part2-card-green">
+                    <span class="part2-card-badge part2-badge-green">Objective</span>
+                    <div class="part2-card-title">Maximizing Cohort Utility</div>
+                    <div class="part2-card-desc">
+                        Every talk and debate should provide actionable insights,
+                        architectural diagrams, and evaluated trade-offs
+                        that expand the collective engineering knowledge of the entire cohort.
+                    </div>
+                    <div class="part2-card-meta">Deliverables committed to the course materials</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.1 Task A Overview -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Task A: Case Study &amp; 1-Hour Talk</h3>
+            <p class="part2-subtitle">Investigate a public architecture or production framework, then teach it to the room</p>
+
+            <div class="part2-cards-grid part2-cards-2col">
+                <div class="part2-card part2-card-blue">
+                    <div class="part2-card-title">Talk Structure (60 Minutes)</div>
+                    <ul class="part2-list">
+                        <li><strong>40–45 min:</strong> Technical Deep-Dive &amp; Architecture Walkthrough</li>
+                        <li><strong>10 min:</strong> Live Demonstration, Code Reproduction, or Benchmark Results</li>
+                        <li><strong>10 min:</strong> Interactive Q&amp;A and Discussion with the Cohort</li>
+                    </ul>
+                    <div class="part2-card-meta">Aim for engineering depth rather than high-level slides</div>
+                </div>
+
+                <div class="part2-card part2-card-teal">
+                    <div class="part2-card-title">Required Deliverables</div>
+                    <ul class="part2-list">
+                        <li><strong>System Architecture Diagram:</strong> Detailed components, state flow</li>
+                        <li><strong>Reproduction or Prototype:</strong> Working code sample, trace logs, or benchmark</li>
+                        <li><strong>Failure Modes &amp; Trade-Offs:</strong> Where does the design fail? What does it cost?</li>
+                        <li><strong>Slide Deck &amp; Notes:</strong> Better to publish for peer access</li>
+                    </ul>
+                    <div class="part2-card-meta">Code &amp; slides submitted to the course materials</div>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Key Metric</span>
+                <span>Can another engineer and AI agent implement or debug this system based solely on your presentation and artifacts?</span>
+            </div>
+        </section>
+
+        <!-- 3.2 Case Study 1: PI.dev -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Case 1: <a href="https://github.com/earendil-works/pi/tree/main/packages/coding-agent">PI.dev</a>
+                Architecture In-Depth</h3>
+            <p class="part2-subtitle">An open-sourced autonomous developer agent harness &amp; sandbox runtime</p>
+
+            <div class="part2-callout part2-callout-purple">
+                <strong>Core Challenge:</strong> Autonomous coding agents require fast execution loops,
+                untrusted command sandboxing,
+                rich filesystem state management, and resilient error recovery across
+                hours of uninterrupted execution.
+            </div>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-purple">
+                    <div class="part2-card-title">Loop &amp; Context Management</div>
+                    <ul class="part2-list">
+                        <li>How does PI.dev structure the primary agent loop?</li>
+                        <li>Context window budgeting &amp; prompt cache prefix stability.</li>
+                        <li>Summarization vs truncation for long terminal outputs.</li>
+                        <li>Handling partial tool streaming and token budgeting.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-blue">
+                    <div class="part2-card-title">Sandbox &amp; Execution Isolation</div>
+                    <ul class="part2-list">
+                        <li>MicroVM vs container isolation for bash &amp; file ops.</li>
+                        <li>Bidirectional synchronization of workspace files.</li>
+                        <li>Security boundaries: protecting against rogue tool invocations.</li>
+                        <li>Interception and human-in-the-loop permission gates.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-teal">
+                    <div class="part2-card-title">Subagents &amp; Recovery</div>
+                    <ul class="part2-list">
+                        <li>Parent-child agent delegation protocols.</li>
+                        <li>How does the system detect and break infinite command loops?</li>
+                        <li>State persistence across disconnects and browser sessions.</li>
+                        <li>Cost &amp; latency tracking per resolved engineering issue.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Deliverable</span>
+                <span>End-to-end architecture diagram + simulated reproduction of the execution harness on sample coding tasks.</span>
+            </div>
+        </section>
+
+        <!-- 3.3 Case Study 2: Antigravity SDK & Local Models -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Case 2: Local Models in Google's Antigravity SDK</h3>
+            <p class="part2-subtitle">Edge execution, on-device agent loops, and hybrid cloud-local dispatch</p>
+
+            <div class="part2-callout part2-callout-amber">
+                <strong>Core Challenge:</strong> Running agent loops with local open models (e.g. Gemma, Llama) eliminates API costs and preserves privacy, 
+                but introduces strict memory limits, higher schema error rates, and constrained reasoning depth.
+            </div>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-amber">
+                    <div class="part2-card-title">Local Runtime Architecture</div>
+                    <ul class="part2-list">
+                        <li>Interface design in Google's Antigravity SDK.</li>
+                        <li>Runtime backends: ONNX Runtime, Metal/CUDA, Ollama, vLLM.</li>
+                        <li>Constrained decoding &amp; grammar-guided JSON generation.</li>
+                        <li>Memory footprint: KV-cache sizing on consumer hardware.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-green">
+                    <div class="part2-card-title">Tool Calling Fidelity</div>
+                    <ul class="part2-list">
+                        <li>Comparing tool call accuracy: 7B/9B models vs frontier cloud models.</li>
+                        <li>Sensitivity to schema complexity and parameter count.</li>
+                        <li>Self-correction loops when a local model emits invalid arguments.</li>
+                        <li>Benchmarking end-to-end task completion rates.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-blue">
+                    <div class="part2-card-title">Hybrid Orchestration</div>
+                    <ul class="part2-list">
+                        <li>Dynamic routing: when to run locally vs dispatching to cloud.</li>
+                        <li>Privacy tiers: classifying sensitive queries for local-only processing.</li>
+                        <li>Fallback cascades upon local reasoning exhaustion.</li>
+                        <li>Comparative cost/energy analysis per resolved task.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Deliverable</span>
+                <span>Working prototype running on a local open model, benchmarked against cloud API on a test suite of tools.</span>
+            </div>
+        </section>
+
+        <!-- 3.4 Case Study 3: What Happens in Context No Longer Stays in Context -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Case 3: What Happens in Context No Longer Stays in Context</h3>
+            <p class="part2-subtitle">Consolidating in-context agent trajectories into persistent memory &amp; model weights</p>
+
+            <div class="part2-callout part2-callout-purple">
+                <strong>Core Challenge:</strong> Trajectory experience shifts token distributions, but keeping history in-context is expensive, hits window limits, and vanishes on reset. 
+                Continual learning approaches consolidate in-context behaviors into persistent memory and model weights.
+            </div>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-purple">
+                    <span class="part2-card-badge part2-badge-purple">ByteDance Seed &amp; Monash</span>
+                    <div class="part2-card-title">Experience Distillation</div>
+                    <ul class="part2-list">
+                        <li><strong>Trajectory Distillation:</strong> Teacher (task + trial experience &tau;<sub>exp</sub>) distills policy into student without extra environment steps.</li>
+                        <li><strong>Retains &ge;64.8%</strong> of in-context learning gains, vs only <strong>3.8%</strong> for direct SFT on identical experience.</li>
+                        <li><strong>Matches RL baselines</strong> with <strong>&ge;9.6&times; fewer</strong> environment samples across 749 SWE tasks &amp; text games.</li>
+                        <li>Internalizes trial-and-error reasoning directly into model parameters.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-blue">
+                    <span class="part2-card-badge">Microsoft Research</span>
+                    <div class="part2-card-title">Online Experiential Learning</div>
+                    <ul class="part2-list">
+                        <li><strong>Two-Stage Continual Loop:</strong> Extract reusable lessons from trajectories &rarr; consolidate into weights via On-Policy Context Distillation.</li>
+                        <li><strong>Reasoning Efficiency:</strong> Qwen3-1.7B cuts response length to <strong>~70%</strong> on Frozen Lake by round 3 while boosting accuracy.</li>
+                        <li><strong>On-Policy Consistency:</strong> Agent learning from own experience outperforms distillation from larger models (Qwen3-4B).</li>
+                        <li>Preserves out-of-distribution instruction-following without task collapse.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-teal">
+                    <span class="part2-card-badge part2-badge-green">Research &amp; Reproduction</span>
+                    <div class="part2-card-title">Engineering Takeaways</div>
+                    <ul class="part2-list">
+                        <li><strong>Context vs Weights:</strong> When to maintain episodic memory vs triggering weight consolidation.</li>
+                        <li><strong>Sample Efficiency:</strong> Replacing expensive online RL exploration with in-context trial-and-error distillation.</li>
+                        <li><strong>Failure Modes:</strong> Catastrophic forgetting, over-consolidation, and off-policy drift.</li>
+                        <li><strong>Deliverable:</strong> Comparative architecture diagram + reproduction on a gym/code benchmark.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Papers</span>
+                <span><a href="https://arxiv.org/abs/2607.21051" target="_blank" rel="noopener noreferrer">Monash / ByteDance Seed (arXiv:2607.21051)</a> &bull; <a href="https://arxiv.org/abs/2603.16856" target="_blank" rel="noopener noreferrer">Microsoft Research: OEL for Language Models (arXiv:2603.16856)</a></span>
+            </div>
+        </section>
+
+        <!-- 3.5 Case Study 4: Omarchy & Vibe Coding an OS -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Case 4: <a href="https://omarchy.org/#watch">Omarchy</a> &mdash; Can You Vibe Code an OS?</h3>
+            <p class="part2-subtitle">Agentic desktop environments, and the boundaries of LLM systems programming</p>
+
+            <div class="part2-callout part2-callout-amber">
+                <strong>Core Challenge &amp; Doctrine:</strong> DHH's Omarchy asserts: <em>&ldquo;When you can vibe code whatever app comes to your mind, you should be able to vibe code your operating system.&rdquo;</em> 
+                Can autonomous agents reliably build, configure, and self-heal an entire operating system, or are they orchestrating mutable userland glue over a mature Linux kernel?
+            </div>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-purple">
+                    <span class="part2-card-badge part2-badge-purple">Userland Reality</span>
+                    <div class="part2-card-title">What is Actually &ldquo;Vibe Coded&rdquo;?</div>
+                    <ul class="part2-list">
+                        <li><strong>Kernel vs. Userland:</strong> The Linux kernel, drivers, and C toolchains remain fixed; agents generate Hyprland/Wayland configs, systemd units, and glue scripts.</li>
+                        <li><strong>Malleable Desktop:</strong> Natural language prompts generate custom status widgets, keybindings, workflow automations, and live system diagnostics.</li>
+                        <li><strong>Tight Feedback Loops:</strong> Shell exit codes, logs (<span class="part2-mono">journalctl</span>), and instant UI visual rendering provide immediate ground-truth feedback.</li>
+                        <li><strong>Agentic Sysadmin:</strong> Replacing manual StackOverflow / ArchWiki research with autonomous problem-solving loops.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-amber">
+                    <span class="part2-card-badge part2-badge-amber">Engineering Limits</span>
+                    <div class="part2-card-title">Bottlenecks &amp; Failure Modes</div>
+                    <ul class="part2-list">
+                        <li><strong>Security &amp; Privilege Escalation:</strong> Giving agents raw <span class="part2-mono">sudo</span> / root shell access opens critical prompt-injection and destructive execution hazards.</li>
+                        <li><strong>State Drift &amp; Config Rot:</strong> Mutating live system files without declarative reproducibility (like NixOS) leads to non-deterministic, irreversible system breakage.</li>
+                        <li><strong>Deep Systems Programming:</strong> LLMs struggle with kernel concurrency, low-level memory allocators, and hardware drivers lacking unit-test harnesses.</li>
+                        <li><strong>Maintenance Burden:</strong> Unvetted, vibe-coded bash/glue scripts accumulate silent regressions and edge-case fragility.</li>
+                    </ul>
+                </div>
+
+                <div class="part2-card part2-card-teal">
+                    <span class="part2-card-badge part2-badge-green">Architectural Lessons</span>
+                    <div class="part2-card-title">Key Takeaways &amp; Deliverables</div>
+                    <ul class="part2-list">
+                        <li><strong>Agents as Desktop Operators:</strong> Shifting from isolated IDE sandboxes to first-class desktop orchestrators with telemetry access.</li>
+                        <li><strong>Declarative Foundations:</strong> Why atomic, declarative architectures (Nix/Guix) are essential for reliable, rollback-safe agentic OS mutation.</li>
+                        <li><strong>Evaluation:</strong> Benchmarking agent OS reliability against benchmarks like OS-World and Linux system administration suites.</li>
+                        <li><strong>Deliverable:</strong> Architecture breakdown + live demo of an agent diagnosing and self-healing a broken desktop configuration.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Reference</span>
+                <span><a href="https://omarchy.org/#watch" target="_blank" rel="noopener noreferrer">Omarchy by DHH (omarchy.org/#watch)</a> &bull; Agentic Linux distribution, desktop vibe coding &amp; system-level autonomy</span>
+            </div>
+        </section>
+
+        <!-- 3.6 Case Study Template -->
+<!--        <section class="part2-slide" data-background-color="white">-->
+<!--            <h3 class="part2-title">Template: Case Study Topic</h3>-->
+<!--            <p class="part2-subtitle">Use this modular structure when proposing or presenting a new case study</p>-->
+
+<!--            <div class="part2-callout">-->
+<!--                <strong>[Topic Title &amp; Domain]:</strong> [1–2 sentences explaining what the system is and why it represents a notable architectural or practical milestone in AI agents].-->
+<!--            </div>-->
+
+<!--            <div class="part2-cards-grid part2-cards-3col">-->
+<!--                <div class="part2-card part2-card-blue">-->
+<!--                    <span class="part2-card-badge">Pillar 1</span>-->
+<!--                    <div class="part2-card-title">[Core Mechanics &amp; Protocol]</div>-->
+<!--                    <ul class="part2-list">-->
+<!--                        <li>[How the loop, prompts, or communication protocol operate]</li>-->
+<!--                        <li>[Unique abstractions introduced by this framework]</li>-->
+<!--                        <li>[State management and context budgeting patterns]</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+
+<!--                <div class="part2-card part2-card-amber">-->
+<!--                    <span class="part2-card-badge part2-badge-amber">Pillar 2</span>-->
+<!--                    <div class="part2-card-title">[Engineering Trade-Offs]</div>-->
+<!--                    <ul class="part2-list">-->
+<!--                        <li>[Latency, cost, and reliability metrics]</li>-->
+<!--                        <li>[Failure modes and recovery mechanisms]</li>-->
+<!--                        <li>[Comparison with established alternatives]</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+
+<!--                <div class="part2-card part2-card-green">-->
+<!--                    <span class="part2-card-badge part2-badge-green">Pillar 3</span>-->
+<!--                    <div class="part2-card-title">[Empirical Demonstration]</div>-->
+<!--                    <ul class="part2-list">-->
+<!--                        <li>[Live code walkthrough or prototype reproduction]</li>-->
+<!--                        <li>[Performance or accuracy benchmarks]</li>-->
+<!--                        <li>[Concrete takeaways for engineers building agents today]</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="part2-bottom-bar">-->
+<!--                <span class="part2-bottom-tag">Starting References</span>-->
+<!--                <span>[Whitepaper link] &bull; [GitHub repository] &bull; [Official architectural documentation]</span>-->
+<!--            </div>-->
+<!--        </section>-->
+    </section>
+
+    <!-- SECTION 4: TRACK B - DEBATES -->
+    <section>
+        <!-- 4.1 Track B Overview -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Task B: Structured Technical Debates</h3>
+            <p class="part2-subtitle">Sharpening architectural decisions through rigorous, evidence-based contest</p>
+
+            <div class="part2-callout">
+                Debates force both teams to examine empirical evidence, quantify cost and latency trade-offs,
+                and uncover the boundary conditions where opposing approaches succeed or fail.
+            </div>
+
+            <div class="part2-cards-grid part2-cards-4col">
+                <div class="part2-card part2-card-blue">
+                    <div class="part2-card-title">1. Opening Theses</div>
+                    <div class="part2-card-desc">
+                        <strong>5 min per team.</strong> Clear thesis statement, foundational principles, and prime evidence supporting the assigned position.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-amber">
+                    <div class="part2-card-title">2. Cross-Exam</div>
+                    <div class="part2-card-desc">
+                        <strong>5 min per team.</strong> Direct, pointed questions exposing weak assumptions, edge cases, and hidden failure modes in the opponent's model.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-purple">
+                    <div class="part2-card-title">3. Rebuttals</div>
+                    <div class="part2-card-desc">
+                        <strong>4 min per team.</strong> Countering challenges with concrete production data, benchmarks, or real-world incident postmortems.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-green">
+                    <div class="part2-card-title">4. Q&amp;A &amp; Verdict</div>
+                    <div class="part2-card-desc">
+                        <strong>10 min.</strong> Audience &amp; instructor probing questions, followed by cohort vote based on technical rigor, not rhetorical flair.
+                    </div>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Rule</span>
+                <span>Every claim must be backed by benchmark citations, mathematical models, or verified production architecture studies.</span>
+            </div>
+        </section>
+
+        <!-- 4.2 Debate 1: AI Regulation -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Debate 1: Regulate &amp; Slow Down vs. Open Velocity</h3>
+            <p class="part2-subtitle">Motion: "Frontier AI development should be actively slowed down and subjected to strict government licensing."</p>
+
+            <div class="debate-arena">
+                <div class="debate-side debate-pro">
+                    <div class="debate-side-header">
+                        <span class="debate-side-title">Team Affirmative (Pro-Regulation)</span>
+                        <span class="part2-card-badge part2-badge-green">Safety &amp; Caution</span>
+                    </div>
+                    <ul class="part2-list">
+                        <li><strong>Catastrophic Misuse Risks:</strong> Autonomous cyberwarfare, CBRN weapon synthesis, and uncontainable propagation cannot be fixed post-release.</li>
+                        <li><strong>Alignment &amp; Loss of Control:</strong> Capabilities consistently outpace interpretability; safety standards must be legally binding.</li>
+                        <li><strong>Externalities &amp; Liability:</strong> Unregulated model releases impose massive societal costs without developer accountability.</li>
+                        <li><strong>Precedents:</strong> Aviation, nuclear, and pharma prove that rigorous pre-deployment certification enhances sustainable progress.</li>
+                    </ul>
+                </div>
+
+                <div class="debate-side debate-con">
+                    <div class="debate-side-header">
+                        <span class="debate-side-title">Team Negative (Pro-Velocity)</span>
+                        <span class="part2-card-badge part2-badge-red">Open Innovation</span>
+                    </div>
+                    <ul class="part2-list">
+                        <li><strong>Regulatory Capture:</strong> Heavy licensing regimes protect incumbent tech monopolies and suffocate open-source ecosystems.</li>
+                        <li><strong>Game-Theoretic Futility:</strong> Unilateral national slowdowns forfeit technical leadership to geopolitical rivals with zero safety treaties.</li>
+                        <li><strong>Defense Needs Frontier Models:</strong> The only viable defense against malicious autonomous agents is a more capable defensive agent.</li>
+                        <li><strong>Tremendous Opportunity Cost:</strong> Slowing AI directly delays breakthroughs in disease cure, clean energy, and scientific automation.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Core Tension</span>
+                <span>Can regulatory gatekeeping prevent catastrophic tail risks without halting decentralized technical and economic progress?</span>
+            </div>
+        </section>
+
+        <!-- 4.3 Debate 2: Multi-Agent vs Single Strong Agent -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Debate 2: Multi-Agent Systems vs. Single Strong Agent</h3>
+            <p class="part2-subtitle">Motion: "Multi-agent systems are the dominant future architecture for complex tasks, not unnecessary complexity."</p>
+
+            <div class="debate-arena">
+                <div class="debate-side debate-pro">
+                    <div class="debate-side-header">
+                        <span class="debate-side-title">Team Affirmative (Multi-Agent Specialization)</span>
+                        <span class="part2-card-badge part2-badge-green">Modular Teams</span>
+                    </div>
+                    <ul class="part2-list">
+                        <li><strong>Separation of Concerns:</strong> Narrow prompts, dedicated tool subsets, and tailored schemas outperform monolithic system prompts.</li>
+                        <li><strong>Independent Verification:</strong> Generator-critic and planner-worker topologies eliminate self-confirmation bias.</li>
+                        <li><strong>Context Window Hygiene:</strong> Subagents maintain compact, focused contexts, avoiding catastrophic distraction in 50+ step runs.</li>
+                        <li><strong>Parallelism:</strong> Independent sub-tasks run concurrently across multiple agents, shrinking wall-clock latency.</li>
+                    </ul>
+                </div>
+
+                <div class="debate-side debate-con">
+                    <div class="debate-side-header">
+                        <span class="debate-side-title">Team Negative (Single Strong Agent + Tools)</span>
+                        <span class="part2-card-badge part2-badge-red">Linear Simplicity</span>
+                    </div>
+                    <ul class="part2-list">
+                        <li><strong>Compounding Failure Rates:</strong> If each agent has a 90% success rate, a 5-agent sequential pipeline succeeds only 59% of the time.</li>
+                        <li><strong>Coordination Tax:</strong> 3x–6x higher token consumption, enormous latency penalties, and fragile inter-agent communication.</li>
+                        <li><strong>SWE-bench Empirical Truth:</strong> The highest-scoring submissions are almost universally single agents with great tools and tight loops.</li>
+                        <li><strong>Frontier Model Capabilities:</strong> As models scale, the need for artificial role-playing collapses into standard tool execution.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Core Tension</span>
+                <span>Does multi-agent modularity provide real robustness, or is it an accidental anti-pattern born of weak model capabilities?</span>
+            </div>
+        </section>
+
+        <!-- 4.4 Debate Template -->
+<!--        <section class="part2-slide" data-background-color="white">-->
+<!--            <h3 class="part2-title">Template: Technical Debate Motion</h3>-->
+<!--            <p class="part2-subtitle">Use this modular structure when formulating a new architectural or industry debate</p>-->
+
+<!--            <div class="part2-callout">-->
+<!--                <strong>Motion:</strong> "[A crisp, unambiguous statement advocating a specific architectural doctrine, policy, or engineering practice]."-->
+<!--            </div>-->
+
+<!--            <div class="debate-arena">-->
+<!--                <div class="debate-side debate-pro">-->
+<!--                    <div class="debate-side-header">-->
+<!--                        <span class="debate-side-title">Position Affirmative (Pro)</span>-->
+<!--                        <span class="part2-card-badge part2-badge-green">Thesis A</span>-->
+<!--                    </div>-->
+<!--                    <ul class="part2-list">-->
+<!--                        <li><strong>[Primary Argument 1]:</strong> [Core engineering rationale backed by system invariants].</li>-->
+<!--                        <li><strong>[Primary Argument 2]:</strong> [Failure modes avoided in production].</li>-->
+<!--                        <li><strong>[Supporting Benchmark]:</strong> [Relevant industry or academic data point].</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+
+<!--                <div class="debate-side debate-con">-->
+<!--                    <div class="debate-side-header">-->
+<!--                        <span class="debate-side-title">Position Negative (Con)</span>-->
+<!--                        <span class="part2-card-badge part2-badge-red">Thesis B</span>-->
+<!--                    </div>-->
+<!--                    <ul class="part2-list">-->
+<!--                        <li><strong>[Counter-Argument 1]:</strong> [Hidden costs, complexity, or fragility introduced].</li>-->
+<!--                        <li><strong>[Counter-Argument 2]:</strong> [Alternative simpler architecture that outperforms].</li>-->
+<!--                        <li><strong>[Supporting Benchmark]:</strong> [Empirical evidence refuting the affirmative position].</li>-->
+<!--                    </ul>-->
+<!--                </div>-->
+<!--            </div>-->
+
+<!--            <div class="part2-bottom-bar">-->
+<!--                <span class="part2-bottom-tag">Adjudication Question</span>-->
+<!--                <span>[What measurable engineering metric or production reality decides this debate?]</span>-->
+<!--            </div>-->
+<!--        </section>-->
+    </section>
+
+    <!-- SECTION 5: GUIDELINES & SIGNUP -->
+    <section>
+        <!-- 5.1 Evaluation Rubric -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Evaluation Rubric &amp; Standards</h3>
+            <p class="part2-subtitle">What we value in technical presentations and debate performances</p>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-blue">
+                    <span class="part2-card-badge">33% of Score</span>
+                    <div class="part2-card-title">Technical Rigor &amp; Depth</div>
+                    <div class="part2-card-desc">
+                        Demonstrated understanding of inner mechanics, protocols, schemas, and wire formats. 
+                        No hand-waving or marketing slides; precise engineering terminology and accurate explanations.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-amber">
+                    <span class="part2-card-badge part2-badge-amber">33% of Score</span>
+                    <div class="part2-card-title">Empirical Evidence &amp; Demos</div>
+                    <div class="part2-card-desc">
+                        Grounding arguments in verified numbers, live prototypes, reproduction code, or trace logs. 
+                        Testing boundaries and demonstrating concrete failure modes under pressure.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-green">
+                    <span class="part2-card-badge part2-badge-green">33% of Score</span>
+                    <div class="part2-card-title">Clarity &amp; Peer Value</div>
+                    <div class="part2-card-desc">
+                        Clean visual structure, effective audience engagement, ability to defend positions during Q&amp;A, 
+                        and high-utility artifacts committed to the repository for the whole cohort.
+                    </div>
+                </div>
+            </div>
+
+            <div class="part2-bottom-bar">
+                <span class="part2-bottom-tag">Artifacts</span>
+                <span>All presentation slides, benchmark scripts, and architecture specs should be uploaded into the course materials.</span>
+            </div>
+        </section>
+
+        <!-- 5.2 Next Steps & Sign-up -->
+        <section class="part2-slide" data-background-color="white">
+            <h3 class="part2-title">Next Steps: Team Formation &amp; Topics</h3>
+            <p class="part2-subtitle">How to get started with your topic</p>
+
+            <div class="part2-cards-grid part2-cards-3col">
+                <div class="part2-card part2-card-blue">
+                    <span class="part2-card-badge">Step 1</span>
+                    <div class="part2-card-title">Form Teams</div>
+                    <div class="part2-card-desc">
+                        Group into teams of <strong>2–3 students</strong> for Task B (Debates) or
+                        <strong>individually</strong> for Task A (Cases).
+                        Coordinate with peers in the course chat.
+                    </div>
+                </div>
+
+                <div class="part2-card part2-card-amber">
+                    <span class="part2-card-badge part2-badge-amber">Step 2</span>
+                    <div class="part2-card-title">Select or Propose Topic</div>
+                    <div class="part2-card-desc">
+                        Choose one of the showcased topics or propose an alternative system/motion using the same template.
+                        Confirm topic selection with the instructor.
+                    </div>
+                </div>
+            </div>
+
+            <div class="part2-callout part2-callout-purple" style="margin-top: 25px;">
+                <strong>Questions or new case ideas?</strong> Reach out in the course channel or
+                discuss with me in chat.
+            </div>
+        </section>
+    </section>
+</div>

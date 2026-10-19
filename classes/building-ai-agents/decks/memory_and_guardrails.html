@@ -1109,6 +1109,81 @@ ul.custom-list li.lamp::before {
 	margin: 0;
 }
 
+/* --- Agenda slide --- */
+.agenda-slide {
+	color: #294a43;
+	height: 100%;
+	min-height: 640px;
+	position: relative;
+	text-align: left;
+}
+.reveal .agenda-slide .agenda-title {
+	color: #294a43;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 54px;
+	font-weight: 400;
+	letter-spacing: -0.01em;
+	line-height: 1.1;
+	margin: 15px 0 32px 10px;
+	text-align: left;
+	text-transform: none;
+}
+.agenda-list {
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+	margin-left: 65px;
+}
+.agenda-item {
+	align-items: center;
+	display: flex;
+	gap: 28px;
+}
+.agenda-num {
+	color: #3b47e0;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 38px;
+	font-weight: 400;
+	line-height: 1;
+	min-width: 55px;
+}
+.agenda-text {
+	color: #2a322e;
+	font-family: var(--r-main-font, "Open Sans", sans-serif);
+	font-size: 23px;
+	font-weight: 400;
+	line-height: 1.25;
+}
+.reveal .agenda-item-dimmed .agenda-num,
+.reveal .agenda-item-dimmed .agenda-text {
+	opacity: 0.4;
+}
+.reveal .agenda-done {
+	color: #16a34a;
+	font-size: 24px;
+	font-weight: 700;
+	line-height: 1;
+	margin-left: 12px;
+}
+.reveal .agenda-item-active {
+	background-color: #f0f4ff;
+	border: 2px solid #3b47e0;
+	border-radius: 12px;
+	box-shadow: 0 4px 18px rgba(59, 71, 224, 0.14);
+	box-sizing: border-box;
+	margin: -6px -24px -6px -14px;
+	padding: 6px 24px 6px 14px;
+	width: fit-content;
+}
+.reveal .agenda-item-active .agenda-num {
+	color: #3b47e0;
+	font-weight: 700;
+}
+.reveal .agenda-item-active .agenda-text {
+	color: #1a2238;
+	font-weight: 600;
+}
+
 /* --- Section divider: the same `.mem-outline` list, standing on its own.
    The `flex` basis it carries on the "Why Memory Matters" slide is inert here,
    outside that slide's flex row. --- */
@@ -1205,28 +1280,52 @@ ul.custom-list li.lamp::before {
                             <div class="diagram-box planning-box" style="top: 380px; left: 780px; width: 150px;">Subgoal decomposition</div>
                         </div>
                     </section>
-                    <section class="mem-slide mem-why-slide" data-background-color="white">
-                        <h3>Memory</h3>
-                        <div class="mem-why-body">
-                            <ul class="mem-outline">
-                                <li class="mem-current">&rarr; Why Memory Matters</li>
-                                <li>Types of Memory</li>
-                                <li>RAG: Pipeline &amp; Query Transformations</li>
-                                <li>Training</li>
-                                <li>Other Context Strategies</li>
-                            </ul>
-                            <div class="mem-why">
-                                <p class="mem-why-quote fragment">"Without memory, every conversation starts from zero."</p>
-                                <div class="fragment">
-                                    <p>An agent without memory:</p>
-                                    <ul>
-                                        <li>Cannot follow up on previous actions</li>
-                                        <li>Cannot personalize responses</li>
-                                        <li>Cannot accumulate knowledge over time</li>
-                                    </ul>
-                                </div>
-                                <p class="mem-why-punchline fragment">Memory is what turns a stateless LLM call into an agent</p>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
                             </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
+                        </div>
+                    </section>
+                    <section class="mem-slide mem-why-slide" data-background-color="white">
+                        <h3>Why Memory Matters</h3>
+                        <div class="mem-why" style="margin-top: 36px; max-width: 900px;">
+                            <p class="mem-why-quote fragment" style="font-size: 26px; line-height: 1.4; color: #203832;">&ldquo;Without memory, every conversation starts from zero.&rdquo;</p>
+                            <div class="fragment" style="margin-top: 28px;">
+                                <p style="font-size: 22px; font-weight: 600; color: #203832;">An agent without memory:</p>
+                                <ul style="font-size: 21px; line-height: 1.6; margin-top: 10px;">
+                                    <li>Cannot follow up on previous actions</li>
+                                    <li>Cannot personalize responses</li>
+                                    <li>Cannot accumulate knowledge over time</li>
+                                </ul>
+                            </div>
+                            <p class="mem-why-punchline fragment" style="margin-top: 36px; font-size: 24px;">Memory is what turns a stateless LLM call into an agent</p>
                         </div>
                     </section>
                     <section class="mem-slide mem-types-slide" data-background-color="white">
@@ -1361,16 +1460,38 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Memory</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li>Why Memory Matters <span class="mem-done">&check;</span></li>
-                                <li>Types of Memory <span class="mem-done">&check;</span></li>
-                                <li class="mem-current">&rarr; RAG: Pipeline &amp; Query Transformations</li>
-                                <li>Training</li>
-                                <li>Other Context Strategies</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-rag-slide" data-background-color="white">
@@ -1574,16 +1695,39 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Memory</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li>Why Memory Matters <span class="mem-done">&check;</span></li>
-                                <li>Types of Memory <span class="mem-done">&check;</span></li>
-                                <li>RAG: Pipeline &amp; Query Transformations <span class="mem-done">&check;</span></li>
-                                <li class="mem-current">&rarr; Training</li>
-                                <li>Other Context Strategies</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-weights-slide" data-background-color="white">
@@ -1779,16 +1923,40 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Memory</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li>Why Memory Matters <span class="mem-done">&check;</span></li>
-                                <li>Types of Memory <span class="mem-done">&check;</span></li>
-                                <li>RAG: Pipeline &amp; Query Transformations <span class="mem-done">&check;</span></li>
-                                <li>Training <span class="mem-done">&check;</span></li>
-                                <li class="mem-current">&rarr; Other Context Strategies</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-strat-slide" data-background-color="white">
@@ -1892,16 +2060,41 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Guardrails</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li class="mem-current">&rarr; Why Guardrails Matter</li>
-                                <li>Threat Model (Injection &middot; Jailbreaking &middot; Hallucinations)</li>
-                                <li>Content Filters &amp; Action Limiters</li>
-                                <li>Tools to Implement Guardrails</li>
-                                <li>Monitoring</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-guard-slide" data-background-color="white">
@@ -2233,16 +2426,42 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Guardrails</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li>Why Guardrails Matter <span class="mem-done">&check;</span></li>
-                                <li>Threat Model (Injection &middot; Jailbreaking &middot; Hallucinations) <span class="mem-done">&check;</span></li>
-                                <li class="mem-current">&rarr; Content Filters &amp; Action Limiters</li>
-                                <li>Tools to Implement Guardrails</li>
-                                <li>Monitoring</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-cf-slide" data-background-color="white">
@@ -2416,16 +2635,43 @@ ul.custom-list li.lamp::before {
                     </section>
                 </section>
                 <section>
-                    <section class="mem-slide mem-agenda-slide" data-background-color="white">
-                        <h3>Guardrails</h3>
-                        <div class="mem-agenda">
-                            <ul class="mem-outline">
-                                <li>Why Guardrails Matter <span class="mem-done">&check;</span></li>
-                                <li>Threat Model (Injection &middot; Jailbreaking &middot; Hallucinations) <span class="mem-done">&check;</span></li>
-                                <li>Content Filters &amp; Action Limiters <span class="mem-done">&check;</span></li>
-                                <li>Tools to Implement Guardrails <span class="mem-done">&check;</span></li>
-                                <li class="mem-current">&rarr; Monitoring</li>
-                            </ul>
+                    <section class="agenda-slide" data-background-color="white">
+                        <h3 class="agenda-title">Agenda</h3>
+                        <div class="agenda-list">
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">01</span>
+                                <span class="agenda-text">Why Memory Matters &amp; Types of Memory</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">02</span>
+                                <span class="agenda-text">RAG: Pipeline &amp; Query Transformations</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">03</span>
+                                <span class="agenda-text">Training: Knowledge in Model Weights</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">04</span>
+                                <span class="agenda-text">Context Management Strategies</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">05</span>
+                                <span class="agenda-text">Guardrails: Threat Model &amp; Defenses</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-dimmed">
+                                <span class="agenda-num">06</span>
+                                <span class="agenda-text">Content Filters &amp; Action Limiters</span>
+                                <span class="agenda-done">&check;</span>
+                            </div>
+                            <div class="agenda-item agenda-item-active">
+                                <span class="agenda-num">07</span>
+                                <span class="agenda-text">Monitoring &amp; Key Takeaways</span>
+                            </div>
                         </div>
                     </section>
                     <section class="mem-slide mem-mon-slide" data-background-color="white">

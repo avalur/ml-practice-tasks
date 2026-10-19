@@ -42,6 +42,10 @@ import { usePyodideRunner } from "@/hooks/usePyodideRunner";
 import { useTheme } from "@/components/ThemeProvider";
 import { useSession } from "next-auth/react";
 
+const DEFAULT_FONT_SIZE = 14;
+const MIN_FONT_SIZE = 10;
+const MAX_FONT_SIZE = 32;
+
 export function SolveWorkspace({
   meta,
   starter,
@@ -54,6 +58,7 @@ export function SolveWorkspace({
   nextTasks?: ProblemMeta[];
 }) {
   const storageKey = `mlp:code:${meta.id}`;
+  const workspaceRef = useRef<HTMLDivElement>(null);
   const [code, setCode] = useState(starter);
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [bundleError, setBundleError] = useState<string | null>(null);
@@ -68,6 +73,34 @@ export function SolveWorkspace({
   const [showRef, setShowRef] = useState(false);
   const [refCode, setRefCode] = useState<string | null>(null);
   const [refLoading, setRefLoading] = useState(false);
+
+  // Fullscreen mode state
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const toggleFullscreen = () => setIsFullscreen((prev) => !prev);
+
+  // Font size zoom state (for fullscreen mode)
+  const [fontSize, setFontSize] = useState<number>(() => {
+    if (typeof window === "undefined") return DEFAULT_FONT_SIZE;
+    try {
+      const saved = localStorage.getItem("mlp:editor-font-size");
+      if (saved) {
+        const parsed = parseFloat(saved);
+        if (!isNaN(parsed) && parsed >= MIN_FONT_SIZE && parsed <= MAX_FONT_SIZE) {
+          return parsed;
+        }
+      }
+    } catch {}
+    return DEFAULT_FONT_SIZE;
+  });
+
+  const fontSizeRef = useRef(fontSize);
+  fontSizeRef.current = fontSize;
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("mlp:editor-font-size", String(fontSize));
+    } catch {}
+  }, [fontSize]);
 
   // Resolve the editor's initial content once, with precedence:
   //   ?submission=<id>  →  local draft (your in-progress edits here)  →
@@ -294,6 +327,130 @@ export function SolveWorkspace({
     return () => window.removeEventListener("keydown", handler);
   }, []);
 
+  // Escape key handler to exit fullscreen mode, and Ctrl/Cmd +/-/0 for font zoom
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && !e.defaultPrevented && !e.isComposing) {
+        setIsFullscreen(false);
+        return;
+      }
+      if (e.ctrlKey || e.metaKey) {
+        if (e.key === "=" || e.key === "+") {
+          e.preventDefault();
+          setFontSize((prev) => Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, prev + 1)));
+        } else if (e.key === "-" || e.key === "_") {
+          e.preventDefault();
+          setFontSize((prev) => Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, prev - 1)));
+        } else if (e.key === "0") {
+          e.preventDefault();
+          setFontSize(DEFAULT_FONT_SIZE);
+        }
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [isFullscreen]);
+
+  // Mouse wheel and trackpad pinch zoom in fullscreen mode
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const workspaceEl = workspaceRef.current;
+    if (!workspaceEl) return;
+
+    const handleWheel = (e: WheelEvent) => {
+      if (!e.ctrlKey && !e.metaKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+
+      const isSmallDelta = Math.abs(e.deltaY) < 40;
+      const factor = isSmallDelta ? 0.04 : 0.015;
+      const delta = -e.deltaY * factor;
+
+      setFontSize((prev) => {
+        const next = prev + delta;
+        const clamped = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, next));
+        return Math.round(clamped * 10) / 10;
+      });
+    };
+
+    // Safari GestureEvent for Mac trackpad pinch
+    let gestureStartSize = fontSizeRef.current;
+    const handleGestureStart = (e: Event) => {
+      e.preventDefault();
+      gestureStartSize = fontSizeRef.current;
+    };
+    const handleGestureChange = (e: Event) => {
+      e.preventDefault();
+      const gestureEvent = e as unknown as { scale: number };
+      if (typeof gestureEvent.scale === "number") {
+        const next = gestureStartSize * gestureEvent.scale;
+        const clamped = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, next));
+        setFontSize(Math.round(clamped * 10) / 10);
+      }
+    };
+    const handleGestureEnd = (e: Event) => {
+      e.preventDefault();
+    };
+
+    // Touchscreen 2-finger pinch
+    let touchStartDistance = 0;
+    let touchStartSize = fontSizeRef.current;
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        touchStartDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY,
+        );
+        touchStartSize = fontSizeRef.current;
+      }
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && touchStartDistance > 0) {
+        e.preventDefault();
+        const currentDistance = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY,
+        );
+        const scale = currentDistance / touchStartDistance;
+        const next = touchStartSize * scale;
+        const clamped = Math.min(MAX_FONT_SIZE, Math.max(MIN_FONT_SIZE, next));
+        setFontSize(Math.round(clamped * 10) / 10);
+      }
+    };
+    const handleTouchEnd = () => {
+      touchStartDistance = 0;
+    };
+
+    workspaceEl.addEventListener("wheel", handleWheel, { passive: false });
+    workspaceEl.addEventListener("gesturestart", handleGestureStart as EventListener, { passive: false });
+    workspaceEl.addEventListener("gesturechange", handleGestureChange as EventListener, { passive: false });
+    workspaceEl.addEventListener("gestureend", handleGestureEnd as EventListener, { passive: false });
+    workspaceEl.addEventListener("touchstart", handleTouchStart, { passive: false });
+    workspaceEl.addEventListener("touchmove", handleTouchMove, { passive: false });
+    workspaceEl.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      workspaceEl.removeEventListener("wheel", handleWheel);
+      workspaceEl.removeEventListener("gesturestart", handleGestureStart as EventListener);
+      workspaceEl.removeEventListener("gesturechange", handleGestureChange as EventListener);
+      workspaceEl.removeEventListener("gestureend", handleGestureEnd as EventListener);
+      workspaceEl.removeEventListener("touchstart", handleTouchStart);
+      workspaceEl.removeEventListener("touchmove", handleTouchMove);
+      workspaceEl.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, [isFullscreen]);
+
+  // Lock body scroll when fullscreen is active; restore previous inline value on cleanup
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isFullscreen]);
+
   if (!meta.webRunnable) {
     return (
       <div className="placeholder">
@@ -305,7 +462,11 @@ export function SolveWorkspace({
   }
 
   return (
-    <div className="workspace">
+    <div
+      ref={workspaceRef}
+      className={`workspace${isFullscreen ? " fullscreen" : ""}`}
+      style={isFullscreen ? ({ "--editor-font-size": `${fontSize}px` } as React.CSSProperties) : undefined}
+    >
       <div className="toolbar">
         <button className="btn primary" onClick={onRun} disabled={busy || !bundle}>
           {runner.status === "loading"
@@ -325,6 +486,53 @@ export function SolveWorkspace({
         <button className="btn" onClick={onReset} disabled={busy}>
           Reset
         </button>
+        <button
+          className="btn"
+          onClick={toggleFullscreen}
+          aria-label={isFullscreen ? "Exit fullscreen (Esc)" : "Enter fullscreen"}
+          title={isFullscreen ? "Exit fullscreen (Esc)" : "Enter fullscreen"}
+        >
+          {isFullscreen ? (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3" />
+            </svg>
+          ) : (
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden="true"
+            >
+              <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+            </svg>
+          )}
+        </button>
+        {isFullscreen && fontSize !== DEFAULT_FONT_SIZE && (
+          <button
+            className="btn"
+            onClick={() => setFontSize(DEFAULT_FONT_SIZE)}
+            title="Reset font zoom (Ctrl/Cmd + 0)"
+            aria-label="Reset font zoom"
+            style={{ fontSize: "0.82rem", padding: "0.25rem 0.5rem" }}
+          >
+            {Math.round((fontSize / DEFAULT_FONT_SIZE) * 100)}% ⟲
+          </button>
+        )}
         <kbd className="hint">⌘/Ctrl + ↵</kbd>
         {runner.status === "done" &&
           runner.mode === "test" &&
@@ -346,65 +554,84 @@ export function SolveWorkspace({
         )}
       </div>
 
-      {allPassed && (
-        <div className="solution-tabs">
-          <button
-            className={`solution-tab${!showRef ? " active" : ""}`}
-            onClick={() => setShowRef(false)}
-          >
-            Your solution
-          </button>
-          <button
-            className={`solution-tab${showRef ? " active" : ""}`}
-            onClick={handleShowRef}
-            disabled={refLoading}
-          >
-            {refLoading ? "Loading…" : "Reference solution"}
-          </button>
-        </div>
-      )}
-
-      <CodeMirror
-        value={activeCode}
-        height="360px"
-        theme={theme}
-        extensions={[python(), editorPadding, preserveIndentOnEnter]}
-        onChange={showRef ? (v) => setRefCode(v) : setCode}
-      />
-
-      <div className={allPassed && nextTasks.length > 0 ? "editor-row" : ""}>
-        <div className={allPassed && nextTasks.length > 0 ? "editor-col" : ""}>
-          {runner.mode === "code" ? (
-            <CodeOutputPanel
-              status={runner.status}
-              error={runner.error}
-              result={runner.codeResult}
-            />
-          ) : (
-            <ResultsPanel
-              status={runner.status}
-              error={runner.error}
-              result={runner.result}
-            />
-          )}
-        </div>
-
-        {allPassed && nextTasks.length > 0 && (
-          <div className="next-tasks-panel">
-            <h3>What&apos;s next?</h3>
-            {nextTasks.map((t) => (
-              <Link
-                key={t.id}
-                href={`/problems/${t.topic}/${t.slug}`}
-                className="next-task-card"
+      <div className="workspace-main">
+        <div className="editor-pane">
+          {allPassed && (
+            <div className="solution-tabs">
+              <button
+                className={`solution-tab${!showRef ? " active" : ""}`}
+                onClick={() => setShowRef(false)}
               >
-                <span className={`badge ${t.difficulty}`}>{t.difficulty}</span>
-                <span>{t.title}</span>
-              </Link>
-            ))}
+                Your solution
+              </button>
+              <button
+                className={`solution-tab${showRef ? " active" : ""}`}
+                onClick={handleShowRef}
+                disabled={refLoading}
+              >
+                {refLoading ? "Loading…" : "Reference solution"}
+              </button>
+            </div>
+          )}
+
+          <CodeMirror
+            value={activeCode}
+            height={isFullscreen ? "100%" : "360px"}
+            theme={theme}
+            extensions={[python(), editorPadding, preserveIndentOnEnter]}
+            onChange={showRef ? (v) => setRefCode(v) : setCode}
+            className="editor-cm"
+          />
+        </div>
+
+        <div className="output-pane">
+          <div className={!isFullscreen && allPassed && nextTasks.length > 0 ? "editor-row" : "output-col"}>
+            <div className={!isFullscreen && allPassed && nextTasks.length > 0 ? "editor-col" : ""}>
+              {runner.mode === "code" ? (
+                <CodeOutputPanel
+                  status={runner.status}
+                  error={runner.error}
+                  result={runner.codeResult}
+                  isFullscreen={isFullscreen}
+                />
+              ) : (
+                <ResultsPanel
+                  status={runner.status}
+                  error={runner.error}
+                  result={runner.result}
+                  isFullscreen={isFullscreen}
+                />
+              )}
+            </div>
+
+            {allPassed && nextTasks.length > 0 && (
+              <div className="next-tasks-panel">
+                <h3>What&apos;s next?</h3>
+                {nextTasks.map((t) => (
+                  <Link
+                    key={t.id}
+                    href={`/problems/${t.topic}/${t.slug}`}
+                    className="next-task-card"
+                  >
+                    <span className={`badge ${t.difficulty}`}>{t.difficulty}</span>
+                    <span>{t.title}</span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </div>
+    </div>
+  );
+}
+
+function OutputPlaceholder() {
+  return (
+    <div className="results placeholder-output">
+      <p className="muted">
+        Run tests (<kbd className="hint">⌘/Ctrl + ↵</kbd>) or Run scratchpad to see output here.
+      </p>
     </div>
   );
 }
@@ -413,10 +640,12 @@ function ResultsPanel({
   status,
   error,
   result,
+  isFullscreen,
 }: {
   status: RunnerStatus;
   error: string | null;
   result: RunResult | null;
+  isFullscreen?: boolean;
 }) {
   if (status === "loading")
     return (
@@ -435,7 +664,12 @@ function ResultsPanel({
     );
   if (status === "error")
     return <p className="results result-bad">Runner error: {error}</p>;
-  if (status !== "done" || !result) return null;
+  if (status !== "done" || !result) {
+    if (isFullscreen) {
+      return <OutputPlaceholder />;
+    }
+    return null;
+  }
 
   const allPass = result.total > 0 && result.passed === result.total;
   return (
@@ -464,10 +698,12 @@ function CodeOutputPanel({
   status,
   error,
   result,
+  isFullscreen,
 }: {
   status: RunnerStatus;
   error: string | null;
   result: CodeResult | null;
+  isFullscreen?: boolean;
 }) {
   if (status === "loading")
     return (
@@ -485,7 +721,12 @@ function CodeOutputPanel({
     );
   if (status === "error")
     return <p className="results result-bad">Runner error: {error}</p>;
-  if (status !== "done" || !result) return null;
+  if (status !== "done" || !result) {
+    if (isFullscreen) {
+      return <OutputPlaceholder />;
+    }
+    return null;
+  }
 
   const empty = !result.output && !result.error;
   return (

@@ -78,6 +78,8 @@ a family missing from it sorts after the listed ones):
 5. `python generate.py` to build `tasks/`.
 6. Verify: `pytest problems/<topic>/<slug>` (reference green) and
    `pytest tasks/<topic>/<slug>` (stub should fail with NotImplementedError).
+7. Sync DB: after commit and push, run `cd web && pnpm db:sync-problems` to sync
+   new problems into the Neon/Postgres database (required for submissions to work in prod).
 
 ## Classes (taught courses)
 
@@ -498,6 +500,7 @@ python tools/build_figures.py         # rebuild the TikZ figures (needs TeX Live
 python tools/build_figures.py --check # CI: a .tex edited without a rebuild
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
+cd web && pnpm db:sync-problems # sync Problem rows in Neon/Postgres DB with manifest
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
 cd web && pnpm db:sync-classes --unpublish <slug> # take it back off

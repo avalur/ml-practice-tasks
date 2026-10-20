@@ -96,6 +96,7 @@ python generate.py            # rebuild tasks/ from problems/
 python generate.py --check    # CI: fail if tasks/ drifted from problems/
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
+cd web && pnpm db:sync-problems # sync Problem rows in Neon/Postgres DB with manifest
 ```
 
 CI (`.github/workflows/ci.yml`) runs the `--check` + `pytest problems` pair on
@@ -114,6 +115,8 @@ push/PR. **Always regenerate and run `pytest problems` before committing.**
 5. `python generate.py` to build `tasks/`.
 6. Verify: `pytest problems/<topic>/<slug>` (reference green) and
    `pytest tasks/<topic>/<slug>` (stub should fail with NotImplementedError).
+7. Sync DB: after commit and push, run `cd web && pnpm db:sync-problems` to sync
+   new problems into the Neon/Postgres database (required for submissions to work in prod).
 
 ## Design principles for good tasks
 

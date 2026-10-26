@@ -2133,7 +2133,7 @@ ul.custom-list li.lamp::before {
 	color: #2a322e;
 	font-size: 20px;
 	line-height: 1.5;
-	list-style-type: disc;
+	list-style-type: decimal;
 	margin: 0;
 	padding-left: 28px;
 }
@@ -2390,6 +2390,49 @@ ul.custom-list li.lamp::before {
 	text-align: center;
 	transform: translateX(-50%);
 	width: 1164px;
+}
+.reveal .why-mas-meme {
+	background: #ffffff;
+	border: 1px solid #d8d8d8;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+	color: #111111;
+	font-family: Arial, Helvetica, sans-serif;
+	position: absolute;
+	right: 48px;
+	top: 118px;
+	width: 480px;
+}
+.reveal .why-mas-meme img {
+	display: block;
+	height: 355px;
+	margin: 0;
+	max-height: none;
+	max-width: none;
+	width: 480px;
+}
+.reveal .why-mas-meme-mid {
+	font-size: 25px;
+	line-height: 1.2;
+	padding: 14px 0 4px;
+	text-align: center;
+}
+.reveal .why-mas-meme-curve {
+	position: relative;
+}
+.reveal .why-mas-meme-side {
+	font-size: 25px;
+	line-height: 1.2;
+	position: absolute;
+	text-align: center;
+	width: 150px;
+}
+.reveal .why-mas-meme-low {
+	left: 22px;
+	top: 150px;
+}
+.reveal .why-mas-meme-high {
+	right: 8px;
+	top: 105px;
 }
 
 /* --- Single-Agent vs Multi-Agent comparison slide --- */
@@ -3265,8 +3308,14 @@ ul.custom-list li.lamp::before {
 .reveal .arch-compare-table tbody tr:nth-child(even) {
 	background-color: #d2dcdc;
 }
+.reveal .arch-compare-table thead th + th {
+	border-left: 2px solid #ffffff;
+}
 .reveal .arch-compare-table tbody td {
 	color: #2a322e;
+}
+.reveal .arch-compare-table tbody td + td {
+	border-left: 2px solid #aebdbd;
 }
 .reveal .arch-compare-table col.arch-col {
 	width: 20%;
@@ -3524,9 +3573,9 @@ ul.custom-list li.lamp::before {
 	transform: translate(-50%, -100%);
 }
 .reveal .dec-label-yes {
-	left: 1104px;
+	left: 1115px;
 	top: 328px;
-	transform: translateY(-50%);
+	transform: translate(-100%, -50%);
 }
 .reveal .dec-bottom-title {
 	color: #294a43;
@@ -3582,13 +3631,13 @@ ul.custom-list li.lamp::before {
 	left: 335px;
 }
 .reveal .dec-card-cent {
-	background-color: #ff2c01;
+	background-color: #87a0b0;
 	color: #ffffff;
 	left: 660px;
 }
 .reveal .dec-card-pool {
-	background-color: #00da72;
-	color: #294a43;
+	background-color: #1d2337;
+	color: #ffffff;
 	left: 985px;
 }
 
@@ -3917,15 +3966,6 @@ ul.custom-list li.lamp::before {
 .reveal .conclusion-takeaways-item {
 	margin: 0;
 }
-.reveal .conclusion-graphic {
-	box-sizing: border-box;
-	display: block;
-	height: 612px;
-	left: 766px;
-	position: absolute;
-	top: 20px;
-	width: 486px;
-}
 </style>
 <div class="slides">
                 <section>
@@ -4118,7 +4158,7 @@ ul.custom-list li.lamp::before {
                         </table>
                     </section>
                     <section class="tao-strategies-slide" data-background-color="white">
-                        <h3 class="tao-title">Four Reasoning Strategies</h3>
+                        <h3 class="tao-title">Three Reasoning Strategies</h3>
                         <div class="tao-strategies-grid">
                             <div class="strategy-card strategy-cot">
                                 <div class="strategy-header">CoT (Chain-of-Thought)</div>
@@ -4145,7 +4185,7 @@ ul.custom-list li.lamp::before {
                         </div>
                     </section>
                     <section class="tao-compare-slide" data-background-color="white">
-                        <h3 class="tao-title">Four Reasoning Strategies</h3>
+                        <h3 class="tao-title">Three Reasoning Strategies</h3>
                         <div class="tao-compare-grid">
                             <div class="tao-compare-col">
                                 <div class="tao-compare-pill pill-cot">CoT</div>
@@ -4376,11 +4416,11 @@ ul.custom-list li.lamp::before {
                         </table>
                         <div class="obs-steps">
                             <div class="obs-steps-title">Three processing steps:</div>
-                            <ul class="obs-steps-list">
-                                <li>1. Parse &mdash; identify function and arguments</li>
-                                <li>2. Execute &mdash; perform the action</li>
-                                <li>3. Append &mdash; result &rarr; into agent context</li>
-                            </ul>
+                            <ol class="obs-steps-list">
+                                <li>Parse &mdash; identify function and arguments</li>
+                                <li>Execute &mdash; perform the action</li>
+                                <li>Append &mdash; result &rarr; into agent context</li>
+                            </ol>
                         </div>
                     </section>
                     <section class="plan-code-slide" data-background-color="white">
@@ -4425,7 +4465,7 @@ plan = structured_llm.invoke(
                                 <div class="tao-rebook-lines">
                                     <div>Thought: Searching flights for tomorrow</div>
                                     <div>Action:  search_flights("SVO", "CDG", "04-16")</div>
-                                    <div>Obs: [{SU2456: 37k₽}, {AF1147: 42k₽}]</div>
+                                    <div>Obs: [{SU2456: ₽37K}, {AF1147: ₽42K}]</div>
                                 </div>
                             </div>
                             <div class="tao-rebook-card tao-rebook-card-blue">
@@ -4433,7 +4473,7 @@ plan = structured_llm.invoke(
                                 <div class="tao-rebook-lines">
                                     <div>Thought: I'll check the policies</div>
                                     <div>Action:  get_policy("rebooking")</div>
-                                    <div>Obs: {fee: 3000₽, same class only}</div>
+                                    <div>Obs: {fee: ₽3000, same class only}</div>
                                 </div>
                             </div>
                             <div class="tao-rebook-card tao-rebook-card-pink">
@@ -4486,6 +4526,14 @@ plan = structured_llm.invoke(
                                 <div>Mixes up subtask contexts</div>
                                 <div>Difficult to debug</div>
                                 <div>Becomes unreliable</div>
+                            </div>
+                        </div>
+                        <div class="why-mas-meme">
+                            <div class="why-mas-meme-mid">12 subagents + message bus</div>
+                            <div class="why-mas-meme-curve">
+                                <img src="assets/bell-curve-iq.jpg" alt="IQ bell curve meme: low and high IQ use one agent, the middle builds 12 subagents">
+                                <div class="why-mas-meme-side why-mas-meme-low">one agent</div>
+                                <div class="why-mas-meme-side why-mas-meme-high">one agent</div>
                             </div>
                         </div>
                         <div class="why-mas-solution">
@@ -4560,7 +4608,7 @@ plan = structured_llm.invoke(
                             </div>
                             <div class="mas-principle-card mas-principle-card-pink">
                                 <div class="mas-principle-header mas-principle-header-pink">FEEDBACK</div>
-                                <div class="mas-principle-body">Correction based on<br />info from other participants</div>
+                                <div class="mas-principle-body">Correction based on<br />info from other agents</div>
                             </div>
                         </div>
                     </section>
@@ -5058,7 +5106,6 @@ plan = structured_llm.invoke(
                     </section>
                     <section class="mm-mas-slide" data-background-color="white">
                         <h3 class="tao-title">Multimodal Agents</h3>
-                        <div class="mm-mas-label">Multimodal MAS:</div>
                         <div class="mm-mas-flow">
                             <div class="mm-mas-col">
                                 <div class="mm-mas-box mm-mas-vision">VisionAgent</div>
@@ -5114,7 +5161,6 @@ plan = structured_llm.invoke(
                                 </div>
                             </div>
                         </div>
-                        <img class="conclusion-graphic" src="assets/conclusion_graphic.webp" alt="Conclusion illustration" />
                     </section>
                     <section data-background-color="white">
                         <h3 style="text-align: left">Practice</h3>

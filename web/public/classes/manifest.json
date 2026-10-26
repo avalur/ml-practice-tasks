@@ -646,6 +646,22 @@
           "homework": null
         }
       ]
+    },
+    {
+      "slug": "math-tutoring",
+      "title": "Math Tutoring",
+      "description": "A private workspace for tutoring sessions: add boards, write solutions by hand, and save them as PDFs.",
+      "order": 3,
+      "lessons": [
+        {
+          "slug": "board",
+          "title": "Math Tutoring",
+          "date": null,
+          "deck": "board",
+          "practice": [],
+          "homework": null
+        }
+      ]
     }
   ]
 }

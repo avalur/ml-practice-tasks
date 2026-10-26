@@ -11,6 +11,12 @@
       "title": "Building AI Agents",
       "description": "What an AI agent actually is, and how to build one: a language model, a set of tools, a loop and some memory. Starting from the wire format a model speaks, you will write the agent loop by hand before reaching for any framework — tool definitions and dispatch, the Model Context Protocol, retrieval, evaluation. By the end you will know which problems deserve an agent, and which are better served by a single call.",
       "order": 2
+    },
+    {
+      "slug": "math-tutoring",
+      "title": "Math Tutoring",
+      "description": "A private workspace for tutoring sessions: add boards, write solutions by hand, and save them as PDFs.",
+      "order": 3
     }
   ]
 }

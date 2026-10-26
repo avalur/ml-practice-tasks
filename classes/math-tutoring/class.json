@@ -1,0 +1,16 @@
+{
+  "slug": "math-tutoring",
+  "title": "Math Tutoring",
+  "draft": true,
+  "teacherEmails": [
+    "ovalur@gmail.com"
+  ],
+  "lessons": [
+    {
+      "slug": "board",
+      "title": "Math Tutoring",
+      "deck": "board",
+      "practice": []
+    }
+  ]
+}

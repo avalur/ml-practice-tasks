@@ -127,12 +127,13 @@
         }
       ],
       "homework": {
-        "due": "2026-11-09T23:59",
+        "due": "2026-11-16T23:59",
         "items": [
           {
             "type": "assignment",
             "id": "intro-react-agent",
             "title": "Build a ReAct Agent from Scratch",
+            "templateHref": "https://colab.research.google.com/github/avalur/ml-practice-tasks/blob/master/classes/building-ai-agents/practice/agents_homework_student.ipynb",
             "maxScore": 100
           }
         ]

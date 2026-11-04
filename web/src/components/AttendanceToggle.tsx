@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export function AttendanceToggle({
@@ -19,6 +19,14 @@ export function AttendanceToggle({
   const router = useRouter();
   const [attended, setAttended] = useState(initialAttended);
   const [busy, setBusy] = useState(false);
+
+  // The prop changes under us when "Mark all" / "Clear all" refreshes the page:
+  // follow it, or the box keeps showing what it was before the batch. Not while
+  // our own request is in flight — the optimistic value is the newer one then.
+  useEffect(() => {
+    if (!busy) setAttended(initialAttended);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialAttended]);
 
   async function toggle() {
     if (busy) return;

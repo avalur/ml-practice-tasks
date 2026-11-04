@@ -213,9 +213,26 @@ test("view mode: deck renders, no annotation layer attached", async ({ page }) =
   expect(errors).toEqual([]);
 });
 
-// A homework that assigns a whole topic ("py_*" → 26 problems) must stay one row
-// with a progress count; the 26 tasks live behind a disclosure. Needs a real
-// signed-in member, since class pages are members-only.
+// A homework that assigns a whole topic ("py_*") must stay one row with a
+// progress count; the tasks live behind a disclosure. Needs a real signed-in
+// member, since class pages are members-only.
+//
+// The size of the topic is read from the published manifest, not written down
+// here: it grows every time a py_* task is added, and a hardcoded count turned
+// this test red for reasons that had nothing to do with groups.
+async function groupSize(classSlug: string, lessonSlug: string, pattern: string): Promise<number> {
+  const file = path.join(__dirname, "..", "..", "public", "classes", "manifest.json");
+  const manifest = JSON.parse(await fs.readFile(file, "utf8"));
+  const lesson = manifest.classes
+    .find((c: { slug: string }) => c.slug === classSlug)
+    ?.lessons.find((l: { slug: string }) => l.slug === lessonSlug);
+  const group = lesson?.homework?.items.find(
+    (i: { type: string; pattern?: string }) => i.type === "group" && i.pattern === pattern,
+  );
+  if (!group) throw new Error(`no ${pattern} group in ${classSlug}/${lessonSlug}`);
+  return group.items.length;
+}
+
 test("member: a topic assigned as homework renders as one collapsed group", async ({
   page,
   context,
@@ -228,20 +245,24 @@ test("member: a topic assigned as homework renders as one collapsed group", asyn
   try {
     await session.solveProblem("py_basics/fizz_buzz");
     await session.solveProblem("py_strings/caesar_cipher");
+    const size = await groupSize(CLASS, LESSON, "py_*");
+    // Small enough to be a group worth folding, and big enough that "one row"
+    // means something.
+    expect(size).toBeGreaterThan(10);
 
     await page.goto(`/classes/${CLASS}/lessons/${LESSON}`);
     await expect(page.getByRole("heading", { name: /Homework/ })).toBeVisible();
 
-    // One row, not 26.
+    // One row, not one per task.
     const group = page.locator(".ref-group");
     await expect(group).toHaveCount(1);
     await expect(group.locator("summary .title")).toHaveText("Python fundamentals");
-    await expect(group.locator("summary .badge")).toHaveText("2/26 done");
+    await expect(group.locator("summary .badge")).toHaveText(`2/${size} done`);
     await expect(group.locator("summary code")).toHaveText("py_*");
 
     // The tasks are present in the DOM but folded away…
     const rows = group.locator(".problem-list .problem-card");
-    await expect(rows).toHaveCount(26);
+    await expect(rows).toHaveCount(size);
     expect(await rows.first().isVisible()).toBe(false);
     // …and open once expanded, with the solved ones ticked.
     await group.locator("summary").click();
@@ -250,7 +271,7 @@ test("member: a topic assigned as homework renders as one collapsed group", asyn
 
     // The class overview counts the tasks, not the group.
     await page.goto(`/classes/${CLASS}`);
-    await expect(page.getByText("2/26", { exact: false }).first()).toBeVisible();
+    await expect(page.getByText(`2/${size}`, { exact: false }).first()).toBeVisible();
   } finally {
     await session.dispose();
   }
@@ -361,18 +382,28 @@ test("teacher: marks attendance for a student, updates and persists", async ({
     await expect(attCheckbox).toBeVisible();
     await expect(attCheckbox).not.toBeChecked();
 
-    // Check attendance
+    // Check attendance. The box ticks optimistically, before the POST lands, so
+    // wait for the response: reloading first aborts the request and nothing is
+    // saved.
+    const saved = page.waitForResponse(
+      (r) => r.url().endsWith(`/api/classes/${CLASS}/attendance`) && r.request().method() === "POST",
+    );
     await attCheckbox.click();
     await expect(attCheckbox).toBeChecked();
+    expect((await saved).ok()).toBe(true);
 
     // Reload and verify persistence
     await page.reload();
     const attCheckboxAfter = page.getByTestId(`att-${student.userId}-${LESSON}`);
     await expect(attCheckboxAfter).toBeChecked();
 
-    // Batch clear
+    // Batch clear. The batch buttons only refresh the server data; the toggle has
+    // to follow it without a reload, or the page shows students as present who
+    // were just cleared.
     await page.getByRole("button", { name: "Clear all" }).click();
     await expect(attCheckboxAfter).not.toBeChecked();
+    await page.reload();
+    await expect(page.getByTestId(`att-${student.userId}-${LESSON}`)).not.toBeChecked();
   } finally {
     await student.dispose();
     await studentCtx.close();

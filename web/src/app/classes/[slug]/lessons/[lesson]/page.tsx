@@ -22,6 +22,8 @@ import {
   type SolvedKeysResult,
 } from "@/lib/classes";
 import { PresentButton } from "@/components/PresentButton";
+import { ClassModeration } from "@/components/ClassModeration";
+import { ReportClassButton } from "@/components/ReportClassButton";
 import { NotebookUploader } from "@/components/NotebookUploader";
 import { renderFeedbackMarkdown } from "@/lib/feedback-render";
 import {
@@ -406,6 +408,8 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       <h1>{lesson.title}</h1>
       {lesson.date && <p className="muted">{lesson.date}</p>}
 
+      <ClassModeration slug={slug} access={access} />
+
       <div className="class-lesson-actions">
         <a className="bt-clear-btn" href={slidesUrl} target="_blank" rel="noopener">
           Open slides
@@ -497,6 +501,9 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             submissions={subMap}
           />
         </section>
+      )}
+      {!access.isTeacher && (
+        <ReportClassButton slug={slug} lesson={lessonSlug} signedIn={!!access.userId} />
       )}
     </article>
   );

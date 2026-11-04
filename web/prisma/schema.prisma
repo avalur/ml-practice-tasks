@@ -35,17 +35,19 @@ model User {
   failedLogins  Int       @default(0)
   lockedUntil   DateTime?
 
-  accounts         Account[]
-  sessions         Session[]
-  passwordResets   PasswordResetToken[]
-  submissions      Submission[]
-  progress         UserProblemProgress[]
-  favorites        Favorite[]
-  notebookProgress UserNotebookProgress[]
-  enrollments      ClassEnrollment[]
-  attendances      LessonAttendance[]
+  accounts            Account[]
+  sessions            Session[]
+  passwordResets      PasswordResetToken[]
+  submissions         Submission[]
+  progress            UserProblemProgress[]
+  favorites           Favorite[]
+  notebookProgress    UserNotebookProgress[]
+  enrollments         ClassEnrollment[]
+  attendances         LessonAttendance[]
   notebookSubmissions NotebookSubmission[]
-  createdAt        DateTime               @default(now())
+  teacherApplications TeacherApplication[]
+  classReports        ClassReport[]
+  createdAt           DateTime               @default(now())
 }
 
 // A password-reset link, one row per request. Only the SHA-256 of the token that
@@ -173,23 +175,31 @@ model UserNotebookProgress {
 // needs no table of its own.
 
 model Class {
-  id            String   @id @default(cuid())
-  slug          String   @unique // matches classes/<slug>/
-  title         String
-  teacherEmails String[] // seeded from class.json; authorizes before first sign-in
-  createdAt     DateTime @default(now())
+  id              String    @id @default(cuid())
+  slug            String    @unique // matches classes/<slug>/
+  title           String
+  teacherEmails   String[] // seeded from class.json; authorizes before first sign-in
+  createdAt       DateTime  @default(now())
   // null = draft: visible to its teachers only, nowhere in the public lists. The
   // DB is the only truth here, because Publish has to work from the site without
   // a redeploy; class.json's `"draft": true` merely picks the value the row is
   // created with. The `@default(now())` is what backfills the classes that
   // existed before this column, so nothing goes dark on `prisma db push`.
-  publishedAt   DateTime? @default(now())
+  publishedAt     DateTime? @default(now())
+  // Set by a site admin (ADMIN_EMAILS) after a report, and only cleared by one.
+  // Overrides publishedAt: a suspended class is back to teachers-only, and its
+  // own Publish button cannot bring it out — that is the point of the switch on
+  // an open platform. Teachers keep seeing it, with the reason, so they know why.
+  suspendedAt     DateTime?
+  suspendedReason String?   @db.Text
+  suspendedBy     String?
 
-  invites     ClassInvite[]
-  enrollments ClassEnrollment[]
-  sessions    LessonSession[]
-  attendances LessonAttendance[]
+  invites             ClassInvite[]
+  enrollments         ClassEnrollment[]
+  sessions            LessonSession[]
+  attendances         LessonAttendance[]
   notebookSubmissions NotebookSubmission[]
+  reports             ClassReport[]
 }
 
 // One invite code, handed out to one group of students. A class can have several
@@ -284,7 +294,7 @@ model LessonAttendance {
 }
 
 model NotebookSubmission {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   userId       String
   classId      String
   lessonSlug   String
@@ -292,15 +302,15 @@ model NotebookSubmission {
   fileUrl      String
   fileName     String
   fileBytes    Int
-  submittedAt  DateTime  @default(now())
+  submittedAt  DateTime @default(now())
 
   // Grading
-  status       String    @default("submitted") // "submitted" | "graded"
-  grade        Int?
-  maxGrade     Int?      @default(100)
-  feedback     String?   @db.Text
-  gradedBy     String?
-  gradedAt     DateTime?
+  status   String    @default("submitted") // "submitted" | "graded"
+  grade    Int?
+  maxGrade Int?      @default(100)
+  feedback String?   @db.Text
+  gradedBy String?
+  gradedAt DateTime?
 
   user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
   class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
@@ -308,6 +318,72 @@ model NotebookSubmission {
   @@unique([userId, classId, lessonSlug, assignmentId])
   @@index([classId, lessonSlug])
   @@index([userId])
+}
+
+// --- Platform teachers ---
+// Who may build their own courses (the Studio). Distinct from Class.teacherEmails,
+// which says who teaches *one* class: this is the site-wide role, granted by a
+// site admin, usually by approving a TeacherApplication.
+
+// Keyed by email rather than userId, like Class.teacherEmails, so a grant can be
+// made before the person has an account. Revoking keeps the row (and so who
+// granted it and when); granting again clears revokedAt.
+model TeacherGrant {
+  id              String    @id @default(cuid())
+  email           String    @unique // lower-cased
+  grantedBy       String // the admin's email
+  grantedAt       DateTime  @default(now())
+  revokedAt       DateTime?
+  revokedBy       String?
+  // The version of the teacher terms last accepted (TEACHER_TERMS_VERSION). The
+  // role is only usable while this matches the current version, so changing the
+  // terms asks everybody again.
+  termsVersion    String?
+  termsAcceptedAt DateTime?
+}
+
+// "I want to teach here". Anyone signed in may apply; an admin approves (which
+// creates or restores the TeacherGrant) or rejects with a note the applicant
+// sees. One pending application per user at a time.
+model TeacherApplication {
+  id         String    @id @default(cuid())
+  userId     String
+  about      String    @db.Text // who they are, where they teach
+  plans      String    @db.Text // what they want to teach here
+  link       String? // a page that vouches for them, optional
+  status     String    @default("pending") // pending | approved | rejected
+  reviewedBy String?
+  reviewedAt DateTime?
+  reviewNote String?   @db.Text
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId])
+}
+
+// A visitor flagging a class: the open platform's half of moderation, the other
+// half being Class.suspendedAt. Sign-in is required, so a report has somebody
+// behind it and one person cannot flood the queue anonymously.
+model ClassReport {
+  id         String    @id @default(cuid())
+  classId    String
+  lessonSlug String? // when it was reported from a lesson page
+  reporterId String
+  reason     String // see REPORT_REASONS in src/lib/teachers.ts
+  details    String    @db.Text
+  status     String    @default("open") // open | resolved | dismissed
+  resolvedBy String?
+  resolvedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  class    Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+  reporter User  @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([classId])
+  @@index([reporterId])
 }
 
 // Whether a brain teaser is on the site yet. Everything else about a teaser is

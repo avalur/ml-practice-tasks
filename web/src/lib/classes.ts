@@ -3,6 +3,7 @@ import path from "node:path";
 import { cache } from "react";
 
 import { auth } from "@/auth";
+import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
 import {
   assignmentKey,
@@ -100,11 +101,18 @@ export type Access = {
   email: string | null;
   classRow: { id: string; slug: string; title: string } | null;
   isTeacher: boolean;
+  /** A site admin (ADMIN_EMAILS). Sees every class, drafts and suspended ones
+   * included, because moderating a class means being able to read it. */
+  isAdmin: boolean;
   /** Published, i.e. listed and readable by anyone. A draft class is still fully
    * built and presentable — it is simply nowhere on the public site yet. */
   published: boolean;
-  /** The check every class page and the notes route makes: a draft belongs to
-   * its teachers, and to nobody else — enrolled students included. */
+  /** Taken down by a site admin: back to teachers-only whatever `published`
+   * says, and the reason is what the teachers are shown. */
+  suspended: { at: Date; reason: string | null } | null;
+  /** The check every class page and the notes route makes: a draft (or a
+   * suspended class) belongs to its teachers and the site admins, and to nobody
+   * else — enrolled students included. */
   visible: boolean;
   /** Enrolled with a code, or teaching. Classes themselves are public; this
    * gates the lecture notes and everything teacher-facing. */
@@ -129,6 +137,7 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
   const session = await currentSession();
   const userId = session?.user?.id ?? null;
   const email = session?.user?.email?.toLowerCase() ?? null;
+  const isAdmin = await isSiteAdmin();
 
   const row = await prisma.class.findUnique({
     where: { slug },
@@ -138,6 +147,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
       title: true,
       teacherEmails: true,
       publishedAt: true,
+      suspendedAt: true,
+      suspendedReason: true,
       // Not conditional on `userId`: a select that is sometimes `false` gives
       // this row two different shapes, and the caller then cannot read the
       // group off it. An impossible id costs one indexed miss instead.
@@ -155,7 +166,9 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
       email,
       classRow: null,
       isTeacher: false,
+      isAdmin,
       published: false,
+      suspended: null,
       visible: false,
       isMember: false,
       isStudent: false,
@@ -167,13 +180,18 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
   const isTeacher = !!email && row.teacherEmails.includes(email);
   const enrollment = userId ? row.enrollments[0] : undefined;
   const published = row.publishedAt !== null;
+  const suspended = row.suspendedAt
+    ? { at: row.suspendedAt, reason: row.suspendedReason }
+    : null;
   return {
     userId,
     email,
     classRow: { id: row.id, slug: row.slug, title: row.title },
     isTeacher,
+    isAdmin,
     published,
-    visible: published || isTeacher,
+    suspended,
+    visible: (published && !suspended) || isTeacher || isAdmin,
     isMember: isTeacher || !!enrollment,
     isStudent: !isTeacher && !!enrollment,
     isEnrolled: !!enrollment,
@@ -196,7 +214,7 @@ export const visibleClasses = cache(async function visibleClasses(): Promise<
   const [all, rows] = await Promise.all([
     getClasses(),
     prisma.class.findMany({
-      select: { slug: true, publishedAt: true, teacherEmails: true },
+      select: { slug: true, publishedAt: true, suspendedAt: true, teacherEmails: true },
     }),
   ]);
 
@@ -205,7 +223,9 @@ export const visibleClasses = cache(async function visibleClasses(): Promise<
   for (const cls of all) {
     const row = state.get(cls.slug);
     if (!row) continue;
-    const draft = row.publishedAt === null;
+    // A suspended class lists like a draft: its teachers still see it (badged as
+    // a draft, which is what it now is to everybody else), nobody else does.
+    const draft = row.publishedAt === null || row.suspendedAt !== null;
     if (draft && !(email && row.teacherEmails.includes(email))) continue;
     out.push({ ...cls, draft });
   }

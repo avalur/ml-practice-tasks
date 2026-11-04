@@ -267,6 +267,38 @@ export async function teaserState(slug: string) {
   };
 }
 
+/** Platform-teacher rows for synthetic addresses.
+ *
+ * A TeacherGrant is keyed by email, not by user, so deleting a test user (which
+ * signInAs's dispose does) leaves the grant behind. This reads them back and
+ * deletes them — @example.test addresses only, like everything else here. */
+export async function teacherGrants() {
+  const { PrismaClient } = await import("@prisma/client");
+  const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+  const touched = new Set<string>();
+  const guard = (email: string) => {
+    if (!TEST_EMAIL.test(email)) throw new Error(`teacherGrants refuses ${email}`);
+    touched.add(email);
+  };
+  return {
+    async grant(email: string) {
+      guard(email);
+      return prisma.teacherGrant.findUnique({ where: { email } });
+    },
+    async application(email: string) {
+      guard(email);
+      return prisma.teacherApplication.findFirst({
+        where: { user: { email } },
+        orderBy: { createdAt: "desc" },
+      });
+    },
+    async dispose() {
+      await prisma.teacherGrant.deleteMany({ where: { email: { in: [...touched] } } });
+      await prisma.$disconnect();
+    },
+  };
+}
+
 /** A throwaway live abacus event, made straight in the database.
  *
  * Its code is prefixed `E2E-` and dispose() refuses to delete anything else, so

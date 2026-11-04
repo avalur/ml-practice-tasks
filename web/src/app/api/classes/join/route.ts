@@ -35,6 +35,7 @@ export async function POST(req: Request) {
           slug: true,
           title: true,
           publishedAt: true,
+          suspendedAt: true,
           teacherEmails: true,
         },
       },
@@ -44,12 +45,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "no group with that code" }, { status: 404 });
   }
 
-  /* A draft class has nothing to join yet — and the same answer as an unknown
+  /* A draft (or suspended) class has nothing to join yet — and the same answer as an unknown
    * code, so a code handed out early does not confirm that the class exists. Its
    * own teachers are the exception: trying the code is how you check it works. */
   const email = session.user?.email?.toLowerCase();
   const isTeacher = !!email && invite.class.teacherEmails.includes(email);
-  if (!invite.class.publishedAt && !isTeacher) {
+  if ((!invite.class.publishedAt || invite.class.suspendedAt) && !isTeacher) {
     return NextResponse.json({ error: "no group with that code" }, { status: 404 });
   }
 

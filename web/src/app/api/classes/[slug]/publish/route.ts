@@ -18,6 +18,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ slug: s
   const access = await getAccess(slug);
   if (!access.classRow) return NextResponse.json({ error: "no such class" }, { status: 404 });
   if (!access.isTeacher) return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  // The moderation switch outranks this one: a suspended class stays down until
+  // an admin lifts it, or Publish would undo the suspension in one click.
+  if (access.suspended) {
+    return NextResponse.json({ error: "This class is suspended by the site admins." }, { status: 403 });
+  }
 
   const body = await jsonBody(req);
   if (!body) return NextResponse.json({ error: "bad json" }, { status: 400 });

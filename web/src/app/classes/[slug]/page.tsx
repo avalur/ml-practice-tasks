@@ -20,6 +20,8 @@ import {
 } from "@/lib/classes";
 import { JoinClassForm } from "@/components/JoinClassForm";
 import { PublishToggle } from "@/components/PublishToggle";
+import { ClassModeration } from "@/components/ClassModeration";
+import { ReportClassButton } from "@/components/ReportClassButton";
 
 type Params = { slug: string };
 
@@ -105,9 +107,9 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
             <span className="badge hard">teacher</span>
             <Link href={`/classes/${slug}/monitor`}>Live monitor</Link>
             <Link href={`/classes/${slug}/homework`}>Homework overview &amp; group codes</Link>
-            <PublishToggle slug={slug} published={access.published} />
+            {!access.suspended && <PublishToggle slug={slug} published={access.published} />}
           </div>
-          {!access.published && (
+          {!access.published && !access.suspended && (
             <p className="class-draft-note" data-testid="draft-note">
               <span className="badge medium">draft</span> Only you can see this class.
               Everything works — slides, present mode, practice links — it is just not
@@ -117,6 +119,8 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
           )}
         </>
       )}
+
+      <ClassModeration slug={slug} access={access} />
 
       {/* Joining changes nothing about what you can read — it is how the teacher
           gets to see your homework, so it is offered rather than demanded. */}
@@ -240,6 +244,8 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
           );
         })}
       </ul>
+
+      {!access.isTeacher && <ReportClassButton slug={slug} signedIn={!!access.userId} />}
     </article>
   );
 }

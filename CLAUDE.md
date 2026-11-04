@@ -148,7 +148,9 @@ A third content family, for lecturing from the reveal.js decks in
   the only truth. A draft is complete and presentable but belongs to its
   **teachers alone**: absent from `/classes`, 404 on its own pages and lesson
   pages, and its group codes enroll nobody. Every caller asks the same question,
-  `access.visible` from `getAccess()` (`published || isTeacher`); the list pages
+  `access.visible` from `getAccess()`
+  (`(published && !suspended) || isTeacher || isAdmin` — see "Teachers and
+  moderation" below for the last two terms); the list pages
   use `visibleClasses()`, which also treats a class with **no `Class` row** as
   hidden — nothing is visible before `db:sync-classes` has run.
   - `"draft": true` in `class.json` picks the state the row is **created** with
@@ -343,6 +345,43 @@ PyScript in the decks, four things learned the hard way:
   dev server is serving, and a truncating overwrite can hand a browser half a
   page — which looks exactly like a deck whose py-editor config vanished.
 
+## Teachers and moderation
+
+The **platform teacher** role is the first step towards teachers building their
+own courses (the Studio, next). It sits between the two older levels: site
+admins (`ADMIN_EMAILS`) grant it, and it is unrelated to `Class.teacherEmails`,
+which still authorizes the hand-written repo classes exactly as before.
+
+- `TeacherGrant` is keyed by **email** (like `teacherEmails`), so a grant can
+  precede the account. Revoking stamps `revokedAt` and keeps the row; granting
+  again clears it. The role is usable only while `termsVersion` equals
+  `TEACHER_TERMS_VERSION` in `web/src/content/teacher-terms.ts` — bump that
+  constant when the substance of the terms changes and everybody is asked again.
+  `teacherState()` in `web/src/lib/teachers.ts` is the single answer
+  (`anonymous | none | pending | revoked | terms | active`);
+  `isPlatformTeacher()` is the gate future Studio routes use.
+- The way in is `/teach`: apply (`TeacherApplication`, one pending per person),
+  an admin approves or rejects in `/admin/teachers` (or grants by email
+  directly), the applicant accepts the terms. Approval is claimed with an
+  atomic `updateMany` on `status: "pending"`, so two admins cannot send two
+  letters. Admins are emailed about each application and report; with no
+  `RESEND_API_KEY` the letters go to the server log, as everywhere.
+- **Moderation** is two halves. Visitors (signed in, not the class's teachers)
+  file a `ClassReport` from the class or lesson page; `/admin/reports` groups
+  them by class. Admins flip `Class.suspendedAt` (with a reason the teachers are
+  shown): a suspended class is teachers-and-admins-only whatever `publishedAt`
+  says, its codes enroll nobody, and the publish route **refuses** while it is
+  suspended — otherwise Publish would undo the suspension in one click. Closing
+  a report never touches the class.
+- Admins **see every class**, drafts included (`access.isAdmin` feeds
+  `visible`): moderating a class means being able to read it. They are not
+  members, so lecture notes stay gated.
+- `/admin/*` 404s for non-admins in its layout, and every page and route checks
+  `isSiteAdmin()` again on its own — a layout is not a boundary for API routes.
+- e2e: `tests/e2e/teach.spec.ts`; `teacherGrants()` in `support/session.ts`
+  cleans up grants, which outlive the deleted test user. The moderation test
+  publishes a scratch class, so it only runs on an isolated database.
+
 ## Brain teasers
 
 Puzzles under `/brainteasers`, listed by the hardcoded `TEASERS` array in
@@ -529,7 +568,7 @@ python tools/build_figures.py --check # CI: a .tex edited without a rebuild
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
 cd web && pnpm db:sync-problems # sync Problem rows in Neon/Postgres DB with manifest
-cd web && pnpm db:push         # apply Prisma schema (required before NotebookSubmission ships)
+cd web && pnpm db:push         # apply Prisma schema (required before teacher/moderation code ships)
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
 cd web && pnpm db:sync-classes --unpublish <slug> # take it back off

@@ -37,6 +37,7 @@ export default function RootLayout({
               <Link href="/notebooks">Notebooks</Link>
               <Link href="/classes">Classes</Link>
               <Link href="/brainteasers">Brainteasers</Link>
+              <Link href="/teach">Teach</Link>
               <Link href="/profile">Profile</Link>
             </nav>
             <div className="header-right">

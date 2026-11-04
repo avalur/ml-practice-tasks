@@ -4,11 +4,19 @@
  * same annotate.js / fitslides.js — so ink, boards and "Finish lesson" behave
  * exactly as on a repo deck. Differences, all deliberate:
  *   - the only inline script carries a nonce, and the CSP below allows no other;
- *   - no PyScript (studio decks have no scripts at all), no devreload.js;
+ *   - PyScript is loaded only when the deck has a py-editor (the sanitizer
+ *     lets those through and nothing else), and only then does the CSP open
+ *     up to its CDNs and to WebAssembly; no devreload.js;
  *   - the body's onload="totalWrapper()" is called from the nonced script,
  *     since an inline handler attribute is exactly what the CSP forbids. */
 
 const SHARED = "/classes/_shared";
+// Same release as PYSCRIPT in export_decks.py — keep the two in step.
+const PYSCRIPT = "https://pyscript.net/releases/2024.11.1";
+
+export function hasPython(deck: string): boolean {
+  return /<script type="py-editor"/.test(deck);
+}
 
 const REVEAL_CONFIG = {
   hash: true,
@@ -25,15 +33,24 @@ function esc(s: string): string {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }
 
-export function deckCsp(nonce: string): string {
+export function deckCsp(nonce: string, python = false): string {
+  // PyScript's core and editor come from pyscript.net, Pyodide and its
+  // packages from jsDelivr, and running WebAssembly needs 'wasm-unsafe-eval'.
+  // The editor's worker is bootstrapped from a blob: URL it fetches and runs,
+  // hence blob: in both script-src and connect-src; and polyscript builds
+  // functions with new Function, which only 'unsafe-eval' allows (a blob
+  // worker inherits this policy). None of that widens what is trusted: the
+  // teacher's Python reaches JavaScript through its `js` module anyway, and
+  // without a script to start it markup still cannot evaluate anything.
+  const py = python ? " https://pyscript.net https://cdn.jsdelivr.net" : "";
   return [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}'`,
+    `script-src 'self' 'nonce-${nonce}'${python ? `${py} blob: 'unsafe-eval' 'wasm-unsafe-eval'` : ""}`,
     // reveal and KaTeX set inline styles; the theme imports Google Fonts.
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
-    "font-src 'self' data: https://fonts.gstatic.com",
+    `style-src 'self' 'unsafe-inline' https://fonts.googleapis.com${py}`,
+    `font-src 'self' data: https://fonts.gstatic.com${py}`,
     "img-src 'self' data: blob:",
-    "connect-src 'self'",
+    `connect-src 'self'${python ? `${py} blob:` : ""}`,
     // annotate.js hands the PDF to /classes/blob-bridge in a hidden iframe.
     "frame-src 'self'",
     "worker-src 'self' blob:",
@@ -75,7 +92,7 @@ export function renderDeckPage(opts: {
 <link rel="stylesheet" href="${SHARED}/theme/sky.css">
 <link rel="stylesheet" href="${SHARED}/plugin/highlight/monokai.css">
 <link rel="stylesheet" href="${SHARED}/present.css">
-</head>
+${hasPython(opts.deck) ? `<link rel="stylesheet" href="${PYSCRIPT}/core.css">\n<script type="module" src="${PYSCRIPT}/core.js"></script>\n` : ""}</head>
 <body data-class="${esc(opts.classSlug)}" data-lesson="${esc(opts.lessonSlug)}" data-deck-hash="${esc(opts.deckHash)}" data-studio="1">
 <div class="reveal">
 <div class="slides">

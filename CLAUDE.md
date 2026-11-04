@@ -414,9 +414,23 @@ always wins a collision.
   and foreign `url()` stripped from style attributes. It runs on save *and* on
   every render, so tightening it covers old decks. The page's CSP allows only
   `_shared` scripts plus one nonced inline script, `img-src 'self' data:`,
-  `form-action 'none'`; there are no PyScript editors in studio decks (that
-  needs a separate sandboxed origin, not built). `tests/deck-sanitize.test.mjs`
-  is the attack list — add to it when the allowlist changes.
+  `form-action 'none'`. `tests/deck-sanitize.test.mjs` is the attack list —
+  add to it when the allowlist changes.
+- **PyScript editors are the one exception**, a decision taken knowingly
+  (2026-11-04): `<script type="py-editor" env="…">` survives with its code and
+  `env` only — `setup` (auto-run), `config` and `src` are dropped, so code runs
+  only when the student presses Run. The Python runs on this origin, so an
+  approved teacher *could* call the site as that student; vetting and
+  suspension are the guard (a cookie-less sandbox per editor was the
+  alternative, and it cannot share `env` across slides). Editors are cut out
+  before sanitize-html and restored only where their placeholder element
+  survived, so code smuggled into an attribute never becomes a tag, and the
+  code cannot close its `<script>` or open a comment. Only a deck that has an
+  editor gets PyScript (`hasPython()`) and the wider CSP: pyscript.net and
+  jsDelivr, `blob:` (the editor worker is bootstrapped from one), and both
+  `'unsafe-eval'` (polyscript uses `new Function`; a blob worker inherits the
+  page's policy) and `'wasm-unsafe-eval'`. A deck without editors keeps the
+  strict policy — `studio.spec.ts` checks both, and fails without `unsafe-eval`.
 - **The full-screen editor** (`DeckFullscreen.tsx`: AI chat | HTML | live
   slide) renders the *unsaved* text through `POST …/lessons/<l>/preview` — a
   form POST into a hidden iframe, swapped in once reveal is ready, so the preview

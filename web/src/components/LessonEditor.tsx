@@ -330,7 +330,7 @@ function DeckPart({
       setPreviewKey((k) => k + 1);
       setMsg(
         data.stripped
-          ? { ok: false, text: "Saved — but some markup is not allowed in slides (scripts, forms, embeds, outside images) and was removed. The editor now shows what is kept." }
+          ? { ok: false, text: "Saved — but some markup is not allowed in slides (scripts other than py-editor, forms, embeds, outside images) and was removed. The editor now shows what is kept." }
           : { ok: true, text: "Saved." },
       );
     } catch (e) {
@@ -439,8 +439,9 @@ function DeckPart({
       <h2>Slides</h2>
       <p className="muted">
         Each slide is a <code>&lt;section&gt;</code>. Formulas in <code>$…$</code>, fragments with{" "}
-        <code>class=&quot;fragment&quot;</code>, speaker notes in <code>&lt;aside class=&quot;notes&quot;&gt;</code>. Scripts, forms and
-        embeds are not allowed; images come from the upload button.
+        <code>class=&quot;fragment&quot;</code>, speaker notes in <code>&lt;aside class=&quot;notes&quot;&gt;</code>. Runnable
+        Python goes in <code>&lt;script type=&quot;py-editor&quot;&gt;</code> (<code>env=&quot;…&quot;</code> to share variables
+        between slides); no other scripts, forms or embeds. Images come from the upload button.
       </p>
       <input
         ref={fileRef}

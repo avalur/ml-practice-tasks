@@ -101,7 +101,8 @@ const DIALECT = `You write lecture slides for reveal.js as plain HTML.
 Output ONLY a sequence of <section>...</section> elements — no <html>, <head>, <body>, no markdown, no code fences, no commentary.
 Allowed: headings, p, ul/ol/li, strong/em, code/pre (use <pre><code class="language-python">), blockquote, table, img, a, div/span with classes, aside class="notes" for speaker notes.
 Use class="fragment" on list items to reveal them one by one. Write formulas in LaTeX between $...$ (inline) or $$...$$ (display).
-Never use <script>, <style>, <iframe>, <form>, <input>, <svg>, event handlers, or images from the web.
+For Python the class can run in the browser, use <script type="py-editor">code</script> (add env="name" to editors that share variables across slides); the student presses Run. Only the standard library is available.
+Never use any other <script>, nor <style>, <iframe>, <form>, <input>, <svg>, event handlers, or images from the web.
 Keep each slide short: a title (h2 or h3) and at most 5–6 bullets or one small code block. The slide is 1280x720.`;
 
 export function buildMessages(opts: {

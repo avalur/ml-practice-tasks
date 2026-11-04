@@ -266,6 +266,55 @@ test("studio: present mode and Finish lesson work under the deck's CSP", async (
   }
 });
 
+// The one script a studio deck may run: PyScript editors, under the deck's CSP,
+// sharing variables across slides through env= exactly like a repo deck.
+test("studio: py-editors run in a studio deck under its CSP", async ({ browser }) => {
+  test.setTimeout(240_000);
+  const t = await teacher(browser, "python");
+  try {
+    const slug = await createCourse(t.page, "E2E Python");
+    const deck =
+      `<section><h2>Run me</h2><script type="py-editor" env="shared" setup>\nx = 6 * 7\nprint("answer", x)\n</script></section>\n` +
+      `<section><h2>Again</h2><script type="py-editor" env="shared">\nprint("again", x + 1)\n</script></section>`;
+    const save = await t.page.request.patch(`/api/studio/courses/${slug}/lessons/l01-intro`, {
+      data: { deck },
+      headers: { origin: ORIGIN },
+    });
+    expect(save.status()).toBe(200);
+    expect((await save.json()).deck).not.toContain("setup"); // no auto-run
+
+    const violations: string[] = [];
+    t.page.on("console", (m) => {
+      if (/Content Security Policy|Refused to|EvalError/i.test(m.text())) violations.push(m.text());
+    });
+    const res = await t.page.goto(`/classes/${slug}/l01-intro/present.html`);
+    expect(res!.headers()["content-security-policy"]).toContain("https://pyscript.net");
+    const run = t.page.locator(".py-editor-run-button");
+    await expect(run).toHaveCount(2, { timeout: 60_000 });
+    const out = t.page.locator(".py-editor-output");
+    // Nothing ran on its own.
+    await expect(out.first()).toHaveText("");
+
+    await run.first().click({ force: true });
+    await expect(out.first()).toContainText("answer 42", { timeout: 180_000 });
+    await t.page.evaluate(() => (window as any).Reveal.slide(1));
+    await run.nth(1).click({ force: true });
+    await expect(out.nth(1)).toContainText("again 43", { timeout: 60_000 });
+    expect(violations).toEqual([]);
+
+    // A deck without editors keeps the strict policy: no eval, no CDN.
+    await t.page.request.patch(`/api/studio/courses/${slug}/lessons/l01-intro`, {
+      data: { deck: "<section><h2>Plain</h2></section>" },
+      headers: { origin: ORIGIN },
+    });
+    const plain = await t.page.request.get(`/classes/${slug}/l01-intro/present.html`);
+    expect(plain.headers()["content-security-policy"]).not.toMatch(/unsafe-eval|pyscript/);
+    expect(await plain.text()).not.toContain("pyscript.net");
+  } finally {
+    await t.close();
+  }
+});
+
 /** Replace everything in the page's CodeMirror, as a paste — typing would let
  * the HTML mode auto-close every tag. */
 async function pasteDeck(page: Page, text: string) {

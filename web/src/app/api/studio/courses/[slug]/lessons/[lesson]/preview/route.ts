@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { crossSite } from "@/lib/http";
 import { sanitizeDeck } from "@/lib/deck-sanitize";
-import { deckCsp, renderDeckPage } from "@/lib/deck-shell";
+import { deckCsp, hasPython, renderDeckPage } from "@/lib/deck-shell";
 import { STUDIO_LIMITS, deckHash, editableClass } from "@/lib/studio";
 
 type Ctx = { params: Promise<{ slug: string; lesson: string }> };
@@ -40,12 +40,13 @@ export async function POST(req: Request, { params }: Ctx) {
   if (Buffer.byteLength(raw) > 2 * STUDIO_LIMITS.deckBytes) return text(413, "deck too large to preview");
 
   const nonce = randomBytes(16).toString("base64");
+  const deck = sanitizeDeck(raw);
   const html = renderDeckPage({
     classSlug: slug,
     classTitle: g.cls.title,
     lessonSlug: lesson,
     lessonTitle: row.title,
-    deck: sanitizeDeck(raw),
+    deck,
     deckHash: deckHash(raw),
     nonce,
     preview: true,
@@ -53,7 +54,7 @@ export async function POST(req: Request, { params }: Ctx) {
   return new Response(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Content-Security-Policy": deckCsp(nonce),
+      "Content-Security-Policy": deckCsp(nonce, hasPython(deck)),
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "same-origin",
       "Cache-Control": "no-store",

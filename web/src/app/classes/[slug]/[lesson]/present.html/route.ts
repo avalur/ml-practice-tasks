@@ -3,7 +3,7 @@ import { randomBytes } from "node:crypto";
 import { prisma } from "@/lib/db";
 import { getAccess } from "@/lib/classes";
 import { sanitizeDeck } from "@/lib/deck-sanitize";
-import { deckCsp, renderDeckPage } from "@/lib/deck-shell";
+import { deckCsp, hasPython, renderDeckPage } from "@/lib/deck-shell";
 import { deckHash } from "@/lib/studio";
 
 /* GET /classes/<slug>/<lesson>/present.html for a studio course.
@@ -48,7 +48,7 @@ export async function GET(
   return new Response(html, {
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Content-Security-Policy": deckCsp(nonce),
+      "Content-Security-Policy": deckCsp(nonce, hasPython(deck)),
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "same-origin",
       // The nonce changes per response, so nothing here may be cached.

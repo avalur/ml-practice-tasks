@@ -78,3 +78,46 @@ test("style attributes lose foreign url() but keep the rest", () => {
 test("bare content is wrapped into one slide", () => {
   assert.match(sanitizeDeck("<h2>Just a heading</h2>"), /^<section>\s*<h2>Just a heading<\/h2>\s*<\/section>/);
 });
+
+/* PyScript editors are the one script a studio deck may carry: kept with their
+ * code, and nothing else about them. */
+test("keeps py-editors, with only env, and drops every other script type", () => {
+  const out = sanitizeDeck(`<section><script type="py-editor" env="shared" setup config="https://evil.example/c.toml" src="https://evil.example/x.py">
+for i in range(3):
+    if i < 2 and i > 0:
+        print(i)
+</script>
+<script type='py-editor'>print("plain")</script>
+<script type="py">import js; js.alert(1)</script><script type="module">alert(2)</script>
+<script type="text/py-editor">x</script><script type="py-editor-x">y</script></section>`);
+  assert.ok(out.includes('<script type="py-editor" env="shared">\nfor i in range(3):\n    if i < 2 and i > 0:'), out);
+  assert.ok(out.includes('<script type="py-editor">print("plain")</script>'), out);
+  for (const bad of ["setup", "config", "evil.example", 'type="py"', "js.alert", "module", "alert(2)", "text/py-editor", "py-editor-x"]) {
+    assert.ok(!out.includes(bad), `${bad} survived: ${out}`);
+  }
+  assert.equal((out.match(/<script/g) ?? []).length, 2, out);
+});
+
+test("editor code can neither close its script nor open a comment", () => {
+  const out = sanitizeDeck(`<section><script type="py-editor">s = "<!--<script"
+</SCRIPT ><img src=x onerror=alert(1)></script></section>`);
+  // The regex stops at the first </script>, so the rest is markup and is sanitized.
+  assert.ok(!/onerror/i.test(out), out);
+  const one = sanitizeDeck(`<section><script type="py-editor">print("</scr" + "ipt>")
+print('<!-- not a comment')</script></section>`);
+  assert.ok(!one.includes("<!--"), one);
+  assert.equal((one.match(/<\/script/gi) ?? []).length, 1, one);
+});
+
+test("an editor smuggled into an attribute comes back as text, not a tag", () => {
+  const out = sanitizeDeck(`<section><img src="${ASSET}" alt='<script type="py-editor">" onerror="alert(1)</script>'>
+<p title="<script type='py-editor'>x</script>">t</p></section>`);
+  assert.ok(!/onerror="alert/.test(out), out);
+  assert.ok(!/<script/.test(out), out);
+});
+
+test("sanitizing twice changes nothing (save, then render)", () => {
+  const deck = `<section><script type="py-editor" env="a">print("</script>")\nx = '<!--'</script><p>t</p></section>`;
+  const once = sanitizeDeck(deck);
+  assert.equal(sanitizeDeck(once), once);
+});

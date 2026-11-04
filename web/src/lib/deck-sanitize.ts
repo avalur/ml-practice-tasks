@@ -7,7 +7,8 @@ import sanitizeHtml from "sanitize-html";
  * Allowlist, not blocklist. What survives is reveal-shaped markup — sections,
  * text, lists, tables, code, images from our own asset route, links — and
  * nothing that executes, embeds, or collects input:
- *   - no <script>, <style>, <iframe>, <object>, <form>, <input>, <svg>, <math>;
+ *   - no <script>, <style>, <iframe>, <object>, <form>, <input>, <svg>, <math>
+ *     — with one deliberate exception, PyScript editors (below);
  *   - no event-handler attributes, and only the reveal data-* attributes that
  *     cannot load anything (data-background-iframe/-video are out);
  *   - images only from /api/studio/assets/<id> or an inline data: image;
@@ -38,6 +39,29 @@ const REVEAL_DATA = [
   "data-trim",
   "data-noescape",
 ];
+
+/* PyScript editors: <script type="py-editor" env="…">python</script>.
+ *
+ * The one kind of script a studio deck may carry, and a conscious trade: the
+ * Python runs on this origin in a worker, so a teacher's code could call the
+ * site as the student who presses Run. Approved teachers are trusted with that
+ * (the terms forbid it; an admin can suspend a course). What is still held:
+ *   - it runs only on a click: `setup` (auto-run), `config`, `src` and every
+ *     other attribute are dropped, and `type` is fixed — no other script type;
+ *   - the code cannot end its own <script> or open an HTML comment, so it can
+ *     never turn into markup;
+ *   - editors are cut out before sanitize-html runs and put back only where a
+ *     whole placeholder element survived, so code smuggled into an attribute
+ *     value comes back as inert text, never as a tag. */
+const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
+const PY_TYPE = /\btype\s*=\s*(["']?)py-editor\1(?=[\s/]|$)/i;
+const PY_ENV = /\benv\s*=\s*(["']?)([A-Za-z0-9_-]{1,40})\1(?=[\s/]|$)/i;
+
+function pyEditor(attrs: string, code: string): string {
+  const env = PY_ENV.exec(attrs)?.[2];
+  const safe = code.replace(/<\/(script)/gi, "<\\/$1").replace(/<!--/g, "<\\!--");
+  return `<script type="py-editor"${env ? ` env="${env}"` : ""}>${safe}</script>`;
+}
 
 function cleanStyle(style: string): string {
   return style
@@ -110,7 +134,14 @@ const OPTIONS: sanitizeHtml.IOptions = {
 
 /** Sanitize a studio deck. Always returns a deck with at least one slide. */
 export function sanitizeDeck(html: string): string {
-  let out = sanitizeHtml(html, {
+  const editors: string[] = [];
+  const marker = `mlp-py-${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
+  const marked = html.replace(SCRIPT_RE, (_m, attrs: string, code: string) => {
+    if (!PY_TYPE.test(attrs)) return "";
+    editors.push(pyEditor(attrs, code));
+    return `<pre class="${marker}-${editors.length - 1}"></pre>`;
+  });
+  let out = sanitizeHtml(marked, {
     ...OPTIONS,
     transformTags: {
       ...OPTIONS.transformTags,
@@ -129,6 +160,7 @@ export function sanitizeDeck(html: string): string {
     `<${tag}${pre} style="${cleanStyle(style)}"`,
   );
   out = out.replace(/\srel=""/g, "");
+  out = out.replace(new RegExp(`<pre class="${marker}-(\\d+)"></pre>`, "g"), (_m, i: string) => editors[Number(i)] ?? "");
   if (!/<section\b/i.test(out)) out = `<section>\n${out.trim()}\n</section>`;
   return out.trim() + "\n";
 }

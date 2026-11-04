@@ -400,29 +400,41 @@ test("studio: the full-screen editor renders unsaved slides live, on the cursor'
 
 test("studio: the AI builder uses the teacher's own key and its answer is sanitized", async ({ browser }) => {
   test.skip(process.env.AI_ALLOW_PRIVATE_BASE_URL !== "1", "needs AI_ALLOW_PRIVATE_BASE_URL=1 on the server for the mock model");
-  const requests: { model: string; messages: { role: string; content: string }[] }[] = [];
+  const requests: { model: string; stream?: boolean; reasoning?: unknown; messages: { role: string; content: string }[] }[] = [];
   const mock = http.createServer((req, res) => {
     let body = "";
     req.on("data", (c) => (body += c));
-    req.on("end", () => {
+    req.on("end", async () => {
       requests.push(JSON.parse(body));
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          choices: [
-            {
-              message: {
-                content:
-                  "Here you go:\n```html\n<section><h2>Mock slide one</h2><script>alert(1)</script></section>\n" +
-                  "<section><h2>Mock slide two</h2></section>\n" +
-                  // Later requests change the deck, so the chat's answer is a visible edit.
-                  (requests.length > 1 ? "<section><h2>Cross product</h2></section>\n" : "") +
-                  "```",
-              },
-            },
-          ],
-        }),
-      );
+      const content =
+        "Here you go:\n```html\n<section><h2>Mock slide one</h2><script>alert(1)</script></section>\n" +
+        "<section><h2>Mock slide two</h2></section>\n" +
+        // Later requests change the deck, so the chat's answer is a visible edit.
+        (requests.length > 1 ? "<section><h2>Cross product</h2></section>\n" : "") +
+        "```";
+      if (requests.length === 1) {
+        // A provider that ignores `stream` and answers plain JSON still works.
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ choices: [{ message: { content } }] }));
+        return;
+      }
+      // Later ones stream like OpenRouter: a keep-alive comment, reasoning,
+      // then the answer in pieces with pauses the editor can be watched in.
+      res.writeHead(200, { "Content-Type": "text/event-stream" });
+      const send = (delta: object) => res.write(`data: ${JSON.stringify({ choices: [{ delta }] })}\n\n`);
+      const pause = () => new Promise((r) => setTimeout(r, 700));
+      res.write(": OPENROUTER PROCESSING\n\n");
+      send({ reasoning: "The teacher wants a cross product slide. " });
+      await pause();
+      send({ reasoning: "I will append it after the existing two." });
+      await pause();
+      const cut = content.indexOf("<section><h2>Cross");
+      send({ content: content.slice(0, cut) });
+      await pause();
+      await pause();
+      send({ content: content.slice(cut) });
+      res.write("data: [DONE]\n\n");
+      res.end();
     });
   });
   await new Promise<void>((r) => mock.listen(0, "127.0.0.1", r));
@@ -481,6 +493,15 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
     await t.page.getByTestId("fs-chat-input").fill("Add a slide about the cross product");
     await t.page.getByTestId("fs-chat-input").press("Enter");
     await expect(t.page.getByTestId("fs-chat-log")).toContainText("Add a slide about the cross product");
+    // While it runs, the chat shows the model thinking, then the slides it has finished.
+    const live = t.page.getByTestId("ai-progress");
+    await expect(live).toContainText("I will append it after the existing two");
+    await expect(live).toContainText("Writing slides — 2 done");
+    await expect(live.locator("li")).toHaveText(["Mock slide one", "Mock slide two"]);
+    await expect(live).toHaveCount(0);
+    expect(requests.at(-1)?.stream).toBe(true);
+    // `reasoning` is an OpenRouter extension; a custom endpoint never gets it.
+    expect(requests.at(-1)?.reasoning).toBeUndefined();
     await expect(t.page.getByTestId("fs-chat-log")).toContainText("3 slides");
     expect(requests.at(-1)?.messages.at(-1)?.content).toContain("cross product");
     await expect(t.page.getByTestId("save-deck")).toHaveText("Save slides");

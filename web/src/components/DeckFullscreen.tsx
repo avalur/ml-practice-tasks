@@ -3,7 +3,7 @@
 import { useEffect, useId, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 
-import { askAi } from "./AiDeckPanel";
+import { AiProgressView, askAi, type AiProgress } from "./AiDeckPanel";
 
 /* The full-screen slide editor: an optional AI chat on the left, the HTML in the
  * middle, and on the right the slide under the cursor, rendered live from the
@@ -170,28 +170,34 @@ function AiChat({
   const [slides, setSlides] = useState(10);
   const [language, setLanguage] = useState("English");
   const [busy, setBusy] = useState(false);
+  const [progress, setProgress] = useState<AiProgress | null>(null);
   const end = useRef<HTMLDivElement | null>(null);
+  const slidesDone = progress ? (progress.text.match(/<\/section>/gi) ?? []).length : 0;
 
   useEffect(() => {
     end.current?.scrollIntoView({ block: "end" });
-  }, [log.length, busy]);
+  }, [log.length, busy, slidesDone]);
 
   async function send() {
     const text = prompt.trim();
     if (busy || text.length < 5) return;
     const before = deck;
     setBusy(true);
+    setProgress(null);
     setPrompt("");
     setLog((l) => [...l, { who: "you", text: mode === "generate" ? `New deck: ${text}` : text }]);
-    const r = await askAi({
-      course: courseSlug,
-      lesson: lessonSlug,
-      mode,
-      prompt: text,
-      slides,
-      language,
-      deck: before,
-    });
+    const r = await askAi(
+      {
+        course: courseSlug,
+        lesson: lessonSlug,
+        mode,
+        prompt: text,
+        slides,
+        language,
+        deck: before,
+      },
+      setProgress,
+    );
     if (r.ok) {
       onDeck(r.deck);
       const n = (r.deck.match(/<section\b/gi) ?? []).length;
@@ -268,7 +274,11 @@ function AiChat({
             )}
           </div>
         ))}
-        {busy && <div className="studio-msg ai muted">Writing… (up to a minute)</div>}
+        {busy && (
+          <div className="studio-msg ai">
+            <AiProgressView progress={progress} />
+          </div>
+        )}
         <div ref={end} />
       </div>
       <div className="studio-chat-input">
@@ -310,12 +320,12 @@ function AiChat({
           disabled={busy || prompt.trim().length < 5}
           data-testid="fs-chat-send"
         >
-          {busy ? "Writing…" : mode === "generate" ? "Write the deck" : "Apply"}
+          {busy ? "Working…" : mode === "generate" ? "Write the deck" : "Apply"}
         </button>
         <p className="muted studio-fineprint">
           {mode === "generate" ? "A new deck replaces the text in the editor. " : ""}
-          Nothing is saved until you press Save. The site&rsquo;s free models may learn from what you send — no student
-          data. <Link href="/studio/settings">Own key</Link>.
+          Nothing is saved until you press Save. The site&rsquo;s model is run by a third party — no student data.{" "}
+          <Link href="/studio/settings">Own key</Link>.
         </p>
       </div>
     </aside>

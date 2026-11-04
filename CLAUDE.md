@@ -460,6 +460,17 @@ always wins a collision.
   The answer is cut down to `<section>`s and sanitized; nothing is saved until
   the teacher presses Save. With neither env key nor own key the route says
   501 and the UI points at AI settings.
+  The OpenRouter default is **`z-ai/glm-5.3`**, a paid reasoning model (the
+  account needs credit), asked for `reasoning.effort` `AI_REASONING_EFFORT`
+  (default `low`; sent to OpenRouter only — other providers reject unknown
+  fields). A whole-deck edit takes minutes, so the route has `maxDuration =
+  300` (Pro + Fluid) with `AI_TIMEOUT_MS` = 285 s upstream, and **streams**:
+  refusals are still JSON with a status, but a running request answers
+  `application/x-ndjson` events — `start`, batched `reasoning`/`text`, then
+  `done` (sanitized deck) or `error`. `askAi()` reads them and
+  `AiProgressView` shows the clock, the model's reasoning and the titles of the
+  slides finished so far. A provider that ignores `stream` and answers plain
+  JSON is still accepted.
 - **Task proposals** (`ProblemProposal`): `/studio/proposals` runs the
   proposal's own reference and stub through the Pyodide worker before it can be
   sent (reference must pass every test, the stub must fail one — the same

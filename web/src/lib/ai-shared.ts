@@ -31,5 +31,5 @@ export type AiMode = "generate" | "edit";
 
 export type AiKeyStatus = {
   own: { provider: AiProviderId; model: string; hint: string; baseUrl: string | null } | null;
-  platform: { available: boolean; limit: number; usedToday: number };
+  platform: { available: boolean; model: string | null; limit: number; usedToday: number };
 };

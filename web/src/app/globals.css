@@ -1878,6 +1878,14 @@ pre.code {
 .studio-ai { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.8rem 1rem; margin-bottom: 1rem; border: 1px dashed var(--accent); border-radius: 8px; }
 .studio-ai textarea { width: 100%; }
 .studio-fineprint { font-size: 0.8rem; margin: 0; }
+.studio-ai-progress { display: flex; flex-direction: column; gap: 0.35rem; font-size: 0.86rem; margin: 0; white-space: normal; }
+.studio-ai-slides { margin: 0; padding-left: 1.4rem; }
+.studio-ai-slides li::marker { color: var(--easy); }
+.studio-ai-thoughts {
+  margin: 0; max-height: 9rem; overflow: auto; white-space: pre-wrap; overflow-wrap: anywhere;
+  font-size: 0.75rem; line-height: 1.35; color: var(--muted); background: var(--panel-2);
+  border-radius: 6px; padding: 0.4rem 0.55rem;
+}
 
 /* Full-screen slide editor: [AI chat] | HTML | live preview, over the whole window. */
 .studio-fs {

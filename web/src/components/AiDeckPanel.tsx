@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 export type AiRequest = {
@@ -13,27 +13,130 @@ export type AiRequest = {
   deck: string;
 };
 
-/** One call to the AI route, shared by this panel and the full-screen chat. The
+/** What the editor shows while a request runs. */
+export type AiProgress = { via: string | null; reasoning: string; text: string; startedAt: number };
+
+/** One call to the AI route, shared by this panel and the full-screen chat.
+ * Refusals come back as JSON with a status; a running request is a stream of
+ * newline-delimited events, reported through `onProgress` as they arrive. The
  * text is what to show the teacher either way. */
-export async function askAi(body: AiRequest): Promise<{ ok: true; deck: string; text: string } | { ok: false; text: string }> {
+export async function askAi(
+  body: AiRequest,
+  onProgress?: (p: AiProgress) => void,
+): Promise<{ ok: true; deck: string; text: string } | { ok: false; text: string }> {
+  const progress: AiProgress = { via: null, reasoning: "", text: "", startedAt: Date.now() };
   try {
     const res = await fetch("/api/studio/ai", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, text: data.error ?? "The request failed." };
-    return {
-      ok: true,
-      deck: data.deck,
-      text:
-        `Done with ${data.via}. Read it through, then Save slides.` +
-        (data.remaining !== null && data.remaining !== undefined ? ` ${data.remaining} free requests left today.` : ""),
-    };
+    if (!res.ok || !res.body || !(res.headers.get("content-type") ?? "").includes("ndjson")) {
+      const data = await res.json().catch(() => ({}));
+      return { ok: false, text: data.error ?? "The request failed." };
+    }
+    const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+    let buf = "";
+    for (;;) {
+      const { value, done } = await reader.read();
+      if (done) break;
+      buf += value;
+      let nl: number;
+      while ((nl = buf.indexOf("\n")) >= 0) {
+        const line = buf.slice(0, nl);
+        buf = buf.slice(nl + 1);
+        if (!line.trim()) continue;
+        const e = JSON.parse(line) as
+          | { type: "start"; via: string }
+          | { type: "reasoning" | "text"; text: string }
+          | { type: "done"; deck: string; via: string; remaining: number | null }
+          | { type: "error"; error: string };
+        if (e.type === "start") {
+          // A fallback to the next provider starts over.
+          Object.assign(progress, { via: e.via, reasoning: "", text: "" });
+        } else if (e.type === "reasoning") {
+          progress.reasoning += e.text;
+        } else if (e.type === "text") {
+          progress.text += e.text;
+        } else if (e.type === "done") {
+          return {
+            ok: true,
+            deck: e.deck,
+            text:
+              `Done with ${e.via} in ${elapsed(progress.startedAt)}. Read it through, then Save slides.` +
+              (e.remaining !== null && e.remaining !== undefined ? ` ${e.remaining} requests to the site's model left today.` : ""),
+          };
+        } else if (e.type === "error") {
+          return { ok: false, text: e.error };
+        }
+        onProgress?.({ ...progress });
+      }
+    }
+    return { ok: false, text: "The answer was cut off — try again." };
   } catch {
     return { ok: false, text: "Network error — try again." };
   }
+}
+
+const elapsed = (from: number) => {
+  const s = Math.max(0, Math.round((Date.now() - from) / 1000));
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
+};
+
+/** Titles of the slides the model has finished so far, in order. */
+export function finishedSlides(text: string): string[] {
+  const parts = text.split(/<\/section>/i);
+  parts.pop(); // the slide still being written
+  return (
+    parts
+      // The closing tag of a wrapper around vertical slides leaves a part with
+      // no <section> of its own: that is not a slide.
+      .filter((p) => /<section\b/i.test(p))
+      .map((p) => {
+        const h = /<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i.exec(p.slice(p.search(/<section\b/i)));
+        return h ? h[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() : "";
+      })
+  );
+}
+
+/** Live view of a running request: the clock, what the model is thinking, and
+ * the slides it has written so far. */
+export function AiProgressView({ progress }: { progress: AiProgress | null }) {
+  const [, tick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => tick((n) => n + 1), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const tail = useRef<HTMLPreElement | null>(null);
+  useEffect(() => {
+    if (tail.current) tail.current.scrollTop = tail.current.scrollHeight;
+  }, [progress?.reasoning]);
+  if (!progress) return <p className="muted studio-ai-progress">Sending…</p>;
+  const slides = finishedSlides(progress.text);
+  const writing = progress.text.length > 0;
+  return (
+    <div className="studio-ai-progress" data-testid="ai-progress">
+      <div>
+        <strong>{writing ? `Writing slides — ${slides.length} done` : progress.reasoning ? "Thinking…" : "Waiting for the model…"}</strong>{" "}
+        <span className="muted">
+          {elapsed(progress.startedAt)}
+          {progress.via ? ` · ${progress.via}` : ""}
+        </span>
+      </div>
+      {slides.length > 0 && (
+        <ol className="studio-ai-slides">
+          {slides.map((t, i) => (
+            <li key={i}>{t || <span className="muted">(untitled)</span>}</li>
+          ))}
+        </ol>
+      )}
+      {progress.reasoning && !writing && (
+        <pre ref={tail} className="studio-ai-thoughts">
+          {progress.reasoning.slice(-1500)}
+        </pre>
+      )}
+    </div>
+  );
 }
 
 /* "Write slides with AI" above the deck editor. The answer replaces what the
@@ -61,12 +164,14 @@ export function AiDeckPanel({
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [previous, setPrevious] = useState<string | null>(null);
+  const [progress, setProgress] = useState<AiProgress | null>(null);
 
   async function run() {
     if (busy) return;
     setBusy(true);
     setMsg(null);
-    const r = await askAi({ course: courseSlug, lesson: lessonSlug, mode, prompt, slides, language, deck: currentDeck });
+    setProgress(null);
+    const r = await askAi({ course: courseSlug, lesson: lessonSlug, mode, prompt, slides, language, deck: currentDeck }, setProgress);
     if (r.ok) {
       setPrevious(currentDeck);
       onDeck(r.deck);
@@ -119,7 +224,7 @@ export function AiDeckPanel({
       )}
       <div className="report-actions">
         <button type="button" className="class-present-btn" onClick={run} disabled={busy || prompt.trim().length < 5} data-testid="ai-run">
-          {busy ? "Writing… (up to a minute)" : mode === "generate" ? "Write slides" : "Apply change"}
+          {busy ? "Working…" : mode === "generate" ? "Write slides" : "Apply change"}
         </button>
         {previous !== null && (
           <button
@@ -138,14 +243,15 @@ export function AiDeckPanel({
           close
         </button>
       </div>
+      {busy && <AiProgressView progress={progress} />}
       {msg && (
         <p className={msg.ok ? "class-join-ok" : "class-join-err"} data-testid="ai-msg">
           {msg.text}
         </p>
       )}
       <p className="muted studio-fineprint">
-        The site&rsquo;s free models may use what you send to improve their service — don&rsquo;t put student data in a
-        request. Check every slide before you show it. <Link href="/studio/settings">Use your own key</Link>.
+        The site&rsquo;s model is run by a third party (through OpenRouter) — don&rsquo;t put student data in a request.
+        Check every slide before you show it. <Link href="/studio/settings">Use your own key</Link>.
       </p>
     </div>
   );

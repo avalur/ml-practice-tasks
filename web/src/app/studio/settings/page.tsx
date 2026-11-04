@@ -23,7 +23,12 @@ export default async function StudioSettingsPage() {
     own: cred
       ? { provider: cred.provider as AiProviderId, model: cred.model, hint: cred.keyHint, baseUrl: cred.baseUrl }
       : null,
-    platform: { available: platformEndpoints().length > 0, limit: dailyLimit(), usedToday: usage?.platform ?? 0 },
+    platform: {
+      available: platformEndpoints().length > 0,
+      model: platformEndpoints()[0]?.model ?? null,
+      limit: dailyLimit(),
+      usedToday: usage?.platform ?? 0,
+    },
   };
 
   return (
@@ -32,12 +37,18 @@ export default async function StudioSettingsPage() {
         <Link href="/studio">Studio</Link> › AI settings
       </p>
       <h1>AI settings</h1>
-      <h2>The site&rsquo;s free model</h2>
+      <h2>The site&rsquo;s model</h2>
       {status.platform.available ? (
         <p>
-          Available to every teacher, {status.platform.limit} requests a day. You have used{" "}
-          <strong>{status.platform.usedToday}</strong> today (resets at midnight UTC). Free models may use requests to
-          improve their service.
+          Available to every teacher at no cost to you, {status.platform.limit} requests a day
+          {status.platform.model ? (
+            <>
+              {" "}
+              (<code>{status.platform.model}</code>)
+            </>
+          ) : null}
+          . You have used <strong>{status.platform.usedToday}</strong> today (resets at midnight UTC). Requests go to a
+          third-party provider, so keep student data out of them.
         </p>
       ) : (
         <p className="muted">Not configured on this site — add your own key below to use the builder.</p>

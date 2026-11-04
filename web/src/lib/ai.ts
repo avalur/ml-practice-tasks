@@ -9,17 +9,24 @@ export * from "./ai-shared";
 /* The AI deck builder's server half.
  *
  * Two ways to pay for a request:
- *   - the platform's free models, configured by env — GEMINI_API_KEY first,
- *     OPENROUTER_API_KEY as the fallback when Gemini refuses or is rate
- *     limited. Shared by every teacher, so capped per teacher per day
- *     (AI_DAILY_LIMIT, default 20) and in total (AI_GLOBAL_DAILY_LIMIT, 500).
- *     Free tiers may train on prompts; the Studio says so next to the button.
+ *   - the platform's model, configured by env — GEMINI_API_KEY first,
+ *     OPENROUTER_API_KEY next (by default Z.ai's GLM-5.3, a paid model: the
+ *     OpenRouter account needs credit). Shared by every teacher, so capped per
+ *     teacher per day (AI_DAILY_LIMIT, default 20) and in total
+ *     (AI_GLOBAL_DAILY_LIMIT, 500).
  *   - the teacher's own key (AiCredential), any OpenAI-compatible provider,
  *     never capped by us.
- * Whatever comes back is only ever slides, and it goes through the same
- * sanitizer as a hand-typed deck before anyone sees it. */
+ * The answer is streamed: a whole deck from a reasoning model takes minutes,
+ * and the teacher watches it think and write rather than a spinner. Whatever
+ * comes back is only ever slides, and it goes through the same sanitizer as a
+ * hand-typed deck before anyone sees it. */
 
 type Endpoint = { baseUrl: string; key: string; model: string; label: string };
+
+/** How long one request may run, end to end — the route's maxDuration is 300 s,
+ * and the answer must still be sanitized and sent inside it. */
+export const AI_TIMEOUT_MS = 285_000;
+export const DEFAULT_OPENROUTER_MODEL = "z-ai/glm-5.3";
 
 export function platformEndpoints(): Endpoint[] {
   const out: Endpoint[] = [];
@@ -35,8 +42,8 @@ export function platformEndpoints(): Endpoint[] {
     out.push({
       baseUrl: AI_PROVIDERS.openrouter.baseUrl,
       key: process.env.OPENROUTER_API_KEY,
-      model: process.env.AI_OPENROUTER_MODEL || "openrouter/free",
-      label: "OpenRouter (free models)",
+      model: process.env.AI_OPENROUTER_MODEL || DEFAULT_OPENROUTER_MODEL,
+      label: "OpenRouter",
     });
   }
   return out;
@@ -156,45 +163,114 @@ class ProviderError extends Error {
   }
 }
 
-async function complete(ep: Endpoint, messages: { role: string; content: string }[]): Promise<string> {
+/** What the browser is told while a request runs: the model's reasoning and
+ * its answer as they arrive, then the sanitized deck or an error. */
+export type AiEvent =
+  | { type: "start"; via: string }
+  | { type: "reasoning"; text: string }
+  | { type: "text"; text: string }
+  | { type: "done"; deck: string; via: string; remaining: number | null }
+  | { type: "error"; error: string };
+
+type Delta = { type: "reasoning" | "text"; text: string };
+
+/** One streamed chat completion. Calls `onDelta` for every piece of reasoning
+ * or answer text and resolves with the whole answer. A provider that ignores
+ * `stream` and answers with plain JSON is accepted too. */
+async function complete(
+  ep: Endpoint,
+  messages: { role: string; content: string }[],
+  onDelta: (d: Delta) => void,
+): Promise<string> {
   const ctrl = new AbortController();
-  const timer = setTimeout(() => ctrl.abort(), 55_000);
+  const timer = setTimeout(() => ctrl.abort(), AI_TIMEOUT_MS);
+  const openrouter = ep.baseUrl.startsWith(AI_PROVIDERS.openrouter.baseUrl);
+  let answer = "";
   try {
     const res = await fetch(`${ep.baseUrl.replace(/\/+$/, "")}/chat/completions`, {
       method: "POST",
       signal: ctrl.signal,
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${ep.key}` },
-      body: JSON.stringify({ model: ep.model, messages, temperature: 0.4, max_tokens: 8000 }),
+      body: JSON.stringify({
+        model: ep.model,
+        messages,
+        temperature: 0.4,
+        // Reasoning tokens count against this on most providers.
+        max_tokens: 32_000,
+        stream: true,
+        // Slides need some thought, not a research plan: low effort keeps a
+        // reasoning model inside the time limit. OpenRouter only — other
+        // providers reject fields they do not know.
+        ...(openrouter ? { reasoning: { effort: process.env.AI_REASONING_EFFORT || "low" } } : {}),
+      }),
     });
     if (!res.ok) {
       const text = (await res.text().catch(() => "")).slice(0, 300);
       throw new ProviderError(`${ep.label} answered ${res.status}${text ? `: ${text}` : ""}`, res.status === 429 || res.status >= 500);
     }
-    const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) throw new ProviderError(`${ep.label} returned no text`, true);
-    return content;
+    if (!(res.headers.get("content-type") ?? "").includes("text/event-stream") || !res.body) {
+      const data = (await res.json()) as { choices?: { message?: { content?: string } }[] };
+      answer = data.choices?.[0]?.message?.content ?? "";
+      if (answer) onDelta({ type: "text", text: answer });
+    } else {
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+      let buf = "";
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buf += value;
+        let nl: number;
+        while ((nl = buf.indexOf("\n")) >= 0) {
+          const line = buf.slice(0, nl).trim();
+          buf = buf.slice(nl + 1);
+          // ":" lines are keep-alive comments (OpenRouter sends them while it waits).
+          if (!line.startsWith("data:")) continue;
+          const payload = line.slice(5).trim();
+          if (payload === "[DONE]") continue;
+          let chunk: {
+            error?: { message?: string };
+            choices?: { delta?: { content?: string; reasoning?: string; reasoning_content?: string } }[];
+          };
+          try {
+            chunk = JSON.parse(payload);
+          } catch {
+            continue;
+          }
+          if (chunk.error) throw new ProviderError(`${ep.label}: ${chunk.error.message ?? "error"}`, !answer);
+          const delta = chunk.choices?.[0]?.delta;
+          const thought = delta?.reasoning ?? delta?.reasoning_content;
+          if (thought) onDelta({ type: "reasoning", text: thought });
+          if (delta?.content) {
+            answer += delta.content;
+            onDelta({ type: "text", text: delta.content });
+          }
+        }
+      }
+    }
+    if (!answer) throw new ProviderError(`${ep.label} returned no text`, true);
+    return answer;
   } catch (e) {
     if (e instanceof ProviderError) throw e;
     throw new ProviderError(
-      (e as Error).name === "AbortError" ? `${ep.label} took too long` : `${ep.label} unreachable`,
-      true,
+      (e as Error).name === "AbortError"
+        ? `${ep.label} · ${ep.model} did not finish in ${Math.round(AI_TIMEOUT_MS / 60_000)} minutes`
+        : `${ep.label} unreachable`,
+      // A request that already wrote half a deck is not worth repeating elsewhere.
+      !answer,
     );
   } finally {
     clearTimeout(timer);
   }
 }
 
-export type AiOutcome =
-  | { ok: true; deck: string; via: string; own: boolean; remaining: number | null }
+export type AiPlan =
+  | { ok: true; run: (messages: { role: string; content: string }[], emit: (e: AiEvent) => void) => Promise<void> }
   | { ok: false; status: number; error: string };
 
-/** Run one request for a teacher: their own key if they set one, else the
- * platform's free models within quota. */
-export async function generateDeck(
-  userId: string,
-  messages: { role: string; content: string }[],
-): Promise<AiOutcome> {
+/** Everything that can be refused before a byte is streamed — no key, no
+ * quota, a bad endpoint — so the route can still answer it with a status
+ * code. The returned `run` streams one request and never throws. */
+export async function planDeckRequest(userId: string): Promise<AiPlan> {
   const day = today();
   const cred = await prisma.aiCredential.findUnique({ where: { userId } });
 
@@ -210,23 +286,29 @@ export async function generateDeck(
       const bad = checkBaseUrl(ep.baseUrl);
       if (bad) return { ok: false, status: 400, error: `Your endpoint address is not usable: ${bad}` };
     }
-    try {
-      const deck = extractDeck(await complete(ep, messages));
-      await prisma.aiUsage.upsert({
-        where: { userId_day: { userId, day } },
-        create: { userId, day, own: 1 },
-        update: { own: { increment: 1 } },
-      });
-      if (!deck) return { ok: false, status: 502, error: "The model did not return any slides. Try rephrasing." };
-      return { ok: true, deck, via: `${ep.label} · ${ep.model} (your key)`, own: true, remaining: null };
-    } catch (e) {
-      return { ok: false, status: 502, error: (e as Error).message };
-    }
+    const via = `${ep.label} · ${ep.model} (your key)`;
+    return {
+      ok: true,
+      run: async (messages, emit) => {
+        emit({ type: "start", via });
+        try {
+          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)));
+          await prisma.aiUsage.upsert({
+            where: { userId_day: { userId, day } },
+            create: { userId, day, own: 1 },
+            update: { own: { increment: 1 } },
+          });
+          emit(deck ? { type: "done", deck, via, remaining: null } : { type: "error", error: "The model did not return any slides. Try rephrasing." });
+        } catch (e) {
+          emit({ type: "error", error: (e as Error).message });
+        }
+      },
+    };
   }
 
   const endpoints = platformEndpoints();
   if (endpoints.length === 0) {
-    return { ok: false, status: 501, error: "The site has no free model configured. Add your own key in Studio → AI settings." };
+    return { ok: false, status: 501, error: "The site has no AI model configured. Add your own key in Studio → AI settings." };
   }
 
   // Reserve a slot first, refund it if nothing useful came back: two tabs
@@ -243,29 +325,39 @@ export async function generateDeck(
     return {
       ok: false,
       status: 429,
-      error: `You have used today's ${dailyLimit()} free requests. They renew at midnight UTC — or add your own key in AI settings.`,
+      error: `You have used today's ${dailyLimit()} requests to the site's model. They renew at midnight UTC — or add your own key in AI settings.`,
     };
   }
   const total = await prisma.aiUsage.aggregate({ where: { day }, _sum: { platform: true } });
   if ((total._sum.platform ?? 0) > globalLimit()) {
     await refund();
-    return { ok: false, status: 429, error: "The site's free AI budget for today is used up. Try tomorrow, or add your own key." };
+    return { ok: false, status: 429, error: "The site's AI budget for today is used up. Try tomorrow, or add your own key." };
   }
+  const remaining = Math.max(0, dailyLimit() - usage.platform);
 
-  let lastError = "no provider answered";
-  for (const ep of endpoints) {
-    try {
-      const deck = extractDeck(await complete(ep, messages));
-      if (!deck) {
-        await refund();
-        return { ok: false, status: 502, error: "The model did not return any slides. Try rephrasing." };
+  return {
+    ok: true,
+    run: async (messages, emit) => {
+      let lastError = "no provider answered";
+      for (const ep of endpoints) {
+        const via = `${ep.label} · ${ep.model}`;
+        emit({ type: "start", via });
+        try {
+          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)));
+          if (!deck) {
+            await refund();
+            emit({ type: "error", error: "The model did not return any slides. Try rephrasing." });
+            return;
+          }
+          emit({ type: "done", deck, via, remaining });
+          return;
+        } catch (e) {
+          lastError = (e as Error).message;
+          if (!(e as ProviderError).retryable) break;
+        }
       }
-      return { ok: true, deck, via: `${ep.label} · ${ep.model}`, own: false, remaining: Math.max(0, dailyLimit() - usage.platform) };
-    } catch (e) {
-      lastError = (e as Error).message;
-      if (!(e as ProviderError).retryable) break;
-    }
-  }
-  await refund();
-  return { ok: false, status: 502, error: lastError };
+      await refund();
+      emit({ type: "error", error: lastError });
+    },
+  };
 }

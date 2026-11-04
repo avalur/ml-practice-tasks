@@ -26,6 +26,26 @@ jobs:
       - name: Run reference solutions
         run: pytest problems -q
 
+  # The node:test suites import src/lib/*.ts directly, which needs Node's
+  # built-in type stripping (22.6+, on by default from 23.6). The web job stays
+  # on Node 20 to match the build, so these get a job of their own.
+  unit:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Enable pnpm
+        run: corepack enable
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Unit tests (sanitizer, submissions, grading)
+        run: node --test tests/*.test.mjs
+
   web:
     runs-on: ubuntu-latest
     needs: python
@@ -76,8 +96,6 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
-      - name: Unit tests
-        run: node --test tests/*.test.mjs
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Run e2e (in-browser Pyodide runner)

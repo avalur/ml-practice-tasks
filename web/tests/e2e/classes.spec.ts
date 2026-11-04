@@ -512,9 +512,13 @@ test("dev mode: ?dev=1 reloads when the page is rebuilt, plain URL does not", as
   );
   const original = await fs.readFile(target);
 
-  // A reload is observable as the loss of a marker set on window.
+  // A reload is observable as the loss of a marker set on window. An evaluate
+  // that lands while the reload is under way throws "execution context was
+  // destroyed", and expect.poll gives up on a throw instead of retrying — so
+  // that moment reads as null ("can't tell yet") and the poll keeps going.
   const mark = async () => page.evaluate(() => ((window as any).__devMark = 1));
-  const marked = () => page.evaluate(() => (window as any).__devMark === 1);
+  const marked = () =>
+    page.evaluate(() => (window as any).__devMark === 1).catch(() => null);
   const rebuild = async (note: string) =>
     fs.writeFile(target, Buffer.concat([original, Buffer.from(`\n<!-- ${note} -->\n`)]));
 

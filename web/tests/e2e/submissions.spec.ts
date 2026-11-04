@@ -21,7 +21,11 @@ function databaseUrl(): string {
 }
 
 function blobToken(): string | null {
-  if (process.env.BLOB_READ_WRITE_TOKEN) return process.env.BLOB_READ_WRITE_TOKEN;
+  // Set but empty means "no store", exactly as `next start` reads it: Next never
+  // overrides a variable that is already defined with the one from .env.local.
+  // Falling through to the file here made the test expect a store the server
+  // did not have, so the CI setup could not be reproduced locally.
+  if (process.env.BLOB_READ_WRITE_TOKEN !== undefined) return process.env.BLOB_READ_WRITE_TOKEN || null;
   const file = path.join(__dirname, "..", "..", ".env.local");
   if (!fs.existsSync(file)) return null;
   const line = fs
@@ -720,9 +724,15 @@ test.describe("Submission, Download, and Grading Routes", () => {
           },
         },
       });
-      expect(alreadySubRes.status()).toBe(409);
-      const alreadySubJson = await alreadySubRes.json();
-      expect(alreadySubJson.error).toMatch(/already submitted/i);
+      // Without a store the token route answers 501 before it looks at anybody,
+      // as above; only with one does it get as far as the existing submission.
+      if (blobToken()) {
+        expect(alreadySubRes.status()).toBe(409);
+        const alreadySubJson = await alreadySubRes.json();
+        expect(alreadySubJson.error).toMatch(/already submitted/i);
+      } else {
+        expect(alreadySubRes.status()).toBe(501);
+      }
     } finally {
       if (submissionId) {
         await prismaLive.notebookSubmission.deleteMany({ where: { id: submissionId } });

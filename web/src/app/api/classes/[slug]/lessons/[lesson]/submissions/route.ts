@@ -89,14 +89,9 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: pathCheck.error }, { status: 400 });
   }
 
-  if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    return NextResponse.json(
-      { error: "no Blob store is configured (BLOB_READ_WRITE_TOKEN is unset)" },
-      { status: 501 },
-    );
-  }
-
-  // Pre-check existing submission before contacting storage
+  // Pre-check existing submission before contacting storage — and before
+  // requiring it: both answers below come from the database alone, so neither
+  // may fail just because no Blob store is set up.
   let existing = null;
   try {
     existing = await prisma.notebookSubmission.findUnique({
@@ -128,11 +123,20 @@ export async function POST(req: Request, { params }: RouteParams) {
     if (isSameSubmissionFile(existing.fileUrl, fileUrl)) {
       return NextResponse.json({ submission: existing }, { status: 200 });
     }
-    // Clean up the newly uploaded orphan only if it is strictly distinct from the recorded file
-    if (!isSameSubmissionFile(existing.fileUrl, fileUrl)) {
+    // Clean up the newly uploaded orphan only if it is strictly distinct from the
+    // recorded file. Best effort, and only when there is a store to delete from.
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
       await del(fileUrl).catch(() => {});
     }
     return NextResponse.json({ error: "assignment already submitted" }, { status: 409 });
+  }
+
+  // Everything below talks to the store.
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    return NextResponse.json(
+      { error: "no Blob store is configured (BLOB_READ_WRITE_TOKEN is unset)" },
+      { status: 501 },
+    );
   }
 
   // Server-side verification of uploaded blob

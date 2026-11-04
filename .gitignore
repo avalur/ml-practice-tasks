@@ -21,3 +21,6 @@ node_modules/
 # returns an empty profile when it is missing, so it is a local run artifact.
 /classes/building-ai-agents/practice/data/passenger_profile.json
 /classes/building-ai-agents/practice/tau2-bench/
+# `vercel link` (project id) and the short-lived VERCEL_OIDC_TOKEN it writes.
+.vercel
+/.env.local

@@ -3,6 +3,39 @@
 import { useState } from "react";
 import Link from "next/link";
 
+export type AiRequest = {
+  course: string;
+  lesson: string;
+  mode: "generate" | "edit";
+  prompt: string;
+  slides: number;
+  language: string;
+  deck: string;
+};
+
+/** One call to the AI route, shared by this panel and the full-screen chat. The
+ * text is what to show the teacher either way. */
+export async function askAi(body: AiRequest): Promise<{ ok: true; deck: string; text: string } | { ok: false; text: string }> {
+  try {
+    const res = await fetch("/api/studio/ai", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) return { ok: false, text: data.error ?? "The request failed." };
+    return {
+      ok: true,
+      deck: data.deck,
+      text:
+        `Done with ${data.via}. Read it through, then Save slides.` +
+        (data.remaining !== null && data.remaining !== undefined ? ` ${data.remaining} free requests left today.` : ""),
+    };
+  } catch {
+    return { ok: false, text: "Network error — try again." };
+  }
+}
+
 /* "Write slides with AI" above the deck editor. The answer replaces what the
  * editor shows but is not saved — the teacher reads it first, and can step back
  * to the previous text with one click. */
@@ -33,28 +66,12 @@ export function AiDeckPanel({
     if (busy) return;
     setBusy(true);
     setMsg(null);
-    try {
-      const res = await fetch("/api/studio/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ course: courseSlug, lesson: lessonSlug, mode, prompt, slides, language, deck: currentDeck }),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        setMsg({ ok: false, text: data.error ?? "The request failed." });
-      } else {
-        setPrevious(currentDeck);
-        onDeck(data.deck);
-        setMsg({
-          ok: true,
-          text:
-            `Done with ${data.via}. Read it through, then Save slides.` +
-            (data.remaining !== null && data.remaining !== undefined ? ` ${data.remaining} free requests left today.` : ""),
-        });
-      }
-    } catch {
-      setMsg({ ok: false, text: "Network error — try again." });
+    const r = await askAi({ course: courseSlug, lesson: lessonSlug, mode, prompt, slides, language, deck: currentDeck });
+    if (r.ok) {
+      setPrevious(currentDeck);
+      onDeck(r.deck);
     }
+    setMsg({ ok: r.ok, text: r.text });
     setBusy(false);
   }
 

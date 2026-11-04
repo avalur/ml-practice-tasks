@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import CodeMirror, { EditorView } from "@uiw/react-codemirror";
 import { html } from "@codemirror/lang-html";
@@ -8,6 +8,7 @@ import { html } from "@codemirror/lang-html";
 import { useTheme } from "@/components/ThemeProvider";
 import { STUDIO_LIMITS, type StudioHomeworkInput, type StudioItemInput } from "@/lib/studio-shared";
 import { AiDeckPanel } from "./AiDeckPanel";
+import { DeckFullscreen, slideAt, type ChatEntry, type SlidePos } from "./DeckFullscreen";
 
 export type CatalogEntry = { type: "problem" | "notebook"; id: string; title: string; difficulty?: string };
 
@@ -310,10 +311,16 @@ function DeckPart({
   const [previewKey, setPreviewKey] = useState(0);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [full, setFull] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatLog, setChatLog] = useState<ChatEntry[]>([]);
+  const [at, setAt] = useState<SlidePos>({ h: 0, v: 0 });
   const viewRef = useRef<EditorView | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const dirty = deck !== saved;
 
   async function save() {
+    if (busy || !dirty) return;
     setBusy(true);
     setMsg(null);
     try {
@@ -331,6 +338,41 @@ function DeckPart({
     }
     setBusy(false);
   }
+  const saveRef = useRef(save);
+  saveRef.current = save;
+
+  // ⌘S / Ctrl+S saves in both views; Esc leaves full screen unless it is
+  // closing something inside the editor or the chat box first.
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "s") {
+        e.preventDefault();
+        saveRef.current();
+      } else if (e.key === "Escape" && full && !e.defaultPrevented) {
+        const t = e.target as HTMLElement | null;
+        if (!t?.closest(".cm-editor, textarea, input")) setFull(false);
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [full]);
+
+  // The page behind the overlay must not scroll under the wheel.
+  useEffect(() => {
+    if (!full) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [full]);
+
+  useEffect(() => {
+    if (!dirty) return;
+    const warn = (e: BeforeUnloadEvent) => e.preventDefault();
+    window.addEventListener("beforeunload", warn);
+    return () => window.removeEventListener("beforeunload", warn);
+  }, [dirty]);
 
   async function upload(file: File) {
     setMsg(null);
@@ -350,10 +392,48 @@ function DeckPart({
     } else {
       setDeck((d) => `${d}\n${tag}\n`);
     }
-    setMsg({ ok: true, text: "Image uploaded and inserted — save to see it." });
+    setMsg({ ok: true, text: full ? "Image uploaded and inserted." : "Image uploaded and inserted — save to see it." });
   }
 
   const presentUrl = `/classes/${courseSlug}/${lessonSlug}/present.html`;
+  const slideCount = (deck.match(/<section\b/gi) ?? []).length;
+
+  // One editor, mounted in whichever view is showing — so the upload button
+  // always inserts at the cursor the teacher is looking at.
+  const editor = (height: string) => (
+    <CodeMirror
+      value={deck}
+      height={height}
+      theme={theme}
+      extensions={[html(), EditorView.lineWrapping]}
+      onChange={setDeck}
+      onCreateEditor={(view) => {
+        viewRef.current = view;
+      }}
+      onUpdate={(u) => {
+        if (!u.selectionSet && !u.docChanged) return;
+        const next = slideAt(u.state.sliceDoc(0, u.state.selection.main.head), Infinity);
+        setAt((cur) => (cur.h === next.h && cur.v === next.v ? cur : next));
+      }}
+      className="editor-cm"
+    />
+  );
+  const saveButton = (
+    <button type="button" className="class-present-btn" onClick={save} disabled={busy || !dirty} data-testid="save-deck">
+      {busy ? "Saving…" : dirty ? "Save slides" : "Saved"}
+    </button>
+  );
+  const uploadButton = (
+    <button type="button" className="bt-clear-btn" onClick={() => fileRef.current?.click()}>
+      Upload image
+    </button>
+  );
+  const message = msg && (
+    <p className={`${msg.ok ? "class-join-ok" : "class-join-err"}${full ? " studio-fs-msg" : ""}`} data-testid="deck-msg">
+      {msg.text}
+    </p>
+  );
+
   return (
     <section className="studio-part" data-testid="deck-part">
       <h2>Slides</h2>
@@ -362,61 +442,86 @@ function DeckPart({
         <code>class=&quot;fragment&quot;</code>, speaker notes in <code>&lt;aside class=&quot;notes&quot;&gt;</code>. Scripts, forms and
         embeds are not allowed; images come from the upload button.
       </p>
-      <AiDeckPanel
-        courseSlug={courseSlug}
-        lessonSlug={lessonSlug}
-        lessonTitle={lessonTitle}
-        courseTitle={courseTitle}
-        currentDeck={deck}
-        onDeck={(d) => setDeck(d)}
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/png,image/jpeg,image/gif,image/webp"
+        hidden
+        data-testid="image-input"
+        onChange={(e) => {
+          const f = e.target.files?.[0];
+          if (f) upload(f);
+          e.target.value = "";
+        }}
       />
-      <div className="studio-deck">
-        <div className="studio-deck-editor">
-          <CodeMirror
-            value={deck}
-            height="520px"
-            theme={theme}
-            extensions={[html(), EditorView.lineWrapping]}
-            onChange={setDeck}
-            onCreateEditor={(view) => {
-              viewRef.current = view;
-            }}
-            className="editor-cm"
+      {full ? (
+        <>
+          <p className="muted">
+            Editing in full screen.{" "}
+            <button type="button" className="link-btn" onClick={() => setFull(false)}>
+              Back here
+            </button>
+          </p>
+          <DeckFullscreen
+            courseSlug={courseSlug}
+            lessonSlug={lessonSlug}
+            lessonTitle={lessonTitle}
+            courseTitle={courseTitle}
+            deck={deck}
+            onDeck={setDeck}
+            at={at}
+            editor={editor("100%")}
+            toolbar={
+              <>
+                {saveButton}
+                {uploadButton}
+                <span className="muted">{slideCount} slides</span>
+              </>
+            }
+            message={message}
+            chatOpen={chatOpen}
+            setChatOpen={setChatOpen}
+            chatLog={chatLog}
+            setChatLog={setChatLog}
+            onClose={() => setFull(false)}
           />
-          <div className="report-actions">
-            <button type="button" className="class-present-btn" onClick={save} disabled={busy || deck === saved} data-testid="save-deck">
-              {busy ? "Saving…" : deck === saved ? "Saved" : "Save slides"}
-            </button>
-            <button type="button" className="bt-clear-btn" onClick={() => fileRef.current?.click()}>
-              Upload image
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/png,image/jpeg,image/gif,image/webp"
-              hidden
-              data-testid="image-input"
-              onChange={(e) => {
-                const f = e.target.files?.[0];
-                if (f) upload(f);
-                e.target.value = "";
-              }}
+        </>
+      ) : (
+        <>
+          <AiDeckPanel
+            courseSlug={courseSlug}
+            lessonSlug={lessonSlug}
+            lessonTitle={lessonTitle}
+            courseTitle={courseTitle}
+            currentDeck={deck}
+            onDeck={(d) => setDeck(d)}
+          />
+          <div className="studio-deck">
+            <div className="studio-deck-editor">
+              {editor("520px")}
+              <div className="report-actions">
+                {saveButton}
+                {uploadButton}
+                <button type="button" className="bt-clear-btn" onClick={() => setFull(true)} data-testid="open-fullscreen">
+                  Open full screen
+                </button>
+                <a className="link-btn" href={presentUrl} target="_blank" rel="noopener">
+                  Present ↗
+                </a>
+                <span className="muted">{slideCount} slides</span>
+              </div>
+              {message}
+            </div>
+            <iframe
+              key={previewKey}
+              className="studio-preview"
+              src={presentUrl}
+              title="Slide preview"
+              data-testid="deck-preview"
             />
-            <a className="bt-clear-btn" href={presentUrl} target="_blank" rel="noopener">
-              Open full screen
-            </a>
-            <span className="muted">{(deck.match(/<section\b/gi) ?? []).length} slides</span>
           </div>
-          {msg && <p className={msg.ok ? "class-join-ok" : "class-join-err"} data-testid="deck-msg">{msg.text}</p>}
-        </div>
-        <iframe
-          key={previewKey}
-          className="studio-preview"
-          src={presentUrl}
-          title="Slide preview"
-          data-testid="deck-preview"
-        />
-      </div>
+        </>
+      )}
     </section>
   );
 }

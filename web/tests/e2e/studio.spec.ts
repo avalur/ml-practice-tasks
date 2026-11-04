@@ -266,6 +266,89 @@ test("studio: present mode and Finish lesson work under the deck's CSP", async (
   }
 });
 
+/** Replace everything in the page's CodeMirror, as a paste — typing would let
+ * the HTML mode auto-close every tag. */
+async function pasteDeck(page: Page, text: string) {
+  await page.locator(".cm-content").click();
+  await page.keyboard.press("ControlOrMeta+A");
+  await page.locator(".cm-content").evaluate((el, t) => {
+    const dt = new DataTransfer();
+    dt.setData("text/plain", t);
+    el.dispatchEvent(new ClipboardEvent("paste", { clipboardData: dt, bubbles: true, cancelable: true }));
+  }, text);
+}
+
+test("studio: the full-screen editor renders unsaved slides live, on the cursor's slide", async ({ browser }) => {
+  const t = await teacher(browser, "fullscreen");
+  try {
+    const slug = await createCourse(t.page, "E2E Fullscreen");
+    const lessonSlug = "l01-intro";
+    const violations: string[] = [];
+    t.page.on("console", (m) => {
+      if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text());
+    });
+    await t.page.goto(`/studio/${slug}/${lessonSlug}`);
+    await t.page.getByTestId("open-fullscreen").click();
+    await expect(t.page.getByTestId("deck-fullscreen")).toBeVisible();
+    // The page's own preview iframe is gone; the overlay's live one replaces it.
+    await expect(t.page.getByTestId("deck-preview")).toHaveCount(0);
+    const front = () => t.page.frameLocator('[data-testid="fs-preview-front"]');
+    await expect(front().locator(".reveal .slides > section")).toHaveCount(2); // the starter deck
+
+    await pasteDeck(
+      t.page,
+      `<section><h2>Alpha slide</h2></section>\n<section><h2>Beta slide $x^2$</h2>` +
+        `<script>window.top.__pwned = 1</script></section>\n<section><h2>Gamma slide</h2></section>`,
+    );
+    // Rendered from the unsaved text, through the same sanitizer and shell.
+    await expect(front().locator(".reveal .slides > section")).toHaveCount(3);
+    await expect(front().locator(".reveal .slides > section").nth(1).locator(".katex")).toHaveCount(1);
+    await expect(front().locator("script:not([src]):not([nonce])")).toHaveCount(0);
+    expect(await t.page.evaluate(() => (window as any).__pwned)).toBeUndefined();
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Save slides");
+
+    // The preview follows the cursor: end of the text is the last slide, then
+    // a click inside the second one shows the second.
+    const indexH = () =>
+      t.page.locator('[data-testid="fs-preview-front"]').evaluate((f) => ((f as HTMLIFrameElement).contentWindow as any).Reveal.getIndices().h);
+    await t.page.locator(".cm-content").click();
+    await t.page.keyboard.press("ControlOrMeta+End");
+    await expect.poll(indexH).toBe(2);
+    await t.page.locator(".cm-content").getByText("Beta slide").click();
+    await expect.poll(indexH).toBe(1);
+    await expect(t.page.getByTestId("deck-fullscreen")).toContainText("slide 2");
+
+    // Fragments are all shown in the editor's preview.
+    await pasteDeck(t.page, `<section><h2>One</h2></section>\n<section><ul><li class="fragment">Hidden in Present</li></ul></section>`);
+    await t.page.locator(".cm-content").getByText("Hidden in Present").click();
+    await expect(front().locator(".reveal li", { hasText: "Hidden in Present" })).toBeVisible();
+
+    // ⌘S / Ctrl+S saves from the overlay.
+    await t.page.keyboard.press("ControlOrMeta+s");
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
+
+    await t.page.getByTestId("fs-exit").click();
+    await expect(t.page.getByTestId("deck-fullscreen")).toHaveCount(0);
+    await expect(t.page.frameLocator('[data-testid="deck-preview"]').locator(".reveal .slides > section")).toHaveCount(2);
+    expect(violations).toEqual([]);
+
+    // The preview renders for the course's editors only, and only same-origin.
+    const anon = await browser.newContext();
+    const r1 = await anon.request.post(`${ORIGIN}/api/studio/courses/${slug}/lessons/${lessonSlug}/preview`, {
+      form: { deck: "<section>hi</section>" },
+    });
+    expect(r1.status()).toBe(401);
+    await anon.close();
+    const r2 = await t.page.request.post(`/api/studio/courses/${slug}/lessons/${lessonSlug}/preview`, {
+      form: { deck: "<section>hi</section>" },
+      headers: { origin: "https://evil.example" },
+    });
+    expect(r2.status()).toBe(403);
+  } finally {
+    await t.close();
+  }
+});
+
 test("studio: the AI builder uses the teacher's own key and its answer is sanitized", async ({ browser }) => {
   test.skip(process.env.AI_ALLOW_PRIVATE_BASE_URL !== "1", "needs AI_ALLOW_PRIVATE_BASE_URL=1 on the server for the mock model");
   const requests: { model: string; messages: { role: string; content: string }[] }[] = [];
@@ -282,7 +365,10 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
               message: {
                 content:
                   "Here you go:\n```html\n<section><h2>Mock slide one</h2><script>alert(1)</script></section>\n" +
-                  "<section><h2>Mock slide two</h2></section>\n```",
+                  "<section><h2>Mock slide two</h2></section>\n" +
+                  // Later requests change the deck, so the chat's answer is a visible edit.
+                  (requests.length > 1 ? "<section><h2>Cross product</h2></section>\n" : "") +
+                  "```",
               },
             },
           ],
@@ -337,6 +423,24 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
 
     // Not saved until the teacher saves.
     await t.page.getByTestId("save-deck").click();
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
+
+    // In full screen the same AI is a chat in the left column.
+    await t.page.getByTestId("open-fullscreen").click();
+    await expect(t.page.getByTestId("fs-chat")).toHaveCount(0);
+    await t.page.getByTestId("fs-ai").click();
+    await t.page.getByTestId("fs-chat-input").fill("Add a slide about the cross product");
+    await t.page.getByTestId("fs-chat-input").press("Enter");
+    await expect(t.page.getByTestId("fs-chat-log")).toContainText("Add a slide about the cross product");
+    await expect(t.page.getByTestId("fs-chat-log")).toContainText("3 slides");
+    expect(requests.at(-1)?.messages.at(-1)?.content).toContain("cross product");
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Save slides");
+    // The live preview has it (on its own slide — the preview stays on the cursor's).
+    await expect(
+      t.page.frameLocator('[data-testid="fs-preview-front"]').locator(".reveal .slides > section h2", { hasText: "Cross product" }),
+    ).toHaveCount(1);
+    // Undo puts back exactly what was there before the request.
+    await t.page.getByTestId("fs-chat-log").getByRole("button", { name: "Undo this change" }).click();
     await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
   } finally {
     await t.close();

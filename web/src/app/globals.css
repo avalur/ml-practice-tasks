@@ -1878,6 +1878,60 @@ pre.code {
 .studio-ai { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.8rem 1rem; margin-bottom: 1rem; border: 1px dashed var(--accent); border-radius: 8px; }
 .studio-ai textarea { width: 100%; }
 .studio-fineprint { font-size: 0.8rem; margin: 0; }
+
+/* Full-screen slide editor: [AI chat] | HTML | live preview, over the whole window. */
+.studio-fs {
+  position: fixed; inset: 0; z-index: 1100;
+  display: flex; flex-direction: column;
+  background: var(--bg); color: var(--text);
+}
+.studio-fs-bar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem;
+  padding: 0.5rem 0.9rem; border-bottom: 1px solid var(--border); background: var(--panel);
+}
+.studio-fs-bar .bt-clear-btn { margin-left: 0; }
+.studio-fs-bar .bt-clear-btn.on { border-color: var(--accent); color: var(--accent); }
+.studio-fs-title { margin-right: auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studio-fs-msg { margin: 0; padding: 0.35rem 0.9rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+.studio-fs-body {
+  flex: 1; min-height: 0;
+  display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.studio-fs-body.with-chat { grid-template-columns: minmax(16rem, 22rem) minmax(0, 1fr) minmax(0, 1fr); }
+.studio-fs-editor { min-height: 0; overflow: hidden; border-right: 1px solid var(--border); }
+.studio-fs-editor > .editor-cm, .studio-fs-editor .cm-editor { height: 100%; }
+/* The slide keeps its 16:9 box, centred, so its edges show in a tall column. */
+.studio-fs-preview { min-height: 0; display: flex; align-items: center; justify-content: center; padding: 1rem; background: var(--panel-2); container-type: size; }
+.studio-fs-stage { position: relative; width: min(100cqw, 100cqh * 16 / 9); aspect-ratio: 16 / 9; background: #fff; box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25); }
+.studio-fs-preview iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+.studio-fs-preview iframe.back { visibility: hidden; }
+.studio-fs-loading { position: absolute; inset: auto 0 50% 0; text-align: center; color: #666; }
+@media (max-width: 900px) {
+  .studio-fs-body, .studio-fs-body.with-chat { grid-template-columns: 1fr; grid-template-rows: minmax(12rem, 1fr) minmax(12rem, 1fr); }
+  .studio-fs-body.with-chat { grid-template-rows: minmax(14rem, 1fr) minmax(12rem, 1fr) minmax(12rem, 1fr); }
+  .studio-fs-editor { border-right: 0; border-bottom: 1px solid var(--border); }
+}
+
+.studio-chat { display: flex; flex-direction: column; min-height: 0; border-right: 1px solid var(--border); background: var(--panel); }
+.studio-chat-head { display: flex; align-items: center; gap: 0.6rem; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); }
+.studio-chat-head .link-btn { margin-left: auto; }
+.studio-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+.studio-seg button { background: none; border: 0; color: var(--muted); padding: 0.2rem 0.55rem; font: inherit; font-size: 0.8rem; cursor: pointer; }
+.studio-seg button.on { background: var(--accent); color: var(--on-accent); }
+.studio-chat-log { flex: 1; min-height: 0; overflow-y: auto; padding: 0.75rem; display: flex; flex-direction: column; gap: 0.5rem; font-size: 0.88rem; }
+.studio-chat-log > p { margin: 0; }
+.studio-msg { padding: 0.45rem 0.65rem; border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 92%; }
+.studio-msg.you { align-self: flex-end; background: var(--accent); color: var(--on-accent); }
+.studio-msg.ai { align-self: flex-start; border: 1px solid var(--border); }
+.studio-msg.err { border-color: var(--hard); }
+.studio-chat-input { display: flex; flex-direction: column; gap: 0.45rem; padding: 0.65rem 0.75rem; border-top: 1px solid var(--border); }
+.studio-chat-input .studio-row { margin: 0; }
+.studio-chat-input .studio-row input { width: 6.5rem; }
+.studio-chat-input textarea, .studio-chat-input input {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text);
+  padding: 0.4rem 0.6rem; font: inherit; font-size: 0.9rem; resize: vertical;
+}
+.studio-chat-input .class-present-btn { align-self: flex-end; }
 .studio-proposal .cm-editor { font-size: 0.85rem; }
 .studio-check { white-space: pre-wrap; padding: 0.6rem 0.8rem; border: 1px solid var(--hard); border-radius: 6px; font-size: 0.82rem; max-height: 22rem; overflow: auto; }
 .studio-check.ok { border-color: var(--easy); }

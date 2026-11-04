@@ -52,8 +52,15 @@ export function renderDeckPage(opts: {
   deck: string; // already sanitized
   deckHash: string;
   nonce: string;
+  /** The Studio's live preview: always the slide view, however narrow the
+   * column (reveal otherwise switches to its scroll view under 435px), every
+   * fragment shown, and no transitions while the editor moves between slides. */
+  preview?: boolean;
 }): string {
   const { nonce } = opts;
+  const config = opts.preview
+    ? { ...REVEAL_CONFIG, scrollActivationWidth: null, fragments: false, transition: "none", backgroundTransition: "none" }
+    : REVEAL_CONFIG;
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -83,7 +90,7 @@ ${opts.deck}
 <script src="${SHARED}/vendor/html2canvas.min.js"></script>
 <script src="${SHARED}/vendor/jspdf.umd.min.js"></script>
 <script nonce="${nonce}">
-Reveal.initialize(Object.assign(${JSON.stringify(REVEAL_CONFIG)}, {
+Reveal.initialize(Object.assign(${JSON.stringify(config)}, {
   plugins: [RevealHighlight, RevealNotes, RevealMath.KaTeX]
 }));
 window.addEventListener('load', function () {

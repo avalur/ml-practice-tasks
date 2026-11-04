@@ -417,6 +417,14 @@ always wins a collision.
   `form-action 'none'`; there are no PyScript editors in studio decks (that
   needs a separate sandboxed origin, not built). `tests/deck-sanitize.test.mjs`
   is the attack list — add to it when the allowlist changes.
+- **The full-screen editor** (`DeckFullscreen.tsx`: AI chat | HTML | live
+  slide) renders the *unsaved* text through `POST …/lessons/<l>/preview` — a
+  form POST into a hidden iframe, swapped in once reveal is ready, so the preview
+  is a real document with the deck's own CSP rather than a srcdoc/blob page on
+  the editor's origin. Same sanitizer and shell, plus `preview: true`:
+  fragments shown, no transitions, and `scrollActivationWidth: null` — under
+  435px reveal silently turns into its scroll view, which a column beside the
+  chat easily is.
 - **Images are rows** (`StudioAsset`, bytes in Postgres, 2 MB each, 25 MB per
   course), served same-origin and immutable. Type is decided by magic bytes,
   and SVG is refused: opened directly it is a document that can run script.

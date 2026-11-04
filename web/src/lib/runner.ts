@@ -36,7 +36,7 @@ export type RunnerStatus =
   | "error";
 
 // Shared harness files mounted at the /task root, fetched from the static bundle.
-const SHARED: ReadonlyArray<readonly [url: string, dest: string]> = [
+export const SHARED: ReadonlyArray<readonly [url: string, dest: string]> = [
   ["/content/_shared/conftest.py", "conftest.py"],
   ["/content/_shared/pytest.ini", "pytest.ini"],
   ["/content/_shared/tools/__init__.py", "tools/__init__.py"],

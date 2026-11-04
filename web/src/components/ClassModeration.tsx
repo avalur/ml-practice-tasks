@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import type { Access } from "@/lib/classes";
 import { SuspendToggle } from "./SuspendToggle";
+import { AdminAction } from "./AdminAction";
 
 /* What a class page shows about moderation, by who is looking:
  *   - teachers and admins of a suspended class: the notice, with the reason;
@@ -29,6 +30,15 @@ export function ClassModeration({ slug, access }: { slug: string; access: Access
             {access.suspended ? "suspended" : access.published ? "published" : "draft"}
           </span>
           <SuspendToggle slug={slug} suspended={!!access.suspended} />
+          {/* Studio courses are unlisted until an admin lists them. */}
+          {access.studio && (
+            <AdminAction
+              url={`/api/admin/classes/${slug}/feature`}
+              body={{ featured: !access.featured }}
+              label={access.featured ? "Unlist from /classes" : "List on /classes"}
+              testId="feature-toggle"
+            />
+          )}
           <Link href="/admin/reports">Reports</Link>
         </div>
       )}

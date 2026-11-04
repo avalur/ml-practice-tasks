@@ -5,6 +5,7 @@ import { cache } from "react";
 import { auth } from "@/auth";
 import { isSiteAdmin } from "@/lib/admin";
 import { prisma } from "@/lib/db";
+import { deckHash, studioClassMetas } from "@/lib/studio";
 import {
   assignmentKey,
   assignmentSubmissionWhere,
@@ -27,10 +28,19 @@ import {
 // instead, seeded by scripts/sync-classes.cjs.
 const CLASSES_DIR = path.join(process.cwd(), "public", "classes");
 
+/** Every class the site knows: the hand-written ones from the published
+ * manifest, then the ones teachers built in the Studio (from the DB). Both come
+ * out in the same shape, so no page needs to know which kind it renders. */
 export async function getClasses(): Promise<ClassMeta[]> {
-  const raw = await fs.readFile(path.join(CLASSES_DIR, "manifest.json"), "utf8");
+  const [raw, studio] = await Promise.all([
+    fs.readFile(path.join(CLASSES_DIR, "manifest.json"), "utf8"),
+    studioClassMetas(),
+  ]);
   const parsed = JSON.parse(raw) as { classes: ClassMeta[] };
-  return parsed.classes.sort((a, b) => a.order - b.order);
+  const repo = parsed.classes.sort((a, b) => a.order - b.order);
+  // A repo slug always wins: a studio course can never shadow a real one.
+  const taken = new Set(repo.map((c) => c.slug));
+  return [...repo, ...studio.filter((c) => !taken.has(c.slug))];
 }
 
 export async function getClassMeta(slug: string): Promise<ClassMeta | null> {
@@ -67,6 +77,14 @@ export async function deckHashFor(
   classSlug: string,
   lessonSlug: string,
 ): Promise<string> {
+  // A studio deck has no file: hash what the present route will render.
+  const studio = await prisma.studioLesson
+    .findFirst({
+      where: { slug: lessonSlug, class: { slug: classSlug, source: "studio" } },
+      select: { deck: true },
+    })
+    .catch(() => null);
+  if (studio) return deckHash(studio.deck);
   try {
     const html = await fs.readFile(
       path.join(CLASSES_DIR, classSlug, lessonSlug, "present.html"),
@@ -110,6 +128,10 @@ export type Access = {
   /** Taken down by a site admin: back to teachers-only whatever `published`
    * says, and the reason is what the teachers are shown. */
   suspended: { at: Date; reason: string | null } | null;
+  /** Built in the Studio (Class.source = "studio") rather than in the repo. */
+  studio: boolean;
+  /** A studio course a site admin has listed on /classes. */
+  featured: boolean;
   /** The check every class page and the notes route makes: a draft (or a
    * suspended class) belongs to its teachers and the site admins, and to nobody
    * else — enrolled students included. */
@@ -149,6 +171,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
       publishedAt: true,
       suspendedAt: true,
       suspendedReason: true,
+      source: true,
+      featuredAt: true,
       // Not conditional on `userId`: a select that is sometimes `false` gives
       // this row two different shapes, and the caller then cannot read the
       // group off it. An impossible id costs one indexed miss instead.
@@ -169,6 +193,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
       isAdmin,
       published: false,
       suspended: null,
+      studio: false,
+      featured: false,
       visible: false,
       isMember: false,
       isStudent: false,
@@ -191,6 +217,8 @@ export const getAccess = cache(async function getAccess(slug: string): Promise<A
     isAdmin,
     published,
     suspended,
+    studio: row.source === "studio",
+    featured: row.featuredAt !== null,
     visible: (published && !suspended) || isTeacher || isAdmin,
     isMember: isTeacher || !!enrollment,
     isStudent: !isTeacher && !!enrollment,
@@ -214,7 +242,14 @@ export const visibleClasses = cache(async function visibleClasses(): Promise<
   const [all, rows] = await Promise.all([
     getClasses(),
     prisma.class.findMany({
-      select: { slug: true, publishedAt: true, suspendedAt: true, teacherEmails: true },
+      select: {
+        slug: true,
+        publishedAt: true,
+        suspendedAt: true,
+        teacherEmails: true,
+        source: true,
+        featuredAt: true,
+      },
     }),
   ]);
 
@@ -226,7 +261,11 @@ export const visibleClasses = cache(async function visibleClasses(): Promise<
     // A suspended class lists like a draft: its teachers still see it (badged as
     // a draft, which is what it now is to everybody else), nobody else does.
     const draft = row.publishedAt === null || row.suspendedAt !== null;
-    if (draft && !(email && row.teacherEmails.includes(email))) continue;
+    const teaches = !!email && row.teacherEmails.includes(email);
+    if (draft && !teaches) continue;
+    // Studio courses are unlisted: reachable by their link, listed only once a
+    // site admin features them — or for their own teachers.
+    if (row.source === "studio" && !row.featuredAt && !teaches) continue;
     out.push({ ...cls, draft });
   }
   return out;

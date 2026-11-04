@@ -14,7 +14,7 @@ import type { BrowserContext } from "@playwright/test";
 
 // CI exports DATABASE_URL; locally it lives in .env.local, which Playwright does
 // not load (only `next start` does), so fall back to reading it directly.
-function databaseUrl(): string {
+export function databaseUrl(): string {
   if (process.env.DATABASE_URL) return process.env.DATABASE_URL;
   const file = path.join(__dirname, "..", "..", "..", ".env.local");
   const line = fs
@@ -284,6 +284,16 @@ export async function teacherGrants() {
     async grant(email: string) {
       guard(email);
       return prisma.teacherGrant.findUnique({ where: { email } });
+    },
+    /** Make `email` a teacher with the current terms accepted, as if they had
+     * applied, been approved and clicked through. */
+    async activate(email: string, termsVersion: string) {
+      guard(email);
+      await prisma.teacherGrant.upsert({
+        where: { email },
+        create: { email, grantedBy: "e2e", termsVersion, termsAcceptedAt: new Date() },
+        update: { revokedAt: null, termsVersion, termsAcceptedAt: new Date() },
+      });
     },
     async application(email: string) {
       guard(email);

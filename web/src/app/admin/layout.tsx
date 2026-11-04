@@ -17,6 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         <span className="badge medium">admin</span>
         <Link href="/admin/teachers">Teachers</Link>
         <Link href="/admin/reports">Reports</Link>
+        <Link href="/admin/proposals">Task proposals</Link>
       </nav>
       {children}
     </div>

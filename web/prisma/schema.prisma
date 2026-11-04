@@ -47,6 +47,10 @@ model User {
   notebookSubmissions NotebookSubmission[]
   teacherApplications TeacherApplication[]
   classReports        ClassReport[]
+  ownedClasses        Class[]                @relation("ClassOwner")
+  aiCredential        AiCredential?
+  aiUsage             AiUsage[]
+  problemProposals    ProblemProposal[]
   createdAt           DateTime               @default(now())
 }
 
@@ -193,6 +197,16 @@ model Class {
   suspendedAt     DateTime?
   suspendedReason String?   @db.Text
   suspendedBy     String?
+  // "repo" — a hand-written course under classes/, structure in manifest.json.
+  // "studio" — built by a platform teacher on the site: structure is in
+  // StudioLesson, slides in StudioLesson.deck, nothing on disk at all.
+  source          String    @default("repo")
+  ownerId         String?
+  owner           User?     @relation("ClassOwner", fields: [ownerId], references: [id], onDelete: SetNull)
+  description     String?   @db.Text
+  // Studio courses are unlisted: reachable by link and code, absent from
+  // /classes until a site admin features them. Repo courses ignore this.
+  featuredAt      DateTime?
 
   invites             ClassInvite[]
   enrollments         ClassEnrollment[]
@@ -200,6 +214,8 @@ model Class {
   attendances         LessonAttendance[]
   notebookSubmissions NotebookSubmission[]
   reports             ClassReport[]
+  studioLessons       StudioLesson[]
+  studioAssets        StudioAsset[]
 }
 
 // One invite code, handed out to one group of students. A class can have several
@@ -384,6 +400,113 @@ model ClassReport {
   @@index([status, createdAt])
   @@index([classId])
   @@index([reporterId])
+}
+
+// --- Studio (courses built on the site) ---
+
+// One lesson of a studio course. Mirrors a lesson in classes/<c>/class.json, so
+// the rest of the site reads both through the same ClassMeta: practice and
+// homework are stored in class.json's shape *before* expansion (a `*` pattern
+// stays a pattern) and expanded on read against the current task catalogue.
+model StudioLesson {
+  id        String   @id @default(cuid())
+  classId   String
+  slug      String
+  title     String
+  position  Int
+  date      String?
+  // The slides: a sequence of <section> elements, sanitized on every write and
+  // rendered inside the same reveal shell as the repo decks.
+  deck      String   @db.Text
+  practice  Json     @default("[]")
+  homework  Json? // { due, items[] } or null
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@unique([classId, slug])
+  @@index([classId, position])
+}
+
+// An image a studio deck shows. Kept in Postgres rather than Blob: images are
+// small (capped), the Blob store is private, and serving them same-origin is
+// what lets the deck's CSP say img-src 'self'.
+model StudioAsset {
+  id        String   @id @default(cuid())
+  classId   String
+  mime      String
+  bytes     Bytes
+  size      Int
+  name      String
+  createdAt DateTime @default(now())
+
+  class Class @relation(fields: [classId], references: [id], onDelete: Cascade)
+
+  @@index([classId])
+}
+
+// A teacher's own model for the AI deck builder ("bring your own key"). The key
+// is AES-256-GCM encrypted with a server secret and never sent back to a client.
+model AiCredential {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  provider  String // see AI_PROVIDERS in src/lib/ai.ts
+  baseUrl   String? // only for provider "custom"
+  model     String
+  keyCipher String // base64: iv | tag | ciphertext
+  keyHint   String // last 4 characters, to recognise it by
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// Requests to the AI builder per teacher per UTC day: the platform's free
+// model is shared, so its use is capped per teacher and in total.
+model AiUsage {
+  id       String @id @default(cuid())
+  userId   String
+  day      String // "2026-11-04", UTC
+  platform Int    @default(0) // on the site's free model (counts against quota)
+  own      Int    @default(0) // on the teacher's own key (never capped)
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([day])
+}
+
+// A task a teacher proposes for the catalogue. It never becomes a problem by
+// itself: an admin accepts it, then `pnpm db:proposal <id>` writes it into
+// problems/<topic>/<slug>/ where the usual generate -> pytest -> commit applies.
+model ProblemProposal {
+  id         String    @id @default(cuid())
+  userId     String
+  topic      String
+  slug       String
+  title      String
+  difficulty String
+  entry      String
+  statement  String    @db.Text
+  reference  String    @db.Text
+  test       String    @db.Text
+  banned     Json      @default("{}")
+  pyDeps     Json      @default("[\"numpy\"]")
+  // What the in-browser check reported when the teacher submitted. Advisory:
+  // the import script runs the real pytest before anything is committed.
+  check      Json?
+  status     String    @default("pending") // pending | accepted | rejected | imported
+  reviewNote String?   @db.Text
+  reviewedBy String?
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt])
+  @@index([userId])
 }
 
 // Whether a brain teaser is on the site yet. Everything else about a teaser is

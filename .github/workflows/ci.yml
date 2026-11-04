@@ -51,6 +51,9 @@ jobs:
       # The brain-teaser tests read a draft board, which only a site editor can
       # see. Synthetic address, throwaway database — this grants nothing real.
       ADMIN_EMAILS: e2e-admin@example.test
+      # Lets the Studio's AI test point a teacher's "own key" at a mock model on
+      # localhost. Production leaves it unset, which refuses private addresses.
+      AI_ALLOW_PRIVATE_BASE_URL: "1"
     defaults:
       run:
         working-directory: web
@@ -73,6 +76,8 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
+      - name: Unit tests
+        run: node --test tests/*.test.mjs
       - name: Install Playwright browser
         run: pnpm exec playwright install --with-deps chromium
       - name: Run e2e (in-browser Pyodide runner)

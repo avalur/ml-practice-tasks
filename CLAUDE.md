@@ -382,6 +382,74 @@ which still authorizes the hand-written repo classes exactly as before.
   cleans up grants, which outlive the deleted test user. The moderation test
   publishes a scratch class, so it only runs on an isolated database.
 
+## Studio (courses built on the site)
+
+`/studio` is where a platform teacher builds a course: lessons, slides, tasks
+from the catalogue, homework. It is the second **source** of classes, next to
+the repo, and the design rests on one rule: **the rest of the app cannot tell
+them apart.** `getClasses()` returns the manifest classes followed by
+`studioClassMetas()` (built from `Class.source = "studio"` rows and
+`StudioLesson`), in the same `ClassMeta` shape — so the class and lesson pages,
+homework, monitor, attendance, notebook submissions, Present, ink and "Finish
+lesson" all work on a studio course without a line of their own. A repo slug
+always wins a collision.
+
+- **Items are stored unexpanded** (class.json's shape, `py_*` stays a pattern)
+  and expanded on every read by `expandItem()` in `web/src/lib/studio.ts` — a
+  port of `export_decks.py`'s `expand_item`, fnmatch semantics included. A task
+  that leaves the catalogue drops out of the lesson instead of breaking it.
+  Writes are validated against the catalogue (`validateLessonItems`), links are
+  practice-only exactly as in the repo.
+- **Slides live in `StudioLesson.deck`** and are served by a route at the same
+  URL a repo deck has, `/classes/<c>/<l>/present.html`
+  (`app/classes/[slug]/[lesson]/present.html/route.ts`). Repo decks never reach
+  it: Next serves `public/` files before dynamic routes. The shell
+  (`web/src/lib/deck-shell.ts`) mirrors `SHELL` in `export_decks.py` — keep
+  the two in step when one changes.
+- **Security is the sanitizer, with a CSP behind it.** A studio deck runs on
+  this origin, next to every student's cookies. `sanitizeDeck()`
+  (`web/src/lib/deck-sanitize.ts`) is an allowlist: no script/style/iframe/
+  form/input/svg, no event handlers, only the reveal `data-*` attributes that
+  load nothing, images only from `/api/studio/assets/<id>` or `data:image`,
+  and foreign `url()` stripped from style attributes. It runs on save *and* on
+  every render, so tightening it covers old decks. The page's CSP allows only
+  `_shared` scripts plus one nonced inline script, `img-src 'self' data:`,
+  `form-action 'none'`; there are no PyScript editors in studio decks (that
+  needs a separate sandboxed origin, not built). `tests/deck-sanitize.test.mjs`
+  is the attack list — add to it when the allowlist changes.
+- **Images are rows** (`StudioAsset`, bytes in Postgres, 2 MB each, 25 MB per
+  course), served same-origin and immutable. Type is decided by magic bytes,
+  and SVG is refused: opened directly it is a document that can run script.
+- **Unlisted by default.** Course slugs get a random tail
+  (`e2e-linear-algebra-k3x9a`); a published studio course is reachable by link
+  and code but absent from `/classes` until an admin presses "List on
+  /classes" (`Class.featuredAt`). Editing needs the live role *and* ownership
+  (`editableClass()`); a revoked teacher's course keeps running, frozen.
+- **AI builder** (`web/src/lib/ai.ts`): one OpenAI-compatible adapter.
+  Platform models come from env — `GEMINI_API_KEY` first, `OPENROUTER_API_KEY`
+  as fallback (`AI_GEMINI_MODEL`, `AI_OPENROUTER_MODEL` override the models) —
+  capped at `AI_DAILY_LIMIT` (20) per teacher and `AI_GLOBAL_DAILY_LIMIT` (500)
+  in total, counted in `AiUsage` with a reserve-then-refund so parallel clicks
+  cannot slip past. A teacher's own key (`AiCredential`, any provider in
+  `AI_PROVIDERS`) is AES-256-GCM encrypted with a key derived from
+  `AI_KEY_SECRET` (falls back to `AUTH_SECRET` — **rotating it makes stored
+  keys unreadable**) and is never sent back. A custom endpoint must be https
+  and public; `AI_ALLOW_PRIVATE_BASE_URL=1` lifts that for the e2e mock only.
+  The answer is cut down to `<section>`s and sanitized; nothing is saved until
+  the teacher presses Save. With neither env key nor own key the route says
+  501 and the UI points at AI settings.
+- **Task proposals** (`ProblemProposal`): `/studio/proposals` runs the
+  proposal's own reference and stub through the Pyodide worker before it can be
+  sent (reference must pass every test, the stub must fail one — the same
+  `make_stub` as `content_pipeline.py`, ported in `proposal-shared.ts`).
+  Accepting in `/admin/proposals` changes nothing on the site; the files reach
+  `problems/` only through `cd web && pnpm db:proposal <id>` (refuses anything
+  not accepted and any existing directory), then the usual generate → pytest →
+  review → commit. A proposal never becomes a task by itself.
+- e2e: `tests/e2e/studio.spec.ts`, isolated database only. The AI test answers
+  with a mock model on localhost through a teacher's "own key", so it needs
+  `AI_ALLOW_PRIVATE_BASE_URL=1` (set in CI).
+
 ## Brain teasers
 
 Puzzles under `/brainteasers`, listed by the hardcoded `TEASERS` array in
@@ -568,11 +636,13 @@ python tools/build_figures.py --check # CI: a .tex edited without a rebuild
 pytest problems -q            # CI: all reference solutions must pass
 pytest tasks/<topic>/<slug>   # run a student stub
 cd web && pnpm db:sync-problems # sync Problem rows in Neon/Postgres DB with manifest
-cd web && pnpm db:push         # apply Prisma schema (required before teacher/moderation code ships)
+cd web && pnpm db:push         # apply Prisma schema (required before teacher/Studio code ships)
 cd web && pnpm db:sync-classes # upsert Class rows (group codes are made in the UI)
 cd web && pnpm db:sync-classes --publish <slug>   # put a draft class on the site
 cd web && pnpm db:sync-classes --unpublish <slug> # take it back off
 cd web && pnpm db:users        # who has registered (read-only; --limit N)
+cd web && pnpm db:proposal <id> # write an accepted task proposal into problems/ (--dry-run to print)
+cd web && node --test tests/*.test.mjs # unit tests (sanitizer, submissions, grading)
 ```
 
 `db:users` answers "who is on the site" without opening Prisma Studio. Two things

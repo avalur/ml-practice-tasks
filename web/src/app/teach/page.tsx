@@ -120,18 +120,21 @@ async function TeacherHome({ since }: { since: Date }) {
           ))}
         </ul>
       )}
-      <p className="class-draft-note">
-        The course builder is on its way: creating a course, choosing its tasks and writing
-        its slides will happen right here.
+      <p>
+        <Link className="class-present-btn" href="/studio" data-testid="open-studio">
+          Open the Studio
+        </Link>{" "}
+        <span className="muted">— build a course, write its slides, pick its tasks.</span>
       </p>
     </section>
   );
 }
 
 async function AdminSummary() {
-  const [applications, reports] = await Promise.all([
+  const [applications, reports, proposals] = await Promise.all([
     prisma.teacherApplication.count({ where: { status: "pending" } }),
     prisma.classReport.count({ where: { status: "open" } }),
+    prisma.problemProposal.count({ where: { status: "pending" } }).catch(() => 0),
   ]);
   return (
     <div className="class-teacher-bar class-admin-bar" data-testid="admin-summary">
@@ -140,6 +143,7 @@ async function AdminSummary() {
         Teachers{applications > 0 ? ` · ${applications} to review` : ""}
       </Link>
       <Link href="/admin/reports">Reports{reports > 0 ? ` · ${reports} open` : ""}</Link>
+      <Link href="/admin/proposals">Task proposals{proposals > 0 ? ` · ${proposals} to review` : ""}</Link>
     </div>
   );
 }

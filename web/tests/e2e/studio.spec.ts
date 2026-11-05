@@ -488,6 +488,9 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
 
     // In full screen the same AI is a chat in the left column.
     await t.page.getByTestId("open-fullscreen").click();
+    // The chat is open by default; the AI button folds it away and back.
+    await expect(t.page.getByTestId("fs-chat")).toBeVisible();
+    await t.page.getByTestId("fs-ai").click();
     await expect(t.page.getByTestId("fs-chat")).toHaveCount(0);
     await t.page.getByTestId("fs-ai").click();
     await t.page.getByTestId("fs-chat-input").fill("Add a slide about the cross product");

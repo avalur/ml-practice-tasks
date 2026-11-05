@@ -312,7 +312,7 @@ function DeckPart({
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const [full, setFull] = useState(false);
-  const [chatOpen, setChatOpen] = useState(false);
+  const [chatOpen, setChatOpen] = useState(true);
   const [chatLog, setChatLog] = useState<ChatEntry[]>([]);
   const [at, setAt] = useState<SlidePos>({ h: 0, v: 0 });
   const viewRef = useRef<EditorView | null>(null);

@@ -139,7 +139,15 @@ export function numberedDeck(sections: string[]): string {
 export function expandSourceRefs(answer: string, sections: string[]): { text: string; refs: number } {
   let refs = 0;
   const n = sections.length;
-  const text = answer
+  const REF = String.raw`<copy-source\s*\/?>(?:\s*<\/copy-source>)?|<source-slides?\b[^>]*?\/?>(?:\s*<\/source-slides?>)?`;
+  // Each source slide is already a whole <section> (or a vertical stack of
+  // them), so a <section> the model put around references would nest a stack
+  // a level deeper than reveal can show. Drop such wrappers.
+  const unwrapped = answer.replace(
+    new RegExp(String.raw`<section\b[^>]*>\s*((?:(?:${REF})\s*)+)<\/section>`, "gi"),
+    (_m, inner: string) => inner,
+  );
+  const text = unwrapped
     .replace(/<copy-source\s*\/?>(?:\s*<\/copy-source>)?/gi, () => {
       refs++;
       return "\n" + sections.join("\n\n") + "\n";

@@ -119,6 +119,7 @@ export type AiSource = { url: string; title: string; sections: string[] };
 
 const SOURCE_RULES = `Do not retype source slides — refer to them by number: <source-slides from="3" to="7"/> puts slides 3 to 7 there exactly as they are (to is optional), and <copy-source/> puts the whole source deck.
 If the teacher simply wants the lesson copied, answer with exactly <copy-source/> and nothing else.
+Each numbered slide is a whole <section> — some are vertical stacks of several — so put references between your own sections, never inside one.
 Retype a source slide only to change it, and then keep its markup, classes, inline styles, image URLs and editors (with their env and config) exactly as they are.
 The slide count and language asked for apply only to slides you write yourself.`;
 

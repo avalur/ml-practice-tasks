@@ -63,6 +63,22 @@ test("references to source slides expand to the exact slides", () => {
   assert.equal(text.replace(/\s+/g, ""), "<section>new</section><section>2</section><section>3</section><section>1</section>");
 });
 
+test("a <section> wrapped around references is dropped, so stacks stay two levels deep", () => {
+  const src = ["<section><section>a</section><section>b</section></section>", "<section>c</section>"];
+  const { text } = expandSourceRefs(
+    `<section>\n  <source-slides from="1" to="1"/>\n</section>\n<section data-x="1"><copy-source/></section><section><h3>Own</h3><source-slides n="2"/></section>`,
+    src,
+  );
+  assert.equal(
+    text.replace(/\s+/g, ""),
+    "<section><section>a</section><section>b</section></section>" +
+      "<section><section>a</section><section>b</section></section><section>c</section>" +
+      // A section with content of its own is the model's slide: left alone.
+      "<section><h3>Own</h3><section>c</section></section>",
+  );
+  assert.equal(topLevelSections(text).length, 4);
+});
+
 test("pyscript.toml: packages and the files beside it", () => {
   const cfg = readPyToml(`name = "Numpy and Pandas"\npackages = ["numpy", "pandas"]\n\n[files]\n# comment\n"example.csv" = ""\n"data/t.csv" = "./titanic.csv"\n`);
   assert.deepEqual(cfg.packages, ["numpy", "pandas"]);

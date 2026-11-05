@@ -398,6 +398,17 @@ test("studio: the full-screen editor renders unsaved slides live, on the cursor'
   }
 });
 
+/** Point the teacher's "own key" at a mock model on localhost. */
+async function saveOwnKey(page: Page, port: number) {
+  await page.goto("/studio/settings");
+  await page.locator('select[name="provider"]').selectOption("custom");
+  await page.locator('input[name="baseUrl"]').fill(`http://127.0.0.1:${port}/v1`);
+  await page.locator('input[name="model"]').fill("mock-model");
+  await page.locator('input[name="key"]').fill("sk-e2e-secret-1234");
+  await page.getByRole("button", { name: "Save key" }).click();
+  await expect(page.getByTestId("ai-key-status")).toContainText("mock-model");
+}
+
 test("studio: the AI builder uses the teacher's own key and its answer is sanitized", async ({ browser }) => {
   test.skip(process.env.AI_ALLOW_PRIVATE_BASE_URL !== "1", "needs AI_ALLOW_PRIVATE_BASE_URL=1 on the server for the mock model");
   const requests: { model: string; stream?: boolean; reasoning?: unknown; messages: { role: string; content: string }[] }[] = [];
@@ -451,13 +462,7 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
     });
     if (!process.env.GEMINI_API_KEY && !process.env.OPENROUTER_API_KEY) expect(none.status()).toBe(501);
 
-    await t.page.goto("/studio/settings");
-    await t.page.locator('select[name="provider"]').selectOption("custom");
-    await t.page.locator('input[name="baseUrl"]').fill(`http://127.0.0.1:${port}/v1`);
-    await t.page.locator('input[name="model"]').fill("mock-model");
-    await t.page.locator('input[name="key"]').fill("sk-e2e-secret-1234");
-    await t.page.getByRole("button", { name: "Save key" }).click();
-    await expect(t.page.getByTestId("ai-key-status")).toContainText("mock-model");
+    await saveOwnKey(t.page, port);
     await expect(t.page.getByTestId("ai-key-status")).toContainText("…1234");
 
     // The key is stored encrypted, never in the clear.
@@ -515,6 +520,128 @@ test("studio: the AI builder uses the teacher's own key and its answer is saniti
     // Undo puts back exactly what was there before the request.
     await t.page.getByTestId("fs-chat-log").getByRole("button", { name: "Undo this change" }).click();
     await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
+  } finally {
+    await t.close();
+    mock.close();
+  }
+});
+
+test("studio: a lesson linked in the AI chat is copied exactly, images, data and packages included", async ({ browser }) => {
+  test.skip(process.env.AI_ALLOW_PRIVATE_BASE_URL !== "1", "needs AI_ALLOW_PRIVATE_BASE_URL=1 on the server for the mock model");
+  test.setTimeout(300_000);
+  // The model is shown the lesson and answers with one reference to it — the
+  // short answer SOURCE_RULES asks for when the teacher only wants a copy.
+  const requests: { messages: { role: string; content: string }[] }[] = [];
+  const mock = http.createServer((req, res) => {
+    let body = "";
+    req.on("data", (c) => (body += c));
+    req.on("end", async () => {
+      requests.push(JSON.parse(body));
+      const sees = requests.at(-1)!.messages.some((m) => m.content.includes("<source-deck>"));
+      await new Promise((r) => setTimeout(r, 1500)); // long enough to watch the progress
+      res.writeHead(200, { "Content-Type": "application/json" });
+      res.end(JSON.stringify({ choices: [{ message: { content: sees ? "<copy-source/>" : "<section><h2>Invented</h2></section>" } }] }));
+    });
+  });
+  await new Promise<void>((r) => mock.listen(0, "127.0.0.1", r));
+  const port = (mock.address() as AddressInfo).port;
+
+  const SRC = "/classes/ml-intensive-tlf/l02-numpy-pandas/present.html";
+  const t = await teacher(browser, "copy");
+  try {
+    const slug = await createCourse(t.page, "E2E Copy");
+    await saveOwnKey(t.page, port);
+
+    // What the published lesson has, to compare the copy against.
+    const source = await t.page.request.get(SRC).then((r) => r.text());
+    const count = (html: string, re: RegExp) => (html.match(re) ?? []).length;
+    const slidesHtml = source.slice(source.indexOf('<div class="slides">'));
+    const want = { sections: count(slidesHtml, /<section\b/g), editors: count(slidesHtml, /<script type="py-editor"/g) };
+    expect(want.editors).toBeGreaterThan(20);
+
+    await t.page.goto(`/studio/${slug}/l01-intro`);
+    await t.page.getByTestId("open-fullscreen").click();
+    await t.page.getByRole("radio", { name: "New deck" }).click();
+    // The teacher's own words, with the production address: it is still this site.
+    await t.page.getByTestId("fs-chat-input").fill(`Можешь сделать тут копию вот этих слайдов, включая картинки? https://www.mlpractice.com${SRC}`);
+    await t.page.getByTestId("fs-chat-input").press("Enter");
+    await expect(t.page.getByTestId("ai-source")).toContainText("Lecture 2. NumPy and Pandas");
+    await expect(t.page.getByTestId("ai-source")).toContainText("4 images, 2 data files");
+    await expect(t.page.getByTestId("ai-progress")).toHaveCount(0, { timeout: 30_000 });
+    await expect(t.page.getByTestId("fs-chat-log")).toContainText(`${want.sections} slides`);
+    // The model was given the real slides, numbered, and told how to refer to them.
+    const prompt = requests.at(-1)!.messages.at(-1)!.content;
+    expect(prompt).toContain("<!-- slide 1 -->");
+    expect(prompt).toContain("<copy-source/>");
+    expect(prompt).toContain("genfromtxt('example.csv'");
+    await t.page.keyboard.press("ControlOrMeta+S");
+    await expect(t.page.getByTestId("save-deck")).toHaveText("Saved");
+    await t.page.getByTestId("fs-exit").click();
+
+    const prisma = await db();
+    const cls = await prisma.class.findUniqueOrThrow({ where: { slug }, select: { id: true } });
+    const { deck } = await prisma.studioLesson.findUniqueOrThrow({
+      where: { classId_slug: { classId: cls.id, slug: "l01-intro" } },
+      select: { deck: true },
+    });
+    const assets = await prisma.studioAsset.findMany({ where: { classId: cls.id }, select: { id: true, name: true, mime: true } });
+    await prisma.$disconnect();
+    expect(count(deck, /<section\b/g)).toBe(want.sections);
+    expect(count(deck, /<script type="py-editor"/g)).toBe(want.editors);
+    expect(deck).not.toContain("/classes/ml-intensive-tlf/assets/");
+    expect(deck).toContain('class="important" style="color:orange"'); // the deck's own CSS, inlined
+    expect(assets.map((a) => a.mime).sort()).toEqual(["image/gif", "image/gif", "image/png", "image/webp", "text/csv", "text/csv"]);
+    for (const a of assets) expect(deck).toContain(`/api/studio/assets/${a.id}`);
+    // The toml config became an inline one, pointing at the copied data files.
+    const csv = assets.find((a) => a.name === "example.csv")!;
+    expect(deck).toContain(`env="read" config='{"packages":["numpy","pandas"],"files":{`);
+    expect(deck).toContain(`"/api/studio/assets/${csv.id}":"example.csv"`);
+
+    // Asking again copies nothing twice.
+    const again = await t.page.request.post("/api/studio/ai", {
+      data: { course: slug, lesson: "l01-intro", mode: "generate", prompt: `copy ${SRC}` },
+      headers: { origin: ORIGIN },
+    });
+    expect(again.status()).toBe(200);
+    await again.text();
+    const prisma2 = await db();
+    expect(await prisma2.studioAsset.count({ where: { classId: cls.id } })).toBe(assets.length);
+    await prisma2.$disconnect();
+
+    // Every picture loads, and the editor that reads example.csv runs with
+    // numpy under the deck's CSP.
+    const violations: string[] = [];
+    t.page.on("console", (m) => {
+      if (/Content Security Policy|Refused to|EvalError/i.test(m.text())) violations.push(m.text());
+    });
+    await t.page.goto(`/classes/${slug}/l01-intro/present.html`);
+    const broken = await t.page.evaluate(async () => {
+      const urls = [...document.querySelectorAll("img")].map((i) => i.getAttribute("src")!);
+      const bad: string[] = [];
+      for (const u of urls) {
+        const r = await fetch(u);
+        if (!r.ok || !(r.headers.get("content-type") ?? "").startsWith("image/")) bad.push(u);
+      }
+      return { n: urls.length, bad };
+    });
+    expect(broken.n).toBeGreaterThan(0);
+    expect(broken.bad).toEqual([]);
+    const run = t.page.locator(".py-editor-run-button");
+    await expect(run).toHaveCount(want.editors, { timeout: 90_000 });
+    // PyScript replaces each <script> with its editor box, in order — so the
+    // editor's place in the saved deck is its place on the page.
+    const k = deck.split('<script type="py-editor"').slice(1).findIndex((e) => e.includes("genfromtxt('example.csv'"));
+    expect(k).toBeGreaterThanOrEqual(0);
+    await t.page.evaluate((i) => {
+      const R = (window as any).Reveal;
+      const at = R.getIndices(document.querySelectorAll(".py-editor-box")[i].closest("section"));
+      R.slide(at.h, at.v);
+    }, k);
+    await run.nth(k).click({ force: true });
+    // The first rows of example.csv, as numpy prints them: "[1. 2. 3.]".
+    await expect(t.page.locator(".py-editor-output").nth(k)).toContainText(/\[\s*-?\d+\.\s/, { timeout: 240_000 });
+    await expect(t.page.locator(".py-editor-output").nth(k)).not.toContainText("Error");
+    expect(violations).toEqual([]);
   } finally {
     await t.close();
     mock.close();

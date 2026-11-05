@@ -14,7 +14,14 @@ export type AiRequest = {
 };
 
 /** What the editor shows while a request runs. */
-export type AiProgress = { via: string | null; reasoning: string; text: string; startedAt: number };
+export type AiProgress = {
+  via: string | null;
+  reasoning: string;
+  text: string;
+  startedAt: number;
+  /** The lesson the prompt linked to, as the server read it. */
+  source: { title: string; slides: number; images: number; files: number } | null;
+};
 
 /** One call to the AI route, shared by this panel and the full-screen chat.
  * Refusals come back as JSON with a status; a running request is a stream of
@@ -24,7 +31,7 @@ export async function askAi(
   body: AiRequest,
   onProgress?: (p: AiProgress) => void,
 ): Promise<{ ok: true; deck: string; text: string } | { ok: false; text: string }> {
-  const progress: AiProgress = { via: null, reasoning: "", text: "", startedAt: Date.now() };
+  const progress: AiProgress = { via: null, reasoning: "", text: "", startedAt: Date.now(), source: null };
   try {
     const res = await fetch("/api/studio/ai", {
       method: "POST",
@@ -48,12 +55,15 @@ export async function askAi(
         if (!line.trim()) continue;
         const e = JSON.parse(line) as
           | { type: "start"; via: string }
+          | { type: "source"; title: string; slides: number; images: number; files: number }
           | { type: "reasoning" | "text"; text: string }
           | { type: "done"; deck: string; via: string; remaining: number | null }
           | { type: "error"; error: string };
         if (e.type === "start") {
           // A fallback to the next provider starts over.
           Object.assign(progress, { via: e.via, reasoning: "", text: "" });
+        } else if (e.type === "source") {
+          progress.source = { title: e.title, slides: e.slides, images: e.images, files: e.files };
         } else if (e.type === "reasoning") {
           progress.reasoning += e.text;
         } else if (e.type === "text") {
@@ -83,20 +93,29 @@ const elapsed = (from: number) => {
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, "0")}`;
 };
 
-/** Titles of the slides the model has finished so far, in order. */
+/** Titles of the slides the model has finished so far, in order. A reference
+ * to the linked lesson's slides (`<copy-source/>`, `<source-slides …/>`) is
+ * listed as what it stands for. */
 export function finishedSlides(text: string): string[] {
-  const parts = text.split(/<\/section>/i);
+  const refs = /<copy-source\s*\/?>|<source-slides?\b[^>]*\/?>/gi;
+  const describe = (tag: string) => {
+    if (/^<copy-source/i.test(tag)) return "All slides of the linked lesson";
+    const n = (k: string) => new RegExp(`\\b${k}\\s*=\\s*["']?(\\d+)`, "i").exec(tag)?.[1];
+    const from = n("from") ?? n("n");
+    const to = n("to");
+    return to && to !== from ? `Linked lesson, slides ${from}–${to}` : `Linked lesson, slide ${from}`;
+  };
+  const out: string[] = [];
+  const parts = text.replace(refs, (m) => `<section><h2>${describe(m)}</h2></section>`).split(/<\/section>/i);
   parts.pop(); // the slide still being written
-  return (
-    parts
-      // The closing tag of a wrapper around vertical slides leaves a part with
-      // no <section> of its own: that is not a slide.
-      .filter((p) => /<section\b/i.test(p))
-      .map((p) => {
-        const h = /<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i.exec(p.slice(p.search(/<section\b/i)));
-        return h ? h[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() : "";
-      })
-  );
+  for (const p of parts) {
+    // The closing tag of a wrapper around vertical slides leaves a part with
+    // no <section> of its own: that is not a slide.
+    if (!/<section\b/i.test(p)) continue;
+    const h = /<h[1-4][^>]*>([\s\S]*?)<\/h[1-4]>/i.exec(p.slice(p.search(/<section\b/i)));
+    out.push(h ? h[1].replace(/<[^>]+>/g, "").replace(/\s+/g, " ").trim() : "");
+  }
+  return out;
 }
 
 /** Live view of a running request: the clock, what the model is thinking, and
@@ -123,6 +142,12 @@ export function AiProgressView({ progress }: { progress: AiProgress | null }) {
           {progress.via ? ` · ${progress.via}` : ""}
         </span>
       </div>
+      {progress.source && (
+        <p className="muted" data-testid="ai-source">
+          Read “{progress.source.title}”: {progress.source.slides} slides, {progress.source.images} images
+          {progress.source.files ? `, ${progress.source.files} data files` : ""} copied into this course.
+        </p>
+      )}
       {slides.length > 0 && (
         <ol className="studio-ai-slides">
           {slides.map((t, i) => (

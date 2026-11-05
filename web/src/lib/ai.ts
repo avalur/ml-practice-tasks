@@ -1,7 +1,8 @@
 import { createCipheriv, createDecipheriv, hkdfSync, randomBytes } from "node:crypto";
 
 import { prisma } from "@/lib/db";
-import { sanitizeDeck } from "@/lib/deck-sanitize";
+import { PY_PACKAGES, sanitizeDeck } from "@/lib/deck-sanitize";
+import { expandSourceRefs, numberedDeck } from "@/lib/deck-convert";
 import { AI_PROVIDERS, type AiMode, type AiProviderId } from "./ai-shared";
 
 export * from "./ai-shared";
@@ -108,9 +109,27 @@ const DIALECT = `You write lecture slides for reveal.js as plain HTML.
 Output ONLY a sequence of <section>...</section> elements — no <html>, <head>, <body>, no markdown, no code fences, no commentary.
 Allowed: headings, p, ul/ol/li, strong/em, code/pre (use <pre><code class="language-python">), blockquote, table, img, a, div/span with classes, aside class="notes" for speaker notes.
 Use class="fragment" on list items to reveal them one by one. Write formulas in LaTeX between $...$ (inline) or $$...$$ (display).
-For Python the class can run in the browser, use <script type="py-editor">code</script> (add env="name" to editors that share variables across slides); the student presses Run. Only the standard library is available.
+For Python the class can run in the browser, use <script type="py-editor">code</script> (add env="name" to editors that share variables across slides); the student presses Run. An editor starts with only the standard library: to use packages, give the FIRST editor of that env config='{"packages":["numpy","pandas"]}' (allowed: ${PY_PACKAGES.join(", ")}) — exactly one editor per env may carry a config.
+You cannot open web links. Never invent the content of a page or lesson you were not given: if the teacher asks to copy something that is not provided below, return one slide saying which link could not be read.
 Never use any other <script>, nor <style>, <iframe>, <form>, <input>, <svg>, event handlers, or images from the web.
 Keep each slide short: a title (h2 or h3) and at most 5–6 bullets or one small code block. The slide is 1280x720.`;
+
+/** A lesson of this site the teacher linked to, already read by the server. */
+export type AiSource = { url: string; title: string; sections: string[] };
+
+const SOURCE_RULES = `Do not retype source slides — refer to them by number: <source-slides from="3" to="7"/> puts slides 3 to 7 there exactly as they are (to is optional), and <copy-source/> puts the whole source deck.
+If the teacher simply wants the lesson copied, answer with exactly <copy-source/> and nothing else.
+Retype a source slide only to change it, and then keep its markup, classes, inline styles, image URLs and editors (with their env and config) exactly as they are.
+The slide count and language asked for apply only to slides you write yourself.`;
+
+function sourceBlock(src: AiSource | undefined): string {
+  if (!src) return "";
+  return (
+    `\n\nThe teacher's message links to the lesson "${src.title}" (${src.url}). You cannot open links, so it has been read for you. ` +
+    `Here are its ${src.sections.length} slides, numbered and already converted for this editor — images, styles and Python editors work as they are:\n\n` +
+    `<source-deck>\n${numberedDeck(src.sections)}\n</source-deck>\n\n${SOURCE_RULES}`
+  );
+}
 
 export function buildMessages(opts: {
   mode: AiMode;
@@ -120,6 +139,7 @@ export function buildMessages(opts: {
   currentDeck: string;
   slides: number;
   language: string;
+  source?: AiSource;
 }) {
   const system = { role: "system", content: DIALECT };
   if (opts.mode === "generate") {
@@ -129,7 +149,8 @@ export function buildMessages(opts: {
         role: "user",
         content:
           `Course: ${opts.courseTitle}\nLesson: ${opts.lessonTitle}\n` +
-          `Write about ${opts.slides} slides in ${opts.language}.\n\nWhat the lesson should cover:\n${opts.prompt}`,
+          `Write about ${opts.slides} slides in ${opts.language}.\n\nWhat the lesson should cover:\n${opts.prompt}` +
+          sourceBlock(opts.source),
       },
     ];
   }
@@ -139,15 +160,16 @@ export function buildMessages(opts: {
       role: "user",
       content:
         `Here is the current deck for the lesson "${opts.lessonTitle}" of the course "${opts.courseTitle}":\n\n` +
-        `${opts.currentDeck}\n\nRevise it as follows, and return the complete revised deck:\n${opts.prompt}`,
+        `${opts.currentDeck}\n\nRevise it as follows, and return the complete revised deck:\n${opts.prompt}` +
+        sourceBlock(opts.source),
     },
   ];
 }
 
 /** The model's answer, reduced to slides and sanitized. Null when nothing
  * slide-shaped came back. */
-export function extractDeck(answer: string): string | null {
-  const text = answer.replace(/```(?:html)?/gi, "");
+export function extractDeck(answer: string, source?: string[]): string | null {
+  const text = expandSourceRefs(answer.replace(/```(?:html)?/gi, ""), source ?? []).text;
   const start = text.search(/<section\b/i);
   const end = text.toLowerCase().lastIndexOf("</section>");
   if (start < 0 || end < start) return null;
@@ -167,6 +189,7 @@ class ProviderError extends Error {
  * its answer as they arrive, then the sanitized deck or an error. */
 export type AiEvent =
   | { type: "start"; via: string }
+  | { type: "source"; title: string; slides: number; images: number; files: number }
   | { type: "reasoning"; text: string }
   | { type: "text"; text: string }
   | { type: "done"; deck: string; via: string; remaining: number | null }
@@ -264,7 +287,12 @@ async function complete(
 }
 
 export type AiPlan =
-  | { ok: true; run: (messages: { role: string; content: string }[], emit: (e: AiEvent) => void) => Promise<void> }
+  | {
+      ok: true;
+      /** `source` is the linked lesson's slides, for expanding the answer's
+       * references to them. */
+      run: (messages: { role: string; content: string }[], emit: (e: AiEvent) => void, source?: string[]) => Promise<void>;
+    }
   | { ok: false; status: number; error: string };
 
 /** Everything that can be refused before a byte is streamed — no key, no
@@ -289,10 +317,10 @@ export async function planDeckRequest(userId: string): Promise<AiPlan> {
     const via = `${ep.label} · ${ep.model} (your key)`;
     return {
       ok: true,
-      run: async (messages, emit) => {
+      run: async (messages, emit, source) => {
         emit({ type: "start", via });
         try {
-          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)));
+          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)), source);
           await prisma.aiUsage.upsert({
             where: { userId_day: { userId, day } },
             create: { userId, day, own: 1 },
@@ -337,13 +365,13 @@ export async function planDeckRequest(userId: string): Promise<AiPlan> {
 
   return {
     ok: true,
-    run: async (messages, emit) => {
+    run: async (messages, emit, source) => {
       let lastError = "no provider answered";
       for (const ep of endpoints) {
         const via = `${ep.label} · ${ep.model}`;
         emit({ type: "start", via });
         try {
-          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)));
+          const deck = extractDeck(await complete(ep, messages, (d) => emit(d)), source);
           if (!deck) {
             await refund();
             emit({ type: "error", error: "The model did not return any slides. Try rephrasing." });

@@ -418,8 +418,12 @@ always wins a collision.
   add to it when the allowlist changes.
 - **PyScript editors are the one exception**, a decision taken knowingly
   (2026-11-04): `<script type="py-editor" env="…">` survives with its code and
-  `env` only — `setup` (auto-run), `config` and `src` are dropped, so code runs
-  only when the student presses Run. The Python runs on this origin, so an
+  `env` and a rebuilt `config` — `setup` (auto-run) and `src` are dropped, so
+  code runs only when the student presses Run. `config` survives only as inline
+  JSON that `pyConfig()` rebuilds: `packages` from `PY_PACKAGES` (Pyodide's own,
+  from jsDelivr — nothing from PyPI) and `files` whose URLs are studio assets;
+  a toml URL or any other key is dropped, and only the **first** config of an
+  env is kept, since PyScript refuses to boot on a duplicate. The Python runs on this origin, so an
   approved teacher *could* call the site as that student; vetting and
   suspension are the guard (a cookie-less sandbox per editor was the
   alternative, and it cannot share `env` across slides). Editors are cut out
@@ -471,6 +475,19 @@ always wins a collision.
   `AiProgressView` shows the clock, the model's reasoning and the titles of the
   slides finished so far. A provider that ignores `stream` and answers plain
   JSON is still accepted.
+- **A lesson linked in the AI prompt is read by the server**, because a model
+  cannot open links — asked to copy one, GLM invented 11 slides in its own
+  style. `findDeckRefs()` (`deck-convert.ts`) picks this site's
+  `/classes/<c>/<l>[/present.html]` URLs out of the prompt (one per request);
+  `importLessonDeck()` (`deck-import.ts`) reads a repo lesson from its published
+  `present.html` on this origin (paths built from slugs, so nothing else is
+  fetchable) or a studio lesson from the DB, only if `access.visible`. The
+  deck's `<style>` class rules move inline, images and the toml's data files
+  (CSV, as text assets) become the course's `StudioAsset`s — written before
+  Save, deduped on name+size+type — and toml configs become inline ones. The
+  model sees the slides numbered and may answer `<copy-source/>` or
+  `<source-slides from to/>`, which `expandSourceRefs()` replaces with the exact
+  slides: a copy is a one-line answer, not 40 KB retyped.
 - **Task proposals** (`ProblemProposal`): `/studio/proposals` runs the
   proposal's own reference and stub through the Pyodide worker before it can be
   sent (reference must pass every test, the stub must fail one — the same

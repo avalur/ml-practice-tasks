@@ -311,3 +311,14 @@ export function newLessonSlug(position: number, title: string): string {
 export function deckHash(deck: string): string {
   return createHash("sha256").update(deck).digest("hex").slice(0, 16);
 }
+
+/** The raster type of an image, from its magic bytes — never from what the
+ * uploader declared. Null for anything else (SVG included: opened directly it
+ * is a document that can run script). */
+export function sniffImage(b: Buffer): string | null {
+  if (b.length >= 8 && b.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]))) return "image/png";
+  if (b.length >= 3 && b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff) return "image/jpeg";
+  if (b.length >= 6 && /^GIF8[79]a$/.test(b.subarray(0, 6).toString("latin1"))) return "image/gif";
+  if (b.length >= 12 && b.subarray(0, 4).toString("latin1") === "RIFF" && b.subarray(8, 12).toString("latin1") === "WEBP") return "image/webp";
+  return null;
+}

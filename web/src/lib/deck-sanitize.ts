@@ -46,8 +46,13 @@ const REVEAL_DATA = [
  * Python runs on this origin in a worker, so a teacher's code could call the
  * site as the student who presses Run. Approved teachers are trusted with that
  * (the terms forbid it; an admin can suspend a course). What is still held:
- *   - it runs only on a click: `setup` (auto-run), `config`, `src` and every
- *     other attribute are dropped, and `type` is fixed — no other script type;
+ *   - it runs only on a click: `setup` (auto-run), `src` and every other
+ *     attribute are dropped, and `type` is fixed — no other script type;
+ *   - `config` survives only as inline JSON we rebuild ourselves: Pyodide's own
+ *     packages from PY_PACKAGES, and data files that are this site's studio
+ *     assets. A config file URL, or anything else in it, is dropped — and only
+ *     the first config of an env is kept, since PyScript refuses to boot with
+ *     two ("duplicated config for env");
  *   - the code cannot end its own <script> or open an HTML comment, so it can
  *     never turn into markup;
  *   - editors are cut out before sanitize-html runs and put back only where a
@@ -57,10 +62,50 @@ const SCRIPT_RE = /<script\b([^>]*)>([\s\S]*?)<\/script\s*>/gi;
 const PY_TYPE = /\btype\s*=\s*(["']?)py-editor\1(?=[\s/]|$)/i;
 const PY_ENV = /\benv\s*=\s*(["']?)([A-Za-z0-9_-]{1,40})\1(?=[\s/]|$)/i;
 
-function pyEditor(attrs: string, code: string): string {
+/** Packages an editor may ask for: ones Pyodide ships itself, fetched from the
+ * jsDelivr CDN the deck's CSP already allows. Nothing that would need PyPI. */
+export const PY_PACKAGES = [
+  "numpy", "pandas", "matplotlib", "scipy", "scikit-learn", "sympy", "networkx", "statsmodels",
+] as const;
+const PY_CONFIG = /\bconfig\s*=\s*(?:'([^']*)'|"([^"]*)")/i;
+const PY_FILE = /^[A-Za-z0-9_-][A-Za-z0-9_.-]{0,79}$/;
+
+/** The editor's config, rebuilt from what is allowed — or null. */
+export function pyConfig(attrs: string): string | null {
+  const m = PY_CONFIG.exec(attrs);
+  if (!m) return null;
+  const raw = (m[1] ?? m[2] ?? "").replace(/&quot;/g, '"').replace(/&#39;/g, "'").replace(/&amp;/g, "&");
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== "object") return null;
+  const { packages, files } = parsed as { packages?: unknown; files?: unknown };
+  const out: { packages?: string[]; files?: Record<string, string> } = {};
+  if (Array.isArray(packages)) {
+    const ok = packages.filter((p): p is string => (PY_PACKAGES as readonly string[]).includes(p as string));
+    if (ok.length) out.packages = [...new Set(ok)];
+  }
+  if (files && typeof files === "object") {
+    const ok = Object.entries(files as Record<string, unknown>).filter(
+      ([url, name]) => ASSET_SRC.test(url) && typeof name === "string" && PY_FILE.test(name),
+    ) as [string, string][];
+    if (ok.length) out.files = Object.fromEntries(ok);
+  }
+  return out.packages || out.files ? JSON.stringify(out) : null;
+}
+
+function pyEditor(attrs: string, code: string, configured: Set<string>): string {
   const env = PY_ENV.exec(attrs)?.[2];
+  const key = env ?? "";
+  const config = configured.has(key) ? null : pyConfig(attrs);
+  if (config) configured.add(key);
   const safe = code.replace(/<\/(script)/gi, "<\\/$1").replace(/<!--/g, "<\\!--");
-  return `<script type="py-editor"${env ? ` env="${env}"` : ""}>${safe}</script>`;
+  // The JSON holds no ' (names and URLs are pattern-checked), so it can sit in
+  // a single-quoted attribute as it is — the form PyScript's examples use.
+  return `<script type="py-editor"${env ? ` env="${env}"` : ""}${config ? ` config='${config}'` : ""}>${safe}</script>`;
 }
 
 function cleanStyle(style: string): string {
@@ -135,10 +180,11 @@ const OPTIONS: sanitizeHtml.IOptions = {
 /** Sanitize a studio deck. Always returns a deck with at least one slide. */
 export function sanitizeDeck(html: string): string {
   const editors: string[] = [];
+  const configured = new Set<string>();
   const marker = `mlp-py-${Math.random().toString(36).slice(2, 10)}${Date.now().toString(36)}`;
   const marked = html.replace(SCRIPT_RE, (_m, attrs: string, code: string) => {
     if (!PY_TYPE.test(attrs)) return "";
-    editors.push(pyEditor(attrs, code));
+    editors.push(pyEditor(attrs, code, configured));
     return `<pre class="${marker}-${editors.length - 1}"></pre>`;
   });
   let out = sanitizeHtml(marked, {

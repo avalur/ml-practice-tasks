@@ -6,6 +6,7 @@ import {
   allRefs,
   codePrefix,
   flatten,
+  formatMilestoneDate,
   getAccess,
   getClassMeta,
   isAssignment,
@@ -160,6 +161,14 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 <span className="meta">
                   {lesson.date && <span className="muted">{lesson.date}</span>}
                   {delivered && <span className="badge easy">delivered</span>}
+                  {lesson.milestones && lesson.milestones.length > 0 && (
+                    <a
+                      href={`/classes/${slug}/${lesson.slug}/present.html`}
+                      className="muted"
+                    >
+                      Open slides
+                    </a>
+                  )}
                   {/* Notes are the one members-only thing here. */}
                   {hasPdf && access.isMember && (
                     <a
@@ -171,6 +180,22 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                   )}
                 </span>
               </div>
+
+              {lesson.milestones && lesson.milestones.length > 0 && (
+                <ul className="class-milestones" data-testid="class-milestones">
+                  {lesson.milestones.map((milestone) => (
+                    <li key={`${milestone.date}-${milestone.title}`}>
+                      {milestone.kind === "deadline" ? "By " : ""}
+                      {formatMilestoneDate(milestone.date)} — {milestone.title}
+                      {milestone.tentative && (
+                        <span className="badge medium" style={{ marginLeft: "0.4rem" }}>
+                          tentative
+                        </span>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              )}
 
               {lesson.practice.length > 0 && (
                 <p className="class-lesson-line">

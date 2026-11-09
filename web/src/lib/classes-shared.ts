@@ -62,6 +62,13 @@ export type Item = TrackedItem | LinkRef;
 
 export type Homework = { due: string; items: TrackedItem[] };
 
+export type Milestone = {
+  date: string;
+  title: string;
+  kind: "deadline" | "event";
+  tentative?: boolean;
+};
+
 export type Lesson = {
   slug: string;
   title: string;
@@ -69,6 +76,7 @@ export type Lesson = {
   deck: string;
   practice: Item[];
   homework: Homework | null;
+  milestones?: Milestone[];
 };
 
 export type ClassMeta = {
@@ -98,6 +106,17 @@ export function flatten(items: Item[]): TrackableRef[] {
 
 export function findLesson(cls: ClassMeta, lessonSlug: string): Lesson | null {
   return cls.lessons.find((l) => l.slug === lessonSlug) ?? null;
+}
+
+export function formatMilestoneDate(value: string): string {
+  const date = new Date(`${value}T00:00:00Z`);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleDateString("en-US", {
+    timeZone: "UTC",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
 
 /** Items shown in the focused-lesson homework matrix.

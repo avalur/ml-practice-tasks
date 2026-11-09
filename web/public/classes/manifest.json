@@ -645,6 +645,33 @@
           "deck": "case_studies_debates",
           "practice": [],
           "homework": null
+        },
+        {
+          "slug": "final-projects",
+          "title": "Final Project: Topic Approval & Defenses",
+          "date": null,
+          "deck": "final_projects",
+          "practice": [],
+          "homework": null,
+          "milestones": [
+            {
+              "date": "2026-11-24",
+              "title": "Choose a project topic and get instructor approval",
+              "kind": "deadline"
+            },
+            {
+              "date": "2027-01-12",
+              "title": "Project defenses",
+              "kind": "event",
+              "tentative": true
+            },
+            {
+              "date": "2027-01-19",
+              "title": "Project defenses",
+              "kind": "event",
+              "tentative": true
+            }
+          ]
         }
       ]
     },

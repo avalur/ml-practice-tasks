@@ -221,6 +221,36 @@ def lesson_items(lesson: dict, problems: set[str], notebooks: set[str],
     return practice, homework, e1 + e2
 
 
+def validate_milestones(lesson: dict, where: str) -> list[str]:
+    milestones = lesson.get("milestones")
+    if milestones is None:
+        return []
+    if not isinstance(milestones, list):
+        return [f"{where}: milestones must be a list"]
+
+    errors = []
+    for index, milestone in enumerate(milestones, start=1):
+        label = f"{where} milestone {index}"
+        if not isinstance(milestone, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        date = milestone.get("date")
+        try:
+            if not isinstance(date, str) or not re.fullmatch(r"\d{4}-\d{2}-\d{2}", date):
+                raise ValueError
+            datetime.date.fromisoformat(date)
+        except ValueError:
+            errors.append(f"{label} date must be a valid YYYY-MM-DD date, got {date!r}")
+        title = milestone.get("title")
+        if not isinstance(title, str) or not title.strip():
+            errors.append(f"{label} needs a non-empty title")
+        if milestone.get("kind") not in ("deadline", "event"):
+            errors.append(f"{label} kind must be 'deadline' or 'event'")
+        if "tentative" in milestone and not isinstance(milestone["tentative"], bool):
+            errors.append(f"{label} tentative must be true or false")
+    return errors
+
+
 def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[str]:
     """Check every practice/homework id in class.json resolves to real content."""
     errors = []
@@ -231,6 +261,7 @@ def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[s
                       f"got {cls['draft']!r}")
     seen_assignments: dict[str, str] = {}
     for lesson in cls["lessons"]:
+        errors += validate_milestones(lesson, f"{cls['slug']}/{lesson['slug']}")
         practice, homework, errs = lesson_items(lesson, problems, notebooks,
                                                 f"{cls['slug']}/{lesson['slug']}")
         errors += errs
@@ -589,6 +620,25 @@ def build_lesson(cls: dict, lesson: dict, problems: set[str],
     return []
 
 
+def public_lesson_payload(cls: dict, lesson: dict, problems: set[str],
+                          notebooks: set[str]) -> dict:
+    practice, hw_items, _ = lesson_items(
+        lesson, problems, notebooks, f"{cls['slug']}/{lesson['slug']}"
+    )
+    homework = lesson.get("homework")
+    payload = {
+        "slug": lesson["slug"],
+        "title": lesson["title"],
+        "date": lesson.get("date"),
+        "deck": lesson["deck"],
+        "practice": practice,
+        "homework": {**homework, "items": hw_items} if homework else None,
+    }
+    if "milestones" in lesson:
+        payload["milestones"] = lesson["milestones"]
+    return payload
+
+
 def write_public_manifest(classes: list[dict]) -> Path:
     """Emit web/public/classes/manifest.json for the Next app to read.
 
@@ -600,20 +650,6 @@ def write_public_manifest(classes: list[dict]) -> Path:
     """
     problems, notebooks = known_content_ids()
 
-    def lesson_payload(cls: dict, lesson: dict) -> dict:
-        practice, hw_items, _ = lesson_items(
-            lesson, problems, notebooks, f"{cls['slug']}/{lesson['slug']}"
-        )
-        homework = lesson.get("homework")
-        return {
-            "slug": lesson["slug"],
-            "title": lesson["title"],
-            "date": lesson.get("date"),
-            "deck": lesson["deck"],
-            "practice": practice,
-            "homework": {**homework, "items": hw_items} if homework else None,
-        }
-
     payload = {
         "classes": [
             {
@@ -621,7 +657,10 @@ def write_public_manifest(classes: list[dict]) -> Path:
                 "title": c["title"],
                 "description": c["_meta"].get("description", ""),
                 "order": c["_meta"].get("order", 100),
-                "lessons": [lesson_payload(c, l) for l in c["lessons"]],
+                "lessons": [
+                    public_lesson_payload(c, lesson, problems, notebooks)
+                    for lesson in c["lessons"]
+                ],
             }
             for c in classes
         ]

@@ -930,3 +930,56 @@ test("practice links open off-site and are never ticked as done", async ({
     await fixture.dispose();
   }
 });
+
+test("project milestones are shown on the class and lesson pages", async ({
+  page,
+  context,
+}) => {
+  const fixture = await draftClass({
+    slug: `e2e-milestones-${process.pid}`,
+    title: "E2E Project Milestones",
+    lesson: "final-projects",
+    milestones: [
+      {
+        date: "2026-11-24",
+        title: "Choose a project topic and get instructor approval",
+        kind: "deadline",
+      },
+      {
+        date: "2027-01-12",
+        title: "Project defenses",
+        kind: "event",
+        tentative: true,
+      },
+    ],
+  });
+  const teacher = await signInAs(context, {
+    email: "e2e-milestones-teacher@example.test",
+    name: "E2E Milestones Teacher",
+    classSlug: fixture.slug,
+    teacher: true,
+  });
+  try {
+    await page.goto(`/classes/${fixture.slug}`);
+    const courseMilestones = page.getByTestId("class-milestones");
+    await expect(courseMilestones).toContainText("By Nov 24, 2026");
+    await expect(courseMilestones).toContainText("instructor approval");
+    await expect(courseMilestones).toContainText("Jan 12, 2027");
+    await expect(courseMilestones).toContainText("tentative");
+    await expect(page.getByRole("link", { name: "Open slides" })).toHaveAttribute(
+      "href",
+      `/classes/${fixture.slug}/${fixture.lessonSlug}/present.html`,
+    );
+
+    await page.goto(`/classes/${fixture.slug}/lessons/${fixture.lessonSlug}`);
+    await expect(page.getByRole("heading", { name: "Project timeline" })).toBeVisible();
+    await expect(page.getByTestId("class-milestones")).toContainText("Nov 24, 2026");
+    await expect(page.getByRole("link", { name: "Open slides" })).toHaveAttribute(
+      "href",
+      `/classes/${fixture.slug}/${fixture.lessonSlug}/present.html`,
+    );
+  } finally {
+    await teacher.dispose();
+    await fixture.dispose();
+  }
+});

@@ -6,6 +6,7 @@ import {
   contentHref,
   findLesson,
   flatten,
+  formatMilestoneDate,
   getAccess,
   getClassMeta,
   isAssignment,
@@ -407,6 +408,25 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       </p>
       <h1>{lesson.title}</h1>
       {lesson.date && <p className="muted">{lesson.date}</p>}
+
+      {lesson.milestones && lesson.milestones.length > 0 && (
+        <section className="class-milestones" data-testid="class-milestones">
+          <h2>Project timeline</h2>
+          <ul>
+            {lesson.milestones.map((milestone) => (
+              <li key={`${milestone.date}-${milestone.title}`}>
+                {milestone.kind === "deadline" ? "By " : ""}
+                {formatMilestoneDate(milestone.date)} — {milestone.title}
+                {milestone.tentative && (
+                  <span className="badge medium" style={{ marginLeft: "0.4rem" }}>
+                    tentative
+                  </span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
 
       <ClassModeration slug={slug} access={access} />
 

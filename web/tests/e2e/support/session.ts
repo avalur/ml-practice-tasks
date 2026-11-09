@@ -140,6 +140,8 @@ export async function draftClass(opts: {
   practice?: unknown[];
   /** Homework for the scratch lesson, in published-manifest shape. */
   homework?: unknown;
+  /** Milestones for the scratch lesson, in published-manifest shape. */
+  milestones?: unknown[];
   /** Opt in to a temporary `publishedAt`, so enrolled students and outsiders can
    * reach the scratch pages (a draft is 404 for everybody but its teachers).
    * Only allowed for a slug starting `e2e-`, which no real class uses; the row is
@@ -180,6 +182,7 @@ export async function draftClass(opts: {
         deck: "scratch",
         practice: opts.practice ?? [],
         homework: opts.homework ?? null,
+        ...(opts.milestones ? { milestones: opts.milestones } : {}),
       },
     ],
   });

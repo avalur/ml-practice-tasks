@@ -8,7 +8,14 @@ from __future__ import annotations
 
 import pytest
 
-from export_decks import expand_item, item_href, lesson_items, validate_items
+from export_decks import (
+    expand_item,
+    item_href,
+    lesson_items,
+    public_lesson_payload,
+    validate_items,
+    validate_milestones,
+)
 
 
 def test_expand_assignment_minimal() -> None:
@@ -181,6 +188,48 @@ def test_lesson_payload_manifest_structure() -> None:
     assert payload["homework"]["items"][0]["type"] == "assignment"
     assert payload["homework"]["items"][0]["templateHref"] == "https://colab.research.google.com/xyz"
     assert payload["homework"]["items"][0]["maxScore"] == 50
+
+
+def test_milestones_are_validated_and_exported() -> None:
+    milestones = [
+        {"date": "2026-11-24", "title": "Approve a topic", "kind": "deadline"},
+        {
+            "date": "2027-01-12",
+            "title": "Project defense",
+            "kind": "event",
+            "tentative": True,
+        },
+    ]
+    lesson = {
+        "slug": "final-projects",
+        "title": "Final Project",
+        "deck": "final_projects",
+        "practice": [],
+        "milestones": milestones,
+    }
+    cls = {"slug": "test_class"}
+
+    assert validate_milestones(lesson, "test_class/final-projects") == []
+    assert public_lesson_payload(cls, lesson, set(), set())["milestones"] == milestones
+
+
+@pytest.mark.parametrize(
+    ("milestones", "message"),
+    [
+        ("not a list", "milestones must be a list"),
+        ([{"date": "2026-02-30", "title": "Deadline", "kind": "deadline"}],
+         "valid YYYY-MM-DD date"),
+        ([{"date": "2026-11-24", "title": " ", "kind": "deadline"}],
+         "non-empty title"),
+        ([{"date": "2026-11-24", "title": "Date", "kind": "unknown"}],
+         "kind must be"),
+        ([{"date": "2026-11-24", "title": "Date", "kind": "event", "tentative": "yes"}],
+         "tentative must be"),
+    ],
+)
+def test_invalid_milestones_are_rejected(milestones: object, message: str) -> None:
+    errors = validate_milestones({"milestones": milestones}, "test_class/final-projects")
+    assert any(message in error for error in errors)
 
 
 def test_validate_items_duplicate_assignment_id_rejected() -> None:

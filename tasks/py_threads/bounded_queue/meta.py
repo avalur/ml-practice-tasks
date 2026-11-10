@@ -5,6 +5,7 @@ META = {
     "entry": "BoundedQueue",
     "order": 1,
     "py_deps": [],
+    "threads": True,
     "banned": {
         "modules": ["queue", "multiprocessing"],
     },
@@ -18,6 +19,8 @@ META = {
 Implement a thread-safe bounded FIFO queue `BoundedQueue` coordinating concurrent producers and consumers without busy waiting.
 
 The ready-made `queue` and `multiprocessing` modules are off-limits; use `threading.Lock` and `threading.Condition`.
+
+> **Why not just use a standard container?** `queue.Queue` is thread-safe out of the box: it keeps a lock and condition variables inside, and its `put`/`get` block on a full/empty queue. That is exactly what you are rebuilding here, which is why it is banned. `collections.deque` is **not** a thread-safe queue in that sense. A single `append` or `popleft` is atomic, but a deque never blocks: `popleft` on an empty deque raises `IndexError`, and `deque(maxlen=n)` silently drops the oldest item instead of waiting for space. A compound step such as "check `len`, then `append`" can also interleave with another thread between the two calls. So a `deque` is a fine buffer *inside* your queue, but only while you hold the lock.
 
 ### Interface
 

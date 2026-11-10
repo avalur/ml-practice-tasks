@@ -45,7 +45,8 @@ a family missing from it sorts after the listed ones):
   - `meta.py` — a `META` dict: required `title`, `topic`, `difficulty`
     (easy/medium/hard), `entry`, `statement`; optional `banned`, `hints`,
     `order` (within-topic sort, default 100), `py_deps` (default `["numpy"]`;
-    `[]` for pure-Python), `hidden`.
+    `[]` for pure-Python), `hidden`, and `threads` (default `false`; enables
+    the Pyodide JSPI thread shim for tasks that use `threading`).
 - **`tasks/<topic>/<slug>/` is generated** by `generate.py` (submission stub +
   copied test.py/meta.py + rendered README.md). Regenerate after any edit.
 - **Constraints are enforced statically** by `tools/checks.py` via `ast`.

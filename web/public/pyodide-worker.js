@@ -8,8 +8,8 @@
  *
  * Protocol (postMessage):
  *   in:  { type: "INIT", pyDeps }
- *        { type: "RUN", runId, files, testPath, pyDeps }   // run the pytest suite
- *        { type: "RUN_CODE", runId, code, pyDeps }         // run editor code, capture output
+ *        { type: "RUN", runId, files, testPath, pyDeps, threads? }
+ *        { type: "RUN_CODE", runId, code, pyDeps, threads? }
  *   out: { type: "STATUS", stage }            // loading-pyodide | loading-packages
  *        { type: "READY" }
  *        { type: "RESULT", runId, result }        // pytest results
@@ -112,6 +112,22 @@ def _run_code(code):
 `;
 
 let pyodidePromise = null;
+let greenThreadsPromise = null;
+
+async function ensureGreenThreads(pyodide) {
+  if (!greenThreadsPromise) {
+    greenThreadsPromise = (async () => {
+      const response = await fetch("/greenthreads.py");
+      if (!response.ok) {
+        throw new Error(`Could not load thread emulation: ${response.status}`);
+      }
+      pyodide.FS.mkdirTree("/runner");
+      pyodide.FS.writeFile("/runner/greenthreads.py", await response.text());
+      pyodide.runPython("import sys; sys.path.insert(0, '/runner'); import greenthreads");
+    })();
+  }
+  return greenThreadsPromise;
+}
 
 function ensurePyodide(pyDeps) {
   if (!pyodidePromise) {
@@ -138,6 +154,7 @@ self.onmessage = async (event) => {
     }
     if (msg.type === "RUN") {
       const pyodide = await ensurePyodide(msg.pyDeps);
+      if (msg.threads) await ensureGreenThreads(pyodide);
       // Load any extra per-problem packages (cached if already present).
       await pyodide.loadPackage(
         [...new Set(["pytest", ...(msg.pyDeps || ["numpy"])])],
@@ -145,25 +162,53 @@ self.onmessage = async (event) => {
       );
       pyodide.globals.set("FILES_JSON", JSON.stringify(msg.files));
       pyodide.globals.set("TEST_PATH", msg.testPath);
-      const out = pyodide.runPython(
-        "json.dumps(_run_once(json.loads(FILES_JSON), TEST_PATH))",
-      );
-      self.postMessage({ type: "RESULT", runId: msg.runId, result: JSON.parse(out) });
+      const source = msg.threads
+        ? `import greenthreads
+greenthreads.install(preempt=0.2, seed=2)
+try:
+    result = _run_once(json.loads(FILES_JSON), TEST_PATH)
+finally:
+    greenthreads.uninstall()
+json.dumps(result)`
+        : "json.dumps(_run_once(json.loads(FILES_JSON), TEST_PATH))";
+      const out = await pyodide.runPythonAsync(source);
+      self.postMessage({
+        type: "RESULT",
+        runId: msg.runId,
+        result: JSON.parse(out),
+        restart: Boolean(msg.threads),
+      });
     }
     if (msg.type === "RUN_CODE") {
       const pyodide = await ensurePyodide(msg.pyDeps);
+      if (msg.threads) await ensureGreenThreads(pyodide);
       await pyodide.loadPackage([...new Set(msg.pyDeps || ["numpy"])], {
         messageCallback: () => {},
       });
       pyodide.globals.set("USER_CODE", msg.code);
-      const out = pyodide.runPython("json.dumps(_run_code(USER_CODE))");
-      self.postMessage({ type: "CODE_RESULT", runId: msg.runId, result: JSON.parse(out) });
+      const source = msg.threads
+        ? `import greenthreads
+greenthreads.install(preempt=0.2, seed=2)
+try:
+    result = _run_code(USER_CODE)
+finally:
+    greenthreads.uninstall()
+json.dumps(result)`
+        : "json.dumps(_run_code(USER_CODE))";
+      const out = await pyodide.runPythonAsync(source);
+      self.postMessage({
+        type: "CODE_RESULT",
+        runId: msg.runId,
+        result: JSON.parse(out),
+        restart: Boolean(msg.threads),
+      });
     }
   } catch (err) {
     self.postMessage({
       type: "ERROR",
       runId: msg.runId,
       error: String((err && err.message) || err),
+      restart: Boolean(msg.threads),
     });
   }
 };

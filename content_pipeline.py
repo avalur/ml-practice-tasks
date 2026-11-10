@@ -120,6 +120,8 @@ def validate_meta(meta: dict, topic: str, slug: str) -> None:
         raise ValueError(f"{where} hints must be a list of strings")
     if not isinstance(meta.get("hidden", False), bool):
         raise ValueError(f"{where} hidden must be a bool")
+    if not isinstance(meta.get("threads", False), bool):
+        raise ValueError(f"{where} threads must be a bool")
     for key in ("prereqs", "next"):
         val = meta.get(key, [])
         if not isinstance(val, (list, tuple)) or not all(isinstance(v, str) and v for v in val):
@@ -141,6 +143,7 @@ class ProblemBundle:
     banned: dict
     statement_md: str
     py_deps: tuple[str, ...]
+    threads: bool
     web_runnable: bool
     hidden: bool
     order: int
@@ -186,6 +189,7 @@ def iter_problems() -> list[ProblemBundle]:
                 banned=meta.get("banned") or {},
                 statement_md=meta.get("statement", "").strip(),
                 py_deps=tuple(meta.get("py_deps", ["numpy"])),
+                threads=meta.get("threads", False),
                 web_runnable=bool(meta.get("web_runnable", True)),
                 hidden=bool(meta.get("hidden", False)),
                 order=int(meta.get("order", 100)),

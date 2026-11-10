@@ -11,9 +11,10 @@
       "multiprocessing"
     ]
   },
-  "statementMd": "Implement a thread-safe bounded FIFO queue `BoundedQueue` coordinating concurrent producers and consumers without busy waiting.\n\nThe ready-made `queue` and `multiprocessing` modules are off-limits; use `threading.Lock` and `threading.Condition`.\n\n### Interface\n\n- `QueueEmpty(Exception)`: Exception raised when `get` times out.\n- `QueueFull(Exception)`: Exception raised when `put` times out.\n- `BoundedQueue(capacity: int)`:\n  - `put(item: Any, timeout: float | None = None) -> None`:\n    Add an item to the queue. If the queue is full, block until space is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueFull`. If `timeout` is `None`, block indefinitely.\n  - `get(timeout: float | None = None) -> Any`:\n    Remove and return an item in FIFO order. If the queue is empty, block until an item is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueEmpty`. If `timeout` is `None`, block indefinitely.\n  - `qsize() -> int`:\n    Return the current number of items in the queue (thread-safe).\n  - `empty() -> bool`:\n    Return `True` if the queue is empty, `False` otherwise.\n  - `full() -> bool`:\n    Return `True` if the queue is full, `False` otherwise.",
+  "statementMd": "Implement a thread-safe bounded FIFO queue `BoundedQueue` coordinating concurrent producers and consumers without busy waiting.\n\nThe ready-made `queue` and `multiprocessing` modules are off-limits; use `threading.Lock` and `threading.Condition`.\n\n> **Why not just use a standard container?** `queue.Queue` is thread-safe out of the box: it keeps a lock and condition variables inside, and its `put`/`get` block on a full/empty queue. That is exactly what you are rebuilding here, which is why it is banned. `collections.deque` is **not** a thread-safe queue in that sense. A single `append` or `popleft` is atomic, but a deque never blocks: `popleft` on an empty deque raises `IndexError`, and `deque(maxlen=n)` silently drops the oldest item instead of waiting for space. A compound step such as \"check `len`, then `append`\" can also interleave with another thread between the two calls. So a `deque` is a fine buffer *inside* your queue, but only while you hold the lock.\n\n### Interface\n\n- `QueueEmpty(Exception)`: Exception raised when `get` times out.\n- `QueueFull(Exception)`: Exception raised when `put` times out.\n- `BoundedQueue(capacity: int)`:\n  - `put(item: Any, timeout: float | None = None) -> None`:\n    Add an item to the queue. If the queue is full, block until space is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueFull`. If `timeout` is `None`, block indefinitely.\n  - `get(timeout: float | None = None) -> Any`:\n    Remove and return an item in FIFO order. If the queue is empty, block until an item is available or until `timeout` seconds have elapsed. If `timeout` expires, raise `QueueEmpty`. If `timeout` is `None`, block indefinitely.\n  - `qsize() -> int`:\n    Return the current number of items in the queue (thread-safe).\n  - `empty() -> bool`:\n    Return `True` if the queue is empty, `False` otherwise.\n  - `full() -> bool`:\n    Return `True` if the queue is full, `False` otherwise.",
   "bundlePath": "/content/problems/py_threads/bounded_queue",
   "pyDeps": [],
+  "threads": true,
   "webRunnable": true,
   "hidden": false,
   "hints": [
@@ -24,5 +25,5 @@
   ],
   "prereqs": [],
   "next": [],
-  "contentHash": "dc0fcf860cbda98db1e85aa1c9b9e990eed14142cb7dfbae6be31f1a932a6970"
+  "contentHash": "329cca939c903bc3c6f10f1016283a3d14da19c6c13bfbe5973c88594b0274f6"
 }

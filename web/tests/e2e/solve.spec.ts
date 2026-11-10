@@ -1,6 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 const ID = "numpy_basics/pairwise_distances";
+const BOUNDED_QUEUE_ID = "py_threads/bounded_queue";
 
 const CORRECT = `import numpy as np
 
@@ -17,14 +18,167 @@ def pairwise_distances(x, y):
     return np.zeros((x.shape[0], y.shape[0]))
 `;
 
+const BOUNDED_QUEUE_CORRECT = `from collections import deque
+import threading
+import time
+from typing import Any
+
+
+class QueueEmpty(Exception):
+    pass
+
+
+class QueueFull(Exception):
+    pass
+
+
+class BoundedQueue:
+    def __init__(self, capacity: int) -> None:
+        if capacity <= 0:
+            raise ValueError("capacity must be greater than 0")
+        self._capacity = capacity
+        self._queue: deque[Any] = deque()
+        self._lock = threading.Lock()
+        self._not_empty = threading.Condition(self._lock)
+        self._not_full = threading.Condition(self._lock)
+
+    def put(self, item: Any, timeout: float | None = None) -> None:
+        with self._lock:
+            if timeout is not None and timeout <= 0:
+                if len(self._queue) >= self._capacity:
+                    raise QueueFull("Queue is full")
+            elif timeout is not None:
+                deadline = time.monotonic() + timeout
+                while len(self._queue) >= self._capacity:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise QueueFull("Queue is full")
+                    self._not_full.wait(remaining)
+            else:
+                while len(self._queue) >= self._capacity:
+                    self._not_full.wait()
+            self._queue.append(item)
+            self._not_empty.notify()
+
+    def get(self, timeout: float | None = None) -> Any:
+        with self._lock:
+            if timeout is not None and timeout <= 0:
+                if not self._queue:
+                    raise QueueEmpty("Queue is empty")
+            elif timeout is not None:
+                deadline = time.monotonic() + timeout
+                while not self._queue:
+                    remaining = deadline - time.monotonic()
+                    if remaining <= 0:
+                        raise QueueEmpty("Queue is empty")
+                    self._not_empty.wait(remaining)
+            else:
+                while not self._queue:
+                    self._not_empty.wait()
+            item = self._queue.popleft()
+            self._not_full.notify()
+            return item
+
+    def qsize(self) -> int:
+        with self._lock:
+            return len(self._queue)
+
+    def empty(self) -> bool:
+        with self._lock:
+            return len(self._queue) == 0
+
+    def full(self) -> bool:
+        with self._lock:
+            return len(self._queue) >= self._capacity
+`;
+
+const BOUNDED_QUEUE_RACY = `import time
+
+
+class QueueFull(Exception):
+    pass
+
+
+class QueueEmpty(Exception):
+    pass
+
+
+class BoundedQueue:
+    def __init__(self, capacity):
+        if capacity <= 0:
+            raise ValueError("capacity")
+        self._buf = [None] * capacity
+        self._cap = capacity
+        self._head = 0
+        self._tail = 0
+        self._size = 0
+
+    def qsize(self):
+        return self._size
+
+    def empty(self):
+        return self._size == 0
+
+    def full(self):
+        return self._size >= self._cap
+
+    def put(self, item, timeout=None):
+        deadline = None if timeout is None else time.monotonic() + timeout
+        while self._size >= self._cap:
+            if deadline is not None and time.monotonic() >= deadline:
+                raise QueueFull
+            time.sleep(0.001)
+        self._buf[self._tail] = item
+        self._tail = (self._tail + 1) % self._cap
+        self._size += 1
+
+    def get(self, timeout=None):
+        deadline = None if timeout is None else time.monotonic() + timeout
+        while self._size == 0:
+            if deadline is not None and time.monotonic() >= deadline:
+                raise QueueEmpty
+            time.sleep(0.001)
+        item = self._buf[self._head]
+        self._head = (self._head + 1) % self._cap
+        self._size -= 1
+        return item
+`;
+
 // Seed the editor via localStorage (SolveWorkspace restores it on mount), so we
 // don't have to type multi-line Python into CodeMirror.
-async function seed(page: import("@playwright/test").Page, code: string) {
+async function seed(
+  page: import("@playwright/test").Page,
+  code: string,
+  id = ID,
+) {
   await page.addInitScript(
     (a: { key: string; value: string }) => localStorage.setItem(a.key, a.value),
-    { key: `mlp:code:${ID}`, value: code },
+    { key: `mlp:code:${id}`, value: code },
   );
 }
+
+test("threaded bounded queue passes in-browser with the Pyodide shim", async ({ page }) => {
+  await seed(page, BOUNDED_QUEUE_CORRECT, BOUNDED_QUEUE_ID);
+  await page.goto(`/problems/${BOUNDED_QUEUE_ID}`);
+
+  const run = page.getByRole("button", { name: "Run tests" });
+  await expect(run).toBeEnabled();
+  await run.click();
+
+  await expect(page.locator(".results")).toContainText("7/7 tests passed");
+});
+
+test("threaded bounded queue detects a lock-free race in-browser", async ({ page }) => {
+  await seed(page, BOUNDED_QUEUE_RACY, BOUNDED_QUEUE_ID);
+  await page.goto(`/problems/${BOUNDED_QUEUE_ID}`);
+
+  const run = page.getByRole("button", { name: "Run tests" });
+  await expect(run).toBeEnabled();
+  await run.click();
+
+  await expect(page.locator(".results")).toContainText("6/7 tests passed");
+  await expect(page.locator(".results")).toContainText("test_concurrent_producers_consumers");
+});
 
 test("correct solution passes all tests in-browser", async ({ page }) => {
   await seed(page, CORRECT);

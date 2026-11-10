@@ -5,6 +5,7 @@ META = {
     "entry": "ThreadPool",
     "order": 2,
     "py_deps": [],
+    "threads": True,
     "banned": {
         "modules": ["concurrent", "multiprocessing"],
     },

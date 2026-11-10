@@ -62,7 +62,7 @@ export function SolveWorkspace({
   const [code, setCode] = useState(starter);
   const [bundle, setBundle] = useState<Bundle | null>(null);
   const [bundleError, setBundleError] = useState<string | null>(null);
-  const runner = usePyodideRunner(meta.pyDeps);
+  const runner = usePyodideRunner(meta.pyDeps, meta.threads);
   const { theme } = useTheme();
   const { data: session } = useSession();
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -264,6 +264,7 @@ export function SolveWorkspace({
       files: { ...bundle.files, [bundle.submissionPath]: activeCode },
       testPath: bundle.testPath,
       pyDeps: meta.pyDeps,
+      threads: meta.threads,
     });
   };
 

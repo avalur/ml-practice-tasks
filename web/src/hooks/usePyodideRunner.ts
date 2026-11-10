@@ -9,6 +9,7 @@ export type RunPayload = {
   files: Record<string, string>;
   testPath: string;
   pyDeps: string[];
+  threads?: boolean;
 };
 
 /**
@@ -17,12 +18,14 @@ export type RunPayload = {
  * worker (WASM can't be interrupted). Stale results from a terminated/older run
  * are dropped via a monotonic run id.
  */
-export function usePyodideRunner(pyDeps: string[]) {
+export function usePyodideRunner(pyDeps: string[], threads = false) {
   const workerRef = useRef<Worker | null>(null);
   const runIdRef = useRef(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const pyDepsRef = useRef(pyDeps);
   pyDepsRef.current = pyDeps;
+  const threadsRef = useRef(threads);
+  threadsRef.current = threads;
 
   const [status, setStatus] = useState<RunnerStatus>("loading");
   const [mode, setMode] = useState<"test" | "code" | null>(null);
@@ -32,6 +35,11 @@ export function usePyodideRunner(pyDeps: string[]) {
 
   const spawn = useCallback(() => {
     const w = new Worker("/pyodide-worker.js");
+    const retire = (requested: boolean) => {
+      if (!requested) return;
+      w.terminate();
+      if (workerRef.current === w) workerRef.current = null;
+    };
     w.onmessage = (e: MessageEvent) => {
       const msg = e.data || {};
       if (msg.type === "READY") {
@@ -42,17 +50,20 @@ export function usePyodideRunner(pyDeps: string[]) {
         setResult(msg.result as RunResult);
         setError(null);
         setStatus("done");
+        retire(Boolean(msg.restart));
       } else if (msg.type === "CODE_RESULT") {
         if (msg.runId !== runIdRef.current) return; // stale run
         if (timerRef.current) clearTimeout(timerRef.current);
         setCodeResult(msg.result as CodeResult);
         setError(null);
         setStatus("done");
+        retire(Boolean(msg.restart));
       } else if (msg.type === "ERROR") {
         if (msg.runId != null && msg.runId !== runIdRef.current) return;
         if (timerRef.current) clearTimeout(timerRef.current);
         setError(msg.error || "runner error");
         setStatus("error");
+        retire(Boolean(msg.restart));
       }
     };
     w.onerror = (e) => {
@@ -112,6 +123,7 @@ export function usePyodideRunner(pyDeps: string[]) {
         runId,
         code,
         pyDeps: pyDepsRef.current,
+        threads: threadsRef.current,
       });
     },
     [begin],

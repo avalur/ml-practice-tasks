@@ -49,6 +49,7 @@ def manifest_entry(b: ProblemBundle) -> dict:
         "statementMd": b.statement_md,
         "bundlePath": f"/content/problems/{b.topic}/{b.slug}",
         "pyDeps": list(b.py_deps),
+        **({"threads": True} if b.threads else {}),
         "webRunnable": b.web_runnable,
         "hidden": b.hidden,
         "hints": list(b.hints),

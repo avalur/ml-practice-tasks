@@ -21,6 +21,7 @@ export type ProblemMeta = {
   statementMd: string;
   bundlePath: string;
   pyDeps: string[];
+  threads?: boolean;
   webRunnable: boolean;
   /** Unlisted: kept in the manifest (so it stays SSG-built and solvable by
    *  direct URL) but filtered out of the catalog, sidebar and prev/next nav. */

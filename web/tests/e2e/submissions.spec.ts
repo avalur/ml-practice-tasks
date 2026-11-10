@@ -678,7 +678,7 @@ test.describe("Submission, Download, and Grading Routes", () => {
       await expect(profCard.getByTestId("card-grade-badge")).toHaveText("Graded: 95/100");
       await expect(profCard.getByTestId("feedback-content").locator("strong")).toHaveText("Excellent");
       await expect(profCard.getByTestId("download-submission-link")).toBeVisible();
-      await expect(profCard.getByTestId("lock-notice")).toBeVisible();
+      await expect(profCard.getByTestId("notebook-dropzone")).toBeVisible();
 
       // Student views feedback on lesson page
       await studentPage.goto(`/classes/${draftFixture.slug}/lessons/${draftFixture.lessonSlug}`);
@@ -687,7 +687,7 @@ test.describe("Submission, Download, and Grading Routes", () => {
       await expect(lessonCard.getByTestId("lesson-grade-badge")).toHaveText("Graded: 95/100");
       await expect(lessonCard.getByTestId("feedback-content").locator("strong")).toHaveText("Excellent");
       await expect(lessonCard.getByTestId("download-submission-link")).toBeVisible();
-      await expect(lessonCard.getByTestId("lock-notice")).toBeVisible();
+      await expect(lessonCard.getByTestId("notebook-dropzone")).toBeVisible();
       await studentPage.close();
 
       // Regression for duplicate submission: student submitting same URL idempotently returns 200 without deletion
@@ -709,7 +709,7 @@ test.describe("Submission, Download, and Grading Routes", () => {
       const fresh = await prismaLive.notebookSubmission.findUnique({ where: { id: created.id } });
       expect(fresh?.fileUrl).toBe(created.fileUrl);
 
-      // Verify that requesting upload token for already submitted assignment returns 409
+      // Upload tokens remain available after the first version has been submitted.
       const alreadySubRes = await studentCtx.request.post("/api/blob/upload-submission-token", {
         data: {
           type: "blob.generate-client-token",
@@ -724,12 +724,58 @@ test.describe("Submission, Download, and Grading Routes", () => {
           },
         },
       });
-      // Without a store the token route answers 501 before it looks at anybody,
-      // as above; only with one does it get as far as the existing submission.
+      // Without a store the token route answers 501; with one, another version is allowed.
       if (blobToken()) {
-        expect(alreadySubRes.status()).toBe(409);
-        const alreadySubJson = await alreadySubRes.json();
-        expect(alreadySubJson.error).toMatch(/already submitted/i);
+        expect(alreadySubRes.status()).toBe(200);
+
+        const resubmitPage = await studentCtx.newPage();
+        await resubmitPage.goto(`/classes/${draftFixture.slug}/lessons/${draftFixture.lessonSlug}`);
+        const resubmitCard = resubmitPage.getByTestId("assignment-scratch-react-agent");
+        await expect(resubmitCard.getByTestId("grade-badge")).toHaveText("Graded · 95 / 100 pts");
+        await resubmitCard.getByTestId("notebook-file-input").setInputFiles({
+          name: "updated.ipynb",
+          mimeType: "application/x-ipynb+json",
+          buffer: Buffer.from('{"cells":[{"cell_type":"code"}],"metadata":{}}'),
+        });
+        await resubmitCard.getByTestId("submit-notebook-btn").click();
+        await expect(resubmitCard.getByTestId("status-badge")).toHaveText(
+          "Submitted · Awaiting Review",
+        );
+        await expect(resubmitCard.getByTestId("grade-badge")).toHaveCount(0);
+
+        const replaced = await prismaLive.notebookSubmission.findUnique({
+          where: {
+            userId_classId_lessonSlug_assignmentId: {
+              userId: student.userId,
+              classId: clsRow.id,
+              lessonSlug: draftFixture.lessonSlug,
+              assignmentId: "scratch-react-agent",
+            },
+          },
+        });
+        if (!replaced) throw new Error("replacement submission was not recorded");
+        expect(replaced.id).not.toBe(created.id);
+        expect(replaced.fileUrl).not.toBe(created.fileUrl);
+        expect(replaced.fileName).toBe("updated.ipynb");
+        expect(replaced.status).toBe("submitted");
+        expect(replaced.grade).toBeNull();
+        expect(replaced.feedback).toBeNull();
+        expect(replaced.gradedBy).toBeNull();
+        expect(replaced.gradedAt).toBeNull();
+        submissionId = replaced.id;
+
+        // A stale grading request addresses the old ID and cannot grade the new version.
+        const staleGrade = await teacherCtx.request.post(
+          `/api/classes/${draftFixture.slug}/lessons/${draftFixture.lessonSlug}/submissions/${created.id}/grade`,
+          { data: { grade: 90, feedback: "stale review" } },
+        );
+        expect(staleGrade.status()).toBe(404);
+        const stillCurrent = await prismaLive.notebookSubmission.findUnique({
+          where: { id: replaced.id },
+        });
+        expect(stillCurrent?.grade).toBeNull();
+        expect(stillCurrent?.status).toBe("submitted");
+        await resubmitPage.close();
       } else {
         expect(alreadySubRes.status()).toBe(501);
       }
@@ -957,7 +1003,7 @@ test.describe("NotebookUploader with mocked network", () => {
     buffer: Buffer.from('{"cells":[],"metadata":{}}'),
   };
 
-  test("token 409 (masked by the Blob client) is resolved by re-reading the row, then locks", async ({
+  test("token failure refreshes the current submission without locking out another upload", async ({
     browser,
   }) => {
     const m = await mockedStudent(browser, "t409");
@@ -968,9 +1014,9 @@ test.describe("NotebookUploader with mocked network", () => {
       await page.route("**/api/blob/upload-submission-token", async (route) => {
         tokenCalls++;
         await route.fulfill({
-          status: 409,
+          status: 500,
           contentType: "application/json",
-          body: JSON.stringify({ error: "assignment already submitted" }),
+          body: JSON.stringify({ error: "temporary token failure" }),
         });
       });
       await page.route(m.submissionsUrl, async (route) => {
@@ -1002,21 +1048,23 @@ test.describe("NotebookUploader with mocked network", () => {
       await card.getByTestId("notebook-file-input").setInputFiles(NOTEBOOK);
       await card.getByTestId("submit-notebook-btn").click();
 
-      await expect(card.getByTestId("notebook-uploader-locked")).toBeVisible();
       expect(tokenCalls, "the token route must have been attempted").toBeGreaterThanOrEqual(1);
       expect(getCalls).toBeGreaterThanOrEqual(2);
+      await expect(card.getByTestId("submission-feedback-card")).toBeVisible();
       await expect(card.getByTestId("grade-badge")).toHaveText("Graded · 92 / 100 pts");
       await expect(card.getByTestId("feedback-content")).toHaveText(
         "Great job on the tools implementation!",
       );
-      await expect(card.getByTestId("lock-notice")).toBeVisible();
-      await expect(card.getByTestId("notebook-dropzone")).toHaveCount(0);
+      await expect(card.getByTestId("upload-error")).toBeVisible();
+      await expect(card.getByTestId("selected-file-name")).toHaveText("solution.ipynb");
+      await expect(card.getByTestId("submit-notebook-btn")).toBeVisible();
+      await expect(card.getByTestId("notebook-dropzone")).toBeVisible();
     } finally {
       await m.dispose();
     }
   });
 
-  test("a failed save is retried against the staged blob: no second upload, same URL, progress shown", async ({
+  test("a failed replacement save retries the staged blob and a successful version clears the old grade", async ({
     browser,
   }) => {
     const m = await mockedStudent(browser, "retry");
@@ -1025,6 +1073,19 @@ test.describe("NotebookUploader with mocked network", () => {
       let tokenCalls = 0;
       let blobPuts = 0;
       const commitBodies: Array<{ fileUrl: string; assignmentId: string }> = [];
+      const previousSubmission = m.row({
+        id: "sub-previous",
+        fileName: "previous.ipynb",
+        status: "graded",
+        grade: 92,
+        feedback: "Previous review",
+        gradedBy: "Teacher",
+        gradedAt: new Date().toISOString(),
+      });
+      const replacementSubmission = m.row({
+        id: "sub-replacement",
+        fileName: "replacement.ipynb",
+      });
       let releaseBlob: () => void = () => {};
       const blobGate = new Promise<void>((resolve) => (releaseBlob = resolve));
 
@@ -1074,7 +1135,7 @@ test.describe("NotebookUploader with mocked network", () => {
           return route.fulfill({
             status: 200,
             contentType: "application/json",
-            body: JSON.stringify({ submissions: [] }),
+            body: JSON.stringify({ submissions: [previousSubmission] }),
           });
         }
         posts++;
@@ -1088,9 +1149,9 @@ test.describe("NotebookUploader with mocked network", () => {
           });
         }
         await route.fulfill({
-          status: 201,
+          status: 200,
           contentType: "application/json",
-          body: JSON.stringify({ submission: m.row() }),
+          body: JSON.stringify({ submission: replacementSubmission }),
         });
       });
 
@@ -1108,9 +1169,12 @@ test.describe("NotebookUploader with mocked network", () => {
       expect(blobPuts).toBe(1);
       expect(posts).toBe(1);
 
-      // Retry with the same file selected
+      // Retry with the same file selected; it must retain the existing submission until success.
+      await expect(card.getByTestId("grade-badge")).toHaveText("Graded · 92 / 100 pts");
       await card.getByTestId("submit-notebook-btn").click();
-      await expect(card.getByTestId("notebook-uploader-locked")).toBeVisible();
+      await expect(card.getByTestId("status-badge")).toHaveText("Submitted · Awaiting Review");
+      await expect(card.getByTestId("grade-badge")).toHaveCount(0);
+      await expect(card.getByTestId("notebook-dropzone")).toBeVisible();
 
       expect(blobPuts, "retry must reuse the staged blob").toBe(1);
       expect(tokenCalls, "retry must not ask for a second token").toBe(1);

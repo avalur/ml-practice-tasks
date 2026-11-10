@@ -91,7 +91,7 @@ export async function POST(req: Request, { params }: RouteParams) {
     return NextResponse.json({ error: feedbackValidation.error }, { status: 400 });
   }
 
-  const updated = await prisma.notebookSubmission.update({
+  const updated = await prisma.notebookSubmission.updateMany({
     where: { id: submission.id },
     data: {
       status: "graded",
@@ -103,5 +103,22 @@ export async function POST(req: Request, { params }: RouteParams) {
     },
   });
 
-  return NextResponse.json({ submission: updated });
+  if (updated.count !== 1) {
+    return NextResponse.json(
+      { error: "submission was replaced before grading could be saved" },
+      { status: 409 },
+    );
+  }
+
+  const gradedSubmission = await prisma.notebookSubmission.findUnique({
+    where: { id: submission.id },
+  });
+  if (!gradedSubmission) {
+    return NextResponse.json(
+      { error: "submission was replaced before grading could be saved" },
+      { status: 409 },
+    );
+  }
+
+  return NextResponse.json({ submission: gradedSubmission });
 }

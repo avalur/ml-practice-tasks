@@ -1,4 +1,5 @@
 import path from "node:path";
+import { randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import { del, head } from "@vercel/blob";
 import { prisma } from "@/lib/db";
@@ -27,7 +28,7 @@ type RouteParams = {
  * - Revalidates student enrollment and lesson assignment existence
  * - Strict pathname prefix validation prevents using other students' blobs or arbitrary paths
  * - Server-side blob verification (head) checks actual blob existence and byte size
- * - Handles concurrent submit races and DB unique conflict with orphan blob cleanup
+ * - Handles concurrent submit races while retaining only the latest version
  */
 export async function POST(req: Request, { params }: RouteParams) {
   if (crossSite(req)) {
@@ -118,17 +119,9 @@ export async function POST(req: Request, { params }: RouteParams) {
     }
     throw err;
   }
-  if (existing) {
-    // If client retries submitting the exact same file, treat idempotently and NEVER delete it!
-    if (isSameSubmissionFile(existing.fileUrl, fileUrl)) {
-      return NextResponse.json({ submission: existing }, { status: 200 });
-    }
-    // Clean up the newly uploaded orphan only if it is strictly distinct from the
-    // recorded file. Best effort, and only when there is a store to delete from.
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
-      await del(fileUrl).catch(() => {});
-    }
-    return NextResponse.json({ error: "assignment already submitted" }, { status: 409 });
+  if (existing && isSameSubmissionFile(existing.fileUrl, fileUrl)) {
+    // A client retry for the already-recorded blob must not reset grading.
+    return NextResponse.json({ submission: existing }, { status: 200 });
   }
 
   // Everything below talks to the store.
@@ -167,65 +160,88 @@ export async function POST(req: Request, { params }: RouteParams) {
   const rawFileName = typeof body.fileName === "string" ? body.fileName : "";
   const fileName = sanitizeFileName(rawFileName, path.posix.basename(blobPathname));
 
-  try {
-    const maxGrade = assignment.maxScore ?? 100;
-    const submission = await prisma.notebookSubmission.create({
-      data: {
-        userId: access.userId,
-        classId: access.classRow.id,
-        lessonSlug: lesson,
-        assignmentId,
-        fileUrl: canonicalFileUrl,
-        fileName,
-        fileBytes,
-        status: "submitted",
-        maxGrade,
-      },
-    });
-    return NextResponse.json({ submission }, { status: 201 });
-  } catch (err: unknown) {
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "P2021"
-    ) {
-      return NextResponse.json(
-        { error: "notebook submissions are not enabled yet (database table missing)" },
-        { status: 503 },
-      );
-    }
-    // Unique constraint race condition
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "P2002"
-    ) {
-      // Re-read winner row to compare before touching storage
-      const winner = await prisma.notebookSubmission.findUnique({
-        where: {
-          userId_classId_lessonSlug_assignmentId: {
+  const where = {
+    userId_classId_lessonSlug_assignmentId: {
+      userId: access.userId,
+      classId: access.classRow.id,
+      lessonSlug: lesson,
+      assignmentId,
+    },
+  };
+  const maxGrade = assignment.maxScore ?? 100;
+  const submissionData = {
+    fileUrl: canonicalFileUrl,
+    fileName,
+    fileBytes,
+    submittedAt: new Date(),
+    status: "submitted",
+    grade: null,
+    maxGrade,
+    feedback: null,
+    gradedBy: null,
+    gradedAt: null,
+  };
+
+  // Optimistically replace the version we observed. If another submit wins first,
+  // reread and retry; the unique key continues to identify one current submission.
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const current = await prisma.notebookSubmission.findUnique({ where });
+      if (current && isSameSubmissionFile(current.fileUrl, canonicalFileUrl)) {
+        return NextResponse.json({ submission: current }, { status: 200 });
+      }
+
+      if (!current) {
+        const submission = await prisma.notebookSubmission.create({
+          data: {
             userId: access.userId,
             classId: access.classRow.id,
             lessonSlug: lesson,
             assignmentId,
+            ...submissionData,
           },
-        },
-      });
-      if (winner) {
-        if (isSameSubmissionFile(winner.fileUrl, canonicalFileUrl)) {
-          return NextResponse.json({ submission: winner }, { status: 200 });
-        }
-        // NEVER delete winner.fileUrl! Only clean up the losing orphan upload if distinct
-        if (!isSameSubmissionFile(winner.fileUrl, canonicalFileUrl)) {
-          await del(canonicalFileUrl).catch(() => {});
-        }
+        });
+        return NextResponse.json({ submission }, { status: 201 });
       }
-      return NextResponse.json({ error: "assignment already submitted" }, { status: 409 });
+
+      const replaced = await prisma.notebookSubmission.updateMany({
+        where: { id: current.id },
+        data: { id: randomUUID(), ...submissionData },
+      });
+      if (replaced.count === 0) continue;
+
+      const submission = await prisma.notebookSubmission.findUnique({ where });
+      if (submission) {
+        return NextResponse.json({ submission }, { status: 200 });
+      }
+    } catch (err: unknown) {
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        (err as { code: string }).code === "P2021"
+      ) {
+        return NextResponse.json(
+          { error: "notebook submissions are not enabled yet (database table missing)" },
+          { status: 503 },
+        );
+      }
+      if (
+        typeof err === "object" &&
+        err !== null &&
+        "code" in err &&
+        (err as { code: string }).code === "P2002"
+      ) {
+        continue;
+      }
+      throw err;
     }
-    throw err;
   }
+
+  return NextResponse.json(
+    { error: "submission changed concurrently; please try again" },
+    { status: 409 },
+  );
 }
 
 /* GET — fetch submissions for this lesson.

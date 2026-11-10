@@ -4,7 +4,6 @@ import React, { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import {
   formatBytes,
-  formatDate,
   sanitizeFileName,
   submissionPrefix,
   validateNotebookFile,
@@ -59,9 +58,6 @@ export function NotebookUploader({
 
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  // Single-submission lock: once committed, no second upload is permitted
-  const isLocked = submission !== null;
-
   function validateFile(file: File): string | null {
     const res = validateNotebookFile(file.name, file.size);
     return res.valid ? null : (res.error ?? "Invalid file");
@@ -91,7 +87,7 @@ export function NotebookUploader({
 
   function onDragOver(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
-    if (!uploading && !isLocked && !isUnavailable) {
+    if (!uploading && !isUnavailable) {
       setIsDragOver(true);
     }
   }
@@ -104,7 +100,7 @@ export function NotebookUploader({
   function onDrop(e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     setIsDragOver(false);
-    if (uploading || isLocked || isUnavailable) return;
+    if (uploading || isUnavailable) return;
 
     const file = e.dataTransfer.files?.[0];
     if (file) {
@@ -158,22 +154,17 @@ export function NotebookUploader({
   }
 
   async function handleSubmit() {
-    if (!selectedFile || uploading || isLocked || isUnavailable) return;
+    if (!selectedFile || uploading || isUnavailable) return;
 
     setUploading(true);
     setProgress(0);
     setError(null);
 
     try {
-      // Pre-check existing submission before uploading
+      // Check availability and refresh the currently recorded version before uploading.
       const preCheck = await fetchExistingSubmission().catch(() => null);
       if (preCheck?.submission) {
         setSubmission(preCheck.submission);
-        setSelectedFile(null);
-        setStagedBlob(null);
-        if (onSubmitted) onSubmitted(preCheck.submission);
-        setUploading(false);
-        return;
       }
       if (preCheck?.unavailable) {
         setIsUnavailable(true);
@@ -235,19 +226,6 @@ export function NotebookUploader({
         },
       );
 
-      if (res.status === 409) {
-        const check = await fetchExistingSubmission().catch(() => null);
-        if (check?.submission) {
-          setSubmission(check.submission);
-          setSelectedFile(null);
-          setStagedBlob(null);
-          setError(null);
-          if (onSubmitted) onSubmitted(check.submission);
-          return;
-        }
-        throw new Error("This assignment has already been submitted.");
-      }
-
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(
@@ -277,16 +255,12 @@ export function NotebookUploader({
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
-      // Vercel Blob client hides token 409/403/503 behind BlobError("Failed to retrieve the client token").
-      // Check whether a submission already exists or if submissions are unavailable.
+      // Refresh status after failures: a token or save error must not discard the
+      // selected file or mark it as successfully submitted.
       const check = await fetchExistingSubmission().catch(() => null);
       if (check?.submission) {
         setSubmission(check.submission);
-        setSelectedFile(null);
-        setStagedBlob(null);
-        setError(null);
         if (onSubmitted) onSubmitted(check.submission);
-        return;
       }
       if (check?.unavailable) {
         setIsUnavailable(true);
@@ -298,7 +272,7 @@ export function NotebookUploader({
         return;
       }
       if (msg.includes("Failed to retrieve the client token")) {
-        setError("Upload failed. If you already submitted or lack enrollment permissions, please check your status.");
+        setError("Upload failed. Please check your submission status and try again.");
       } else {
         setError(msg);
       }
@@ -315,9 +289,9 @@ export function NotebookUploader({
     );
   }
 
-  if (isLocked) {
-    return (
-      <div className="notebook-uploader-locked" data-testid="notebook-uploader-locked">
+  return (
+    <div className="notebook-uploader-container" data-testid="notebook-uploader">
+      {submission && (
         <SubmissionFeedbackCard
           submission={submission}
           maxScore={maxScore}
@@ -325,15 +299,7 @@ export function NotebookUploader({
           lessonSlug={lessonSlug}
           renderedFeedbackHtml={renderedFeedbackHtml}
         />
-        <p className="notebook-lock-notice muted" data-testid="lock-notice">
-          🔒 Single submission policy: This assignment is locked. No further submissions are accepted.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="notebook-uploader-container" data-testid="notebook-uploader">
+      )}
       <div
         className={`notebook-dropzone ${isDragOver ? "dragover" : ""} ${
           selectedFile ? "has-file" : ""
@@ -409,7 +375,7 @@ export function NotebookUploader({
             disabled={uploading}
             data-testid="submit-notebook-btn"
           >
-            Submit Notebook (.ipynb)
+            {submission ? "Upload New Version (.ipynb)" : "Submit Notebook (.ipynb)"}
           </button>
           <button
             type="button"

@@ -20,7 +20,7 @@ import {
  * - Authenticated student enrolled in the specified class
  * - Exact class, lesson, student userId, and assignmentId path prefix
  * - Private blob storage with 10-minute expiry and immutable (no-overwrite) flag
- * - Enforces single submission: rejects token generation if submission already recorded.
+ * - Existing submissions may be replaced with a newly uploaded version.
  */
 export async function POST(req: Request) {
   if (crossSite(req)) {
@@ -100,9 +100,8 @@ export async function POST(req: Request) {
           throw new SubmissionApiError(403, pathCheck.error ?? "invalid submission path");
         }
 
-        let existing = null;
         try {
-          existing = await prisma.notebookSubmission.findUnique({
+          await prisma.notebookSubmission.findUnique({
             where: {
               userId_classId_lessonSlug_assignmentId: {
                 userId: access.userId,
@@ -126,10 +125,6 @@ export async function POST(req: Request) {
           }
           throw dbErr;
         }
-        if (existing) {
-          throw new SubmissionApiError(409, "assignment already submitted");
-        }
-
         return {
           allowedContentTypes: ALLOWED_SUBMISSION_MIME_TYPES,
           addRandomSuffix: true,

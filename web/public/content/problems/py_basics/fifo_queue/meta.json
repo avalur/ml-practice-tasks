@@ -1,0 +1,30 @@
+{
+  "id": "py_basics/fifo_queue",
+  "topic": "py_basics",
+  "slug": "fifo_queue",
+  "title": "Implement a Queue",
+  "difficulty": "easy",
+  "entry": "Queue",
+  "banned": {
+    "modules": [
+      "queue",
+      "collections"
+    ],
+    "names": [
+      "deque"
+    ]
+  },
+  "statementMd": "Implement a FIFO queue class named `Queue` using two Python lists as stacks.\n\nThe queue must provide `enqueue(item)`, `dequeue()`, `peek()`, `is_empty()`,\nand `__len__` (so `len(queue)` works). `dequeue` removes and returns the oldest\nitem; `peek` returns it without removing it. Both raise `IndexError` when the\nqueue is empty. Any object, including `None`, may be stored.\n\nDo not use the ready-made `queue` or `collections` modules. In particular,\n`list.pop(0)` is not suitable: removing the first list element shifts the rest,\nso processing many items takes quadratic time. With two stacks, each item can\nbe moved once and queue operations take amortized O(1) time.",
+  "bundlePath": "/content/problems/py_basics/fifo_queue",
+  "pyDeps": [],
+  "webRunnable": true,
+  "hidden": false,
+  "hints": [
+    "Keep one list for newly enqueued items and another for items ready to be dequeued.",
+    "When the outgoing list is empty, move items from the incoming list by popping and appending them.",
+    "Only transfer items when needed; each item should move between the lists at most once."
+  ],
+  "prereqs": [],
+  "next": [],
+  "contentHash": "054306795736fcf4d8342ba5fc00a14068a3c8ff22f36597cab1247fa397e855"
+}

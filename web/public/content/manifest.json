@@ -285,6 +285,36 @@
       "contentHash": "7202cce4fc2a6c71325b260b8720619400e9240a109cc19427e1ed887665bd60"
     },
     {
+      "id": "py_basics/fifo_queue",
+      "topic": "py_basics",
+      "slug": "fifo_queue",
+      "title": "Implement a Queue",
+      "difficulty": "easy",
+      "entry": "Queue",
+      "banned": {
+        "modules": [
+          "queue",
+          "collections"
+        ],
+        "names": [
+          "deque"
+        ]
+      },
+      "statementMd": "Implement a FIFO queue class named `Queue` using two Python lists as stacks.\n\nThe queue must provide `enqueue(item)`, `dequeue()`, `peek()`, `is_empty()`,\nand `__len__` (so `len(queue)` works). `dequeue` removes and returns the oldest\nitem; `peek` returns it without removing it. Both raise `IndexError` when the\nqueue is empty. Any object, including `None`, may be stored.\n\nDo not use the ready-made `queue` or `collections` modules. In particular,\n`list.pop(0)` is not suitable: removing the first list element shifts the rest,\nso processing many items takes quadratic time. With two stacks, each item can\nbe moved once and queue operations take amortized O(1) time.",
+      "bundlePath": "/content/problems/py_basics/fifo_queue",
+      "pyDeps": [],
+      "webRunnable": true,
+      "hidden": false,
+      "hints": [
+        "Keep one list for newly enqueued items and another for items ready to be dequeued.",
+        "When the outgoing list is empty, move items from the incoming list by popping and appending them.",
+        "Only transfer items when needed; each item should move between the lists at most once."
+      ],
+      "prereqs": [],
+      "next": [],
+      "contentHash": "054306795736fcf4d8342ba5fc00a14068a3c8ff22f36597cab1247fa397e855"
+    },
+    {
       "id": "py_classes/range",
       "topic": "py_classes",
       "slug": "range",
@@ -716,9 +746,11 @@
         "When getting an item, wait on not_empty while the queue is empty; notify not_full after popping.",
         "To handle timeouts accurately, compute deadline = time.monotonic() + timeout and wait for the remaining time in a loop."
       ],
-      "prereqs": [],
+      "prereqs": [
+        "py_basics/fifo_queue"
+      ],
       "next": [],
-      "contentHash": "329cca939c903bc3c6f10f1016283a3d14da19c6c13bfbe5973c88594b0274f6"
+      "contentHash": "d7f16ba00166451ede7796ae7543dbe14704127b81a389d70978949713dc85b9"
     },
     {
       "id": "py_threads/thread_pool",

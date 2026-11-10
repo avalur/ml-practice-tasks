@@ -23,7 +23,9 @@
     "When getting an item, wait on not_empty while the queue is empty; notify not_full after popping.",
     "To handle timeouts accurately, compute deadline = time.monotonic() + timeout and wait for the remaining time in a loop."
   ],
-  "prereqs": [],
+  "prereqs": [
+    "py_basics/fifo_queue"
+  ],
   "next": [],
-  "contentHash": "329cca939c903bc3c6f10f1016283a3d14da19c6c13bfbe5973c88594b0274f6"
+  "contentHash": "d7f16ba00166451ede7796ae7543dbe14704127b81a389d70978949713dc85b9"
 }

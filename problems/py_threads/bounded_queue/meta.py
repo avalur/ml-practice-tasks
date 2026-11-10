@@ -5,6 +5,7 @@ META = {
     "entry": "BoundedQueue",
     "order": 1,
     "py_deps": [],
+    "prereqs": ["py_basics/fifo_queue"],
     "threads": True,
     "banned": {
         "modules": ["queue", "multiprocessing"],

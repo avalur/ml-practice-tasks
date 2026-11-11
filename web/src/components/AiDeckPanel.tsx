@@ -208,7 +208,7 @@ export function AiDeckPanel({
   if (!open) {
     return (
       <p>
-        <button type="button" className="bt-clear-btn" onClick={() => setOpen(true)} data-testid="ai-open">
+        <button type="button" className="btn subtle small" onClick={() => setOpen(true)} data-testid="ai-open">
           ✨ Write slides with AI
         </button>
       </p>
@@ -254,7 +254,7 @@ export function AiDeckPanel({
         {previous !== null && (
           <button
             type="button"
-            className="bt-clear-btn"
+            className="btn subtle small"
             onClick={() => {
               onDeck(previous);
               setPrevious(null);

@@ -250,6 +250,25 @@ export function formatDate(d: string | Date | null | undefined): string {
   }
 }
 
+/** A calendar day, "3 Nov" (or "3 Nov 2026" with `year`). Always UTC with an
+ * explicit locale: these render on the server and in the browser, and a
+ * locale- or zone-dependent string is a hydration mismatch and a date that
+ * moves by one depending on who looks. */
+export function formatDay(
+  d: string | Date | null | undefined,
+  opts: { year?: boolean } = {},
+): string {
+  if (!d) return "—";
+  const date = typeof d === "string" ? new Date(/^\d{4}-\d{2}-\d{2}$/.test(d) ? `${d}T00:00:00Z` : d) : d;
+  if (Number.isNaN(date.getTime())) return String(d);
+  return date.toLocaleDateString("en-GB", {
+    timeZone: "UTC",
+    day: "numeric",
+    month: "short",
+    ...(opts.year ? { year: "numeric" } : {}),
+  });
+}
+
 /** Canonical prefix for student submissions. Scoped by class, lesson, user, and assignment. */
 export function submissionPrefix(
   classSlug: string,

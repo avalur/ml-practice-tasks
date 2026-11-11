@@ -49,7 +49,7 @@ export function TeaserPublishToggle({
     <>
       <button
         type="button"
-        className="bt-clear-btn"
+        className="btn subtle small"
         disabled={busy}
         data-testid="teaser-publish-toggle"
         onClick={() => set(!published)}

@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Inter } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { Providers } from "@/components/Providers";
-import { AuthStatus } from "@/components/AuthStatus";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
+
+// Self-hosted at build time by next/font: no request to Google from the page.
+const inter = Inter({ subsets: ["latin", "cyrillic"], display: "swap", variable: "--font-inter" });
 
 export const metadata: Metadata = {
   title: "ML Practice",
@@ -22,30 +25,30 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" className={inter.variable} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT }} />
       </head>
       <body>
         <Providers>
-          <header className="site-header">
-            <Link href="/" className="brand">
-              ML&nbsp;Practice
-            </Link>
-            <nav className="nav-links">
-              <Link href="/problems">Problems</Link>
-              <Link href="/notebooks">Notebooks</Link>
-              <Link href="/classes">Classes</Link>
-              <Link href="/brainteasers">Brainteasers</Link>
-              <Link href="/teach">Teach</Link>
-              <Link href="/profile">Profile</Link>
-            </nav>
-            <div className="header-right">
-              <ThemeToggle />
-              <AuthStatus />
-            </div>
-          </header>
+          <SiteHeader />
           <main className="container">{children}</main>
+          <footer className="site-footer">
+            <div className="site-footer-inner">
+              <span>ML Practice — machine learning, by hand.</span>
+              <a href="https://avalur.github.io/mlcourse" target="_blank" rel="noopener noreferrer">
+                The course
+              </a>
+              <Link href="/teach">Teach here</Link>
+              <a
+                href="https://github.com/avalur/ml-practice-tasks"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                GitHub
+              </a>
+            </div>
+          </footer>
         </Providers>
         <Analytics />
         <SpeedInsights />

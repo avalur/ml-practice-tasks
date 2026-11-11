@@ -120,7 +120,7 @@ export function CourseDetailsForm({
         />
       </label>
       <div className="report-actions">
-        <button type="submit" className="bt-clear-btn" disabled={busy || !dirty || !title.trim()}>
+        <button type="submit" className="btn subtle small" disabled={busy || !dirty || !title.trim()}>
           {busy ? "Saving…" : "Save details"}
         </button>
         {msg && <span className={msg.ok ? "class-join-ok" : "class-join-err"}>{msg.text}</span>}
@@ -226,7 +226,7 @@ export function LessonList({ slug, lessons }: { slug: string; lessons: LessonRow
           maxLength={STUDIO_LIMITS.title}
           aria-label="New lesson title"
         />
-        <button type="submit" className="bt-clear-btn" disabled={busy || !title.trim()}>
+        <button type="submit" className="btn subtle small" disabled={busy || !title.trim()}>
           Add lesson
         </button>
       </form>
@@ -242,7 +242,7 @@ export function DeleteCourseButton({ slug }: { slug: string }) {
     <>
       <button
         type="button"
-        className="bt-clear-btn danger"
+        className="btn subtle small danger"
         onClick={async () => {
           if (!window.confirm("Delete this course with all its lessons, slides and images? This cannot be undone.")) return;
           try {

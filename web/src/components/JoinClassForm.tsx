@@ -54,7 +54,7 @@ export function JoinClassForm({ placeholder }: { placeholder?: string }) {
           spellCheck={false}
           maxLength={24}
         />
-        <button type="submit" className="bt-clear-btn" disabled={busy || !code.trim()}>
+        <button type="submit" className="btn subtle small" disabled={busy || !code.trim()}>
           {busy ? "Joining…" : "Join"}
         </button>
       </div>

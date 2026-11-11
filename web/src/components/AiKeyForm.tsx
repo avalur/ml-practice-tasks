@@ -89,7 +89,7 @@ export function AiKeyForm({ status }: { status: AiKeyStatus }) {
           {busy ? "Saving…" : "Save key"}
         </button>
         {status.own && (
-          <button type="button" className="bt-clear-btn danger" disabled={busy} onClick={() => call("DELETE")}>
+          <button type="button" className="btn subtle small danger" disabled={busy} onClick={() => call("DELETE")}>
             Remove my key
           </button>
         )}

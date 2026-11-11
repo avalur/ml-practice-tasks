@@ -8,7 +8,7 @@
 export function PopOutButton({ url }: { url: string }) {
   return (
     <button
-      className="bt-clear-btn"
+      className="btn subtle small push"
       onClick={() => window.open(url, "mlp-monitor", "width=460,height=820")}
       title="Open in a small separate window"
     >

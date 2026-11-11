@@ -101,7 +101,7 @@ export function ReportClassButton({
       <div className="report-actions">
         <button
           type="submit"
-          className="bt-clear-btn"
+          className="btn subtle small"
           disabled={busy || !reason || details.trim().length < 10}
         >
           {busy ? "Sending…" : "Send report"}

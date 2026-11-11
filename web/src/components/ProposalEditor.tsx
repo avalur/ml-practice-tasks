@@ -250,7 +250,7 @@ export function ProposalEditor() {
         </label>
       </div>
       <div className="report-actions">
-        <button type="button" className="bt-clear-btn" onClick={runCheck} disabled={busy !== null} data-testid="proposal-check">
+        <button type="button" className="btn subtle small" onClick={runCheck} disabled={busy !== null} data-testid="proposal-check">
           {busy === "check" ? "Checking…" : "Check in the browser"}
         </button>
         <button type="button" className="class-present-btn" onClick={send} disabled={busy !== null || !good} data-testid="proposal-send">

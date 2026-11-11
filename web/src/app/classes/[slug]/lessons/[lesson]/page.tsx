@@ -144,7 +144,7 @@ function AssignmentCard({
               href={assignment.templateHref}
               target="_blank"
               rel="noopener noreferrer"
-              className="bt-clear-btn"
+              className="btn subtle small"
               style={{ fontSize: "0.82rem" }}
               data-testid="template-link"
             >
@@ -162,7 +162,7 @@ function AssignmentCard({
             <span>Instructor view: </span>
             <Link
               href={`/classes/${classSlug}/homework?lesson=${lessonSlug}`}
-              className="bt-clear-btn"
+              className="btn subtle small"
               style={{ fontSize: "0.8rem", marginLeft: "0.5rem" }}
             >
               Review submissions in homework matrix →
@@ -431,13 +431,13 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
       <ClassModeration slug={slug} access={access} />
 
       <div className="class-lesson-actions">
-        <a className="bt-clear-btn" href={slidesUrl} target="_blank" rel="noopener">
+        <a className="btn subtle small" href={slidesUrl} target="_blank" rel="noopener">
           Open slides
         </a>
         {access.isTeacher && <PresentButton classSlug={slug} lessonSlug={lessonSlug} />}
         {access.isTeacher && (
           <Link
-            className="bt-clear-btn"
+            className="btn subtle small"
             href={`/classes/${slug}/homework?lesson=${lessonSlug}`}
           >
             Attendance
@@ -454,7 +454,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
             checks membership and signs a short-lived download URL. */}
         {delivered?.pdfUrl && access.isMember && (
           <a
-            className="bt-clear-btn"
+            className="btn subtle small"
             href={`/api/classes/${slug}/lessons/${lessonSlug}/notes`}
             data-testid="lecture-pdf"
           >

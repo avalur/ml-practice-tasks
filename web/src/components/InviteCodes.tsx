@@ -82,7 +82,7 @@ export function InviteCodes({
               {inv.students === 0 && (
                 <button
                   type="button"
-                  className="bt-clear-btn"
+                  className="btn subtle small push"
                   disabled={busy}
                   onClick={() => call("DELETE", { id: inv.id })}
                 >
@@ -114,7 +114,7 @@ export function InviteCodes({
         />
         <button
           type="submit"
-          className="bt-clear-btn"
+          className="btn subtle small"
           disabled={busy || !label.trim() || code.trim().length < 4}
         >
           {busy ? "Saving…" : "New code"}

@@ -371,7 +371,7 @@ export function DeckFullscreen({
       <div className="studio-fs-bar">
         <button
           type="button"
-          className={`bt-clear-btn${chatOpen ? " on" : ""}`}
+          className={`btn subtle small${chatOpen ? " on" : ""}`}
           onClick={() => setChatOpen(!chatOpen)}
           aria-pressed={chatOpen}
           data-testid="fs-ai"
@@ -386,10 +386,10 @@ export function DeckFullscreen({
           slide {at.h + 1}
           {at.v > 0 ? `.${at.v + 1}` : ""}
         </span>
-        <a className="bt-clear-btn" href={presentUrl} target="_blank" rel="noopener">
+        <a className="btn subtle small" href={presentUrl} target="_blank" rel="noopener">
           Present ↗
         </a>
-        <button type="button" className="bt-clear-btn" onClick={onClose} data-testid="fs-exit" title="Esc">
+        <button type="button" className="btn subtle small" onClick={onClose} data-testid="fs-exit" title="Esc">
           Exit full screen
         </button>
       </div>

@@ -379,7 +379,7 @@ export function NotebookUploader({
           </button>
           <button
             type="button"
-            className="bt-clear-btn"
+            className="btn subtle small"
             onClick={() => {
               setSelectedFile(null);
               setStagedBlob(null);

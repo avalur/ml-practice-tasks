@@ -49,7 +49,7 @@ export function NotebookFrame({
       <div className="notebook-toolbar">
         <span className="notebook-toolbar-title">{title}</span>
         {canReset && (
-          <button className="bt-clear-btn" onClick={reset} disabled={resetting}>
+          <button className="btn subtle small push" onClick={reset} disabled={resetting}>
             {resetting ? "Resetting…" : "Reset to starter"}
           </button>
         )}

@@ -61,7 +61,7 @@ export function AdminAction({
     <>
       <button
         type="button"
-        className={`bt-clear-btn${danger ? " danger" : ""}`}
+        className={`btn subtle small${danger ? " danger" : ""}`}
         disabled={busy}
         onClick={run}
         data-testid={testId}

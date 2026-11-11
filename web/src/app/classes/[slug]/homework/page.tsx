@@ -223,13 +223,13 @@ export default async function HomeworkPage({
             <div className="hw-view-tabs">
               <Link
                 href={`/classes/${slug}/homework?tab=attendance`}
-                className={`bt-clear-btn ${currentTab === "attendance" ? "active" : ""}`}
+                className={`btn subtle small ${currentTab === "attendance" ? "active" : ""}`}
               >
                 Attendance
               </Link>
               <Link
                 href={`/classes/${slug}/homework?tab=homework`}
-                className={`bt-clear-btn ${currentTab === "homework" ? "active" : ""}`}
+                className={`btn subtle small ${currentTab === "homework" ? "active" : ""}`}
               >
                 Homework
               </Link>

@@ -86,7 +86,7 @@ function DetailsPart({ url, title: t0, date: d0 }: { url: string; title: string;
         Date
         <input type="date" value={date} onChange={(e) => setDate(e.target.value)} name="lesson-date" />
       </label>
-      <button type="submit" className="bt-clear-btn" disabled={!dirty || !title.trim()}>
+      <button type="submit" className="btn subtle small" disabled={!dirty || !title.trim()}>
         Save
       </button>
       {msg && <span className={msg.ok ? "class-join-ok" : "class-join-err"}>{msg.text}</span>}
@@ -229,7 +229,7 @@ function ItemsPart({
       </div>
 
       <div className="report-actions">
-        <button type="button" className="bt-clear-btn" onClick={save} disabled={busy} data-testid="save-items">
+        <button type="button" className="btn subtle small" onClick={save} disabled={busy} data-testid="save-items">
           {busy ? "Saving…" : "Save practice & homework"}
         </button>
         {msg && <span className={msg.ok ? "class-join-ok" : "class-join-err"} style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>}
@@ -424,7 +424,7 @@ function DeckPart({
     </button>
   );
   const uploadButton = (
-    <button type="button" className="bt-clear-btn" onClick={() => fileRef.current?.click()}>
+    <button type="button" className="btn subtle small" onClick={() => fileRef.current?.click()}>
       Upload image
     </button>
   );
@@ -503,7 +503,7 @@ function DeckPart({
               <div className="report-actions">
                 {saveButton}
                 {uploadButton}
-                <button type="button" className="bt-clear-btn" onClick={() => setFull(true)} data-testid="open-fullscreen">
+                <button type="button" className="btn subtle small" onClick={() => setFull(true)} data-testid="open-fullscreen">
                   Open full screen
                 </button>
                 <a className="link-btn" href={presentUrl} target="_blank" rel="noopener">

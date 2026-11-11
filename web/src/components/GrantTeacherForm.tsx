@@ -48,7 +48,7 @@ export function GrantTeacherForm() {
           placeholder="teacher@school.org"
           autoComplete="off"
         />
-        <button type="submit" className="bt-clear-btn" disabled={busy || !email.trim()}>
+        <button type="submit" className="btn subtle small" disabled={busy || !email.trim()}>
           {busy ? "Granting…" : "Grant"}
         </button>
       </div>

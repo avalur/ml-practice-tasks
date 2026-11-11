@@ -1,0 +1,63 @@
+/* ── Notebooks (marimo WASM iframe) ───────────────────────────────────────── */
+
+/* Sidebar + content shell — breaks out of container padding */
+.notebooks-shell {
+  display: flex;
+  margin: -1.5rem -2rem -2rem;
+  min-height: calc(100vh - var(--header-h));
+}
+/* Sidebar fixed-height and sticky inside the notebooks shell */
+.notebooks-shell .sidebar {
+  position: sticky;
+  top: var(--header-h);
+  height: calc(100vh - var(--header-h));
+  max-height: calc(100vh - var(--header-h));
+  border-radius: 0;
+  border-top: none;
+  border-bottom: none;
+  border-left: none;
+  overflow-y: auto;
+}
+.notebooks-main {
+  flex: 1;
+  min-width: 0;
+  padding: 1.5rem 2rem;
+}
+/* Iframe wrapper fills the main area; negate the padding */
+.notebooks-main .notebook-frame-wrapper {
+  height: calc(100vh - var(--header-h));
+  margin: -1.5rem -2rem;
+}
+.notebook-frame-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+.notebook-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.4rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+  flex: 0 0 auto;
+}
+.notebook-toolbar-title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.notebook-frame {
+  width: 100%;
+  flex: 1 1 auto;
+  min-height: 0;
+  border: none;
+  display: block;
+}
+
+/* The notebook page is an app filling the window; a footer under it would only
+   add a scrollbar. */
+body:has(.notebooks-shell) .site-footer { display: none; }

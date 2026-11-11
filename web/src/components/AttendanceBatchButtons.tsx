@@ -43,7 +43,7 @@ export function AttendanceBatchButtons({
     <div className="att-batch-actions">
       <button
         type="button"
-        className="bt-clear-btn"
+        className="btn subtle small"
         disabled={busy || userIds.length === 0}
         onClick={() => setAll(true)}
         title="Mark all students in the group as present"
@@ -52,7 +52,7 @@ export function AttendanceBatchButtons({
       </button>
       <button
         type="button"
-        className="bt-clear-btn"
+        className="btn subtle small"
         disabled={busy || userIds.length === 0}
         onClick={() => setAll(false)}
         title="Clear attendance for all students"

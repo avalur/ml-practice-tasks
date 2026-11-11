@@ -1,0 +1,227 @@
+/* ── Brain Teasers ─────────────────────────────────────────────────────────── */
+
+.bt-page { max-width: 680px; }
+
+.bt-rules {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem 1.1rem;
+  margin: 1rem 0 0.5rem;
+  font-size: 0.92rem;
+}
+.bt-rules ul { margin: 0.4rem 0 0 1.2rem; padding: 0; }
+.bt-rules li { margin: 0.25rem 0; }
+
+.bt-puzzle {
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  margin: 1.25rem 0;
+  transition: border-color 0.3s, background 0.3s;
+}
+.bt-puzzle.correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 8%, var(--panel));
+}
+
+.bt-puzzle-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+.bt-puzzle-num {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+.bt-status-ok {
+  font-weight: 700;
+  color: var(--easy);
+  font-size: 1rem;
+}
+.bt-clear-btn {
+  margin-left: auto;
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  font-size: 0.82rem;
+  padding: 0.2rem 0.65rem;
+  cursor: pointer;
+}
+.bt-clear-btn:hover { border-color: var(--accent); color: var(--text); }
+
+/* Equation drop zone */
+.bt-equation {
+  min-height: 72px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: center;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg);
+  border: 1px dashed var(--border);
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+.bt-placeholder { color: var(--muted); font-size: 0.88rem; }
+
+/* Tile */
+.bt-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: monospace;
+  cursor: pointer;
+  user-select: none;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s;
+}
+.bt-tile:hover:not(.used):not(:disabled) {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+.bt-tile.bt-op  { color: var(--accent); }
+.bt-tile.bt-eq  { color: var(--medium); }
+.bt-tile.bt-paren { color: var(--muted); border-style: dashed; font-size: 1.3rem; }
+.bt-tile.used   { opacity: 0.22; cursor: default; }
+.bt-tile.placed { background: var(--panel); border-color: var(--accent); cursor: grab; }
+.bt-tile.placed:active { cursor: grabbing; }
+
+/* Tile pool */
+.bt-pool { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
+.bt-pool-section { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.bt-pool-sep {
+  width: 1px; height: 54px;
+  background: var(--border);
+  margin: 0 0.35rem;
+}
+.bt-paren-hint {
+  font-size: 0.75rem;
+  color: var(--muted);
+  align-self: center;
+  white-space: nowrap;
+}
+
+/* ── Integral puzzle (it-*) ──────────────────────────────────────────────── */
+
+.it-formula-wrap {
+  margin: 1.25rem 0 0.75rem;
+  background: var(--panel);
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem 2rem;
+  transition: border-color 0.3s, background 0.3s;
+}
+.it-formula-wrap.it-correct {
+  border-color: var(--easy);
+  background: color-mix(in srgb, var(--easy) 8%, var(--panel));
+}
+
+.it-formula {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Integral sign + stacked bounds */
+.it-int-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+}
+.it-int-sign {
+  font-size: 4.5rem;
+  line-height: 0.8;
+  font-family: serif;
+  color: var(--text);
+}
+
+/* Slot circle */
+.it-slot {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2.5px dashed var(--muted);
+  background: var(--bg);
+  font-size: 1.4rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  color: var(--text);
+}
+.it-slot--active { border-color: var(--accent); border-style: solid; }
+.it-slot--filled { border-style: solid; border-color: var(--accent); background: var(--panel-2); }
+.it-slot--filled:hover { border-color: var(--hard); transform: scale(0.96); }
+.it-slot--correct { border-color: var(--easy); background: color-mix(in srgb, var(--easy) 15%, var(--panel)); }
+/* While a token is being dragged, every empty slot pulses to invite a drop. */
+.it-slot--target:not(.it-slot--filled) {
+  border-color: var(--accent);
+  border-style: solid;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+/* Ghost token following the cursor mid-drag. */
+.it-token--ghost { opacity: 0.9; box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35); }
+
+.it-body { font-size: 1.4rem; }
+.it-eq   { font-size: 1.5rem; }
+
+.it-success {
+  margin-top: 1rem;
+  font-weight: 700; font-size: 1rem;
+  color: var(--easy);
+}
+
+/* Active slot selector */
+.it-slot-bar {
+  display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+  margin-top: 0.75rem;
+}
+.it-slot-btn {
+  padding: 0.3rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 0.88rem;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 0.25rem;
+}
+.it-slot-btn:hover { border-color: var(--accent); color: var(--text); }
+.it-slot-btn.active { border-color: var(--accent); color: var(--text); font-weight: 600; }
+.it-slot-val { color: var(--muted); }
+
+/* Number pool */
+.it-pool { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1.5rem; }
+.it-pool-row { display: flex; gap: 0.55rem; }
+
+/* Draggable token circle */
+.it-token {
+  width: 60px; height: 60px;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--panel-2);
+  font-size: 1.3rem; font-weight: 700; font-family: monospace;
+  display: inline-flex; align-items: center; justify-content: center;
+  cursor: grab;
+  user-select: none;
+  transition: border-color 0.12s, transform 0.1s, opacity 0.15s, box-shadow 0.12s;
+}
+.it-token:hover:not(.it-token--used) {
+  border-color: var(--accent);
+  transform: translateY(-3px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+.it-token:active:not(.it-token--used) { cursor: grabbing; transform: scale(0.95); }
+.it-token--used { opacity: 0.2; cursor: default; }
+.it-token--dragging { opacity: 0.4; }

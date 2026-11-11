@@ -71,7 +71,7 @@ export function SubmissionFeedbackCard({
             <a
               href={downloadUrl}
               download={submission.fileName}
-              className="bt-clear-btn notebook-download-btn"
+              className="btn subtle small notebook-download-btn"
               data-testid="download-submission-link"
             >
               Download .ipynb

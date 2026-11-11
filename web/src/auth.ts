@@ -3,6 +3,7 @@ import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/lib/db";
+import { isAdminEmail } from "@/lib/admin-emails";
 
 // Auth.js v5. Providers read credentials from the AUTH_<PROVIDER>_ID/SECRET env
 // vars by convention. Prisma adapter + database sessions persist users and
@@ -20,7 +21,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   callbacks: {
     session({ session, user }) {
-      if (session.user) session.user.id = user.id;
+      if (session.user) {
+        session.user.id = user.id;
+        // For the header's account menu only. Every admin page and route
+        // checks isSiteAdmin() itself; this flag authorizes nothing.
+        session.user.isAdmin = isAdminEmail(user.email);
+      }
       return session;
     },
   },

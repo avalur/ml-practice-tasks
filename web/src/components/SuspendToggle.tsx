@@ -49,7 +49,7 @@ export function SuspendToggle({ slug, suspended }: { slug: string; suspended: bo
     <>
       <button
         type="button"
-        className="bt-clear-btn danger"
+        className="btn subtle small danger"
         disabled={busy}
         data-testid="suspend-toggle"
         onClick={() => set(!suspended)}

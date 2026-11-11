@@ -47,7 +47,7 @@ export function PublishToggle({ slug, published }: { slug: string; published: bo
     <>
       <button
         type="button"
-        className="bt-clear-btn"
+        className="btn subtle small"
         disabled={busy}
         data-testid="publish-toggle"
         onClick={() => set(!published)}

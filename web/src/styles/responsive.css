@@ -1,0 +1,19 @@
+/* Responsive */
+@media (max-width: 640px) {
+  .profile-layout { grid-template-columns: 1fr; }
+  .container {
+    padding: 1.25rem 1rem;
+  }
+  .problem-card {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .problem-card .meta {
+    margin-left: 0;
+    width: 100%;
+    flex-wrap: wrap;
+  }
+  .filters {
+    flex-direction: column;
+  }
+}

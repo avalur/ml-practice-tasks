@@ -89,7 +89,7 @@ export function MonitorFeed({ classSlug }: { classSlug: string }) {
       <div className="mon-head">
         <span className="mon-title">Live submissions</span>
         <button
-          className="bt-clear-btn"
+          className="btn subtle small push"
           onClick={() => setLive((v) => !v)}
           title={live ? "Pause polling" : "Resume polling"}
         >

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { Metadata } from "next";
 import { myClassSlugs, visibleClasses } from "@/lib/classes";
+import { Badge, EmptyState, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = {
   title: "Classes — ML Practice",
@@ -18,30 +19,26 @@ export default async function ClassesPage() {
 
   return (
     <article>
-      <h1>Classes</h1>
-      <p className="muted">
-        Taught courses built on the problems and notebooks from this site — lecture
-        slides, in-class practice, and weekly homework. Open to everyone; students
-        of a running course join their group with the code their teacher hands out.
-      </p>
+      <PageHeader
+        title="Classes"
+        subtitle="Taught courses built on the problems and notebooks from this site — lecture slides, in-class practice, and weekly homework. Open to everyone; students of a running course join their group with the code their teacher hands out."
+      />
 
       {all.length === 0 ? (
-        <p className="muted" style={{ marginTop: "1.5rem" }}>
-          No classes yet.
-        </p>
+        <EmptyState title="No classes yet" />
       ) : (
-        <ul className="problem-list" style={{ marginTop: "1.5rem" }}>
+        <ul className="problem-list">
           {all.map((cls) => (
             <li key={cls.slug}>
               <Link href={`/classes/${cls.slug}`} className="problem-card">
                 <span className="title">{cls.title}</span>
                 <span className="meta">
-                  {cls.draft && <span className="badge medium">draft</span>}
-                  {teaching.has(cls.slug) && <span className="badge hard">teacher</span>}
+                  {cls.draft && <Badge tone="warning">draft</Badge>}
+                  {teaching.has(cls.slug) && <Badge tone="info">teacher</Badge>}
                   {member.has(cls.slug) && !teaching.has(cls.slug) && (
-                    <span className="badge easy">joined</span>
+                    <Badge tone="success">joined</Badge>
                   )}
-                  <span className="badge medium">{cls.lessons.length} lessons</span>
+                  <span>{cls.lessons.length} lessons</span>
                 </span>
               </Link>
             </li>

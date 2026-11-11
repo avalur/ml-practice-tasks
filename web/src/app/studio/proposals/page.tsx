@@ -39,7 +39,7 @@ export default async function StudioProposalsPage() {
             {mine.map((p) => (
               <li key={p.id}>
                 <span
-                  className={`badge ${p.status === "rejected" ? "hard" : p.status === "pending" ? "medium" : "easy"}`}
+                  className={`badge ${p.status === "rejected" ? "tone-danger" : p.status === "pending" ? "tone-warning" : "tone-success"}`}
                 >
                   {p.status}
                 </span>{" "}

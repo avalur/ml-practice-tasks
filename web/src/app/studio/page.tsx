@@ -7,6 +7,7 @@ import { prisma } from "@/lib/db";
 import { teacherState } from "@/lib/teachers";
 import { STUDIO_LIMITS } from "@/lib/studio";
 import { NewCourseForm } from "@/components/StudioForms";
+import { Badge } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Studio — ML Practice" };
 
@@ -34,7 +35,8 @@ export default async function StudioPage() {
   return (
     <article className="studio">
       <nav className="admin-nav">
-        <span className="badge easy">studio</span>
+        <Link href="/teach">← Teaching</Link>
+        <span className="badge tone-info">studio</span>
         <Link href="/studio">Courses</Link>
         <Link href="/studio/proposals">Task proposals</Link>
         <Link href="/studio/settings">AI settings</Link>
@@ -51,13 +53,13 @@ export default async function StudioPage() {
                   <strong>{c.title}</strong>
                 </Link>
                 {c.suspendedAt ? (
-                  <span className="badge hard">suspended</span>
+                  <Badge tone="danger">suspended</Badge>
                 ) : c.publishedAt ? (
-                  <span className="badge easy">published</span>
+                  <Badge tone="success">published</Badge>
                 ) : (
-                  <span className="badge medium">draft</span>
+                  <Badge tone="warning">draft</Badge>
                 )}
-                {c.featuredAt && <span className="badge">listed</span>}
+                {c.featuredAt && <Badge tone="info">listed</Badge>}
                 <span className="muted">
                   {c._count.studioLessons} lessons · {c._count.enrollments} joined
                 </span>

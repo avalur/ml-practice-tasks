@@ -21,6 +21,9 @@ import {
   toSubmissionData,
 } from "@/lib/notebook-submissions";
 import { visibleProblems } from "@/lib/problem";
+import { dueMs, isOverdue } from "@/lib/classes-shared";
+
+export { dueMs, isOverdue };
 
 /* What the student cabinet (/profile/*) knows about the signed-in user.
  *
@@ -62,18 +65,6 @@ export type StudentClass = {
   /** The earliest unfinished homework that is not overdue yet, else the latest overdue one. */
   next: HomeworkEntry | null;
 };
-
-/** A due date as a timestamp. class.json writes "2026-11-16T23:59"; a bare
- * "2026-11-16" means the end of that day, not its first minute. */
-export function dueMs(due: string | null | undefined): number | null {
-  if (!due) return null;
-  const t = new Date(/^\d{4}-\d{2}-\d{2}$/.test(due) ? `${due}T23:59:59Z` : due).getTime();
-  return Number.isNaN(t) ? null : t;
-}
-
-export function isOverdue(due: number | null, now = Date.now()): boolean {
-  return due !== null && due < now;
-}
 
 /** How a deadline should look: danger when overdue, warning within three days. */
 export function dueTone(e: Pick<HomeworkEntry, "dueMs" | "done" | "total" | "overdue">) {

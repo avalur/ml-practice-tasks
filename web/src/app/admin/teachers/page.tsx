@@ -98,11 +98,11 @@ export default async function AdminTeachersPage() {
                 </td>
                 <td>
                   {g.revokedAt ? (
-                    <span className="badge hard">revoked {when(g.revokedAt)}</span>
+                    <span className="badge tone-danger">revoked {when(g.revokedAt)}</span>
                   ) : g.termsVersion === TEACHER_TERMS_VERSION ? (
-                    <span className="badge easy">accepted</span>
+                    <span className="badge tone-success">accepted</span>
                   ) : (
-                    <span className="badge medium">not yet</span>
+                    <span className="badge tone-warning">not yet</span>
                   )}
                 </td>
                 <td>
@@ -136,7 +136,7 @@ export default async function AdminTeachersPage() {
           <ul className="admin-list compact">
             {decided.map((a) => (
               <li key={a.id}>
-                <span className={`badge ${a.status === "approved" ? "easy" : "hard"}`}>{a.status}</span>{" "}
+                <span className={`badge ${a.status === "approved" ? "tone-success" : "tone-danger"}`}>{a.status}</span>{" "}
                 {a.user.name ?? a.user.email} <span className="muted">{a.user.email}</span>
                 {a.reviewedAt && (
                   <span className="muted">

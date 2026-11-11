@@ -7,6 +7,7 @@ import { editableClass } from "@/lib/studio";
 import { slideCount } from "@/lib/deck-sanitize";
 import { PublishToggle } from "@/components/PublishToggle";
 import { CourseDetailsForm, DeleteCourseButton, LessonList } from "@/components/StudioForms";
+import { Badge, Notice, PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Course — Studio" };
 
@@ -25,35 +26,42 @@ export default async function StudioCoursePage({ params }: { params: Promise<{ s
   return (
     <article className="studio">
       <p className="muted class-breadcrumb">
-        <Link href="/studio">Studio</Link> › {cls.title}
+        <Link href="/teach">Teaching</Link> › <Link href="/studio">Studio</Link> › {cls.title}
       </p>
-      <h1>{cls.title}</h1>
-
-      <div className="class-teacher-bar">
-        {cls.suspendedAt ? (
-          <span className="badge hard">suspended</span>
-        ) : cls.publishedAt ? (
-          <span className="badge easy">published</span>
-        ) : (
-          <span className="badge medium">draft</span>
-        )}
-        <Link href={`/classes/${slug}`}>Course page</Link>
-        <Link href={`/classes/${slug}/homework`}>Group codes &amp; homework</Link>
-        {!cls.suspendedAt && <PublishToggle slug={slug} published={!!cls.publishedAt} />}
-      </div>
+      <PageHeader
+        title={cls.title}
+        actions={
+          <>
+            {cls.suspendedAt ? (
+              <Badge tone="danger">suspended</Badge>
+            ) : cls.publishedAt ? (
+              <Badge tone="success">published</Badge>
+            ) : (
+              <Badge tone="warning">draft</Badge>
+            )}
+            <Link className="btn small" href={`/classes/${slug}`}>
+              Course page
+            </Link>
+            <Link className="btn small" href={`/classes/${slug}/homework?tab=groups`}>
+              Group codes &amp; homework
+            </Link>
+            {!cls.suspendedAt && <PublishToggle slug={slug} published={!!cls.publishedAt} />}
+          </>
+        }
+      />
       {cls.suspendedAt && (
-        <p className="class-suspended-note">
-          <span className="badge hard">suspended</span> The site admins have taken this course down.
+        <Notice tone="danger">
+          <Badge tone="danger">suspended</Badge> The site admins have taken this course down.
           {cls.suspendedReason && (
             <>
               {" "}
               Reason: <em>{cls.suspendedReason}</em>
             </>
           )}
-        </p>
+        </Notice>
       )}
       {!cls.suspendedAt && (
-        <p className="class-draft-note">
+        <Notice tone={cls.publishedAt ? "info" : "warning"}>
           {cls.publishedAt ? (
             <>
               Published and <strong>unlisted</strong>: anyone with the link{" "}
@@ -63,7 +71,7 @@ export default async function StudioCoursePage({ params }: { params: Promise<{ s
           ) : (
             <>Only you can see this course until you publish it.</>
           )}
-        </p>
+        </Notice>
       )}
 
       <h2>Lessons</h2>
@@ -75,9 +83,9 @@ export default async function StudioCoursePage({ params }: { params: Promise<{ s
       <h2>Details</h2>
       <CourseDetailsForm slug={slug} title={cls.title} description={cls.description ?? ""} />
 
-      <p style={{ marginTop: "2rem" }}>
+      <div className="studio-danger-zone">
         <DeleteCourseButton slug={slug} />
-      </p>
+      </div>
     </article>
   );
 }

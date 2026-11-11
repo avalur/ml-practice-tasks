@@ -4,7 +4,10 @@ import type { Metadata } from "next";
 import { prisma } from "@/lib/db";
 import { isSiteAdmin } from "@/lib/admin";
 import { teacherState } from "@/lib/teachers";
-import { getClasses, myClassSlugs } from "@/lib/classes";
+import { formatDay } from "@/lib/classes";
+import { teachingOverview, type TeachingClass } from "@/lib/teaching";
+import { GradingList } from "@/components/GradingList";
+import { Badge, EmptyState, Notice, PageHeader, ProgressBar, Section, Stat } from "@/components/ui";
 import { TEACHER_TERMS, TEACHER_TERMS_VERSION } from "@/content/teacher-terms";
 import { TeacherApplyForm } from "@/components/TeacherApplyForm";
 import { AcceptTermsButton } from "@/components/AcceptTermsButton";
@@ -19,16 +22,41 @@ const dateFmt = (d: Date) =>
  * their classes. */
 export default async function TeachPage() {
   const [state, admin] = await Promise.all([teacherState(), isSiteAdmin()]);
+  // A teacher of a repo class (Class.teacherEmails) has classes to run whether
+  // or not they ever applied for the Studio role, so they get the dashboard too;
+  // the application steps then sit below it, as the way into the Studio.
+  const overview = state.kind === "anonymous" ? null : await teachingOverview();
+  const dashboard = state.kind === "active" || (overview?.classes.length ?? 0) > 0;
 
   return (
-    <article className="teach">
-      <h1>Teach on ML Practice</h1>
-      <p className="muted">
-        Teachers build their own courses here from the site&rsquo;s tasks and their own
-        slides, hand their students a group code, and follow their homework.
-      </p>
+    <article className={dashboard ? "teach teach-wide" : "teach"}>
+      <PageHeader
+        title={dashboard ? "Teaching" : "Teach on ML Practice"}
+        subtitle={
+          dashboard
+            ? "Your classes, what is waiting to be graded, and what is coming up."
+            : "Teachers build their own courses here from the site’s tasks and their own slides, hand their students a group code, and follow their homework."
+        }
+        actions={
+          state.kind === "active" ? (
+            <Link className="btn primary small" href="/studio">
+              New course
+            </Link>
+          ) : undefined
+        }
+      />
 
       {admin && <AdminSummary />}
+
+      {dashboard && overview && (
+        <TeacherHome
+          overview={overview}
+          since={state.kind === "active" ? state.since : null}
+        />
+      )}
+      {dashboard && state.kind !== "active" && (
+        <h2 className="teach-studio-title">Build your own courses in the Studio</h2>
+      )}
 
       {state.kind === "anonymous" && (
         <p>
@@ -40,7 +68,7 @@ export default async function TeachPage() {
       {state.kind === "none" && (
         <>
           {state.rejected && (
-            <p className="class-draft-note" data-testid="teach-rejected">
+            <Notice tone="neutral" testId="teach-rejected">
               Your last application ({dateFmt(state.rejected.at)}) was not approved.
               {state.rejected.note && (
                 <>
@@ -49,7 +77,7 @@ export default async function TeachPage() {
                 </>
               )}{" "}
               You are welcome to apply again.
-            </p>
+            </Notice>
           )}
           <h2>Apply to teach</h2>
           <TeacherApplyForm />
@@ -57,19 +85,18 @@ export default async function TeachPage() {
       )}
 
       {state.kind === "pending" && (
-        <p className="class-draft-note" data-testid="teach-pending">
-          <span className="badge medium">pending</span> Your application from{" "}
-          {dateFmt(state.since)} is waiting for review. You will get an email when it is
-          answered.
-        </p>
+        <Notice tone="info" testId="teach-pending">
+          <Badge tone="info">pending</Badge> Your application from {dateFmt(state.since)} is
+          waiting for review. You will get an email when it is answered.
+        </Notice>
       )}
 
       {state.kind === "revoked" && (
         <>
-          <p className="class-draft-note" data-testid="teach-revoked">
+          <Notice tone="danger" testId="teach-revoked">
             Your teacher access was withdrawn on {dateFmt(state.at)}. If you think that is a
             mistake, apply again and say so.
-          </p>
+          </Notice>
           <h2>Apply again</h2>
           <TeacherApplyForm />
         </>
@@ -79,9 +106,9 @@ export default async function TeachPage() {
         <section data-testid="teach-terms">
           <h2>Teacher terms</h2>
           {state.previouslyAccepted && (
-            <p className="class-draft-note">
+            <Notice tone="warning">
               The terms have changed since you last accepted them. Please read them again.
-            </p>
+            </Notice>
           )}
           <ol className="teach-terms">
             {TEACHER_TERMS.map((t) => (
@@ -95,38 +122,151 @@ export default async function TeachPage() {
         </section>
       )}
 
-      {state.kind === "active" && <TeacherHome since={state.since} />}
     </article>
   );
 }
 
-async function TeacherHome({ since }: { since: Date }) {
-  const [{ teaching }, all] = await Promise.all([myClassSlugs(), getClasses()]);
-  const titles = new Map(all.map((c) => [c.slug, c.title]));
+function TeacherHome({
+  overview: { classes, grading, gradingUnavailable },
+  since,
+}: {
+  overview: Awaited<ReturnType<typeof teachingOverview>>;
+  since: Date | null;
+}) {
+  const students = classes.reduce((n, c) => n + c.students, 0);
+  const upcoming = classes
+    .filter((c) => c.nextLesson)
+    .sort((a, b) => a.nextLesson!.date.localeCompare(b.nextLesson!.date))[0];
+
   return (
-    <section data-testid="teach-active">
-      <p>
-        <span className="badge easy">teacher</span> since {dateFmt(since)}.
-      </p>
-      <h2>Your classes</h2>
-      {teaching.length === 0 ? (
-        <p className="muted">None yet.</p>
-      ) : (
-        <ul>
-          {teaching.map((slug) => (
-            <li key={slug}>
-              <Link href={`/classes/${slug}`}>{titles.get(slug) ?? slug}</Link>
-            </li>
-          ))}
-        </ul>
-      )}
-      <p>
-        <Link className="class-present-btn" href="/studio" data-testid="open-studio">
-          Open the Studio
-        </Link>{" "}
-        <span className="muted">— build a course, write its slides, pick its tasks.</span>
-      </p>
+    <section data-testid={since ? "teach-active" : "teach-classes"}>
+      <div className="stats">
+        <Stat value={classes.length} label={classes.length === 1 ? "class" : "classes"} />
+        <Stat value={students} label="students in groups" />
+        <Stat
+          value={grading.length}
+          label="notebooks to grade"
+          tone={grading.length > 0 ? "warning" : undefined}
+          testId="stat-to-grade"
+        />
+        <Stat
+          value={upcoming ? formatDay(upcoming.nextLesson!.date) : "—"}
+          label={upcoming ? `next: ${upcoming.title}` : "no lesson scheduled"}
+        />
+      </div>
+
+      <Section
+        title="Your classes"
+        action={
+          since && (
+            <Link href="/studio" data-testid="open-studio">
+              Open the Studio
+            </Link>
+          )
+        }
+      >
+        {classes.length === 0 ? (
+          <EmptyState
+            title="No classes yet"
+            action={
+              since && (
+                <Link className="btn small primary" href="/studio">
+                  Build a course in the Studio
+                </Link>
+              )
+            }
+          >
+            A course is lessons, slides, tasks from the catalogue and homework. Your students
+            join it with a group code you make.
+          </EmptyState>
+        ) : (
+          <div className="teach-classes">
+            {classes.map((c) => (
+              <TeachingCard key={c.slug} c={c} />
+            ))}
+          </div>
+        )}
+      </Section>
+
+      <Section title="To grade" testId="teach-grading">
+        {gradingUnavailable ? (
+          <Notice tone="warning">
+            Notebook submissions are unavailable on this deployment (table not migrated).
+          </Notice>
+        ) : (
+          <GradingList
+            items={grading.slice(0, 12)}
+            showClass
+            empty="No notebook is waiting for a grade."
+            testId="teach-grading-list"
+          />
+        )}
+      </Section>
+
+      {since && <p className="muted teach-since">Teacher since {dateFmt(since)}.</p>}
     </section>
+  );
+}
+
+const STATUS_TONE = { published: "success", draft: "warning", suspended: "danger" } as const;
+
+function TeachingCard({ c }: { c: TeachingClass }) {
+  const base = `/classes/${c.slug}`;
+  return (
+    <div className="card teach-card" data-testid={`teach-class-${c.slug}`}>
+      <div className="card-head">
+        <Link className="card-title" href={base}>
+          {c.title}
+        </Link>
+        <Badge tone={STATUS_TONE[c.status]}>{c.status}</Badge>
+        {c.studio && <Badge tone="neutral">{c.listed ? "studio · listed" : "studio · unlisted"}</Badge>}
+      </div>
+      <div className="teach-card-facts">
+        <span>
+          <strong>{c.students}</strong> student{c.students === 1 ? "" : "s"}
+        </span>
+        <span>
+          <strong>{c.lessonCount}</strong> lesson{c.lessonCount === 1 ? "" : "s"}
+        </span>
+        {c.toGrade > 0 && (
+          <Link href={`${base}/homework?tab=grading`}>
+            <Badge tone="warning">{c.toGrade} to grade</Badge>
+          </Link>
+        )}
+      </div>
+      {c.homework && (
+        <ProgressBar
+          done={c.homework.done}
+          total={c.homework.total}
+          label={`${Math.round((c.homework.done / c.homework.total) * 100)}% of due homework done`}
+        />
+      )}
+      {c.nextLesson && (
+        <p className="teach-card-next">
+          Next: <Link href={`${base}/lessons/${c.nextLesson.slug}`}>{c.nextLesson.title}</Link>{" "}
+          <span className="muted">· {formatDay(c.nextLesson.date)}</span>
+        </p>
+      )}
+      <div className="teach-card-actions">
+        <Link className="btn small" href={`${base}/homework?tab=homework`}>
+          Homework
+        </Link>
+        <Link className="btn small" href={`${base}/homework?tab=attendance`}>
+          Attendance
+        </Link>
+        <Link className="btn small" href={`${base}/homework?tab=groups`}>
+          Group codes
+        </Link>
+        <Link className="btn subtle small" href={`${base}/monitor`}>
+          Live monitor
+        </Link>
+        {c.studio && (
+          <Link className="btn subtle small" href={`/studio/${c.slug}`}>
+            Edit
+          </Link>
+        )}
+      </div>
+    </div>
   );
 }
 
@@ -136,14 +276,20 @@ async function AdminSummary() {
     prisma.classReport.count({ where: { status: "open" } }),
     prisma.problemProposal.count({ where: { status: "pending" } }).catch(() => 0),
   ]);
+  const waiting = applications + reports + proposals;
   return (
-    <div className="class-teacher-bar class-admin-bar" data-testid="admin-summary">
-      <span className="badge medium">admin</span>
-      <Link href="/admin/teachers">
-        Teachers{applications > 0 ? ` · ${applications} to review` : ""}
-      </Link>
-      <Link href="/admin/reports">Reports{reports > 0 ? ` · ${reports} open` : ""}</Link>
-      <Link href="/admin/proposals">Task proposals{proposals > 0 ? ` · ${proposals} to review` : ""}</Link>
-    </div>
+    <Notice tone={waiting > 0 ? "warning" : "neutral"} testId="admin-summary">
+      <Badge tone="info">admin</Badge>{" "}
+      {waiting > 0 ? (
+        <>
+          {applications} application{applications === 1 ? "" : "s"}, {reports} open report
+          {reports === 1 ? "" : "s"} and {proposals} task proposal{proposals === 1 ? "" : "s"} are
+          waiting.
+        </>
+      ) : (
+        <>Nothing is waiting for review.</>
+      )}{" "}
+      <Link href="/admin">Open admin</Link>
+    </Notice>
   );
 }

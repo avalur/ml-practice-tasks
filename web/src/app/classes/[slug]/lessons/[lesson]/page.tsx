@@ -62,7 +62,7 @@ function RefRow({
         {content.id}
       </span>
       <span className="meta">
-        <span className="badge medium">{content.type}</span>
+        <span className="badge tone-neutral">{content.type}</span>
       </span>
     </Link>
   );
@@ -116,17 +116,17 @@ function AssignmentCard({
               {assignment.maxScore} pts ·{" "}
             </span>
           )}
-          <span className="badge medium">assignment</span>
+          <span className="badge tone-info">assignment</span>
           {submissionsUnavailable ? (
             <span className="badge muted" data-testid="lesson-status-badge">
               Submissions Unavailable
             </span>
           ) : isGraded ? (
-            <span className="badge easy" data-testid="lesson-grade-badge">
+            <span className="badge tone-success" data-testid="lesson-grade-badge">
               Graded: {submission.grade}/{maxScore}
             </span>
           ) : submission ? (
-            <span className="badge medium" data-testid="lesson-status-badge">
+            <span className="badge tone-warning" data-testid="lesson-status-badge">
               Submitted · Awaiting Review
             </span>
           ) : (
@@ -217,7 +217,7 @@ function GroupCard({ group, done }: { group: GroupRef; done: (r: TrackableRef) =
           {group.title}
         </span>
         <span className="meta">
-          <span className={`badge ${complete ? "easy" : "medium"}`}>
+          <span className={`badge ${complete ? "tone-success" : "tone-warning"}`}>
             {n}/{total} done
           </span>
           <code className="topic-tag">{group.pattern}</code>
@@ -240,7 +240,7 @@ function LinkRow({ link }: { link: LinkRef }) {
     <a href={link.href} className="problem-card" target="_blank" rel="noopener noreferrer">
       <span className="title">{link.title}</span>
       <span className="meta">
-        <span className="badge medium">external</span>
+        <span className="badge tone-neutral">external</span>
       </span>
     </a>
   );
@@ -418,7 +418,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
                 {milestone.kind === "deadline" ? "By " : ""}
                 {formatMilestoneDate(milestone.date)} — {milestone.title}
                 {milestone.tentative && (
-                  <span className="badge medium" style={{ marginLeft: "0.4rem" }}>
+                  <span className="badge tone-warning" style={{ marginLeft: "0.4rem" }}>
                     tentative
                   </span>
                 )}
@@ -444,7 +444,7 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
           </Link>
         )}
         {attendance?.attended && (
-          <span className="badge easy" style={{ alignSelf: "center" }}>
+          <span className="badge tone-success" style={{ alignSelf: "center" }}>
             ✓ Attended
           </span>
         )}

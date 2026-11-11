@@ -126,3 +126,38 @@
 .admin-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
 .admin-table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.88rem; }
 .admin-table th, .admin-table td { text-align: left; padding: 0.4rem 0.5rem; border-bottom: 1px solid var(--border); }
+
+/* ── Teaching dashboard (/teach, active) ─────────────────────────────────── */
+
+.teach.teach-wide { max-width: none; }
+.teach-classes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(21rem, 1fr));
+  gap: var(--space-3);
+}
+.teach-card { display: flex; flex-direction: column; gap: 0.7rem; }
+.teach-card .card-head { margin-bottom: 0; }
+.teach-card a.card-title { color: var(--text); }
+.teach-card a.card-title:hover { color: var(--accent); text-decoration: none; }
+.teach-card-facts {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 1rem;
+  font-size: var(--text-sm);
+  color: var(--muted);
+}
+.teach-card-facts strong { color: var(--text); }
+.teach-card-next { margin: 0; font-size: var(--text-sm); }
+.teach-card-actions { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.2rem; }
+.teach-since { margin-top: var(--space-6); font-size: var(--text-sm); }
+.teach-studio-title { margin-top: var(--space-6); font-size: var(--text-lg); }
+
+/* Teacher tabs on class pages */
+.class-teacher-nav { margin-bottom: var(--space-4); }
+.tab-section-title { font-size: var(--text-md); margin: var(--space-5) 0 var(--space-2); }
+.tab-section-title:first-of-type { margin-top: 0; }
+
+/* Admin home */
+.admin-home .stats { margin-top: 0; }
+.studio-danger-zone { margin-top: var(--space-6); padding-top: var(--space-4); border-top: 1px solid var(--border); }

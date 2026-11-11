@@ -62,7 +62,7 @@ export default async function AdminReportsPage() {
                 {reports.map((r) => (
                   <li key={r.id}>
                     <p>
-                      <span className="badge hard">
+                      <span className="badge tone-danger">
                         {REPORT_REASONS[r.reason as ReportReason] ?? r.reason}
                       </span>{" "}
                       <span className="muted">

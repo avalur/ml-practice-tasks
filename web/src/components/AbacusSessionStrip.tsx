@@ -81,7 +81,7 @@ export function AbacusSessionStrip({ sessions }: { sessions: SessionRow[] }) {
               <span className="muted">
                 {s.teams} команд{s.teams === 1 ? "а" : s.teams >= 2 && s.teams <= 4 ? "ы" : ""}
               </span>
-              {s.closed && <span className="badge hard">завершена</span>}
+              {s.closed && <span className="badge tone-danger">завершена</span>}
               <Link className="muted" href={`/brainteasers/abacus/m/${encodeURIComponent(s.code)}`}>
                 монитор
               </Link>

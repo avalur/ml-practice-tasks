@@ -63,7 +63,7 @@ export function AbacusMonitor({
           {board.code}
         </span>
         {board.title && <span className="muted">{board.title}</span>}
-        {board.closed && <span className="badge hard">{t.closed}</span>}
+        {board.closed && <span className="badge tone-danger">{t.closed}</span>}
         {stale && <span className="muted abx-stale">{t.stale}</span>}
         <div className="abacus-lang" role="group" aria-label="Language">
           {(["ru", "en"] as const).map((l) => (
@@ -94,7 +94,7 @@ export function AbacusMonitor({
               <header className="abx-team-head">
                 <span className="abx-rank">{rank + 1}</span>
                 <span className="abx-team-name">{team.name}</span>
-                <span className="badge medium abx-team-level">{team.level}</span>
+                <span className="badge tone-info abx-team-level">{team.level}</span>
               </header>
               <div className="abx-score" data-testid={`abx-score-${team.name}`}>
                 {team.score}

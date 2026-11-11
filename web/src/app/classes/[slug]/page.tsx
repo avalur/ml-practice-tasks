@@ -6,7 +6,10 @@ import {
   allRefs,
   codePrefix,
   flatten,
+  dueMs,
+  formatDay,
   formatMilestoneDate,
+  isOverdue,
   getAccess,
   getClassMeta,
   isAssignment,
@@ -23,6 +26,8 @@ import { JoinClassForm } from "@/components/JoinClassForm";
 import { PublishToggle } from "@/components/PublishToggle";
 import { ClassModeration } from "@/components/ClassModeration";
 import { ReportClassButton } from "@/components/ReportClassButton";
+import { ClassTeacherNav } from "@/components/ClassTeacherNav";
+import { Badge, Notice, PageHeader } from "@/components/ui";
 
 type Params = { slug: string };
 
@@ -37,14 +42,13 @@ export async function generateMetadata({
   return { title: cls && access.visible ? `${cls.title} — ML Practice` : "Class" };
 }
 
-function dueState(lesson: Lesson): { text: string; cls: string } | null {
+function dueState(lesson: Lesson, complete: boolean): { text: string; cls: string } | null {
   if (!lesson.homework) return null;
-  const due = new Date(lesson.homework.due);
-  if (Number.isNaN(due.getTime())) return null;
-  const overdue = due.getTime() < Date.now();
+  const due = dueMs(lesson.homework.due);
+  if (due === null) return null;
   return {
-    text: `due ${due.toLocaleDateString([], { day: "numeric", month: "short" })}`,
-    cls: overdue ? "medium" : "easy",
+    text: `due ${formatDay(lesson.homework.due)}`,
+    cls: complete ? "success" : isOverdue(due) ? "danger" : "neutral",
   };
 }
 
@@ -90,33 +94,42 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
 
   return (
     <article>
-      <h1>{cls.title}</h1>
-      <p className="muted">{cls.description}</p>
-      {submissionsUnavailable && (
-        <p
-          className="muted"
-          data-testid="submissions-unavailable-notice"
-          style={{ color: "var(--medium)", marginTop: "0.5rem" }}
-        >
-          ⚠️ Notebook submissions are currently unavailable on this deployment (database table not migrated yet).
+      {access.isTeacher && (
+        <p className="muted class-breadcrumb">
+          <Link href="/teach">Teaching</Link> › {cls.title}
         </p>
+      )}
+      <PageHeader
+        title={cls.title}
+        subtitle={cls.description}
+        actions={
+          access.isTeacher && !access.suspended ? (
+            <PublishToggle slug={slug} published={access.published} />
+          ) : undefined
+        }
+      />
+      {submissionsUnavailable && (
+        <Notice tone="warning" testId="submissions-unavailable-notice">
+          Notebook submissions are currently unavailable on this deployment (database table not
+          migrated yet).
+        </Notice>
       )}
 
       {access.isTeacher && (
         <>
-          <div className="class-teacher-bar">
-            <span className="badge hard">teacher</span>
-            <Link href={`/classes/${slug}/monitor`}>Live monitor</Link>
-            <Link href={`/classes/${slug}/homework`}>Homework overview &amp; group codes</Link>
-            {!access.suspended && <PublishToggle slug={slug} published={access.published} />}
-          </div>
+          <ClassTeacherNav
+            slug={slug}
+            classId={classId}
+            studio={access.studio}
+            current="overview"
+          />
           {!access.published && !access.suspended && (
-            <p className="class-draft-note" data-testid="draft-note">
-              <span className="badge medium">draft</span> Only you can see this class.
-              Everything works — slides, present mode, practice links — it is just not
-              listed anywhere public and its pages answer 404 to everyone else, students
-              included. Publish when you are ready.
-            </p>
+            <Notice tone="warning" testId="draft-note">
+              <Badge tone="warning">draft</Badge> Only you can see this class. Everything works —
+              slides, present mode, practice links — it is just not listed anywhere public and
+              its pages answer 404 to everyone else, students included. Publish when you are
+              ready.
+            </Notice>
           )}
         </>
       )}
@@ -146,7 +159,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
         {cls.lessons.map((lesson) => {
           const hwItems = flatten(lesson.homework?.items ?? []);
           const hwDone = hwItems.filter((r) => checkDone(lesson.slug, r)).length;
-          const due = dueState(lesson);
+          const due = dueState(lesson, hwItems.length > 0 && hwDone === hwItems.length);
           const delivered = deliveredLessons.has(lesson.slug);
           const hasPdf = lessonsWithPdf.has(lesson.slug);
           return (
@@ -160,7 +173,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 </Link>
                 <span className="meta">
                   {lesson.date && <span className="muted">{lesson.date}</span>}
-                  {delivered && <span className="badge easy">delivered</span>}
+                  {delivered && <span className="badge tone-success">delivered</span>}
                   {lesson.milestones && lesson.milestones.length > 0 && (
                     <a
                       href={`/classes/${slug}/${lesson.slug}/present.html`}
@@ -188,7 +201,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                       {milestone.kind === "deadline" ? "By " : ""}
                       {formatMilestoneDate(milestone.date)} — {milestone.title}
                       {milestone.tentative && (
-                        <span className="badge medium" style={{ marginLeft: "0.4rem" }}>
+                        <span className="badge tone-warning" style={{ marginLeft: "0.4rem" }}>
                           tentative
                         </span>
                       )}
@@ -242,7 +255,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                         </Link>
                         {isAssignment(item) && (
                           <span
-                            className={submissionsUnavailable ? "badge muted" : "badge medium"}
+                            className={submissionsUnavailable ? "badge tone-neutral" : "badge tone-info"}
                             style={{ marginLeft: "0.35rem", fontSize: "0.75rem" }}
                           >
                             {submissionsUnavailable ? "assignment (unavailable)" : "assignment"}
@@ -257,7 +270,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
               {hwItems.length > 0 && (
                 <p className="class-lesson-line">
                   <span className="muted">Homework:</span>{" "}
-                  <span className={`badge ${due?.cls ?? "easy"}`}>
+                  <span className={`badge tone-${due?.cls ?? "neutral"}`}>
                     {/* "0/26" is a progress bar with nothing behind it when
                         nobody is signed in — show the size of the assignment. */}
                     {access.userId ? `${hwDone}/${hwItems.length}` : `${hwItems.length} tasks`}

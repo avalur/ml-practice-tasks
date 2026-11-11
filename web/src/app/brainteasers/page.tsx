@@ -59,7 +59,7 @@ export default async function BrainTeasersPage() {
               <span className="title">{t.title}</span>
               <span className="meta">
                 {state.get(t.slug)?.published === false && (
-                  <span className="badge medium">draft</span>
+                  <span className="badge tone-warning">draft</span>
                 )}
                 <span className={`badge ${t.difficulty}`}>{t.difficulty}</span>
                 <span className="muted">{t.count} puzzles</span>

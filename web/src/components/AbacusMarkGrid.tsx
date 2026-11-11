@@ -163,7 +163,7 @@ export function AbacusMarkGrid({
         <section key={team.id} className="abx-mark-team">
           <header className="abx-mark-head">
             <strong>{team.name}</strong>
-            <span className="badge medium">{team.level}</span>
+            <span className="badge tone-info">{team.level}</span>
             <span className="abx-mark-score" data-testid={`abx-mark-score-${team.name}`}>
               {team.score}
             </span>

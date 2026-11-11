@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-/* Publish / Unpublish, in the teacher bar of the class page.
+/* Publish / Unpublish, in the header of the class page (and of a studio course).
  *
  * Publishing is one click. Hiding a class again asks first, because "draft" here
  * means teachers only: the students who already typed a group code lose the class
@@ -47,7 +47,7 @@ export function PublishToggle({ slug, published }: { slug: string; published: bo
     <>
       <button
         type="button"
-        className="btn subtle small"
+        className={published ? "btn subtle small" : "btn primary small"}
         disabled={busy}
         data-testid="publish-toggle"
         onClick={() => set(!published)}

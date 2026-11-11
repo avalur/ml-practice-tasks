@@ -85,7 +85,7 @@ export function AbacusTeamBoard({
       <div className="abacus-head">
         <h1>{me?.name ?? "…"}</h1>
         <div className="abacus-head-actions">
-          <span className="badge medium">{variant.label}</span>
+          <span className="badge tone-info">{variant.label}</span>
           <div className="abacus-lang" role="group" aria-label="Language">
             {(["ru", "en"] as const).map((l) => (
               <button
@@ -124,7 +124,7 @@ export function AbacusTeamBoard({
             </button>
           ))}
         </div>
-        {board.closed && <span className="badge hard">{t.closed}</span>}
+        {board.closed && <span className="badge tone-danger">{t.closed}</span>}
       </div>
 
       {view === "all" ? (

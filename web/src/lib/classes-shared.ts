@@ -250,6 +250,18 @@ export function formatDate(d: string | Date | null | undefined): string {
   }
 }
 
+/** A due date as a timestamp. class.json writes "2026-11-16T23:59"; a bare
+ * "2026-11-16" means the end of that day, not its first minute. */
+export function dueMs(due: string | null | undefined): number | null {
+  if (!due) return null;
+  const t = new Date(/^\d{4}-\d{2}-\d{2}$/.test(due) ? `${due}T23:59:59Z` : due).getTime();
+  return Number.isNaN(t) ? null : t;
+}
+
+export function isOverdue(due: number | null, now = Date.now()): boolean {
+  return due !== null && due < now;
+}
+
 /** A calendar day, "3 Nov" (or "3 Nov 2026" with `year`). Always UTC with an
  * explicit locale: these render on the server and in the browser, and a
  * locale- or zone-dependent string is a hydration mismatch and a date that

@@ -37,11 +37,11 @@ export function SubmissionFeedbackCard({
       <div className="notebook-feedback-header">
         <div className="notebook-feedback-status">
           {isGraded ? (
-            <span className="badge easy" data-testid="grade-badge">
+            <span className="badge tone-success" data-testid="grade-badge">
               Graded · {submission.grade} / {resolvedMax} pts
             </span>
           ) : (
-            <span className="badge medium" data-testid="status-badge">
+            <span className="badge tone-warning" data-testid="status-badge">
               Submitted · Awaiting Review
             </span>
           )}

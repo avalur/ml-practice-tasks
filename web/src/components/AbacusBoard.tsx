@@ -143,7 +143,7 @@ export function AbacusBoard({
         <div className="abacus-head-actions no-print">
           {admin && (
             <>
-              {!published && <span className="badge medium">draft</span>}
+              {!published && <span className="badge tone-warning">draft</span>}
               <TeaserPublishToggle slug={game.slug} published={published} />
             </>
           )}

@@ -337,13 +337,13 @@ export function SubmissionReviewModal({
               <span className="sub-modal-meta-label">Status</span>
               <div>
                 {!submission ? (
-                  <span className="badge hard">Not Submitted</span>
+                  <span className="badge tone-danger">Not Submitted</span>
                 ) : submission.status === "graded" ? (
-                  <span className="badge easy">
+                  <span className="badge tone-success">
                     Graded ({submission.grade} / {maxGrade})
                   </span>
                 ) : (
-                  <span className="badge medium">Submitted · Awaiting Review</span>
+                  <span className="badge tone-warning">Submitted · Awaiting Review</span>
                 )}
               </div>
             </div>

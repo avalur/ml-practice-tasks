@@ -86,7 +86,7 @@ export default async function AdminProposalsPage() {
           <ul className="admin-list compact">
             {recent.map((p) => (
               <li key={p.id}>
-                <span className={`badge ${p.status === "rejected" ? "hard" : "easy"}`}>{p.status}</span> {p.title}{" "}
+                <span className={`badge ${p.status === "rejected" ? "tone-danger" : "tone-success"}`}>{p.status}</span> {p.title}{" "}
                 <span className="muted">
                   {p.topic}/{p.slug} · by {p.reviewedBy}
                   {p.status === "accepted" && (

@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Access } from "@/lib/classes";
 import { SuspendToggle } from "./SuspendToggle";
 import { AdminAction } from "./AdminAction";
+import { Badge, Notice } from "./ui";
 
 /* What a class page shows about moderation, by who is looking:
  *   - teachers and admins of a suspended class: the notice, with the reason;
@@ -11,8 +12,8 @@ export function ClassModeration({ slug, access }: { slug: string; access: Access
   return (
     <>
       {access.suspended && (access.isTeacher || access.isAdmin) && (
-        <p className="class-suspended-note" data-testid="suspended-note">
-          <span className="badge hard">suspended</span> The site admins have taken this class
+        <Notice tone="danger" testId="suspended-note">
+          <Badge tone="danger">suspended</Badge> The site admins have taken this class
           down: it answers 404 to students and its group codes enroll nobody, whatever the
           Publish button says.
           {access.suspended.reason && (
@@ -21,11 +22,11 @@ export function ClassModeration({ slug, access }: { slug: string; access: Access
               Reason: <em>{access.suspended.reason}</em>
             </>
           )}
-        </p>
+        </Notice>
       )}
       {access.isAdmin && (
         <div className="class-teacher-bar class-admin-bar" data-testid="admin-bar">
-          <span className="badge medium">admin</span>
+          <Badge tone="info">admin</Badge>
           <span className="muted">
             {access.suspended ? "suspended" : access.published ? "published" : "draft"}
           </span>

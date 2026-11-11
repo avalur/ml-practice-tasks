@@ -606,6 +606,57 @@ print job that starts mid-transition puts a half-dark frame on paper — hence
 `transition: none` in that block. `tests/e2e/brainteasers.spec.ts` asserts both by
 emulating print media.
 
+## Site design and the two cabinets
+
+**Styles.** `web/src/app/globals.css` is only an ordered list of `@import`s of
+`web/src/styles/*.css`, one file per area. The order is the old single file's
+cascade order and matters (a later area overrides an earlier one at equal
+specificity); `responsive.css` stays last. Every colour, radius, size and shadow
+is a token in `tokens.css`. Two colour families look alike and must not be
+mixed: `--easy/--medium/--hard` mean problem **difficulty** and nothing else
+(`.badge.easy`), while a **state** — draft, overdue, graded, suspended — takes a
+tone (`--success/--warning/--danger/--info/--neutral`, `.badge.tone-*`).
+
+**Primitives** live in `web/src/components/ui/` (server-safe, no hooks):
+`Badge`, `DifficultyBadge`, `Notice`, `PageHeader`, `Section`, `EmptyState`,
+`ProgressBar`, `Stat`, `Tabs`. Buttons are `.btn` (+ `primary`, `subtle`,
+`danger`, `small`, `large`); `bt-clear-btn` belongs to the brainteasers and is
+not a general button. Inline `style={{…}}` only for computed values.
+
+**The header** (`SiteHeader.tsx`) is a client component on purpose: reading the
+session in the root layout would make every page dynamic, and the problem pages
+are statically generated. The account corner fills in after hydration behind a
+fixed-size placeholder. `session.user.isAdmin` (set in the auth session
+callback from `ADMIN_EMAILS`) only decides whether the menu shows "Admin" —
+it authorizes nothing.
+
+**Student cabinet** = `/profile` (overview) plus `/profile/{assignments,
+submissions,favorites,classes,account}` under one layout. `/profile?tab=…`
+redirects to the matching route, because old emails link there. Data comes from
+`web/src/lib/student.ts` (homework per class, assignments with submissions,
+progress per family); "student" means enrolled with a code and not teaching the
+class. Every page re-checks the user: a layout and its page render in parallel.
+
+**Teacher cabinet** = `/teach`. It shows the dashboard (`lib/teaching.ts`:
+classes, students, notebooks to grade, share of due homework done, next lesson,
+cross-class grading queue) to an active platform teacher **and** to anyone in a
+class's `teacherEmails`; for the latter the Studio application sits below.
+Every teacher-facing class page carries `ClassTeacherNav`: Overview · Homework ·
+Attendance · Group codes · Grading · Live monitor (· Edit in Studio). The
+homework page's views are `?tab=homework|attendance|groups|grading`, and
+`?lesson=` is the per-lesson detail with the review modal.
+
+NotebookSubmission reads go through `lib/notebook-submissions.ts`
+(`findNotebookSubmissions`, `toSubmissionData`, `isMissingTable`) so a database
+without the table answers "unavailable" instead of "nobody handed it in".
+Dates shown to people are formatted with `formatDay`/`formatDate` (explicit
+locale and UTC), never a bare `toLocaleString()`.
+
+**No `loading.tsx` above a page that can `notFound()`.** A loading boundary
+starts streaming a 200 before the page decides it is a 404, so teacher-only and
+draft pages answered 200 to strangers (and the test DOM held every element
+twice). The class, teach, studio and profile routes deliberately have none.
+
 ## Accounts and sign-in
 
 Auth.js v5 with the Prisma adapter and **database** sessions: a session is a

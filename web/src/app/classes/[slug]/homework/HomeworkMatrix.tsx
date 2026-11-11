@@ -1,6 +1,13 @@
 import Link from "next/link";
 
-import { flatten, isAssignment, type Lesson, type TrackableRef } from "@/lib/classes";
+import {
+  dueMs,
+  flatten,
+  isAssignment,
+  isOverdue,
+  type Lesson,
+  type TrackableRef,
+} from "@/lib/classes";
 
 type Student = {
   id: string;
@@ -58,7 +65,7 @@ export function HomeworkMatrix({
               const skipped = submissionsUnavailable && all.some(isAssignment);
               const items = skipped ? all.filter((r) => !isAssignment(r)) : all;
               const n = items.filter((r) => done(m.id, r, l.slug)).length;
-              const overdue = new Date(l.homework!.due).getTime() < Date.now();
+              const overdue = isOverdue(dueMs(l.homework!.due));
               allDone += n;
               allTotal += items.length;
               if (skipped) {

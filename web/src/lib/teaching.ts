@@ -1,18 +1,19 @@
 import { prisma } from "@/lib/db";
 import {
-  allRefs,
   classStudents,
+  dueMs,
   extractLessonAssignments,
   flatten,
   getClasses,
   isAssignment,
   isDone,
+  isOverdue,
   myClassSlugs,
   solvedKeys,
   type ClassMeta,
   type Lesson,
 } from "@/lib/classes";
-import { findNotebookSubmissions } from "@/lib/notebook-submissions";
+import { findNotebookSubmissions, isMissingTable } from "@/lib/notebook-submissions";
 
 /* What the teaching dashboard (/teach) and the class Grading tab know.
  *
@@ -61,14 +62,18 @@ export function nextLesson(lessons: Lesson[]): Lesson | null {
 }
 
 async function homeworkRate(cls: ClassMeta, classId: string) {
+  // dueMs, as the student side reads it: a bare "2026-11-16" is due at the end
+  // of that day, so both dashboards agree on what is already due.
   const lessons = cls.lessons.filter(
-    (l) => (l.homework?.items.length ?? 0) > 0 && new Date(l.homework!.due).getTime() < Date.now(),
+    (l) => (l.homework?.items.length ?? 0) > 0 && isOverdue(dueMs(l.homework!.due)),
   );
   if (lessons.length === 0) return null;
   const students = await classStudents(classId);
   if (students.length === 0) return null;
   const ids = students.map((s) => s.id);
-  const solved = await solvedKeys(ids, allRefs(cls), { classId });
+  // Only what is counted: the homework of lessons already due, not the whole course.
+  const refs = flatten(lessons.flatMap((l) => l.homework!.items));
+  const solved = await solvedKeys(ids, refs, { classId });
   // A missing NotebookSubmission table would count every assignment as undone;
   // leave them out rather than report a class that failed.
   const skipAssignments = !!(solved as { unavailable?: boolean }).unavailable;
@@ -88,7 +93,14 @@ async function homeworkRate(cls: ClassMeta, classId: string) {
 
 export async function teachingOverview() {
   const [{ teaching }, all] = await Promise.all([myClassSlugs(), getClasses()]);
-  if (teaching.length === 0) return { classes: [] as TeachingClass[], grading: [] as GradingItem[], gradingUnavailable: false };
+  if (teaching.length === 0) {
+    return {
+      classes: [] as TeachingClass[],
+      grading: [] as GradingItem[],
+      toGrade: 0,
+      gradingUnavailable: false,
+    };
+  }
 
   const metas = new Map(all.map((c) => [c.slug, c]));
   const rows = await prisma.class.findMany({
@@ -105,11 +117,27 @@ export async function teachingOverview() {
     },
   });
 
-  const grading = await gradingQueue(rows.map((r) => ({ id: r.id, slug: r.slug })), metas, {
-    pendingOnly: true,
-  });
-  const pendingByClass = new Map<string, number>();
-  for (const g of grading.items) pendingByClass.set(g.classSlug, (pendingByClass.get(g.classSlug) ?? 0) + 1);
+  // Counted on their own: the queue below is only the oldest few, and a count
+  // derived from a capped list would read 200 for 201 and 0 for a class whose
+  // submissions all fell past the cap.
+  const [grading, pendingCounts] = await Promise.all([
+    gradingQueue(
+      rows.map((r) => ({ id: r.id, slug: r.slug })),
+      metas,
+      { status: "submitted", take: 20 },
+    ),
+    prisma.notebookSubmission
+      .groupBy({
+        by: ["classId"],
+        where: { classId: { in: rows.map((r) => r.id) }, status: "submitted" },
+        _count: { _all: true },
+      })
+      .catch((err: unknown) => {
+        if (isMissingTable(err)) return [];
+        throw err;
+      }),
+  ]);
+  const pendingById = new Map(pendingCounts.map((p) => [p.classId, p._count._all]));
 
   const classes = await Promise.all(
     rows.map(async (r): Promise<TeachingClass> => {
@@ -122,7 +150,7 @@ export async function teachingOverview() {
         studio: r.source === "studio",
         listed: r.source !== "studio" || r.featuredAt !== null,
         students: r._count.enrollments,
-        toGrade: pendingByClass.get(r.slug) ?? 0,
+        toGrade: pendingById.get(r.id) ?? 0,
         homework: meta ? await homeworkRate(meta, r.id) : null,
         nextLesson: next ? { slug: next.slug, title: next.title, date: next.date! } : null,
         lessonCount: meta?.lessons.length ?? 0,
@@ -135,24 +163,27 @@ export async function teachingOverview() {
       (a.nextLesson?.date ?? "9999").localeCompare(b.nextLesson?.date ?? "9999") ||
       a.title.localeCompare(b.title),
   );
-  return { classes, grading: grading.items, gradingUnavailable: grading.unavailable };
+  return {
+    classes,
+    grading: grading.items,
+    toGrade: classes.reduce((n, c) => n + c.toGrade, 0),
+    gradingUnavailable: grading.unavailable,
+  };
 }
 
-/** Notebook submissions of these classes, oldest waiting first. */
+/** Notebook submissions of these classes in one state: "submitted" oldest
+ * first (who has waited longest), "graded" newest first. */
 export async function gradingQueue(
   classes: Array<{ id: string; slug: string }>,
   metas: Map<string, ClassMeta>,
-  opts: { pendingOnly?: boolean; take?: number } = {},
+  opts: { status: "submitted" | "graded"; take?: number },
 ): Promise<{ items: GradingItem[]; unavailable: boolean }> {
   if (classes.length === 0) return { items: [], unavailable: false };
   const slugById = new Map(classes.map((c) => [c.id, c.slug]));
   const { rows, unavailable } = await findNotebookSubmissions({
-    where: {
-      classId: { in: classes.map((c) => c.id) },
-      ...(opts.pendingOnly ? { status: "submitted" } : {}),
-    },
-    orderBy: opts.pendingOnly ? { submittedAt: "asc" } : { submittedAt: "desc" },
-    take: opts.take ?? 200,
+    where: { classId: { in: classes.map((c) => c.id) }, status: opts.status },
+    orderBy: opts.status === "submitted" ? { submittedAt: "asc" } : { gradedAt: "desc" },
+    take: opts.take ?? 500,
   });
   if (rows.length === 0) return { items: [], unavailable };
 

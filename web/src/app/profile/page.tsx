@@ -16,6 +16,7 @@ import {
 import {
   Badge,
   EmptyState,
+  Notice,
   PageHeader,
   ProgressBar,
   Section,
@@ -88,6 +89,7 @@ export default async function OverviewPage({
     (a) => a.submission && a.submission.status !== "graded",
   ).length;
   const first = firstNameOf(user.name);
+  const unavailable = homework.unavailable || assignments.unavailable;
 
   return (
     <>
@@ -95,6 +97,12 @@ export default async function OverviewPage({
         title={first ? `Welcome back, ${first}` : "Your dashboard"}
         subtitle="What is due, what you have solved, and what your teachers said."
       />
+      {unavailable && (
+        <Notice tone="warning" testId="submissions-unavailable-notice">
+          Notebook submissions are unavailable on this deployment, so notebook assignments are
+          left out of the homework counts and grades below.
+        </Notice>
+      )}
 
       <div className="stats" data-testid="overview-stats">
         <Stat

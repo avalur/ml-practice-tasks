@@ -4,9 +4,9 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { getManifest } from "@/lib/content";
 import {
-  allRefs,
   extractLessonAssignments,
   flatten,
+  isAssignment,
   isDone,
   myClassSlugs,
   solvedKeys,
@@ -106,17 +106,31 @@ export const studentHomework = cache(async function studentHomework(userId: stri
   const entries: HomeworkEntry[] = [];
   const summaries: StudentClass[] = [];
 
+  // Only homework is counted here, so only homework is read.
   const solvedPerClass = await Promise.all(
-    classes.map((c) => solvedKeys([userId], allRefs(c.meta), { classId: c.classId })),
+    classes.map((c) =>
+      solvedKeys(
+        [userId],
+        flatten(c.meta.lessons.flatMap((l) => l.homework?.items ?? [])),
+        { classId: c.classId },
+      ),
+    ),
   );
+  let unavailable = false;
 
   classes.forEach(({ meta, classId, group }, i) => {
     const solved = solvedPerClass[i]!;
+    // No NotebookSubmission table: an assignment cannot be told from "not handed
+    // in", so it is left out of the counts rather than shown as overdue.
+    const skipAssignments = !!solved.unavailable;
+    unavailable ||= skipAssignments;
     let hwDone = 0;
     let hwTotal = 0;
     const mine: HomeworkEntry[] = [];
     for (const lesson of meta.lessons) {
-      const items = flatten(lesson.homework?.items ?? []);
+      const items = flatten(lesson.homework?.items ?? []).filter(
+        (r) => !(skipAssignments && isAssignment(r)),
+      );
       if (items.length === 0) continue;
       const done = items.filter((r) =>
         isDone(solved, userId, r, { classId, lessonSlug: lesson.slug }),
@@ -159,7 +173,7 @@ export const studentHomework = cache(async function studentHomework(userId: stri
   entries.sort(
     (a, b) => rank(a) - rank(b) || (a.dueMs ?? Infinity) - (b.dueMs ?? Infinity),
   );
-  return { classes: summaries, entries };
+  return { classes: summaries, entries, unavailable };
 });
 
 export type AssignmentWithSubmission = EnrolledAssignment & {

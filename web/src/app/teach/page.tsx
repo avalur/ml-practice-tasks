@@ -127,7 +127,7 @@ export default async function TeachPage() {
 }
 
 function TeacherHome({
-  overview: { classes, grading, gradingUnavailable },
+  overview: { classes, grading, toGrade, gradingUnavailable },
   since,
 }: {
   overview: Awaited<ReturnType<typeof teachingOverview>>;
@@ -144,9 +144,9 @@ function TeacherHome({
         <Stat value={classes.length} label={classes.length === 1 ? "class" : "classes"} />
         <Stat value={students} label="students in groups" />
         <Stat
-          value={grading.length}
+          value={toGrade}
           label="notebooks to grade"
-          tone={grading.length > 0 ? "warning" : undefined}
+          tone={toGrade > 0 ? "warning" : undefined}
           testId="stat-to-grade"
         />
         <Stat
@@ -195,7 +195,7 @@ function TeacherHome({
           </Notice>
         ) : (
           <GradingList
-            items={grading.slice(0, 12)}
+            items={grading}
             showClass
             empty="No notebook is waiting for a grade."
             testId="teach-grading-list"

@@ -50,7 +50,8 @@ test("register, sign out, sign back in with the password", async ({ page }) => {
     // Sign out lives in the account menu behind the avatar.
     await page.getByTestId("account-menu").click();
     await page.getByRole("menuitem", { name: "Sign out" }).click();
-    await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
+    // The header's link; the signed-out cabinet offers one of its own too.
+    await expect(page.locator(".site-header").getByRole("link", { name: "Sign in" })).toBeVisible();
     expect(await account.sessionCount()).toBe(0);
 
     // A wrong password is refused, and says nothing about whether the account

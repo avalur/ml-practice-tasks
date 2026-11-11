@@ -25,7 +25,7 @@ test("phone width: the header fits and its menu opens", async ({ page }) => {
 
   const problems = page.locator("#site-nav").getByRole("link", { name: "Problems" });
   await expect(problems).toBeHidden();
-  await page.getByRole("button", { name: "Open menu" }).click();
+  await page.getByRole("button", { name: "Show navigation" }).click();
   await expect(problems).toBeVisible();
   // The current section is marked, for screen readers as well as the eye.
   await expect(page.locator("#site-nav").getByRole("link", { name: "Classes" })).toHaveAttribute(

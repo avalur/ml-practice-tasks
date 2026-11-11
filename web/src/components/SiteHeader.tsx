@@ -42,7 +42,7 @@ export function SiteHeader() {
       <button
         type="button"
         className="nav-burger"
-        aria-label={open ? "Close menu" : "Open menu"}
+        aria-label={open ? "Hide navigation" : "Show navigation"}
         aria-expanded={open}
         aria-controls="site-nav"
         onClick={() => setOpen((v) => !v)}
@@ -120,6 +120,11 @@ export function AccountMenu({ pathname }: { pathname: string }) {
       <button
         type="button"
         className="account-trigger"
+        // An explicit name: the visible one is the user's own, and "Join" in a
+        // surname would otherwise make this the page's Join button. Kept short
+        // on purpose — role queries match substrings, and "menu" contains "en",
+        // the abacus language button.
+        aria-label="Account"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((v) => !v)}

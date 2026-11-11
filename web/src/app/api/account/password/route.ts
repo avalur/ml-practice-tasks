@@ -33,7 +33,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: { id: userId },
-    select: { email: true, passwordHash: true, failedLogins: true, lockedUntil: true },
+    select: { email: true, passwordHash: true, lockedUntil: true },
   });
   if (!user?.passwordHash) {
     return NextResponse.json(
@@ -54,14 +54,20 @@ export async function POST(req: Request) {
   // The same lockout as sign-in: a borrowed, still-signed-in browser must not
   // become a free password oracle.
   if (!(await verifyPassword(current, user.passwordHash))) {
-    const failed = user.failedLogins + 1;
-    await prisma.user.update({
+    // Incremented in the database, not from the value read above: concurrent
+    // guesses would otherwise each write "n + 1" and never reach the limit. And
+    // a failure only ever sets the lock, never clears one a parallel request set.
+    const { failedLogins } = await prisma.user.update({
       where: { id: userId },
-      data: {
-        failedLogins: failed,
-        lockedUntil: failed >= MAX_ATTEMPTS ? new Date(Date.now() + LOCK_MINUTES * 60000) : null,
-      },
+      data: { failedLogins: { increment: 1 } },
+      select: { failedLogins: true },
     });
+    if (failedLogins >= MAX_ATTEMPTS) {
+      await prisma.user.update({
+        where: { id: userId },
+        data: { lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) },
+      });
+    }
     return NextResponse.json({ error: "The current password is wrong." }, { status: 400 });
   }
 

@@ -119,13 +119,16 @@ export default async function HomeworkPage({
   }
 
   if (tab === "grading") {
-    const { items, unavailable } = await gradingQueue(
-      [{ id: classId, slug }],
-      new Map((await getClasses()).map((c) => [c.slug, c])),
-    );
-    // Oldest waiting first: that student has waited longest.
-    const pending = items.filter((g) => g.status !== "graded").reverse();
-    const graded = items.filter((g) => g.status === "graded");
+    // Two queries, not one list split in two: a cap on a mixed list would let
+    // recent grades push an old ungraded notebook out of sight.
+    const metas = new Map((await getClasses()).map((c) => [c.slug, c]));
+    const [pendingQ, gradedQ] = await Promise.all([
+      gradingQueue([{ id: classId, slug }], metas, { status: "submitted" }),
+      gradingQueue([{ id: classId, slug }], metas, { status: "graded", take: 50 }),
+    ]);
+    const unavailable = pendingQ.unavailable || gradedQ.unavailable;
+    const pending = pendingQ.items;
+    const graded = gradedQ.items;
     return (
       <article>
         {header}
@@ -144,7 +147,7 @@ export default async function HomeworkPage({
         />
         {graded.length > 0 && (
           <>
-            <h2 className="tab-section-title">Graded</h2>
+            <h2 className="tab-section-title">Recently graded</h2>
             <GradingList items={graded} showClass={false} empty="" testId="grading-done" />
           </>
         )}

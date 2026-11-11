@@ -13,6 +13,7 @@ import {
   submissionPrefix,
   validateSubmissionPath,
 } from "@/lib/submissions";
+import { isMissingTable } from "@/lib/notebook-submissions";
 
 /* Mints a short-lived client upload token for submitting a Jupyter Notebook (.ipynb).
  *
@@ -112,12 +113,7 @@ export async function POST(req: Request) {
             },
           });
         } catch (dbErr: unknown) {
-          if (
-            typeof dbErr === "object" &&
-            dbErr !== null &&
-            "code" in dbErr &&
-            (dbErr as { code: string }).code === "P2021"
-          ) {
+          if (isMissingTable(dbErr)) {
             throw new SubmissionApiError(
               503,
               "notebook submissions are not enabled yet (database table missing)",
@@ -139,12 +135,7 @@ export async function POST(req: Request) {
     if (err instanceof SubmissionApiError) {
       return NextResponse.json({ error: err.message }, { status: err.status });
     }
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "P2021"
-    ) {
+    if (isMissingTable(err)) {
       return NextResponse.json(
         { error: "notebook submissions are not enabled yet (database table missing)" },
         { status: 503 },

@@ -232,7 +232,7 @@ function ItemsPart({
         <button type="button" className="btn subtle small" onClick={save} disabled={busy} data-testid="save-items">
           {busy ? "Saving…" : "Save practice & homework"}
         </button>
-        {msg && <span className={msg.ok ? "class-join-ok" : "class-join-err"} style={{ whiteSpace: "pre-wrap" }}>{msg.text}</span>}
+        {msg && <span className={`${msg.ok ? "class-join-ok" : "class-join-err"} pre-wrap`}>{msg.text}</span>}
       </div>
     </section>
   );

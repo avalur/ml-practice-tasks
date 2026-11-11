@@ -201,7 +201,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                       {milestone.kind === "deadline" ? "By " : ""}
                       {formatMilestoneDate(milestone.date)} — {milestone.title}
                       {milestone.tentative && (
-                        <span className="badge tone-warning" style={{ marginLeft: "0.4rem" }}>
+                        <span className="badge tone-warning">
                           tentative
                         </span>
                       )}
@@ -256,7 +256,6 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                         {isAssignment(item) && (
                           <span
                             className={submissionsUnavailable ? "badge tone-neutral" : "badge tone-info"}
-                            style={{ marginLeft: "0.35rem", fontSize: "0.75rem" }}
                           >
                             {submissionsUnavailable ? "assignment (unavailable)" : "assignment"}
                           </span>

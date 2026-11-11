@@ -315,7 +315,7 @@ export function NotebookUploader({
           ref={fileInputRef}
           onChange={onFileInputChange}
           accept=".ipynb,application/x-ipynb+json"
-          style={{ display: "none" }}
+          hidden
           data-testid="notebook-file-input"
         />
 
@@ -326,7 +326,7 @@ export function NotebookUploader({
               <span className="notebook-file-title" data-testid="selected-file-name">
                 {selectedFile.name}
               </span>
-              <span className="muted" style={{ fontSize: "0.8rem" }}>
+              <span className="muted text-xs">
                 {formatBytes(selectedFile.size)} · Click or drop another file to change
               </span>
             </div>
@@ -338,7 +338,7 @@ export function NotebookUploader({
               Drag and drop your completed <code>.ipynb</code> notebook here, or{" "}
               <span className="notebook-browse-btn">browse</span>
             </p>
-            <span className="muted" style={{ fontSize: "0.78rem" }}>
+            <span className="muted text-xs">
               Jupyter Notebook (.ipynb) only · Up to 25 MB
             </span>
           </div>
@@ -361,13 +361,13 @@ export function NotebookUploader({
       )}
 
       {error && (
-        <div className="sub-modal-error" data-testid="upload-error" style={{ marginTop: "0.75rem" }}>
+        <div className="sub-modal-error mt-3" data-testid="upload-error">
           {error}
         </div>
       )}
 
       {selectedFile && !uploading && (
-        <div className="notebook-uploader-actions" style={{ marginTop: "0.75rem" }}>
+        <div className="notebook-uploader-actions mt-3">
           <button
             type="button"
             className="bt-login-btn notebook-submit-btn"

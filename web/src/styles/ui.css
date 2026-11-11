@@ -369,3 +369,10 @@ a.row-title:hover { color: var(--accent); text-decoration: none; }
 .skeleton-card { height: 5.5rem; margin-bottom: 0.75rem; border-radius: var(--radius-lg); }
 @keyframes skeleton-shimmer { from { background-position: 100% 0; } to { background-position: -100% 0; } }
 @media (prefers-reduced-motion: reduce) { .skeleton { animation: none; } }
+
+/* Small utilities, for the one-off spacing that used to be inline styles. */
+.flush { margin: 0; }
+.pre-wrap { white-space: pre-wrap; }
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.mt-3 { margin-top: var(--space-3); }

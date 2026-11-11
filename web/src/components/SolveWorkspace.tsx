@@ -525,11 +525,10 @@ export function SolveWorkspace({
         </button>
         {isFullscreen && fontSize !== DEFAULT_FONT_SIZE && (
           <button
-            className="btn"
+            className="btn small"
             onClick={() => setFontSize(DEFAULT_FONT_SIZE)}
             title="Reset font zoom (Ctrl/Cmd + 0)"
             aria-label="Reset font zoom"
-            style={{ fontSize: "0.82rem", padding: "0.25rem 0.5rem" }}
           >
             {Math.round((fontSize / DEFAULT_FONT_SIZE) * 100)}% ⟲
           </button>

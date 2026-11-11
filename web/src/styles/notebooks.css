@@ -61,3 +61,7 @@
 /* The notebook page is an app filling the window; a footer under it would only
    add a scrollbar. */
 body:has(.notebooks-shell) .site-footer { display: none; }
+
+.nb-section { margin-top: var(--space-6); }
+.nb-section-title { margin-bottom: var(--space-1); }
+.nb-section-blurb { margin: 0 0 var(--space-3); font-size: var(--text-sm); }

@@ -263,7 +263,7 @@ export function ProposalEditor() {
           {checkText}
         </pre>
       )}
-      {err && <p className="class-join-err" style={{ whiteSpace: "pre-wrap" }}>{err}</p>}
+      {err && <p className="class-join-err pre-wrap">{err}</p>}
     </form>
   );
 }

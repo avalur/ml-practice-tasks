@@ -296,7 +296,7 @@ export function SubmissionReviewModal({
         <div className="sub-modal-header">
           <div>
             <h3 id={titleId}>{assignment.title}</h3>
-            <span className="muted" style={{ fontSize: "0.85rem" }}>
+            <span className="muted text-sm">
               Assignment review · {assignment.id}
             </span>
           </div>
@@ -320,7 +320,7 @@ export function SubmissionReviewModal({
               <span className="sub-modal-meta-label">Student</span>
               <span className="sub-modal-meta-val">{studentDisplayName}</span>
               {student.name && student.email && (
-                <span className="muted" style={{ fontSize: "0.78rem" }}>
+                <span className="muted text-xs">
                   {student.email}
                 </span>
               )}
@@ -351,7 +351,7 @@ export function SubmissionReviewModal({
             {submission && (
               <div className="sub-modal-meta-item">
                 <span className="sub-modal-meta-label">Submitted At</span>
-                <span className="sub-modal-meta-val" style={{ fontSize: "0.82rem" }}>
+                <span className="sub-modal-meta-val text-sm">
                   {formatDate(submission.submittedAt)}
                 </span>
               </div>
@@ -361,7 +361,7 @@ export function SubmissionReviewModal({
           {/* Submission not present view */}
           {!submission ? (
             <div className="sub-modal-section">
-              <p className="muted" style={{ margin: "0.5rem 0", fontSize: "0.92rem" }}>
+              <p className="muted sub-modal-hint">
                 This student has not submitted a notebook for this assignment yet. Once the student
                 uploads their <code>.ipynb</code> file, you will be able to download and grade it
                 here.
@@ -393,16 +393,7 @@ export function SubmissionReviewModal({
 
               {/* Teacher metadata (if already graded) */}
               {submission.gradedBy && (
-                <div
-                  className="muted"
-                  style={{
-                    fontSize: "0.8rem",
-                    padding: "0.3rem 0.5rem",
-                    background: "var(--panel-2)",
-                    borderRadius: "4px",
-                    border: "1px solid var(--border)",
-                  }}
-                  data-testid="submission-grader-info"
+                <div className="muted sub-modal-grader" data-testid="submission-grader-info"
                 >
                   Graded by <strong>{submission.gradedBy}</strong>
                   {submission.gradedAt ? ` on ${formatDate(submission.gradedAt)}` : ""}
@@ -415,7 +406,7 @@ export function SubmissionReviewModal({
                   <div className="sub-modal-field">
                     <label htmlFor="grade-score-input">
                       <span>Score</span>
-                      <span className="muted" style={{ fontWeight: 400 }}>
+                      <span className="muted sub-modal-label-hint">
                         Maximum: {maxGrade} pts
                       </span>
                     </label>
@@ -435,15 +426,9 @@ export function SubmissionReviewModal({
                     />
                   </div>
 
-                  <div className="sub-modal-field" style={{ marginTop: "0.75rem" }}>
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                      }}
-                    >
-                      <label htmlFor="grade-feedback-input" style={{ margin: 0 }}>
+                  <div className="sub-modal-field mt-3">
+                    <div className="sub-modal-field-head">
+                      <label htmlFor="grade-feedback-input">
                         Teacher Feedback (Markdown)
                       </label>
                       <div
@@ -515,9 +500,8 @@ export function SubmissionReviewModal({
 
                   {error && (
                     <div
-                      className="sub-modal-error"
+                      className="sub-modal-error mt-3"
                       role="alert"
-                      style={{ marginTop: "0.75rem" }}
                       data-testid="submission-grade-error"
                     >
                       {error}

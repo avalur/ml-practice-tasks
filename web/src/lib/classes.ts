@@ -21,6 +21,7 @@ import {
   type Lesson,
   flatten,
 } from "./classes-shared";
+import { isMissingTable } from "@/lib/notebook-submissions";
 
 // Lesson structure is generated content, published to web/public/classes by
 // export_decks.py (classes/ itself lives outside the web/ package and is not
@@ -378,12 +379,7 @@ export async function solvedKeys(
             },
           })
           .catch((err: unknown) => {
-            if (
-              typeof err === "object" &&
-              err !== null &&
-              "code" in err &&
-              (err as { code: string }).code === "P2021"
-            ) {
+            if (isMissingTable(err)) {
               assignmentUnavailable = true;
               return [];
             }

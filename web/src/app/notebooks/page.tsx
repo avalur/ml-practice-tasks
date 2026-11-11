@@ -20,9 +20,9 @@ export default function NotebooksPage() {
       </p>
 
       {manifest.sections.map((section) => (
-        <section key={section.slug} style={{ marginTop: "2rem" }}>
-          <h2 style={{ marginBottom: "0.25rem" }}>{section.title}</h2>
-          <p className="muted" style={{ marginBottom: "0.75rem", fontSize: "0.9rem" }}>
+        <section key={section.slug} className="nb-section">
+          <h2 className="nb-section-title">{section.title}</h2>
+          <p className="muted nb-section-blurb">
             {section.description}
           </p>
           <ul className="problem-list">

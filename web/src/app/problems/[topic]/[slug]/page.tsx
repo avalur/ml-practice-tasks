@@ -53,7 +53,7 @@ export default async function ProblemPage({
   return (
     <article>
       <div className="problem-head">
-        <h1 style={{ margin: 0 }}>{problem.title}</h1>
+        <h1 className="flush">{problem.title}</h1>
         <span className={`badge ${problem.difficulty}`}>
           {problem.difficulty}
         </span>

@@ -358,3 +358,20 @@
 .hw-sub-btn.hw-sub-none.hw-none-late {
   color: var(--hard);
 }
+
+/* Lesson page */
+.lesson-section { margin-top: var(--space-6); }
+.lesson-section-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.9rem;
+  margin-bottom: var(--space-3);
+}
+.lesson-section-head h2 { margin: 0; }
+.lesson-hw-progress { margin-left: auto; min-width: 12rem; }
+.lesson-assignment-title { font-size: 1.05rem; font-weight: 600; }
+.notebook-card-points { font-size: var(--text-sm); }
+.notebook-card-note { font-size: var(--text-sm); margin: 0.35rem 0 0; display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+.class-milestones .badge { margin-left: 0.4rem; }
+.class-lesson-line .badge { margin-left: 0.35rem; }

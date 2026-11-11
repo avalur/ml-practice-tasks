@@ -17,7 +17,13 @@ export function GradingList({
   empty: string;
   testId?: string;
 }) {
-  if (items.length === 0) return <EmptyState title="Nothing to grade">{empty}</EmptyState>;
+  if (items.length === 0) {
+    return (
+      <EmptyState title="Nothing to grade" testId={testId}>
+        {empty}
+      </EmptyState>
+    );
+  }
   return (
     <ul className="rows card" data-testid={testId}>
       {items.map((g) => (

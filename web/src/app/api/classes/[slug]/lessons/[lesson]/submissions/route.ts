@@ -16,6 +16,7 @@ import {
   submissionPrefix,
   validateSubmissionPath,
 } from "@/lib/submissions";
+import { isMissingTable } from "@/lib/notebook-submissions";
 
 type RouteParams = {
   params: Promise<{ slug: string; lesson: string }>;
@@ -106,12 +107,7 @@ export async function POST(req: Request, { params }: RouteParams) {
       },
     });
   } catch (err: unknown) {
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "P2021"
-    ) {
+    if (isMissingTable(err)) {
       return NextResponse.json(
         { error: "notebook submissions are not enabled yet (database table missing)" },
         { status: 503 },
@@ -215,12 +211,7 @@ export async function POST(req: Request, { params }: RouteParams) {
         return NextResponse.json({ submission }, { status: 200 });
       }
     } catch (err: unknown) {
-      if (
-        typeof err === "object" &&
-        err !== null &&
-        "code" in err &&
-        (err as { code: string }).code === "P2021"
-      ) {
+      if (isMissingTable(err)) {
         return NextResponse.json(
           { error: "notebook submissions are not enabled yet (database table missing)" },
           { status: 503 },
@@ -294,12 +285,7 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
     return NextResponse.json({ submissions });
   } catch (err: unknown) {
-    if (
-      typeof err === "object" &&
-      err !== null &&
-      "code" in err &&
-      (err as { code: string }).code === "P2021"
-    ) {
+    if (isMissingTable(err)) {
       return NextResponse.json(
         {
           error: "notebook submissions are not enabled yet (database table missing)",

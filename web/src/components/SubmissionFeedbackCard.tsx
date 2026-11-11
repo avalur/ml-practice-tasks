@@ -90,15 +90,11 @@ export function SubmissionFeedbackCard({
               dangerouslySetInnerHTML={{ __html: html }}
             />
           ) : submission.feedback ? (
-            <div
-              className="feedback-markdown-content"
-              data-testid="feedback-content"
-              style={{ whiteSpace: "pre-wrap" }}
-            >
+            <div className="feedback-markdown-content pre-wrap" data-testid="feedback-content">
               {submission.feedback}
             </div>
           ) : (
-            <p className="muted" style={{ fontStyle: "italic", margin: 0 }}>
+            <p className="muted feedback-empty">
               No written feedback provided.
             </p>
           )}

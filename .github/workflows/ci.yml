@@ -96,7 +96,19 @@ jobs:
         run: pnpm build
       - name: Typecheck
         run: pnpm typecheck
+      # Only the browser, not --with-deps: that runs apt-get for fonts and
+      # libraries ubuntu-latest already has (it ships Google Chrome), and it is
+      # what broke CI whenever the runner could not reach the Ubuntu mirrors.
+      # The browser itself is cached per Playwright version.
+      - name: Playwright version
+        id: playwright
+        run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - name: Install Playwright browser
-        run: pnpm exec playwright install --with-deps chromium
+        run: pnpm exec playwright install chromium
       - name: Run e2e (in-browser Pyodide runner)
         run: pnpm exec playwright test

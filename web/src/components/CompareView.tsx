@@ -99,7 +99,9 @@ export default function CompareView({
         collapseUnchanged: COLLAPSE,
       });
       setChunks(view.chunks.length);
+      const unsync = syncHorizontalScroll(view.a.scrollDOM, view.b.scrollDOM);
       return () => {
+        unsync();
         cancelAnimationFrame(frame);
         view?.destroy();
         view = null;
@@ -151,4 +153,36 @@ export default function CompareView({
       <div ref={hostRef} className="compare-cm" data-mode={mode ?? undefined} />
     </div>
   );
+}
+
+/**
+ * Scroll the two sides of a split view sideways together. MergeView shares the
+ * vertical scroll (the whole view is one scroller) but each editor keeps its
+ * own horizontal one, so a long line on one side would otherwise slide out of
+ * line with its counterpart.
+ *
+ * Mirroring a scroll fires a scroll event on the other side; `echo` remembers
+ * the position we wrote so that event is not mirrored back. That matters when
+ * one side is narrower: it clamps (we write 500, it lands on 300), and treating
+ * the echo as a user scroll would drag the wider side back to 300.
+ */
+function syncHorizontalScroll(a: HTMLElement, b: HTMLElement): () => void {
+  const echo = new Map<HTMLElement, number>();
+  const follow = (src: HTMLElement, dst: HTMLElement) => () => {
+    const expected = echo.get(src);
+    echo.delete(src);
+    if (expected === src.scrollLeft) return;
+    const before = dst.scrollLeft;
+    dst.scrollLeft = src.scrollLeft;
+    // No movement means no scroll event, so nothing to swallow.
+    if (dst.scrollLeft !== before) echo.set(dst, dst.scrollLeft);
+  };
+  const onA = follow(a, b);
+  const onB = follow(b, a);
+  a.addEventListener("scroll", onA, { passive: true });
+  b.addEventListener("scroll", onB, { passive: true });
+  return () => {
+    a.removeEventListener("scroll", onA);
+    b.removeEventListener("scroll", onB);
+  };
 }

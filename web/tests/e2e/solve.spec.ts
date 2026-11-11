@@ -582,6 +582,24 @@ test("compare view: solved problem diffs your code against the reference", async
   await expect(mine.locator(".cm-collapsedLines")).toContainText("unchanged lines");
   await expect(mine).not.toContainText("divisible by 15");
 
+  // The two sides scroll sideways together. Unfold the docstring first: its
+  // lines are the long ones, on both sides.
+  await mine.locator(".cm-collapsedLines").click();
+  await expect(mine).toContainText("divisible by 15");
+  const mineScroller = mine.locator(".cm-scroller");
+  const refScroller = ref.locator(".cm-scroller");
+  const scrollLeft = (loc: import("@playwright/test").Locator) =>
+    loc.evaluate((el) => el.scrollLeft);
+  const scrollTo = (loc: import("@playwright/test").Locator, x: number) =>
+    loc.evaluate((el, x) => { el.scrollLeft = x; }, x);
+  expect(await mineScroller.evaluate((el) => el.scrollWidth - el.clientWidth)).toBeGreaterThan(100);
+  await scrollTo(mineScroller, 90);
+  await expect.poll(() => scrollLeft(refScroller)).toBe(90);
+  await scrollTo(refScroller, 30);
+  await expect.poll(() => scrollLeft(mineScroller)).toBe(30);
+  await scrollTo(mineScroller, 0);
+  await expect.poll(() => scrollLeft(refScroller)).toBe(0);
+
   // The reference is read-only; your side edits your code (and autosaves it).
   await expect(ref.locator(".cm-content")).toHaveAttribute("contenteditable", "false");
   await mine.locator(".cm-line", { hasText: "return out" }).click();
@@ -590,6 +608,23 @@ test("compare view: solved problem diffs your code against the reference", async
   await expect
     .poll(() => page.evaluate((k) => localStorage.getItem(k), `mlp:code:${FIZZ_ID}`))
     .toContain("return out  # mine");
+
+  // A side that is narrower stops at its own edge without dragging the other
+  // back: the long comment just typed makes yours the wider one.
+  await page.keyboard.type(` ${"x".repeat(200)}`);
+  const mineMax = await mineScroller.evaluate((el) => el.scrollWidth - el.clientWidth);
+  const refMax = await refScroller.evaluate((el) => el.scrollWidth - el.clientWidth);
+  expect(mineMax).toBeGreaterThan(refMax + 100);
+  // Typing scrolled to the caret already; start from the left edge.
+  await scrollTo(mineScroller, 0);
+  await expect.poll(() => scrollLeft(refScroller)).toBe(0);
+  await scrollTo(mineScroller, mineMax);
+  await expect.poll(() => scrollLeft(refScroller)).toBe(refMax);
+  await page.waitForTimeout(300); // let any echo of the clamped scroll arrive
+  expect(await scrollLeft(mineScroller)).toBe(mineMax);
+  for (let i = 0; i < 201; i++) await page.keyboard.press("Backspace");
+  await expect.poll(() => page.evaluate((k) => localStorage.getItem(k), `mlp:code:${FIZZ_ID}`))
+    .toContain("return out  # mine\n");
 
   // Switching theme (whichever one the page started in) recolours the editors
   // and the highlights, and keeps the diff.

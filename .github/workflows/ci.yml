@@ -103,12 +103,21 @@ jobs:
       - name: Playwright version
         id: playwright
         run: echo "version=$(pnpm exec playwright --version | awk '{print $2}')" >> "$GITHUB_OUTPUT"
-      - name: Cache Playwright browser
-        uses: actions/cache@v4
+      - name: Restore Playwright browser
+        id: pw-cache
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - name: Install Playwright browser
         run: pnpm exec playwright install chromium
+      # Saved right away rather than in actions/cache's post step, which only
+      # runs when the whole job succeeds — one red test would mean no cache.
+      - name: Save Playwright browser
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        uses: actions/cache/save@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ steps.playwright.outputs.version }}-chromium
       - name: Run e2e (in-browser Pyodide runner)
         run: pnpm exec playwright test

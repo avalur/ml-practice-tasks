@@ -1049,8 +1049,12 @@ test.describe("NotebookUploader with mocked network", () => {
       await card.getByTestId("notebook-file-input").setInputFiles(NOTEBOOK);
       await card.getByTestId("submit-notebook-btn").click();
 
-      expect(tokenCalls, "the token route must have been attempted").toBeGreaterThanOrEqual(1);
-      expect(getCalls).toBeGreaterThanOrEqual(2);
+      // Polled, not read once: click() resolves when the button is pressed, before
+      // the uploader's pre-check GET and the token request have gone out.
+      await expect
+        .poll(() => tokenCalls, { message: "the token route must have been attempted" })
+        .toBeGreaterThanOrEqual(1);
+      await expect.poll(() => getCalls).toBeGreaterThanOrEqual(2);
       await expect(card.getByTestId("submission-feedback-card")).toBeVisible();
       await expect(card.getByTestId("grade-badge")).toHaveText("Graded · 92 / 100 pts");
       await expect(card.getByTestId("feedback-content")).toHaveText(

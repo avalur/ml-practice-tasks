@@ -30,6 +30,15 @@
   --info: #6ea8fe;
   --neutral: #9aa3b2;
 
+  /* Code diff (reference compare view). Their own family, not --danger /
+   * --success: a red line there is "yours differs", not "something failed". */
+  --diff-del: #e3574f;
+  --diff-del-line: rgba(227, 87, 79, 0.12);
+  --diff-del-text: rgba(227, 87, 79, 0.28);
+  --diff-add: #38c172;
+  --diff-add-line: rgba(56, 193, 114, 0.11);
+  --diff-add-text: rgba(56, 193, 114, 0.26);
+
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.45);
 
@@ -58,6 +67,13 @@
   --danger: #d23a30;
   --info: #2f6fe0;
   --neutral: #57606f;
+
+  --diff-del: #d23a30;
+  --diff-del-line: rgba(210, 58, 48, 0.08);
+  --diff-del-text: rgba(210, 58, 48, 0.2);
+  --diff-add: #1a8d4e;
+  --diff-add-line: rgba(26, 141, 78, 0.09);
+  --diff-add-text: rgba(26, 141, 78, 0.2);
 
   --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
   --shadow-md: 0 8px 24px rgba(16, 24, 40, 0.12);

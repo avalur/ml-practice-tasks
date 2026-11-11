@@ -513,3 +513,115 @@ test("fullscreen: font zoom with wheel, keyboard shortcuts, and reset button", a
   const kbReset = await getEditorFontSize();
   expect(kbReset).toBeCloseTo(14, 0);
 });
+
+// A correct FizzBuzz written differently from the reference: same signature and
+// docstring (so they collapse as unchanged), a different body.
+const FIZZ_OTHER_WAY = `def get_fizz_buzz(n: int) -> list[int | str]:
+    """
+    Return a list of length \`\`n\`\` whose element at position \`\`i\`\` (0-based)
+    describes the number \`\`i + 1\`\`:
+
+    * \`\`"FizzBuzz"\`\` if the number is divisible by 15,
+    * \`\`"Fizz"\`\`     if divisible by 3 (but not 15),
+    * \`\`"Buzz"\`\`     if divisible by 5 (but not 15),
+    * otherwise the number itself (an \`\`int\`\`).
+
+    For example \`\`get_fizz_buzz(5) == [1, 2, "Fizz", 4, "Buzz"]\`\`.
+
+    :param n: length of the sequence (\`\`n >= 0\`\`)
+    :return: the FizzBuzz list
+    """
+    out = []
+    for i in range(1, n + 1):
+        s = ""
+        if i % 3 == 0:
+            s += "Fizz"
+        if i % 5 == 0:
+            s += "Buzz"
+        out.append(s or i)
+    return out
+`;
+
+test("compare view: solved problem diffs your code against the reference", async ({ page }) => {
+  const FIZZ_ID = "py_basics/fizz_buzz";
+  await page.setViewportSize({ width: 1600, height: 1000 });
+  await page.addInitScript(
+    (a: { codeKey: string; codeVal: string; solvedKey: string }) => {
+      // Only on the first load: the test reads the autosaved draft back later.
+      if (localStorage.getItem(a.solvedKey)) return;
+      localStorage.setItem(a.codeKey, a.codeVal);
+      localStorage.setItem(a.solvedKey, "1");
+    },
+    { codeKey: `mlp:code:${FIZZ_ID}`, codeVal: FIZZ_OTHER_WAY, solvedKey: `mlp:solved:${FIZZ_ID}` },
+  );
+  await page.goto(`/problems/${FIZZ_ID}`);
+  await page.getByRole("button", { name: "Compare" }).click();
+
+  // Wide pane: two columns, yours on the left, the reference on the right.
+  const compare = page.locator(".compare");
+  await expect(compare).toHaveAttribute("data-mode", "split");
+  const mine = compare.locator(".cm-mergeView .mlp-diff-mine");
+  const ref = compare.locator(".cm-mergeView .mlp-diff-ref");
+  await expect(mine).toContainText("out.append(s or i)");
+  await expect(ref).toContainText('result.append("FizzBuzz")');
+  await expect(compare.locator(".compare-legend")).toContainText("2 differences");
+
+  // Changed lines and the changed words inside them are highlighted, each side
+  // in its own colour; the shared docstring is folded away.
+  await expect(mine.locator(".cm-changedLine").first()).toBeVisible();
+  await expect(ref.locator(".cm-changedLine").first()).toBeVisible();
+  await expect(mine.locator(".cm-changedText", { hasText: "out" }).first()).toBeVisible();
+  await expect(ref.locator(".cm-changedText", { hasText: "result" }).first()).toBeVisible();
+  const bg = (loc: import("@playwright/test").Locator) =>
+    loc.first().evaluate((el) => getComputedStyle(el).backgroundColor);
+  const mineBg = await bg(mine.locator(".cm-changedLine"));
+  const refBg = await bg(ref.locator(".cm-changedLine"));
+  expect(mineBg).not.toBe("rgba(0, 0, 0, 0)");
+  expect(refBg).not.toBe("rgba(0, 0, 0, 0)");
+  expect(mineBg).not.toBe(refBg);
+  await expect(mine.locator(".cm-collapsedLines")).toContainText("unchanged lines");
+  await expect(mine).not.toContainText("divisible by 15");
+
+  // The reference is read-only; your side edits your code (and autosaves it).
+  await expect(ref.locator(".cm-content")).toHaveAttribute("contenteditable", "false");
+  await mine.locator(".cm-line", { hasText: "return out" }).click();
+  await page.keyboard.press("End");
+  await page.keyboard.type("  # mine");
+  await expect
+    .poll(() => page.evaluate((k) => localStorage.getItem(k), `mlp:code:${FIZZ_ID}`))
+    .toContain("return out  # mine");
+
+  // Switching theme (whichever one the page started in) recolours the editors
+  // and the highlights, and keeps the diff.
+  const from = await page.locator("html").getAttribute("data-theme");
+  const to = from === "light" ? "dark" : "light";
+  const editorBg = await mine.evaluate((el) => getComputedStyle(el).backgroundColor);
+  await page.locator("header").getByRole("button", { name: /theme/i }).click();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", to);
+  await expect
+    .poll(() => mine.evaluate((el) => getComputedStyle(el).backgroundColor))
+    .not.toBe(editorBg);
+  await expect.poll(() => bg(mine.locator(".cm-changedLine"))).not.toBe(mineBg);
+  await expect.poll(() => bg(mine.locator(".cm-changedLine"))).not.toBe("rgba(0, 0, 0, 0)");
+  await expect(mine).toContainText("return out  # mine");
+
+  // Fullscreen: still the diff, filling the editor pane.
+  await page.getByRole("button", { name: "Enter fullscreen" }).click();
+  await expect(page.locator(".workspace")).toHaveClass(/fullscreen/);
+  await expect(compare).toHaveAttribute("data-mode", "split");
+  const paneH = (await page.locator(".editor-pane").boundingBox())!.height;
+  const cmH = (await compare.locator(".compare-cm").boundingBox())!.height;
+  expect(cmH).toBeGreaterThan(paneH * 0.8);
+
+  // Phone width: one column — your code, with the reference's lines in between.
+  await page.setViewportSize({ width: 375, height: 812 });
+  await expect(compare).toHaveAttribute("data-mode", "unified");
+  await expect(compare.locator(".cm-mergeView")).toHaveCount(0);
+  await expect(compare.locator(".mlp-diff-mine .cm-changedLine").first()).toBeVisible();
+  await expect(compare.locator(".cm-deletedChunk", { hasText: 'result.append("FizzBuzz")' })).toBeVisible();
+  await expect(compare.locator(".compare-legend")).toContainText("2 differences");
+
+  // Back on your own code, the edit made in the diff is there.
+  await page.getByRole("button", { name: "Your solution" }).click();
+  await expect(page.locator(".editor-cm .cm-content")).toContainText("return out  # mine");
+});

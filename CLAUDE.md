@@ -616,6 +616,12 @@ is a token in `tokens.css`. Two colour families look alike and must not be
 mixed: `--easy/--medium/--hard` mean problem **difficulty** and nothing else
 (`.badge.easy`), while a **state** — draft, overdue, graded, suspended — takes a
 tone (`--success/--warning/--danger/--info/--neutral`, `.badge.tone-*`).
+A third, `--diff-del/--diff-add` (+ `-line`, `-text`), belongs to the solve
+page's **Compare** tab (`CompareView.tsx`, `@codemirror/merge`, loaded with
+`next/dynamic` only when the tab opens): yours is `del`, the reference `add`, in
+both layouts — side-by-side from a 720px pane, unified below. The engine colours
+by side and its unified editor is side "b", so each editor carries
+`.mlp-diff-mine`/`.mlp-diff-ref` and `problems.css` colours by role.
 
 **Primitives** live in `web/src/components/ui/` (server-safe, no hooks):
 `Badge`, `DifficultyBadge`, `Notice`, `PageHeader`, `Section`, `EmptyState`,

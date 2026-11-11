@@ -115,7 +115,7 @@ pre.code {
   display: flex;
   flex-direction: column;
 }
-.workspace.fullscreen .editor-pane .cm-editor {
+.workspace.fullscreen .editor-pane .editor-cm > .cm-editor {
   flex: 1;
   height: 100%;
   min-height: 0;
@@ -370,6 +370,115 @@ pre.code {
 .solution-tab:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+.solution-tabs-status {
+  align-self: center;
+  margin-left: 0.75rem;
+  font-size: 0.8rem;
+}
+
+/* Compare view: your code against the reference (CompareView.tsx). Colours are
+ * by role — yours --diff-del, the reference --diff-add — and the editors carry
+ * .mlp-diff-mine / .mlp-diff-ref for it, because @codemirror/merge colours by
+ * side and its unified editor is side "b". The selectors are long on purpose:
+ * the engine's own theme is injected at runtime with up to four classes. */
+.compare {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+.compare-legend {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.8rem;
+  border: 1px solid var(--border);
+  border-bottom: none;
+  border-radius: 0 6px 0 0;
+  background: var(--panel);
+}
+.compare-key::before {
+  content: "";
+  display: inline-block;
+  width: 0.7em;
+  height: 0.7em;
+  margin-right: 0.4em;
+  border-radius: 2px;
+  vertical-align: -0.05em;
+}
+.compare-key.mine::before { background: var(--diff-del); }
+.compare-key.ref::before { background: var(--diff-add); }
+.compare-side:last-child {
+  display: flex;
+  flex: 1;
+  gap: 1rem;
+}
+.compare[data-mode="split"] .compare-side { flex: 1; }
+.compare-count { margin-left: auto; }
+.compare-cm,
+.compare-loading {
+  height: 360px;
+  border: 1px solid var(--border);
+  border-radius: 0 0 6px 6px;
+  overflow: hidden;
+}
+.compare-loading {
+  display: grid;
+  place-items: center;
+  border-radius: 6px;
+}
+.compare-cm > .cm-editor,
+.compare-cm > .cm-mergeView {
+  height: 100%;
+}
+/* A side shorter than the pane still paints its editor background to the bottom. */
+.compare-cm .cm-mergeViewEditors { min-height: 100%; }
+.compare-cm .cm-mergeViewEditor > .cm-editor { min-height: 100%; }
+.compare-cm > .cm-mergeView .cm-mergeViewEditor + .cm-mergeViewEditor {
+  border-left: 1px solid var(--border);
+}
+
+.compare-cm .cm-editor.mlp-diff-mine .cm-line.cm-changedLine { background-color: var(--diff-del-line); }
+.compare-cm .cm-editor.mlp-diff-ref .cm-line.cm-changedLine { background-color: var(--diff-add-line); }
+.compare-cm .cm-editor.mlp-diff-mine .cm-content .cm-changedText {
+  background: var(--diff-del-text);
+  border-radius: 2px;
+}
+.compare-cm .cm-editor.mlp-diff-ref .cm-content .cm-changedText {
+  background: var(--diff-add-text);
+  border-radius: 2px;
+}
+/* Unified: the reference's lines, shown as widgets inside your editor. */
+.compare-cm .cm-editor.mlp-diff-mine .cm-content .cm-deletedChunk { background-color: var(--diff-add-line); }
+.compare-cm .cm-editor.mlp-diff-mine .cm-content .cm-deletedChunk .cm-deletedText {
+  background: var(--diff-add-text);
+  border-radius: 2px;
+}
+.compare-cm .cm-editor.mlp-diff-mine .cm-gutters .cm-changedLineGutter { background: var(--diff-del); }
+.compare-cm .cm-editor.mlp-diff-ref .cm-gutters .cm-changedLineGutter,
+.compare-cm .cm-editor.mlp-diff-mine .cm-gutters .cm-deletedLineGutter { background: var(--diff-add); }
+.compare-cm .cm-editor .cm-content .cm-collapsedLines {
+  color: var(--muted);
+  background: var(--panel-2);
+  font-family: var(--font-sans);
+  font-size: 0.8em;
+}
+.compare-cm .cm-editor .cm-content .cm-collapsedLines:hover { color: var(--text); }
+
+.workspace.fullscreen .editor-pane .compare {
+  flex: 1;
+  min-height: 0;
+}
+.workspace.fullscreen .editor-pane .compare-cm,
+.workspace.fullscreen .editor-pane .compare-loading {
+  flex: 1;
+  height: auto;
+  min-height: 0;
+}
+.workspace.fullscreen .editor-pane .compare-cm .cm-editor {
+  font-size: var(--editor-font-size, 14px);
 }
 
 /* Hints */

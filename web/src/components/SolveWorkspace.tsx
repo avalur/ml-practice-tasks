@@ -1,32 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import CodeMirror, { EditorView } from "@uiw/react-codemirror";
-import { keymap } from "@codemirror/view";
+import CodeMirror from "@uiw/react-codemirror";
 import { python } from "@codemirror/lang-python";
-
-// On Enter: preserve the current line's leading whitespace exactly.
-// Overrides the Python language mode's "smart" dedent which drops 2 spaces.
-const preserveIndentOnEnter = keymap.of([{
-  key: "Enter",
-  run(view) {
-    const sel = view.state.selection.main;
-    const line = view.state.doc.lineAt(sel.from);
-    const indent = line.text.match(/^\s*/)?.[0] ?? "";
-    const insert = "\n" + indent;
-    view.dispatch({
-      changes: { from: sel.from, to: sel.to, insert },
-      selection: { anchor: sel.from + insert.length },
-      scrollIntoView: true,
-    });
-    return true;
-  },
-}]);
-
-// Breathing room so code/comments don't butt against the editor's right edge.
-const editorPadding = EditorView.theme({
-  ".cm-content": { paddingRight: "1.25rem" },
-});
+import dynamic from "next/dynamic";
+import { editorPadding, preserveIndentOnEnter } from "@/lib/editor-extensions";
 import Link from "next/link";
 import type { ProblemMeta } from "@/lib/problem";
 import {
@@ -41,6 +19,12 @@ import {
 import { usePyodideRunner } from "@/hooks/usePyodideRunner";
 import { useTheme } from "@/components/ThemeProvider";
 import { useSession } from "next-auth/react";
+
+// The diff view pulls in @codemirror/merge; load it only when "Compare" opens.
+const CompareView = dynamic(() => import("@/components/CompareView"), {
+  ssr: false,
+  loading: () => <div className="compare-loading muted">Loading the diff…</div>,
+});
 
 const DEFAULT_FONT_SIZE = 14;
 const MIN_FONT_SIZE = 10;
@@ -70,7 +54,9 @@ export function SolveWorkspace({
 
   // Reference solution tab state
   const [allPassed, setAllPassed] = useState(false);
-  const [showRef, setShowRef] = useState(false);
+  // Which view the editor pane shows; anything but "mine" needs refCode.
+  const [view, setView] = useState<"mine" | "ref" | "compare">("mine");
+  const showRef = view === "ref";
   const [refCode, setRefCode] = useState<string | null>(null);
   const [refLoading, setRefLoading] = useState(false);
 
@@ -274,20 +260,22 @@ export function SolveWorkspace({
     runner.runCode(activeCode);
   };
 
-  const handleShowRef = async () => {
+  // Both the reference tab and the compare tab need the reference text; fetch
+  // it once, on first use (the tabs only exist once the problem is solved).
+  const openWithRef = async (next: "ref" | "compare") => {
     if (refCode === null) {
       setRefLoading(true);
       try {
         const src = await fetchReferenceSolution(meta.bundlePath);
         setRefCode(src);
       } catch {
-        // silently ignore — button stays disabled if fetch fails
+        // silently ignore — stay on the current tab if the fetch fails
         return;
       } finally {
         setRefLoading(false);
       }
     }
-    setShowRef(true);
+    setView(next);
   };
 
   const onReset = () => {
@@ -297,7 +285,7 @@ export function SolveWorkspace({
       localStorage.removeItem(`mlp:solved:${meta.id}`);
     } catch {}
     setAllPassed(false);
-    setShowRef(false);
+    setView("mine");
     postedRef.current = null; // allow re-saving after a fresh solve
     if (!session?.user) return;
     // Wipe submissions + progress, THEN tell the sidebar to drop the ✓. We fire
@@ -559,29 +547,42 @@ export function SolveWorkspace({
           {allPassed && (
             <div className="solution-tabs">
               <button
-                className={`solution-tab${!showRef ? " active" : ""}`}
-                onClick={() => setShowRef(false)}
+                className={`solution-tab${view === "mine" ? " active" : ""}`}
+                onClick={() => setView("mine")}
               >
                 Your solution
               </button>
               <button
                 className={`solution-tab${showRef ? " active" : ""}`}
-                onClick={handleShowRef}
+                onClick={() => openWithRef("ref")}
                 disabled={refLoading}
               >
-                {refLoading ? "Loading…" : "Reference solution"}
+                Reference solution
               </button>
+              <button
+                className={`solution-tab${view === "compare" ? " active" : ""}`}
+                onClick={() => openWithRef("compare")}
+                disabled={refLoading}
+                title="Your code next to the reference, differences highlighted"
+              >
+                Compare
+              </button>
+              {refLoading && <span className="solution-tabs-status muted">Loading…</span>}
             </div>
           )}
 
-          <CodeMirror
-            value={activeCode}
-            height={isFullscreen ? "100%" : "360px"}
-            theme={theme}
-            extensions={[python(), editorPadding, preserveIndentOnEnter]}
-            onChange={showRef ? (v) => setRefCode(v) : setCode}
-            className="editor-cm"
-          />
+          {view === "compare" && refCode !== null ? (
+            <CompareView code={code} reference={refCode} theme={theme} onChange={setCode} />
+          ) : (
+            <CodeMirror
+              value={activeCode}
+              height={isFullscreen ? "100%" : "360px"}
+              theme={theme}
+              extensions={[python(), editorPadding, preserveIndentOnEnter]}
+              onChange={showRef ? (v) => setRefCode(v) : setCode}
+              className="editor-cm"
+            />
+          )}
         </div>
 
         <div className="output-pane">

@@ -8,6 +8,8 @@ import {
 } from "@/components/SubmissionReviewModal";
 import {
   computeAssignmentCellState,
+  dueMs,
+  isOverdue,
   isAssignment,
   isGroup,
   isLink,
@@ -75,7 +77,8 @@ export function LessonHomeworkTable({
     submission: SubmissionModalData | null;
   } | null>(null);
 
-  const overdue = due ? new Date(due).getTime() < Date.now() : false;
+  // dueMs, like every other view: a bare "2026-11-16" is due at the end of that day.
+  const overdue = isOverdue(dueMs(due));
 
   function isDoneRef(userId: string, ref: TrackableRef): boolean {
     if (ref.type === "assignment") {

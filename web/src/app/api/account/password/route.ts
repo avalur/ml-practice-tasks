@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { crossSite, jsonBody, rateLimited } from "@/lib/http";
 import { hashPassword, passwordProblem, verifyPassword } from "@/lib/password";
 import { sessionCookieName } from "@/lib/session-cookie";
+import { recordFailedPassword } from "@/lib/lockout";
 
 // POST { current, password } — change the password of the signed-in account.
 //
@@ -14,8 +15,6 @@ import { sessionCookieName } from "@/lib/session-cookie";
 // a mailed link is what proves the address, and a signed-in browser left open
 // is not the same proof.
 
-const MAX_ATTEMPTS = 8;
-const LOCK_MINUTES = 15;
 
 export async function POST(req: Request) {
   if (crossSite(req)) return NextResponse.json({ error: "bad origin" }, { status: 403 });
@@ -54,20 +53,7 @@ export async function POST(req: Request) {
   // The same lockout as sign-in: a borrowed, still-signed-in browser must not
   // become a free password oracle.
   if (!(await verifyPassword(current, user.passwordHash))) {
-    // Incremented in the database, not from the value read above: concurrent
-    // guesses would otherwise each write "n + 1" and never reach the limit. And
-    // a failure only ever sets the lock, never clears one a parallel request set.
-    const { failedLogins } = await prisma.user.update({
-      where: { id: userId },
-      data: { failedLogins: { increment: 1 } },
-      select: { failedLogins: true },
-    });
-    if (failedLogins >= MAX_ATTEMPTS) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { lockedUntil: new Date(Date.now() + LOCK_MINUTES * 60000) },
-      });
-    }
+    await recordFailedPassword(userId);
     return NextResponse.json({ error: "The current password is wrong." }, { status: 400 });
   }
 

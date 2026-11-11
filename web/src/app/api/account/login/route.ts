@@ -2,12 +2,11 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { crossSite, jsonBody, rateLimited } from "@/lib/http";
 import { verifyPassword } from "@/lib/password";
+import { recordFailedPassword } from "@/lib/lockout";
 import { cleanEmail, startSession } from "@/lib/session-cookie";
 
 // POST { email, password } — sign in with a password.
 
-const MAX_ATTEMPTS = 8;
-const LOCK_MINUTES = 15;
 
 /** One message for "no such account" and for "wrong password": which of the two
  * it is would tell a stranger whether an address is registered here. */
@@ -35,7 +34,7 @@ export async function POST(req: Request) {
 
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true, passwordHash: true, failedLogins: true, lockedUntil: true },
+    select: { id: true, passwordHash: true, lockedUntil: true },
   });
 
   if (user?.lockedUntil && user.lockedUntil > new Date()) {
@@ -52,17 +51,7 @@ export async function POST(req: Request) {
   const ok = await verifyPassword(password, user?.passwordHash ?? null);
 
   if (!user || !ok) {
-    if (user) {
-      const failed = user.failedLogins + 1;
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          failedLogins: failed,
-          lockedUntil:
-            failed >= MAX_ATTEMPTS ? new Date(Date.now() + LOCK_MINUTES * 60000) : null,
-        },
-      });
-    }
+    if (user) await recordFailedPassword(user.id);
     return NextResponse.json({ error: REFUSED }, { status: 401 });
   }
 

@@ -41,6 +41,7 @@ export const metadata: Metadata = {
 };
 
 const TABS = ["homework", "attendance", "groups", "grading"] as const;
+const GRADING_LIMIT = 500;
 type Tab = (typeof TABS)[number];
 
 export default async function HomeworkPage({
@@ -123,7 +124,7 @@ export default async function HomeworkPage({
     // recent grades push an old ungraded notebook out of sight.
     const metas = new Map((await getClasses()).map((c) => [c.slug, c]));
     const [pendingQ, gradedQ] = await Promise.all([
-      gradingQueue([{ id: classId, slug }], metas, { status: "submitted" }),
+      gradingQueue([{ id: classId, slug }], metas, { status: "submitted", take: GRADING_LIMIT }),
       gradingQueue([{ id: classId, slug }], metas, { status: "graded", take: 50 }),
     ]);
     const unavailable = pendingQ.unavailable || gradedQ.unavailable;
@@ -139,6 +140,12 @@ export default async function HomeworkPage({
           </Notice>
         )}
         <h2 className="tab-section-title">Waiting for a grade</h2>
+        {pending.length >= GRADING_LIMIT && (
+          <Notice tone="warning">
+            Showing the {GRADING_LIMIT} oldest of the notebooks waiting; the rest appear as these
+            are graded.
+          </Notice>
+        )}
         <GradingList
           items={pending}
           showClass={false}

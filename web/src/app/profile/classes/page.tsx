@@ -3,7 +3,7 @@ import Link from "next/link";
 import { myClassSlugs, visibleClasses } from "@/lib/classes";
 import { dueTone, profileUser, studentHomework } from "@/lib/student";
 import { JoinClassForm } from "@/components/JoinClassForm";
-import { Badge, EmptyState, PageHeader, ProgressBar, Section } from "@/components/ui";
+import { Badge, EmptyState, Notice, PageHeader, ProgressBar, Section } from "@/components/ui";
 import { DueBadge } from "../DueBadge";
 
 export const metadata = { title: "My classes — ML Practice" };
@@ -14,7 +14,7 @@ export default async function MyClassesPage() {
 
   // visibleClasses(), not getClasses(): a class you were enrolled in and that is
   // back in draft would otherwise sit here as a link to a 404.
-  const [{ classes }, mine, visible] = await Promise.all([
+  const [{ classes, unavailable }, mine, visible] = await Promise.all([
     studentHomework(user.id),
     myClassSlugs(),
     visibleClasses(),
@@ -27,6 +27,12 @@ export default async function MyClassesPage() {
         title="My classes"
         subtitle="The courses you joined with a group code, and how far along your homework is."
       />
+      {unavailable && (
+        <Notice tone="warning" testId="submissions-unavailable-notice">
+          Notebook submissions are unavailable on this deployment, so notebook assignments are
+          not counted in the homework below.
+        </Notice>
+      )}
 
       {classes.length === 0 ? (
         <EmptyState title="Not in a group yet">

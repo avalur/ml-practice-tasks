@@ -101,6 +101,10 @@ test("studio: a course is built, published unlisted, and works like any class", 
 
     // Pick tasks: one in class, a whole topic as homework.
     await t.page.getByTestId("lesson-list").locator("li").first().getByRole("link").click();
+    // A full page load: typing before React hydrates the editor loses the input
+    // (the field shows "fizz", the component's state never hears of it).
+    await t.page.waitForURL(/\/studio\/[^/]+\/l02-vectors$/);
+    await t.page.waitForLoadState("networkidle");
     await t.page.getByLabel("Find a task").fill("fizz");
     await t.page.getByTestId("result-py_basics/fizz_buzz").getByRole("button", { name: "+ in class" }).click();
     await t.page.getByLabel("Find a task").fill("py_strings/*");

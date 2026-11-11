@@ -47,7 +47,9 @@ test("register, sign out, sign back in with the password", async ({ page }) => {
     await expect(page).toHaveURL(/\/profile$/);
     await expect(page.locator(".auth-name")).toHaveText("E2E Password User");
 
-    await page.getByRole("button", { name: "Sign out" }).click();
+    // Sign out lives in the account menu behind the avatar.
+    await page.getByTestId("account-menu").click();
+    await page.getByRole("menuitem", { name: "Sign out" }).click();
     await expect(page.getByRole("link", { name: "Sign in" })).toBeVisible();
     expect(await account.sessionCount()).toBe(0);
 
@@ -113,6 +115,57 @@ test("the profile's Account tab sets both halves of the name", async ({ page }) 
     // The removed "coming soon" entries are gone from the sidebar.
     await expect(page.getByText("Study Plan")).toHaveCount(0);
     await expect(page.getByText("Library")).toHaveCount(0);
+  } finally {
+    await account.remove();
+  }
+});
+
+test("Account → Password: the current one is checked, other sessions end", async ({
+  page,
+  request,
+}) => {
+  const account = await testAccount(EMAIL);
+  try {
+    await page.goto("/register");
+    await page.getByLabel("Email").fill(EMAIL);
+    await page.getByLabel(/^First name/).fill("E2E");
+    await page.getByLabel(/^Password/).fill(PASSWORD);
+    await page.getByRole("button", { name: "Create account" }).click();
+    await expect(page).toHaveURL(/\/profile$/);
+
+    // A second device, signed in with the same password.
+    const other = await request.post("/api/account/login", {
+      data: { email: EMAIL, password: PASSWORD },
+    });
+    expect(other.ok()).toBe(true);
+    expect(await account.sessionCount()).toBe(2);
+
+    await page.goto("/profile/account");
+    await expect(page.getByTestId("sign-in-methods")).toContainText("Email and password");
+    const form = page.getByTestId("change-password");
+    await form.getByLabel("Current password").fill("not the password");
+    await form.getByLabel("New password").fill(NEW_PASSWORD);
+    await form.getByRole("button", { name: "Change password" }).click();
+    await expect(page.getByText("The current password is wrong.")).toBeVisible();
+    expect(await account.sessionCount()).toBe(2);
+
+    await form.getByLabel("Current password").fill(PASSWORD);
+    await form.getByLabel("New password").fill(NEW_PASSWORD);
+    await form.getByRole("button", { name: "Change password" }).click();
+    await expect(page.getByText(/Password changed/)).toBeVisible();
+    // The other device is signed out; this browser is not.
+    expect(await account.sessionCount()).toBe(1);
+    await page.reload();
+    await expect(page.locator(".auth-name")).toBeVisible();
+
+    const oldPw = await request.post("/api/account/login", {
+      data: { email: EMAIL, password: PASSWORD },
+    });
+    expect(oldPw.status()).toBe(401);
+    const newPw = await request.post("/api/account/login", {
+      data: { email: EMAIL, password: NEW_PASSWORD },
+    });
+    expect(newPw.ok()).toBe(true);
   } finally {
     await account.remove();
   }

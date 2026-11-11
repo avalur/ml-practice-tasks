@@ -669,9 +669,11 @@ test.describe("Submission, Download, and Grading Routes", () => {
       await expect(subCell).toHaveText("95/100");
       await page.close();
 
-      // Student views feedback in personal profile (/profile?tab=notebooks)
+      // Student views feedback in their cabinet (the old /profile?tab=notebooks
+      // link redirects to /profile/assignments)
       const studentPage = await studentCtx.newPage();
       await studentPage.goto("/profile?tab=notebooks");
+      await expect(studentPage).toHaveURL(/\/profile\/assignments$/);
       await expect(studentPage.getByTestId("notebook-assignment-list")).toBeVisible();
       const profCard = studentPage.getByTestId("assignment-card-scratch-react-agent");
       await expect(profCard).toBeVisible();
@@ -794,7 +796,7 @@ test.describe("Submission, Download, and Grading Routes", () => {
     }
   });
 
-  test("student profile navigation renders Notebooks tab and handles unenrolled state", async ({
+  test("student cabinet links to Assignments and handles the unenrolled state", async ({
     browser,
   }) => {
     const studentCtx = await browser.newContext();
@@ -807,15 +809,14 @@ test.describe("Submission, Download, and Grading Routes", () => {
       const page = await studentCtx.newPage();
       await page.goto("/profile");
 
-      // Verify sidebar contains Notebooks tab link
-      const nbLink = page.getByRole("link", { name: "📓 Notebooks" });
+      // The cabinet's sidebar links to its Assignments page
+      const nbLink = page.locator(".profile-nav").getByRole("link", { name: "Assignments" });
       await expect(nbLink).toBeVisible();
-      await expect(nbLink).toHaveAttribute("href", "/profile?tab=notebooks");
+      await expect(nbLink).toHaveAttribute("href", "/profile/assignments");
 
-      // Click to navigate to Notebooks tab
       await nbLink.click();
-      await expect(page).toHaveURL(/tab=notebooks/);
-      await expect(page.getByRole("heading", { name: "Notebooks" })).toBeVisible();
+      await expect(page).toHaveURL(/\/profile\/assignments$/);
+      await expect(page.getByRole("heading", { name: "Assignments" })).toBeVisible();
       await expect(page.getByText(/Not enrolled in any classes yet/)).toBeVisible();
       await page.close();
     } finally {

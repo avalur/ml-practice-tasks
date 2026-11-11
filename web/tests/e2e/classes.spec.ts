@@ -297,7 +297,7 @@ test("teacher: writes a group code, and its student appears in the homework tabl
     name: "E2E Grouped",
   });
   try {
-    await page.goto(`/classes/${CLASS}/homework`);
+    await page.goto(`/classes/${CLASS}/homework?tab=groups`);
     await expect(page.getByRole("heading", { name: "Group codes" })).toBeVisible();
 
     await page.getByLabel("New code").fill(code);
@@ -323,6 +323,8 @@ test("teacher: writes a group code, and its student appears in the homework tabl
     // which group they belong to.
     await expect(row.getByRole("button", { name: "delete" })).toHaveCount(0);
 
+    // The roster itself is on the homework tab.
+    await page.goto(`/classes/${CLASS}/homework?tab=homework`);
     const table = page.locator("table.hw-table");
     const studentRow = table.locator("tr").filter({ hasText: "E2E Grouped" });
     await expect(studentRow).toContainText("Evening stream");

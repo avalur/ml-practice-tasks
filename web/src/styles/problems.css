@@ -715,6 +715,9 @@ pre.code {
 @media (max-width: 760px) {
   .problems-shell {
     flex-direction: column;
+    /* Not flex-start: in a column that sizes .problems-main to its content, and
+     * the editor's longest line then widens the whole page past the screen. */
+    align-items: stretch;
   }
   .sidebar {
     width: auto;

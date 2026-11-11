@@ -625,3 +625,31 @@ test("compare view: solved problem diffs your code against the reference", async
   await page.getByRole("button", { name: "Your solution" }).click();
   await expect(page.locator(".editor-cm .cm-content")).toContainText("return out  # mine");
 });
+
+test("phone: a long line of code never widens the problem page", async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await seed(
+    page,
+    `${CORRECT}\n# ${"a deliberately long comment that runs well past a phone screen ".repeat(3)}\n`,
+  );
+  await page.goto(`/problems/${ID}`);
+  await expect(page.locator(".editor-cm .cm-content")).toContainText("deliberately long");
+
+  // The page fits the screen; the editor scrolls sideways inside itself instead.
+  const widths = () =>
+    page.evaluate(() => ({
+      page: document.documentElement.scrollWidth,
+      screen: window.innerWidth,
+      scroller: document.querySelector(".editor-cm .cm-scroller")!.scrollWidth,
+    }));
+  let w = await widths();
+  expect(w.page).toBeLessThanOrEqual(w.screen);
+  expect(w.scroller).toBeGreaterThan(w.screen);
+
+  await page.getByRole("button", { name: "Enter fullscreen" }).click();
+  await expect(page.locator(".workspace")).toHaveClass(/fullscreen/);
+  const ws = await page.locator(".workspace").evaluate((el) => [el.scrollWidth, el.clientWidth]);
+  expect(ws[0]).toBeLessThanOrEqual(ws[1]);
+  w = await widths();
+  expect(w.page).toBeLessThanOrEqual(w.screen);
+});

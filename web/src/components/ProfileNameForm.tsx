@@ -32,7 +32,7 @@ export function ProfileNameForm({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ firstName, lastName }),
     });
-    if (res.ok) window.location.assign("/profile?tab=account&saved=1");
+    if (res.ok) window.location.assign("/profile/account?saved=1");
     else {
       const data = await res.json().catch(() => ({}));
       setErr(data.error ?? "Could not save your name.");

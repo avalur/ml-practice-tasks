@@ -44,3 +44,8 @@ export function splitName(user: {
   const parts = (user.name ?? "").trim().split(/\s+/).filter(Boolean);
   return { first: parts[0] ?? "", last: parts.slice(1).join(" ") };
 }
+
+/** The greeting form of a display name: its first word, or null. */
+export function firstNameOf(name: string | null | undefined): string | null {
+  return name?.trim().split(/\s+/)[0] || null;
+}

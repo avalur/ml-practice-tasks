@@ -1,52 +1,59 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 const NAV = [
-  { tab: "favorites",   icon: "⭐", label: "Favorites" },
-  { tab: "submissions", icon: "📋", label: "Submissions" },
-  { tab: "notebooks",   icon: "📓", label: "Notebooks" },
-  { tab: "classes",     icon: "🎓", label: "Classes" },
-  { tab: "account",     icon: "⚙️", label: "Account" },
+  { href: "/profile", label: "Overview" },
+  { href: "/profile/assignments", label: "Assignments" },
+  { href: "/profile/submissions", label: "Submissions" },
+  { href: "/profile/favorites", label: "Favorites" },
+  { href: "/profile/classes", label: "Classes" },
+  { href: "/profile/account", label: "Account" },
 ] as const;
 
 export function ProfileNav({
-  activeTab,
   name,
   email,
-  streak,
-  solvedCount,
-  totalCount,
+  image,
 }: {
-  activeTab: string;
   name: string | null;
   email: string | null;
-  streak: number;
-  solvedCount: number;
-  totalCount: number;
+  image: string | null;
 }) {
-  const initials = (name ?? email ?? "?")
-    .split(/\s+/)
-    .map((w) => w[0]?.toUpperCase() ?? "")
+  const pathname = usePathname();
+  const initials = (name || email || "?")
+    .split(/[\s@.]+/)
+    .filter(Boolean)
+    .map((w) => w[0]!.toUpperCase())
     .slice(0, 2)
     .join("");
 
   return (
     <aside className="profile-sidebar">
-      <div className="profile-avatar">{initials}</div>
-      <p className="profile-name">{name ?? email}</p>
-      {email && name && <p className="profile-email muted">{email}</p>}
-      <p className="profile-stats">
-        {streak > 0 && <span className="streak">🔥 {streak}-day streak &nbsp;</span>}
-        <span className="result-good">{solvedCount}/{totalCount} solved</span>
-      </p>
+      <div className="profile-id">
+        {image ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image} alt="" className="profile-avatar" />
+        ) : (
+          <div className="profile-avatar" aria-hidden>
+            {initials}
+          </div>
+        )}
+        <div className="profile-id-text">
+          <p className="profile-name">{name ?? email}</p>
+          {email && name && <p className="profile-email">{email}</p>}
+        </div>
+      </div>
 
-      <nav className="profile-nav">
-        {NAV.map(({ tab, icon, label }) => (
+      <nav className="profile-nav" aria-label="Your account">
+        {NAV.map(({ href, label }) => (
           <Link
-            key={tab}
-            href={`/profile?tab=${tab}`}
-            className={`profile-nav-link${activeTab === tab ? " active" : ""}`}
+            key={href}
+            href={href}
+            className="profile-nav-link"
+            aria-current={pathname === href ? "page" : undefined}
           >
-            <span>{icon}</span>
             {label}
           </Link>
         ))}

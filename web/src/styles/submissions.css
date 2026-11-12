@@ -167,6 +167,9 @@
 }
 
 .sub-modal-field textarea {
+  /* It sits in a tab panel (a plain block), not directly in the flex column,
+   * so nothing stretches it: without this it is 20 columns wide. */
+  width: 100%;
   resize: vertical;
   min-height: 100px;
 }

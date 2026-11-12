@@ -417,6 +417,15 @@ test.describe("Submission, Download, and Grading Routes", () => {
       // Type grade and feedback
       await page.getByTestId("submission-grade-input").fill("88");
       await page.getByTestId("submission-feedback-input").fill("**Needs improvement** on step 3.");
+      // The feedback box spans the form like the score field above it (it once
+      // shrank to its 20-column default inside the tab panel).
+      const fieldWidth = await page.getByTestId("submission-grade-input").evaluate(
+        (el) => el.getBoundingClientRect().width,
+      );
+      const feedbackWidth = await page.getByTestId("submission-feedback-input").evaluate(
+        (el) => el.getBoundingClientRect().width,
+      );
+      expect(feedbackWidth).toBeGreaterThan(fieldWidth - 2);
 
       // Check preview
       await previewTab.click();

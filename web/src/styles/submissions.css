@@ -105,6 +105,7 @@
 
 .sub-modal-download-box {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
@@ -114,11 +115,21 @@
   border: 1px solid var(--border);
 }
 
+.sub-modal-file-actions,
+.notebook-file-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+}
+
 .sub-modal-file-info {
   display: flex;
   flex-direction: column;
   gap: 0.15rem;
   overflow: hidden;
+  min-width: 0;
+  flex: 1;
 }
 
 .sub-modal-file-name {
@@ -493,6 +504,7 @@
   font-size: 0.75rem;
 }
 
+.notebook-file-actions .btn,
 .notebook-download-btn {
   font-size: 0.82rem;
   padding: 0.35rem 0.75rem;

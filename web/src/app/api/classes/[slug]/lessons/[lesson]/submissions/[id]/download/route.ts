@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import { issueSignedToken, presignUrl } from "@vercel/blob";
-import { prisma } from "@/lib/db";
-import { getAccess } from "@/lib/classes";
-import {
-  getBlobPathname,
-  isAuthorizedToDownload,
-  SUBMISSION_LINK_TTL_MS,
-} from "@/lib/submissions";
+import { readableSubmission } from "@/lib/submission-access";
+import { getBlobPathname, SUBMISSION_LINK_TTL_MS } from "@/lib/submissions";
 
 type RouteParams = {
   params: Promise<{ slug: string; lesson: string; id: string }>;
@@ -23,24 +18,8 @@ type RouteParams = {
 export async function GET(_req: Request, { params }: RouteParams) {
   const { slug, lesson, id } = await params;
 
-  const access = await getAccess(slug);
-  if (!access.classRow || !access.visible || !access.isMember) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
-  }
-
-  const submission = await prisma.notebookSubmission.findFirst({
-    where: {
-      id,
-      classId: access.classRow.id,
-      lessonSlug: lesson,
-    },
-  });
-
+  const submission = await readableSubmission(slug, lesson, id);
   if (!submission) {
-    return NextResponse.json({ error: "not found" }, { status: 404 });
-  }
-
-  if (!isAuthorizedToDownload(submission.userId, access.userId, access.isTeacher)) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 

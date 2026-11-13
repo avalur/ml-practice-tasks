@@ -3,6 +3,8 @@ import {
   effectiveMaxScore,
   formatBytes,
   formatDate,
+  getDownloadEndpoint,
+  getViewEndpoint,
   type NotebookSubmissionData,
 } from "@/lib/classes-shared";
 
@@ -28,9 +30,9 @@ export function SubmissionFeedbackCard({
   const html = renderedFeedbackHtml ?? null;
 
   const downloadUrl =
-    classSlug && lessonSlug
-      ? `/api/classes/${classSlug}/lessons/${lessonSlug}/submissions/${submission.id}/download`
-      : null;
+    classSlug && lessonSlug ? getDownloadEndpoint(classSlug, lessonSlug, submission.id) : null;
+  const viewUrl =
+    classSlug && lessonSlug ? getViewEndpoint(classSlug, lessonSlug, submission.id) : null;
 
   return (
     <div className="notebook-feedback-box" data-testid="submission-feedback-card">
@@ -67,15 +69,26 @@ export function SubmissionFeedbackCard({
               {formatBytes(submission.fileBytes)} · Submitted on {formatDate(submission.submittedAt)}
             </span>
           </div>
-          {downloadUrl && (
-            <a
-              href={downloadUrl}
-              download={submission.fileName}
-              className="btn subtle small notebook-download-btn"
-              data-testid="download-submission-link"
-            >
-              Download .ipynb
-            </a>
+          {downloadUrl && viewUrl && (
+            <div className="notebook-file-actions">
+              <a
+                href={viewUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn subtle small"
+                data-testid="view-submission-link"
+              >
+                View ↗
+              </a>
+              <a
+                href={downloadUrl}
+                download={submission.fileName}
+                className="btn subtle small notebook-download-btn"
+                data-testid="download-submission-link"
+              >
+                Download .ipynb
+              </a>
+            </div>
           )}
         </div>
       )}

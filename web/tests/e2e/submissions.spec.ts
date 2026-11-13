@@ -805,6 +805,124 @@ test.describe("Submission, Download, and Grading Routes", () => {
     }
   });
 
+  /* "View" renders the submitted .ipynb as a page, so a teacher can skim it in a
+   * tab instead of downloading it. The notebook is the student's content, so
+   * the test plants script in it and checks it stays inert at both layers: the
+   * sanitizer (nothing executable in the HTML) and the sandbox CSP (opaque
+   * origin, no script). Needs a real Blob store: the route reads the file. */
+  test("a submitted notebook opens rendered in a sandboxed tab for its author and the teacher only", async ({
+    browser,
+  }) => {
+    skipUnlessIsolated();
+    test.skip(!(await checkNotebookSubmissionsTableExists()), "NotebookSubmission table is not pushed");
+    const token = blobToken();
+    test.skip(!token, "no Blob store configured (BLOB_READ_WRITE_TOKEN)");
+
+    const fixture = await draftClass({
+      slug: `e2e-nbview-${process.pid}`,
+      title: `E2E Notebook View ${process.pid}`,
+      lesson: "l01-scratch",
+      publishForStudents: true,
+      homework: { due: "2026-12-20T23:59:00Z", items: [{ type: "assignment", id: "hw1", title: "Homework 1", maxScore: 10 }] },
+    });
+    const teacherCtx = await browser.newContext();
+    await signInAs(teacherCtx, {
+      email: `e2e-nbview-teacher-${process.pid}@example.test`, name: "E2E View Teacher",
+      classSlug: fixture.slug, teacher: true,
+    });
+    const studentCtx = await browser.newContext();
+    const student = await signInAs(studentCtx, {
+      email: `e2e-nbview-student-${process.pid}@example.test`, name: "E2E View Student",
+      classSlug: fixture.slug,
+    });
+    const otherCtx = await browser.newContext();
+    await signInAs(otherCtx, {
+      email: `e2e-nbview-other-${process.pid}@example.test`, name: "E2E View Other",
+      classSlug: fixture.slug,
+    });
+
+    const png = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+    const notebook = {
+      nbformat: 4, nbformat_minor: 5,
+      metadata: { kernelspec: { display_name: "Python 3", language: "python", name: "python3" }, language_info: { name: "python" } },
+      cells: [
+        { cell_type: "markdown", metadata: {}, source: ["# Gradient check\n", "We minimise $L(w) = \\|Xw - y\\|^2$.\n",
+          '<img src="x" onerror="document.title=\'pwned-md\'">'] },
+        { cell_type: "code", execution_count: 1, metadata: {}, source: ["import numpy as np\n", "print('loss', 0.25)"],
+          outputs: [{ output_type: "stream", name: "stdout", text: ["loss 0.25\n"] }] },
+        { cell_type: "code", execution_count: 2, metadata: {}, source: "df.head()",
+          outputs: [
+            { output_type: "execute_result", execution_count: 2, metadata: {},
+              data: { "text/html": '<table class="dataframe"><tr><th>w</th></tr><tr><td>0.5</td></tr></table>', "text/plain": "w 0.5" } },
+            { output_type: "display_data", metadata: {}, data: { "image/png": png, "text/plain": "<Figure>" } },
+            { output_type: "display_data", metadata: {},
+              data: { "text/html": "<script>document.title='pwned-out'</script>", "text/plain": "<widget>" } },
+          ] },
+      ],
+    };
+
+    const { put, del } = await import("@vercel/blob");
+    const pathname = `classes/${fixture.slug}/${fixture.lessonSlug}/submissions/${student.userId}/hw1/gradient.ipynb`;
+    const blob = await put(pathname, JSON.stringify(notebook), {
+      access: "private", token: token!, contentType: "application/x-ipynb+json", allowOverwrite: true,
+    });
+    created.push(() => del(blob.url, { token: token! }));
+
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+    created.push(() => prisma.$disconnect());
+    const cls = await prisma.class.findUniqueOrThrow({ where: { slug: fixture.slug } });
+    const submission = await prisma.notebookSubmission.create({
+      data: {
+        userId: student.userId, classId: cls.id, lessonSlug: fixture.lessonSlug, assignmentId: "hw1",
+        fileUrl: blob.url, fileName: "gradient.ipynb", fileBytes: 2048, status: "submitted", maxGrade: 10,
+      },
+    });
+    created.push(() => prisma.notebookSubmission.deleteMany({ where: { id: submission.id } }));
+    const viewPath = `/api/classes/${fixture.slug}/lessons/${fixture.lessonSlug}/submissions/${submission.id}/view`;
+
+    // Another student of the same class: 404, exactly like a missing submission.
+    expect((await otherCtx.request.get(viewPath)).status()).toBe(404);
+    expect((await otherCtx.request.get(viewPath.replace(submission.id, "nope"))).status()).toBe(404);
+
+    // The author sees it, with the sandbox header and nothing executable inside.
+    const res = await studentCtx.request.get(viewPath);
+    expect(res.status()).toBe(200);
+    const csp = res.headers()["content-security-policy"] ?? "";
+    expect(csp).toMatch(/^sandbox /);
+    expect(csp).not.toContain("allow-scripts");
+    expect(csp).not.toContain("allow-same-origin");
+    expect(csp).toContain("default-src 'none'");
+    const body = await res.text();
+    expect(body).not.toMatch(/<script|onerror|pwned/);
+    expect(body).toContain("E2E View Student");
+
+    // The student's own card links to it.
+    const studentPage = await studentCtx.newPage();
+    await studentPage.goto(`/classes/${fixture.slug}/lessons/${fixture.lessonSlug}`);
+    await expect(studentPage.getByTestId("view-submission-link")).toHaveAttribute("href", viewPath);
+
+    // The teacher opens it from the review modal: a new tab with the rendered notebook.
+    const page = await teacherCtx.newPage();
+    await page.goto(`/classes/${fixture.slug}/homework?lesson=${fixture.lessonSlug}`);
+    await page.getByTestId(`sub-cell-${student.userId}-hw1`).click();
+    const viewBtn = page.getByTestId("submission-view-btn");
+    await expect(viewBtn).toHaveAttribute("target", "_blank");
+    const [tab] = await Promise.all([page.context().waitForEvent("page"), viewBtn.click()]);
+    await tab.waitForLoadState();
+    await expect(tab).toHaveTitle("gradient.ipynb");
+    await expect(tab.getByRole("heading", { name: "Gradient check" })).toBeVisible();
+    await expect(tab.locator("math").first()).toBeAttached();
+    await expect(tab.getByText("In[1]:")).toBeVisible();
+    await expect(tab.locator("pre.nb-stream")).toHaveText("loss 0.25\n");
+    await expect(tab.locator("table.dataframe td")).toHaveText("0.5");
+    await expect(tab.locator('.nb-image img[src^="data:image/png;base64,"]')).toBeVisible();
+    await expect(tab.getByText("Interactive output")).toBeVisible();
+    // Opaque origin: even a script that did slip through could not reach the site.
+    expect(await tab.evaluate(() => self.origin)).toBe("null");
+    await expect(tab).not.toHaveTitle(/pwned/);
+  });
+
   test("student cabinet links to Assignments and handles the unenrolled state", async ({
     browser,
   }) => {

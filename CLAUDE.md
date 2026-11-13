@@ -143,6 +143,20 @@ A third content family, for lecturing from the reveal.js decks in
   A single-submission policy locks further uploads once committed. Downloads
   route through `GET /api/classes/<slug>/lessons/<lesson>/submissions/<id>/download`
   (10-minute presigned redirect authorized only for author and instructors).
+  **View** (`…/submissions/<id>/view`, same readers via `readableSubmission()`)
+  renders the notebook as a page in a new tab, so a teacher can skim it without
+  downloading and running it. The server reads the blob with `get()` and
+  `renderNotebookPage()` (`web/src/lib/notebook-render.ts`) turns it into HTML:
+  markdown via `marked` + KaTeX **MathML only** (no fonts or CSS to load), Python
+  highlighting, ANSI colours in tracebacks, images as `data:` URIs, SVG only as
+  an `<img>`, per-output text capped at 100 KB. The notebook is the student's
+  content on our origin, so two layers hold: the sanitizer allowlist (an HTML
+  output with any `<script>` — plotly, widgets — falls back to `text/plain` with a
+  note) and a `CSP: sandbox` response without `allow-scripts`, so the page has
+  an opaque origin and never sees the site's cookies. The page is **streamed**
+  a few cells at a time, because a buffered Vercel function response caps at
+  4.5 MB. `tests/notebook-render.test.mjs` is the attack list. Locally, the
+  repo's `.vercel/project.json` makes `get()` 403 (OIDC, as with `head()`).
   Student profile `/profile?tab=notebooks` and lesson pages render submission
   progress, scores, and instructor feedback with Markdown and KaTeX math.
 - **A class is published or a draft**, and `Class.publishedAt` (null = draft) is

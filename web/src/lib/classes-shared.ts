@@ -223,6 +223,15 @@ export function getDownloadEndpoint(
   return `/api/classes/${classSlug}/lessons/${lessonSlug}/submissions/${submissionId}/download`;
 }
 
+/** The submitted notebook rendered as a page — opened in a new tab to skim it. */
+export function getViewEndpoint(
+  classSlug: string,
+  lessonSlug: string,
+  submissionId: string,
+): string {
+  return `/api/classes/${classSlug}/lessons/${lessonSlug}/submissions/${submissionId}/view`;
+}
+
 export function formatBytes(bytes: number): string {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;

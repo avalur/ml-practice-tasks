@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useId, useRef } from "react";
+import { getDownloadEndpoint, getViewEndpoint } from "@/lib/classes-shared";
 import { renderFeedbackMarkdown } from "@/lib/feedback-render";
 
 export type SubmissionModalData = {
@@ -363,7 +364,7 @@ export function SubmissionReviewModal({
             <div className="sub-modal-section">
               <p className="muted sub-modal-hint">
                 This student has not submitted a notebook for this assignment yet. Once the student
-                uploads their <code>.ipynb</code> file, you will be able to download and grade it
+                uploads their <code>.ipynb</code> file, you will be able to view, download and grade it
                 here.
               </p>
             </div>
@@ -379,16 +380,27 @@ export function SubmissionReviewModal({
                     {formatBytes(submission.fileBytes)} · Jupyter Notebook (.ipynb)
                   </span>
                 </div>
-                <a
-                  href={`/api/classes/${classSlug}/lessons/${lessonSlug}/submissions/${submission.id}/download`}
-                  download={submission.fileName}
-                  className="btn small primary"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  data-testid="submission-download-btn"
-                >
-                  Download .ipynb
-                </a>
+                <div className="sub-modal-file-actions">
+                  <a
+                    href={getViewEndpoint(classSlug, lessonSlug, submission.id)}
+                    className="btn small primary"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-testid="submission-view-btn"
+                  >
+                    View notebook ↗
+                  </a>
+                  <a
+                    href={getDownloadEndpoint(classSlug, lessonSlug, submission.id)}
+                    download={submission.fileName}
+                    className="btn small subtle"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    data-testid="submission-download-btn"
+                  >
+                    Download .ipynb
+                  </a>
+                </div>
               </div>
 
               {/* Teacher metadata (if already graded) */}

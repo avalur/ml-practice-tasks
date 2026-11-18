@@ -923,6 +923,107 @@ test.describe("Submission, Download, and Grading Routes", () => {
     await expect(tab).not.toHaveTitle(/pwned/);
   });
 
+  /* An assignment with `accept: ["pdf"]` (the case-study / debate homework):
+   * the student hands in slides as a PDF through the same uploader, the teacher
+   * grades it in the same modal, and "Open PDF" sends the browser to the Blob
+   * store rather than rendering anything on this origin. Runs the real upload,
+   * so it needs a Blob store — and, locally, no repo-root `.vercel` (OIDC). */
+  test("a PDF assignment: upload slides, grade them, open them from the store", async ({ browser }) => {
+    skipUnlessIsolated();
+    test.skip(!(await checkNotebookSubmissionsTableExists()), "NotebookSubmission table is not pushed");
+    const token = blobToken();
+    test.skip(!token, "no Blob store configured (BLOB_READ_WRITE_TOKEN)");
+
+    const fixture = await draftClass({
+      slug: `e2e-pdf-${process.pid}`,
+      title: `E2E PDF ${process.pid}`,
+      lesson: "l01-scratch",
+      publishForStudents: true,
+      homework: {
+        due: "2026-12-22T23:59",
+        items: [{
+          type: "assignment", id: "case-study", title: "Case Study or Tech Debate",
+          templateHref: "/classes/building-ai-agents/l07-case-studies-and-debates/present.html",
+          maxScore: 100, accept: ["pdf"],
+        }],
+      },
+    });
+    const studentCtx = await browser.newContext();
+    const student = await signInAs(studentCtx, {
+      email: `e2e-pdf-student-${process.pid}@example.test`, name: "E2E PDF Student",
+      classSlug: fixture.slug,
+    });
+    const teacherCtx = await browser.newContext();
+    await signInAs(teacherCtx, {
+      email: `e2e-pdf-teacher-${process.pid}@example.test`, name: "E2E PDF Teacher",
+      classSlug: fixture.slug, teacher: true,
+    });
+
+    const { PrismaClient } = await import("@prisma/client");
+    const prisma = new PrismaClient({ datasourceUrl: databaseUrl() });
+    created.push(() => prisma.$disconnect());
+    const { del } = await import("@vercel/blob");
+    created.push(async () => {
+      const rows = await prisma.notebookSubmission.findMany({ where: { userId: student.userId } });
+      for (const r of rows) await del(r.fileUrl, { token: token! }).catch(() => {});
+      await prisma.notebookSubmission.deleteMany({ where: { userId: student.userId } });
+    });
+
+    const page = await studentCtx.newPage();
+    await page.goto(`/classes/${fixture.slug}/lessons/${fixture.lessonSlug}`);
+    const card = page.getByTestId("assignment-case-study");
+    await expect(card.getByTestId("template-link")).toHaveText("Open the brief ↗");
+    await expect(card.getByTestId("notebook-dropzone")).toContainText("PDF (.pdf) only");
+    const input = card.getByTestId("notebook-file-input");
+    await expect(input).toHaveAttribute("accept", ".pdf,application/pdf");
+
+    // A notebook is refused before anything is uploaded.
+    await input.setInputFiles({ name: "solution.ipynb", mimeType: "application/x-ipynb+json", buffer: Buffer.from("{}") });
+    await expect(card.getByTestId("upload-error")).toHaveText("Only PDF (.pdf) files are accepted.");
+
+    // A PDF goes all the way: token, Blob, the database row.
+    const pdf = Buffer.from("%PDF-1.4\n1 0 obj<<>>endobj\ntrailer<<>>\n%%EOF\n");
+    await input.setInputFiles({ name: "Talk Slides.pdf", mimeType: "application/pdf", buffer: pdf });
+    await expect(card.getByTestId("submit-notebook-btn")).toHaveText("Submit PDF (.pdf)");
+    await card.getByTestId("submit-notebook-btn").click();
+    await expect(card.getByTestId("status-badge")).toHaveText(/Submitted/);
+    await expect(card.getByTestId("download-submission-link")).toHaveText("Download .pdf");
+
+    const row = await prisma.notebookSubmission.findFirstOrThrow({ where: { userId: student.userId } });
+    expect(row.fileName).toBe("Talk_Slides.pdf");
+    expect(new URL(row.fileUrl).pathname).toMatch(/\/case-study\/Talk_Slides[^/]*\.pdf$/);
+
+    // "View" on a PDF is a redirect to the store — inline, not a download.
+    const viewPath = `/api/classes/${fixture.slug}/lessons/${fixture.lessonSlug}/submissions/${row.id}/view`;
+    const view = await studentCtx.request.get(viewPath, { maxRedirects: 0 });
+    expect(view.status()).toBe(307);
+    const location = new URL(view.headers()["location"]);
+    expect(location.hostname).toMatch(/\.blob\.vercel-storage\.com$/);
+    expect(location.searchParams.has("download")).toBe(false);
+
+    // The teacher grades it in the same modal.
+    const tpage = await teacherCtx.newPage();
+    await tpage.goto(`/classes/${fixture.slug}/homework?lesson=${fixture.lessonSlug}`);
+    await tpage.getByTestId(`sub-cell-${student.userId}-case-study`).click();
+    await expect(tpage.getByText("PDF (.pdf)", { exact: false })).toBeVisible();
+    await expect(tpage.getByTestId("submission-view-btn")).toHaveText("Open PDF ↗");
+    await expect(tpage.getByTestId("submission-download-btn")).toHaveText("Download .pdf");
+    await tpage.getByTestId("submission-grade-input").fill("87");
+    await tpage.getByTestId("submission-feedback-input").fill("Strong **architecture** diagram; cite the benchmark.");
+    // The cell updates optimistically, so wait for the server's answer itself.
+    const [graded] = await Promise.all([
+      tpage.waitForResponse((r) => r.url().endsWith(`/submissions/${row.id}/grade`)),
+      tpage.getByTestId("submission-save-grade-btn").click(),
+    ]);
+    expect(graded.status()).toBe(200);
+    await expect(tpage.getByTestId(`sub-cell-${student.userId}-case-study`)).toHaveText("87/100");
+
+    // And the student sees the grade and the comment.
+    await page.reload();
+    await expect(card.getByTestId("grade-badge")).toHaveText(/87 \/ 100/);
+    await expect(card.getByTestId("feedback-content").locator("strong")).toHaveText("architecture");
+  });
+
   test("student cabinet links to Assignments and handles the unenrolled state", async ({
     browser,
   }) => {

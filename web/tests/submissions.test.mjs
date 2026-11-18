@@ -287,3 +287,28 @@ test("SubmissionApiError carries status code and message", () => {
   assert.equal(err409.status, 409);
   assert.equal(err409.message, "assignment already submitted");
 });
+
+test("an assignment that accepts PDFs takes .pdf paths and refuses notebooks; the default stays .ipynb", async () => {
+  const { assignmentFormats, allowedMimeTypes } = await import("../src/lib/submissions.ts");
+  const prefix = "classes/agents/l07/submissions/usr_1/case-study/";
+  const pdf = assignmentFormats({ accept: ["pdf"] });
+  assert.deepEqual(pdf, ["pdf"]);
+  assert.deepEqual(assignmentFormats({}), ["ipynb"]);
+  assert.deepEqual(assignmentFormats({ accept: ["html"] }), ["ipynb"], "unknown formats fall back, never widen");
+  assert.deepEqual(allowedMimeTypes(pdf), ["application/pdf"]);
+
+  assert.equal(validateSubmissionPath(`${prefix}slides.pdf`, prefix, pdf).valid, true);
+  assert.equal(validateSubmissionPath(`${prefix}slides.ipynb`, prefix, pdf).valid, false);
+  assert.equal(validateSubmissionPath(`${prefix}slides.pdf`, prefix).valid, false, "a notebook assignment refuses a PDF");
+  assert.equal(validateSubmissionPath(`${prefix}../x/slides.pdf`, prefix, pdf).valid, false);
+  assert.equal(validateSubmissionPath(`${prefix}a.ipynb`, prefix, ["ipynb", "pdf"]).valid, true);
+  assert.equal(validateSubmissionPath(`${prefix}a.svg`, prefix, ["ipynb", "pdf"]).valid, false);
+
+  assert.equal(sanitizeFileName("Talk Slides.PDF", undefined, pdf), "Talk_Slides.pdf");
+  assert.equal(sanitizeFileName("slides.pdf", undefined, pdf), "slides.pdf");
+  assert.equal(sanitizeFileName("slides", undefined, pdf), "slides.pdf");
+  assert.equal(sanitizeFileName("slides.ipynb", undefined, pdf), "slides.ipynb.pdf");
+  assert.equal(sanitizeFileName("", undefined, pdf), "submission.pdf");
+  assert.equal(sanitizeFileName(".pdf", undefined, pdf), "submission.pdf");
+  assert.equal(sanitizeFileName("slides.pdf"), "slides.pdf.ipynb", "default stays notebook-only");
+});

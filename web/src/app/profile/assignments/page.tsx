@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-import { effectiveMaxScore, formatDay, myClassSlugs } from "@/lib/classes";
+import {
+  acceptedFormats,
+  effectiveMaxScore,
+  formatDay,
+  isNotebookOnly,
+  myClassSlugs,
+} from "@/lib/classes";
 import { renderFeedbackMarkdown } from "@/lib/feedback-render";
 import {
   assignmentState,
@@ -198,7 +204,9 @@ function AssignmentCard({
               className="btn subtle small"
               data-testid="template-link"
             >
-              Open starter notebook (Colab) ↗
+              {isNotebookOnly(acceptedFormats(a.assignment))
+                ? "Open starter notebook (Colab) ↗"
+                : "Open the brief ↗"}
             </a>
           </p>
         )}
@@ -215,6 +223,7 @@ function AssignmentCard({
             maxScore={a.assignment.maxScore}
             renderedFeedbackHtml={sub?.feedback ? renderFeedbackMarkdown(sub.feedback) : null}
             submissionsUnavailable={unavailable}
+            formats={acceptedFormats(a.assignment)}
           />
         )}
       </div>

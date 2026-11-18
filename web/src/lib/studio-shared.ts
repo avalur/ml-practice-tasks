@@ -19,9 +19,16 @@ export const ASSET_MIME = ["image/png", "image/jpeg", "image/gif", "image/webp"]
 /** A practice/homework entry as the teacher writes it — class.json's shape,
  * before `*` patterns are expanded. */
 export type StudioItemInput =
-  | { type: "problem" | "notebook"; id: string; title?: string }
+  | { type: "problem" | "notebook"; id: string; title?: string; exclude?: string[] }
   | { type: "link"; title: string; href: string }
-  | { type: "assignment"; id: string; title: string; templateHref?: string; maxScore?: number };
+  | {
+      type: "assignment";
+      id: string;
+      title: string;
+      templateHref?: string;
+      maxScore?: number;
+      accept?: ("ipynb" | "pdf")[];
+    };
 
 export type StudioHomeworkInput = { due: string; items: StudioItemInput[] } | null;
 

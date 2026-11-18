@@ -10,14 +10,66 @@ export function effectiveMaxScore(
   return assignmentMaxScore ?? submissionMaxGrade ?? 100;
 }
 
-/** Pure validation for uploaded notebook files. Client- and server-safe. */
+/* What a student may hand in for an assignment, by extension — class.json's
+ * `accept`, a closed list validated by export_decks.py. No `accept` means a
+ * notebook, which is every assignment written before the field existed.
+ * The server half (content types for the upload token) is in submissions.ts. */
+export type SubmissionFormat = "ipynb" | "pdf";
+
+export const SUBMISSION_FORMATS: Record<
+  SubmissionFormat,
+  { ext: string; label: string; noun: string; accept: string; icon: string }
+> = {
+  ipynb: {
+    ext: ".ipynb",
+    label: "Jupyter Notebook (.ipynb)",
+    noun: "Notebook",
+    accept: ".ipynb,application/x-ipynb+json",
+    icon: "📓",
+  },
+  pdf: { ext: ".pdf", label: "PDF (.pdf)", noun: "PDF", accept: ".pdf,application/pdf", icon: "📄" },
+};
+
+const DEFAULT_FORMATS: SubmissionFormat[] = ["ipynb"];
+
+/** The formats an assignment takes; anything unknown is dropped, nothing left means a notebook. */
+export function acceptedFormats(assignment?: { accept?: readonly string[] } | null): SubmissionFormat[] {
+  const list = (assignment?.accept ?? []).filter(
+    (f): f is SubmissionFormat => Object.hasOwn(SUBMISSION_FORMATS, f),
+  );
+  return list.length ? list : DEFAULT_FORMATS;
+}
+
+/** True for the notebook-only assignments, whose wording predates other formats. */
+export function isNotebookOnly(formats: readonly SubmissionFormat[]): boolean {
+  return formats.length === 1 && formats[0] === "ipynb";
+}
+
+/** ".ipynb" or ".ipynb, .pdf" — for buttons and hints. */
+export function formatExts(formats: readonly SubmissionFormat[]): string {
+  return formats.map((f) => SUBMISSION_FORMATS[f].ext).join(", ");
+}
+
+/** The format of a stored file, by extension; a stored file is always one of them. */
+export function fileFormat(fileName: string): SubmissionFormat {
+  const lower = (fileName || "").toLowerCase();
+  for (const f of Object.keys(SUBMISSION_FORMATS) as SubmissionFormat[]) {
+    if (lower.endsWith(SUBMISSION_FORMATS[f].ext)) return f;
+  }
+  return "ipynb";
+}
+
+/** Pure validation for an uploaded submission file. Client- and server-safe. */
 export function validateNotebookFile(
   fileName: string,
   fileBytes: number,
   maxBytes: number = MAX_SUBMISSION_BYTES,
+  formats: readonly SubmissionFormat[] = DEFAULT_FORMATS,
 ): { valid: boolean; error?: string } {
-  if (!fileName || !fileName.toLowerCase().endsWith(".ipynb")) {
-    return { valid: false, error: "Only Jupyter Notebook (.ipynb) files are accepted." };
+  const lower = (fileName || "").toLowerCase();
+  if (!fileName || !formats.some((f) => lower.endsWith(SUBMISSION_FORMATS[f].ext))) {
+    const labels = formats.map((f) => SUBMISSION_FORMATS[f].label).join(" or ");
+    return { valid: false, error: `Only ${labels} files are accepted.` };
   }
   if (fileBytes <= 0) {
     return { valid: false, error: "File cannot be empty." };
@@ -39,6 +91,8 @@ export type AssignmentRef = {
   title: string;
   templateHref?: string;
   maxScore?: number;
+  /** What may be handed in; absent means `["ipynb"]` (see `acceptedFormats`). */
+  accept?: SubmissionFormat[];
 };
 
 export type TrackableRef = ContentRef | AssignmentRef;
@@ -300,16 +354,22 @@ export function submissionPrefix(
   return `classes/${classSlug}/${lessonSlug}/submissions/${userId}/${assignmentId}/`;
 }
 
-/** Sanitize an uploaded file name, stripping path elements and ensuring .ipynb extension. Client-safe. */
-export function sanitizeFileName(fileName: string, fallback?: string): string {
+/** Sanitize an uploaded file name: strip path elements and end it in one of the
+ * accepted extensions (lower-cased, so the server's path check agrees), adding
+ * the first one when it has none. Client-safe; mirrored in submissions.ts. */
+export function sanitizeFileName(
+  fileName: string,
+  fallback?: string,
+  formats: readonly SubmissionFormat[] = DEFAULT_FORMATS,
+): string {
+  const exts = formats.map((f) => SUBMISSION_FORMATS[f].ext);
   const trimmed = (fileName || "").trim();
-  const rawBase = (trimmed || fallback || "submission.ipynb").replace(/^.*[\\/]/, "");
+  const rawBase = (trimmed || fallback || `submission${exts[0]}`).replace(/^.*[\\/]/, "");
   let cleaned = rawBase.replace(/[^a-zA-Z0-9._-]/g, "_");
-  if (!cleaned.endsWith(".ipynb")) {
-    cleaned += ".ipynb";
-  }
-  if (cleaned === ".ipynb") {
-    cleaned = "submission.ipynb";
+  const ext = exts.find((e) => cleaned.toLowerCase().endsWith(e)) ?? exts[0];
+  cleaned = cleaned.toLowerCase().endsWith(ext) ? cleaned.slice(0, -ext.length) + ext : cleaned + ext;
+  if (cleaned === ext) {
+    cleaned = `submission${ext}`;
   }
   return cleaned;
 }

@@ -1,13 +1,11 @@
 import { NextResponse } from "next/server";
-import { issueSignedToken, presignUrl } from "@vercel/blob";
-import { readableSubmission } from "@/lib/submission-access";
-import { getBlobPathname, SUBMISSION_LINK_TTL_MS } from "@/lib/submissions";
+import { readableSubmission, signedSubmissionUrl } from "@/lib/submission-access";
 
 type RouteParams = {
   params: Promise<{ slug: string; lesson: string; id: string }>;
 };
 
-/* GET — signs a short-lived download link for a student's submitted .ipynb notebook.
+/* GET — signs a short-lived download link for a student's submitted file.
  *
  * Security:
  * - Blob store is private: object URL cannot be fetched directly without authorization.
@@ -30,22 +28,14 @@ export async function GET(_req: Request, { params }: RouteParams) {
     );
   }
 
-  const pathname = getBlobPathname(submission.fileUrl);
   try {
-    const validUntil = Date.now() + SUBMISSION_LINK_TTL_MS;
-    const signed = await issueSignedToken({ pathname, operations: ["get"], validUntil });
-    const { presignedUrl } = await presignUrl(signed, {
-      operation: "get",
-      pathname,
-      access: "private",
-    });
-
+    const presignedUrl = await signedSubmissionUrl(submission.fileUrl);
     return NextResponse.redirect(`${presignedUrl}&download=1`, {
       status: 307,
       headers: { "Cache-Control": "private, no-store" },
     });
   } catch (err) {
-    console.error("[submission-download] could not sign a download link for", pathname, err);
+    console.error("[submission-download] could not sign a download link for", submission.fileUrl, err);
     return NextResponse.json(
       { error: "The submission file is temporarily unavailable." },
       { status: 503 },

@@ -16,7 +16,16 @@
       "homework": {
         "due": "2026-08-18T23:59",
         "items": [
-          { "type": "problem", "id": "py_*", "title": "Python fundamentals" }
+          {
+            "type": "problem",
+            "id": "py_*",
+            "title": "Python fundamentals",
+            "exclude": [
+              "py_basics/fifo_queue",
+              "py_threads/bounded_queue",
+              "py_threads/thread_pool"
+            ]
+          }
         ]
       }
     },

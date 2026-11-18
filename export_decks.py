@@ -119,6 +119,12 @@ def group_title(pattern: str, ids: list[str]) -> str:
 
 
 ASSIGNMENT_ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]*$")
+# File types a student may hand in for an assignment, by extension. A closed
+# list on purpose: each one needs a content type in the upload token and a way
+# to show it to the teacher (a notebook is rendered, a PDF opens in the browser
+# from the Blob store). Anything that is a document on our origin — html, svg —
+# has no business here. Omitted `accept` means a notebook.
+SUBMISSION_FORMATS = ("ipynb", "pdf")
 
 
 def expand_item(item: dict, problems: set[str], notebooks: set[str],
@@ -177,17 +183,38 @@ def expand_item(item: dict, problems: set[str], notebooks: set[str],
             if isinstance(max_score, bool) or not isinstance(max_score, int) or max_score <= 0:
                 return None, [f"{where}: assignment {aid!r} maxScore must be a positive integer, got {max_score!r}"]
             res["maxScore"] = max_score
+        if "accept" in item:
+            accept = item["accept"]
+            if (not isinstance(accept, list) or not accept
+                    or any(f not in SUBMISSION_FORMATS for f in accept)
+                    or len(set(accept)) != len(accept)):
+                return None, [f"{where}: assignment {aid!r} accept must be a non-empty list "
+                              f"of distinct formats from {list(SUBMISSION_FORMATS)}, got {accept!r}"]
+            res["accept"] = list(accept)
         return res, []
     if kind not in ("problem", "notebook"):
         return None, [f"{where}: unknown item type {kind!r}"]
     pool = problems if kind == "problem" else notebooks
 
     if "*" not in item["id"]:
+        if "exclude" in item:
+            return None, [f"{where}: exclude only applies to a pattern, not {item['id']!r}"]
         if item["id"] not in pool:
             return None, [f"{where}: unknown {kind} id {item['id']!r}"]
         return {"type": kind, "id": item["id"]}, []
 
     ids = sorted(fnmatch.filter(pool, item["id"]))
+    # `exclude` keeps a pattern from growing under a homework that is already
+    # set: a task added to the catalogue later would otherwise appear in it as
+    # one more undone cell for every student. Exact ids, each of which the
+    # pattern must actually match, so a typo cannot silently exclude nothing.
+    exclude = item.get("exclude", [])
+    if not isinstance(exclude, list) or not all(isinstance(x, str) for x in exclude):
+        return None, [f"{where}: exclude of {item['id']!r} must be a list of ids"]
+    stray = [x for x in exclude if x not in ids]
+    if stray:
+        return None, [f"{where}: exclude {stray!r} not matched by pattern {item['id']!r}"]
+    ids = [i for i in ids if i not in exclude]
     if not ids:
         return None, [f"{where}: pattern {item['id']!r} matches no {kind}"]
     return {

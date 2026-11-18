@@ -10,7 +10,7 @@ import {
   renderNotebookPage,
   type NotebookPageInfo,
 } from "@/lib/notebook-render";
-import { readableSubmission } from "@/lib/submission-access";
+import { readableSubmission, signedSubmissionUrl } from "@/lib/submission-access";
 import { getBlobPathname } from "@/lib/submissions";
 
 export const runtime = "nodejs";
@@ -45,7 +45,8 @@ const HEADERS = {
   "Cache-Control": "private, no-store",
 };
 
-/* GET — the submitted .ipynb rendered as a read-only page, to skim in a tab
+/* GET — the submitted .ipynb rendered as a read-only page (a PDF is handed to
+ * the browser's viewer instead, below), to skim in a tab
  * without downloading and running it. Same readers as /download: the author
  * and the class's teachers; 404 for everyone else.
  *
@@ -56,6 +57,31 @@ export async function GET(_req: Request, { params }: RouteParams) {
 
   const submission = await readableSubmission(slug, lesson, id);
   if (!submission) return NextResponse.json({ error: "not found" }, { status: 404 });
+
+  // A PDF needs no rendering: the browser's own viewer shows it, straight from
+  // the Blob store. That is another origin, so whatever the file holds never
+  // runs next to this site's cookies — which is why it is not streamed through
+  // here. The path, not the display name, says what the file is.
+  if (getBlobPathname(submission.fileUrl).endsWith(".pdf")) {
+    if (!process.env.BLOB_READ_WRITE_TOKEN) {
+      return NextResponse.json(
+        { error: "no Blob store is configured (BLOB_READ_WRITE_TOKEN is unset)" },
+        { status: 501 },
+      );
+    }
+    try {
+      return NextResponse.redirect(await signedSubmissionUrl(submission.fileUrl), {
+        status: 307,
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    } catch (err) {
+      console.error("[submission-view] could not sign a link for", submission.fileUrl, err);
+      return NextResponse.json(
+        { error: "The submission file is temporarily unavailable." },
+        { status: 503 },
+      );
+    }
+  }
 
   const author = await prisma.user.findUnique({
     where: { id: submission.userId },

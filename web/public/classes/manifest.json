@@ -137,14 +137,6 @@
                   {
                     "type": "problem",
                     "id": "py_strings/normalize_path"
-                  },
-                  {
-                    "type": "problem",
-                    "id": "py_threads/bounded_queue"
-                  },
-                  {
-                    "type": "problem",
-                    "id": "py_threads/thread_pool"
                   }
                 ]
               }
@@ -644,7 +636,21 @@
           "date": "2026-11-17",
           "deck": "case_studies_debates",
           "practice": [],
-          "homework": null
+          "homework": {
+            "due": "2026-12-22T23:59",
+            "items": [
+              {
+                "type": "assignment",
+                "id": "case-study-or-debate",
+                "title": "Case Study or Tech Debate: slides & artifacts",
+                "templateHref": "/classes/building-ai-agents/l07-case-studies-and-debates/present.html",
+                "maxScore": 100,
+                "accept": [
+                  "pdf"
+                ]
+              }
+            ]
+          }
         },
         {
           "slug": "final-projects",

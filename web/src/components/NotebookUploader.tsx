@@ -4,7 +4,11 @@ import React, { useState, useRef } from "react";
 import { upload } from "@vercel/blob/client";
 import {
   formatBytes,
+  formatExts,
+  isNotebookOnly,
   sanitizeFileName,
+  SUBMISSION_FORMATS,
+  type SubmissionFormat,
   submissionPrefix,
   validateNotebookFile,
   type NotebookSubmissionData,
@@ -21,7 +25,11 @@ export interface NotebookUploaderProps {
   renderedFeedbackHtml?: string | null;
   submissionsUnavailable?: boolean;
   onSubmitted?: (submission: NotebookSubmissionData) => void;
+  /** What the assignment takes (`acceptedFormats`); a notebook when omitted. */
+  formats?: SubmissionFormat[];
 }
+
+const NOTEBOOK: SubmissionFormat[] = ["ipynb"];
 
 /** Identity of a picked file. Re-picking the same file creates a new `File` object,
  * so object identity would force a second upload (and an orphaned blob) on retry. */
@@ -39,7 +47,10 @@ export function NotebookUploader({
   renderedFeedbackHtml,
   submissionsUnavailable = false,
   onSubmitted,
+  formats = NOTEBOOK,
 }: NotebookUploaderProps) {
+  const exts = formatExts(formats);
+  const noun = formats.length === 1 ? SUBMISSION_FORMATS[formats[0]].noun : "File";
   const [submission, setSubmission] = useState<NotebookSubmissionData | null>(
     initialSubmission ?? null,
   );
@@ -59,7 +70,7 @@ export function NotebookUploader({
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   function validateFile(file: File): string | null {
-    const res = validateNotebookFile(file.name, file.size);
+    const res = validateNotebookFile(file.name, file.size, undefined, formats);
     return res.valid ? null : (res.error ?? "Invalid file");
   }
 
@@ -185,7 +196,7 @@ export function NotebookUploader({
 
       // 1. Direct client-to-blob upload if not already staged
       if (!blobUrl) {
-        const cleanFileName = sanitizeFileName(selectedFile.name);
+        const cleanFileName = sanitizeFileName(selectedFile.name, undefined, formats);
         const prefix = submissionPrefix(classSlug, lessonSlug, userId, assignmentId);
         const targetPath = `${prefix}${cleanFileName}`;
 
@@ -314,14 +325,16 @@ export function NotebookUploader({
           type="file"
           ref={fileInputRef}
           onChange={onFileInputChange}
-          accept=".ipynb,application/x-ipynb+json"
+          accept={formats.map((f) => SUBMISSION_FORMATS[f].accept).join(",")}
           hidden
           data-testid="notebook-file-input"
         />
 
         {selectedFile ? (
           <div className="notebook-dropzone-selected">
-            <span className="notebook-file-icon">📓</span>
+            <span className="notebook-file-icon">
+              {formats.length === 1 ? SUBMISSION_FORMATS[formats[0]].icon : "📄"}
+            </span>
             <div className="notebook-file-info">
               <span className="notebook-file-title" data-testid="selected-file-name">
                 {selectedFile.name}
@@ -335,11 +348,12 @@ export function NotebookUploader({
           <div className="notebook-dropzone-empty">
             <span className="notebook-file-icon">📤</span>
             <p className="notebook-dropzone-label">
-              Drag and drop your completed <code>.ipynb</code> notebook here, or{" "}
+              Drag and drop your completed <code>{exts}</code>{" "}
+              {isNotebookOnly(formats) ? "notebook" : "file"} here, or{" "}
               <span className="notebook-browse-btn">browse</span>
             </p>
             <span className="muted text-xs">
-              Jupyter Notebook (.ipynb) only · Up to 25 MB
+              {formats.map((f) => SUBMISSION_FORMATS[f].label).join(" or ")} only · Up to 25 MB
             </span>
           </div>
         )}
@@ -375,7 +389,7 @@ export function NotebookUploader({
             disabled={uploading}
             data-testid="submit-notebook-btn"
           >
-            {submission ? "Upload New Version (.ipynb)" : "Submit Notebook (.ipynb)"}
+            {submission ? `Upload New Version (${exts})` : `Submit ${noun} (${exts})`}
           </button>
           <button
             type="button"

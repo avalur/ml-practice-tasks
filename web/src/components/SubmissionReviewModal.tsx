@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState, useId, useRef } from "react";
-import { getDownloadEndpoint, getViewEndpoint } from "@/lib/classes-shared";
+import {
+  acceptedFormats,
+  fileFormat,
+  formatExts,
+  getDownloadEndpoint,
+  getViewEndpoint,
+  SUBMISSION_FORMATS,
+  type SubmissionFormat,
+} from "@/lib/classes-shared";
 import { renderFeedbackMarkdown } from "@/lib/feedback-render";
 
 export type SubmissionModalData = {
@@ -33,6 +41,7 @@ export type AssignmentModalInfo = {
   id: string;
   title: string;
   maxScore?: number;
+  accept?: SubmissionFormat[];
 };
 
 interface SubmissionReviewModalProps {
@@ -187,6 +196,8 @@ export function SubmissionReviewModal({
   if (!isOpen || !student || !assignment) return null;
 
   const studentDisplayName = student.name || student.email || "Student";
+  const expectedExts = formatExts(acceptedFormats(assignment));
+  const submittedFormat = submission ? fileFormat(submission.fileName) : null;
 
   async function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -363,9 +374,10 @@ export function SubmissionReviewModal({
           {!submission ? (
             <div className="sub-modal-section">
               <p className="muted sub-modal-hint">
-                This student has not submitted a notebook for this assignment yet. Once the student
-                uploads their <code>.ipynb</code> file, you will be able to view, download and grade it
-                here.
+                This student has not submitted {expectedExts === ".ipynb" ? "a notebook" : "a file"} for
+                this assignment yet. Once the student
+                uploads their <code>{expectedExts}</code> file, you will be able to view, download and
+                grade it here.
               </p>
             </div>
           ) : (
@@ -377,7 +389,8 @@ export function SubmissionReviewModal({
                     {submission.fileName}
                   </span>
                   <span className="sub-modal-file-size">
-                    {formatBytes(submission.fileBytes)} · Jupyter Notebook (.ipynb)
+                    {formatBytes(submission.fileBytes)} ·{" "}
+                    {SUBMISSION_FORMATS[submittedFormat ?? "ipynb"].label}
                   </span>
                 </div>
                 <div className="sub-modal-file-actions">
@@ -388,7 +401,7 @@ export function SubmissionReviewModal({
                     rel="noopener noreferrer"
                     data-testid="submission-view-btn"
                   >
-                    View notebook ↗
+                    {submittedFormat === "pdf" ? "Open PDF ↗" : "View notebook ↗"}
                   </a>
                   <a
                     href={getDownloadEndpoint(classSlug, lessonSlug, submission.id)}
@@ -398,7 +411,7 @@ export function SubmissionReviewModal({
                     rel="noopener noreferrer"
                     data-testid="submission-download-btn"
                   >
-                    Download .ipynb
+                    Download {SUBMISSION_FORMATS[submittedFormat ?? "ipynb"].ext}
                   </a>
                 </div>
               </div>
@@ -485,7 +498,11 @@ export function SubmissionReviewModal({
                       <textarea
                         id="grade-feedback-input"
                         rows={5}
-                        placeholder="Provide feedback on the notebook code, plots, and analysis (Markdown supported)..."
+                        placeholder={
+                          submittedFormat === "pdf"
+                            ? "Feedback on the talk, the slides and the artifacts (Markdown supported)..."
+                            : "Provide feedback on the notebook code, plots, and analysis (Markdown supported)..."
+                        }
                         value={feedbackInput}
                         onChange={(e) => setFeedbackInput(e.target.value)}
                         disabled={saving}

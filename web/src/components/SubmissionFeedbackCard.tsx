@@ -1,10 +1,12 @@
 import React from "react";
 import {
   effectiveMaxScore,
+  fileFormat,
   formatBytes,
   formatDate,
   getDownloadEndpoint,
   getViewEndpoint,
+  SUBMISSION_FORMATS,
   type NotebookSubmissionData,
 } from "@/lib/classes-shared";
 
@@ -86,7 +88,7 @@ export function SubmissionFeedbackCard({
                 className="btn subtle small notebook-download-btn"
                 data-testid="download-submission-link"
               >
-                Download .ipynb
+                Download {SUBMISSION_FORMATS[fileFormat(submission.fileName)].ext}
               </a>
             </div>
           )}

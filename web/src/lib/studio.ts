@@ -85,6 +85,19 @@ export function expandItem(
       }
       out.maxScore = item.maxScore;
     }
+    if (item.accept !== undefined) {
+      const ok = ["ipynb", "pdf"];
+      const accept: unknown = item.accept;
+      if (
+        !Array.isArray(accept) ||
+        accept.length === 0 ||
+        accept.some((f) => !ok.includes(f)) ||
+        new Set(accept).size !== accept.length
+      ) {
+        return { item: null, error: `assignment ${item.id}: accept must list distinct formats from ${ok.join(", ")}` };
+      }
+      out.accept = accept as ("ipynb" | "pdf")[];
+    }
     return { item: out, error: null };
   }
   if (item.type !== "problem" && item.type !== "notebook") {
@@ -96,8 +109,15 @@ export function expandItem(
     if (!pool.has(item.id)) return { item: null, error: `unknown ${item.type} ${item.id}` };
     return { item: { type: item.type, id: item.id }, error: null };
   }
+  // `exclude` as in export_decks.py, minus its strictness: a studio lesson is
+  // expanded on every read, and an excluded task leaving the catalogue must not
+  // take the whole group down with it.
+  const exclude: unknown = item.exclude ?? [];
+  if (!Array.isArray(exclude) || !exclude.every((x) => typeof x === "string")) {
+    return { item: null, error: `exclude of ${item.id} must be a list of ids` };
+  }
   const re = globToRegExp(item.id);
-  const matched = [...pool].filter((id) => re.test(id)).sort();
+  const matched = [...pool].filter((id) => re.test(id) && !exclude.includes(id)).sort();
   if (matched.length === 0) return { item: null, error: `pattern ${item.id} matches no ${item.type}` };
   return {
     item: {

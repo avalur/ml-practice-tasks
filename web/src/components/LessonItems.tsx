@@ -1,8 +1,10 @@
 import Link from "next/link";
 
 import {
+  acceptedFormats,
   contentHref,
   effectiveMaxScore,
+  isNotebookOnly,
   isAssignment,
   isGroup,
   isLink,
@@ -73,6 +75,8 @@ function AssignmentCard({
     ? renderFeedbackMarkdown(submission.feedback)
     : null;
   const maxScore = effectiveMaxScore(assignment.maxScore, submission?.maxGrade);
+  const formats = acceptedFormats(assignment);
+  const notebook = isNotebookOnly(formats);
 
   return (
     <div
@@ -121,7 +125,7 @@ function AssignmentCard({
               className="btn subtle small"
               data-testid="template-link"
             >
-              Open starter notebook (Colab) ↗
+              {notebook ? "Open starter notebook (Colab) ↗" : "Open the brief ↗"}
             </a>
           </p>
         )}
@@ -150,10 +154,11 @@ function AssignmentCard({
             maxScore={assignment.maxScore}
             renderedFeedbackHtml={renderedFeedback}
             submissionsUnavailable={submissionsUnavailable}
+            formats={formats}
           />
         ) : !userId ? (
           <p className="notebook-card-note muted">
-            Sign in to submit your solution notebook.
+            {notebook ? "Sign in to submit your solution notebook." : "Sign in to submit your work."}
           </p>
         ) : (
           <p className="notebook-card-note muted">

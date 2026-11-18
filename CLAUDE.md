@@ -90,11 +90,24 @@ A third content family, for lecturing from the reveal.js decks in
 - **Source of truth = `classes/<class>/`.**
   - `class.json` — title, `teacherEmails`, and `lessons[]` (slug, title, date,
     `deck`, `practice[]`, `homework{due,items[]}`, optional `revealOverrides`).
+    A `problem`/`notebook` id with a `*` expands to every matching task **at
+    export time**, so a task added later joins every homework whose pattern it
+    matches — one more undone cell for each student, after the due date. Pin a
+    homework that is already set with `"exclude": ["<exact id>", …]` (each id
+    must be matched by the pattern; `ml-intensive-tlf` L01 excludes
+    `py_basics/fifo_queue` and the `py_threads` tasks). `--check` failing after a new task is that warning.
     A practice entry is a `problem`, `notebook`, `assignment`, or a **`link`** —
     `{type, title, href}` for work that lives off-site (a Colab notebook, a
     dataset). An assignment is trackable work declared with a unique lowercase
     slug `id`, a `title`, and optional `templateHref` / positive integer
-    `maxScore`; it may appear in practice or homework. A link is **practice
+    `maxScore` / `accept`; it may appear in practice or homework. `accept` is
+    what may be handed in, a list from the closed set `["ipynb", "pdf"]`
+    (absent = a notebook): the case-study / debate homework takes
+    `["pdf"]` — slides — and is graded in the same modal. The set is closed on
+    purpose: every format needs content types in the upload token and a way to
+    show it, and a format that is a document on our origin (html, svg) must
+    never be one. Formats always come from the lesson definition, never the
+    client. A link is **practice
     only**: `export_decks.py` refuses one in `homework`, and the TS type says so
     too (`Homework.items` is `TrackedItem[]`, which excludes `LinkRef`). The
     homework page is a roster of who handed what in, and an untrackable column
@@ -137,14 +150,18 @@ A third content family, for lecturing from the reveal.js decks in
   `pnpm db:push` against the target database **before this code ships** (and
   before publishing a manifest that includes assignments).
   Authorization is `session.user.email ∈ Class.teacherEmails`.
-  Student `.ipynb` notebook submissions are uploaded directly to private Vercel
-  Blob storage via `@vercel/blob/client` (`access: 'private'`, 25 MB max `.ipynb`),
+  Student submissions (`.ipynb`, or `.pdf` where the assignment accepts it) are
+  uploaded directly to private Vercel Blob storage via `@vercel/blob/client`
+  (`access: 'private'`, 25 MB max),
   scoped to `classes/<class>/<lesson>/submissions/<user>/<assignment>/<filename>`.
   A single-submission policy locks further uploads once committed. Downloads
   route through `GET /api/classes/<slug>/lessons/<lesson>/submissions/<id>/download`
   (10-minute presigned redirect authorized only for author and instructors).
   **View** (`…/submissions/<id>/view`, same readers via `readableSubmission()`)
-  renders the notebook as a page in a new tab, so a teacher can skim it without
+  sends a PDF straight to the browser's viewer — a 307 to a presigned Blob URL
+  without `&download=1`, which the store serves `inline` from its own origin, so
+  nothing in the file runs next to our cookies — and renders a notebook as a page
+  in a new tab, so a teacher can skim it without
   downloading and running it. The server reads the blob with `get()` and
   `renderNotebookPage()` (`web/src/lib/notebook-render.ts`) turns it into HTML:
   markdown via `marked` + KaTeX **MathML only** (no fonts or CSS to load), Python

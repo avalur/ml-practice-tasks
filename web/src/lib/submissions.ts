@@ -10,6 +10,33 @@ export const ALLOWED_SUBMISSION_MIME_TYPES = [
   "application/octet-stream",
 ];
 
+/* The server half of SUBMISSION_FORMATS in classes-shared.ts: the extension a
+ * stored path must end in, and the content types the upload token allows.
+ * A notebook arrives under whatever type the browser guesses for .ipynb (often
+ * none); a PDF is application/pdf everywhere, so nothing looser is let in. */
+export type SubmissionFormat = "ipynb" | "pdf";
+
+export const SUBMISSION_FORMAT_RULES: Record<SubmissionFormat, { ext: string; mimeTypes: string[] }> = {
+  ipynb: { ext: ".ipynb", mimeTypes: ALLOWED_SUBMISSION_MIME_TYPES },
+  pdf: { ext: ".pdf", mimeTypes: ["application/pdf"] },
+};
+
+const DEFAULT_FORMATS: SubmissionFormat[] = ["ipynb"];
+
+/** The formats an assignment takes, from class.json's `accept`; absent or unknown means a notebook. */
+export function assignmentFormats(assignment?: { accept?: unknown } | null): SubmissionFormat[] {
+  const raw = Array.isArray(assignment?.accept) ? assignment.accept : [];
+  const list = raw.filter(
+    (f): f is SubmissionFormat => typeof f === "string" && Object.hasOwn(SUBMISSION_FORMAT_RULES, f),
+  );
+  return list.length ? list : DEFAULT_FORMATS;
+}
+
+/** Content types the upload token may accept for these formats. */
+export function allowedMimeTypes(formats: readonly SubmissionFormat[]): string[] {
+  return [...new Set(formats.flatMap((f) => SUBMISSION_FORMAT_RULES[f].mimeTypes))];
+}
+
 export class SubmissionApiError extends Error {
   status: number;
   constructor(status: number, message: string) {
@@ -25,6 +52,7 @@ export type AssignmentInfo = {
   title: string;
   templateHref?: string;
   maxScore?: number;
+  accept?: SubmissionFormat[];
 };
 
 export type LessonWithAssignments = {
@@ -99,24 +127,31 @@ export function submissionPrefix(
   return `classes/${classSlug}/${lessonSlug}/submissions/${userId}/${assignmentId}/`;
 }
 
-/** Sanitize an uploaded file name, stripping path elements and ensuring .ipynb extension. */
-export function sanitizeFileName(fileName: string, fallback?: string): string {
+/** Sanitize an uploaded file name: strip path elements and end it in one of the
+ * accepted extensions, lower-cased, adding the first one when it has none.
+ * Mirrors the client copy in classes-shared.ts. */
+export function sanitizeFileName(
+  fileName: string,
+  fallback?: string,
+  formats: readonly SubmissionFormat[] = DEFAULT_FORMATS,
+): string {
+  const exts = formats.map((f) => SUBMISSION_FORMAT_RULES[f].ext);
   const trimmed = (fileName || "").trim();
-  const rawBase = (trimmed || fallback || "submission.ipynb").replace(/^.*[\\/]/, "");
+  const rawBase = (trimmed || fallback || `submission${exts[0]}`).replace(/^.*[\\/]/, "");
   let cleaned = rawBase.replace(/[^a-zA-Z0-9._-]/g, "_");
-  if (!cleaned.endsWith(".ipynb")) {
-    cleaned += ".ipynb";
-  }
-  if (cleaned === ".ipynb") {
-    cleaned = "submission.ipynb";
+  const ext = exts.find((e) => cleaned.toLowerCase().endsWith(e)) ?? exts[0];
+  cleaned = cleaned.toLowerCase().endsWith(ext) ? cleaned.slice(0, -ext.length) + ext : cleaned + ext;
+  if (cleaned === ext) {
+    cleaned = `submission${ext}`;
   }
   return cleaned;
 }
 
-/** Validate blob pathname strictly against expected prefix and file requirements. */
+/** Validate blob pathname strictly against expected prefix and the assignment's formats. */
 export function validateSubmissionPath(
   pathname: string,
   expectedPrefix: string,
+  formats: readonly SubmissionFormat[] = DEFAULT_FORMATS,
 ): { valid: boolean; error?: string } {
   if (pathname.includes("..")) {
     return { valid: false, error: "path traversal detected" };
@@ -124,8 +159,15 @@ export function validateSubmissionPath(
   if (!pathname.startsWith(expectedPrefix)) {
     return { valid: false, error: `pathname must sit under ${expectedPrefix}` };
   }
-  if (!pathname.endsWith(".ipynb")) {
-    return { valid: false, error: "file must have .ipynb extension" };
+  const exts = formats.map((f) => SUBMISSION_FORMAT_RULES[f].ext);
+  if (!exts.some((e) => pathname.endsWith(e))) {
+    return {
+      valid: false,
+      error:
+        exts.length === 1
+          ? `file must have ${exts[0]} extension`
+          : `file must have one of these extensions: ${exts.join(", ")}`,
+    };
   }
   return { valid: true };
 }

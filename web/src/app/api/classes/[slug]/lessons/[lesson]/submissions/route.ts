@@ -6,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { crossSite, jsonBody } from "@/lib/http";
 import { findLesson, getAccess, getClassMeta } from "@/lib/classes";
 import {
+  assignmentFormats,
   findAssignmentInLesson,
   getBlobPathname,
   getStoreIdFromToken,
@@ -13,6 +14,7 @@ import {
   isSameSubmissionFile,
   MAX_SUBMISSION_BYTES,
   sanitizeFileName,
+  SUBMISSION_FORMAT_RULES,
   submissionPrefix,
   validateSubmissionPath,
 } from "@/lib/submissions";
@@ -22,7 +24,8 @@ type RouteParams = {
   params: Promise<{ slug: string; lesson: string }>;
 };
 
-/* POST — records student .ipynb notebook submission after client upload to Vercel Blob.
+/* POST — records a student's submission (a .ipynb, or a format the assignment's
+ * `accept` lists) after the client uploaded it to Vercel Blob.
  *
  * Security & integrity:
  * - Cross-site and JSON body guards on cookie mutation
@@ -86,7 +89,8 @@ export async function POST(req: Request, { params }: RouteParams) {
 
   const blobPathname = getBlobPathname(fileUrl);
   const expectedPrefix = submissionPrefix(slug, lesson, access.userId, assignmentId);
-  const pathCheck = validateSubmissionPath(blobPathname, expectedPrefix);
+  const formats = assignmentFormats(assignment);
+  const pathCheck = validateSubmissionPath(blobPathname, expectedPrefix, formats);
   if (!pathCheck.valid) {
     return NextResponse.json({ error: pathCheck.error }, { status: 400 });
   }
@@ -154,7 +158,11 @@ export async function POST(req: Request, { params }: RouteParams) {
   const canonicalFileUrl = blobMeta.url;
 
   const rawFileName = typeof body.fileName === "string" ? body.fileName : "";
-  const fileName = sanitizeFileName(rawFileName, path.posix.basename(blobPathname));
+  // Name the file after the format actually stored, so the label shown for it
+  // can never disagree with the path (a ".ipynb" name on a PDF, say).
+  const storedFormat =
+    formats.find((f) => blobPathname.endsWith(SUBMISSION_FORMAT_RULES[f].ext)) ?? formats[0];
+  const fileName = sanitizeFileName(rawFileName, path.posix.basename(blobPathname), [storedFormat]);
 
   const where = {
     userId_classId_lessonSlug_assignmentId: {

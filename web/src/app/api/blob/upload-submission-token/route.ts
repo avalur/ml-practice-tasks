@@ -5,7 +5,8 @@ import { prisma } from "@/lib/db";
 import { crossSite } from "@/lib/http";
 import { findLesson, getAccess, getClassMeta } from "@/lib/classes";
 import {
-  ALLOWED_SUBMISSION_MIME_TYPES,
+  allowedMimeTypes,
+  assignmentFormats,
   findAssignmentInLesson,
   MAX_SUBMISSION_BYTES,
   SubmissionApiError,
@@ -15,7 +16,8 @@ import {
 } from "@/lib/submissions";
 import { isMissingTable } from "@/lib/notebook-submissions";
 
-/* Mints a short-lived client upload token for submitting a Jupyter Notebook (.ipynb).
+/* Mints a short-lived client upload token for an assignment's file — a notebook
+ * (.ipynb), or whatever else the assignment's `accept` lists (a PDF).
  *
  * Scoped strictly to:
  * - Authenticated student enrolled in the specified class
@@ -96,7 +98,9 @@ export async function POST(req: Request) {
           access.userId,
           payload.assignmentId,
         );
-        const pathCheck = validateSubmissionPath(pathname, expectedPrefix);
+        // The formats come from the lesson definition, never from the client.
+        const formats = assignmentFormats(assignment);
+        const pathCheck = validateSubmissionPath(pathname, expectedPrefix, formats);
         if (!pathCheck.valid) {
           throw new SubmissionApiError(403, pathCheck.error ?? "invalid submission path");
         }
@@ -122,7 +126,7 @@ export async function POST(req: Request) {
           throw dbErr;
         }
         return {
-          allowedContentTypes: ALLOWED_SUBMISSION_MIME_TYPES,
+          allowedContentTypes: allowedMimeTypes(formats),
           addRandomSuffix: true,
           allowOverwrite: false,
           maximumSizeInBytes: MAX_SUBMISSION_BYTES,

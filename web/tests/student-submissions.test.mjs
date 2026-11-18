@@ -256,3 +256,23 @@ test("student feedback presentation: renders score, date, and sanitized markdown
   assert.ok(rendered.includes("katex"));
   assert.ok(rendered.includes("code_block"));
 });
+
+test("validateNotebookFile and the format helpers follow the assignment's accept list", async () => {
+  const { acceptedFormats, fileFormat, formatExts, isNotebookOnly } = await import("../src/lib/classes-shared.ts");
+  const pdf = acceptedFormats({ accept: ["pdf"] });
+  assert.deepEqual(pdf, ["pdf"]);
+  assert.deepEqual(acceptedFormats({}), ["ipynb"]);
+  assert.equal(isNotebookOnly(acceptedFormats(undefined)), true);
+  assert.equal(isNotebookOnly(pdf), false);
+  assert.equal(formatExts(["ipynb", "pdf"]), ".ipynb, .pdf");
+
+  assert.equal(validateNotebookFile("talk.pdf", 1000, undefined, pdf).valid, true);
+  assert.equal(validateNotebookFile("Talk.PDF", 1000, undefined, pdf).valid, true);
+  assert.equal(validateNotebookFile("talk.ipynb", 1000, undefined, pdf).error, "Only PDF (.pdf) files are accepted.");
+  assert.equal(validateNotebookFile("talk.pdf", 0, undefined, pdf).valid, false);
+  assert.equal(validateNotebookFile("talk.pdf", 1000).valid, false, "default stays notebook-only");
+
+  assert.equal(fileFormat("slides.pdf"), "pdf");
+  assert.equal(fileFormat("solution.ipynb"), "ipynb");
+  assert.equal(sanitizeFileName("Talk Slides.PDF", undefined, pdf), "Talk_Slides.pdf");
+});

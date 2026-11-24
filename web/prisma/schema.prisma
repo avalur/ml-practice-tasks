@@ -51,6 +51,7 @@ model User {
   aiCredential        AiCredential?
   aiUsage             AiUsage[]
   problemProposals    ProblemProposal[]
+  debateVotes         DebateVote[]
   createdAt           DateTime               @default(now())
 }
 
@@ -216,6 +217,7 @@ model Class {
   reports             ClassReport[]
   studioLessons       StudioLesson[]
   studioAssets        StudioAsset[]
+  debatePolls         DebatePoll[]
 }
 
 // One invite code, handed out to one group of students. A class can have several
@@ -593,4 +595,44 @@ model AbacusVerdict {
 
   @@unique([teamId, themeId, index])
   @@index([teamId])
+}
+
+// ── In-class debate polls ────────────────────────────────────────────────────
+//
+// Each debate declared on a lesson in class.json gets a poll row once a
+// teacher opens or closes it. An absent row means voting has not opened yet.
+// Members of the class (enrolled students and teachers) cast at most one vote
+// per poll, and may switch teams while the poll is open.
+
+model DebatePoll {
+  id         String    @id @default(cuid())
+  classId    String
+  lessonSlug String
+  debateId   String
+  isOpen     Boolean   @default(false)
+  openedAt   DateTime?
+  closedAt   DateTime?
+  updatedAt  DateTime  @updatedAt
+
+  class Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  votes DebateVote[]
+
+  @@unique([classId, lessonSlug, debateId])
+  @@index([classId, lessonSlug])
+}
+
+model DebateVote {
+  id        String   @id @default(cuid())
+  pollId    String
+  userId    String
+  teamId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  poll DebatePoll @relation(fields: [pollId], references: [id], onDelete: Cascade)
+  user User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([pollId, userId])
+  @@index([pollId, teamId])
+  @@index([userId])
 }

@@ -653,6 +653,41 @@
           }
         },
         {
+          "slug": "l08-debate-1",
+          "title": "Debate 1. Regulate & Slow Down vs. Open Velocity",
+          "date": "2026-11-24",
+          "deck": null,
+          "practice": [],
+          "homework": null,
+          "debates": [
+            {
+              "id": "debate-1",
+              "title": "Regulate & Slow Down vs. Open Velocity",
+              "motion": "Frontier AI development should be actively slowed down and subjected to strict government licensing.",
+              "teams": [
+                {
+                  "id": "openness-velocity",
+                  "name": "Team 1 — For Openness and Velocity",
+                  "members": [
+                    "Mariia Fadeeva",
+                    "Nikita Fadeev",
+                    "Kamaliia Alisheva"
+                  ]
+                },
+                {
+                  "id": "regulation",
+                  "name": "Team 2 — For Regulation",
+                  "members": [
+                    "Dmitrii Kondratev",
+                    "Artem Grigorash",
+                    "Daniil Levtsov"
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
           "slug": "final-projects",
           "title": "Final Project: Topic Approval & Defenses",
           "date": null,

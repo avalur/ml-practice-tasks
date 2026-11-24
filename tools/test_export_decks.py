@@ -13,6 +13,7 @@ from export_decks import (
     item_href,
     lesson_items,
     public_lesson_payload,
+    validate_debates,
     validate_items,
     validate_milestones,
 )
@@ -255,3 +256,64 @@ def test_validate_items_duplicate_assignment_id_rejected() -> None:
     }
     errors = validate_items(cls, set(), set())
     assert any("duplicate assignment id 'duplicate_id'" in e for e in errors)
+
+
+def test_debates_are_validated_and_exported_without_deck() -> None:
+    debates = [
+        {
+            "id": "debate-1",
+            "title": "Regulate & Slow Down vs. Open Velocity",
+            "motion": "Frontier AI development should be actively slowed down.",
+            "teams": [
+                {
+                    "id": "openness-velocity",
+                    "name": "Team 1 — For Openness and Velocity",
+                    "members": ["Mariia Fadeeva", "Nikita Fadeev"],
+                },
+                {
+                    "id": "regulation",
+                    "name": "Team 2 — For Regulation",
+                    "members": ["Dmitrii Kondratev", "Artem Grigorash"],
+                },
+            ],
+        }
+    ]
+    lesson = {
+        "slug": "l08-debate-1",
+        "title": "Debate 1",
+        "date": "2026-11-24",
+        "practice": [],
+        "debates": debates,
+    }
+    cls = {"slug": "test_class"}
+
+    assert validate_debates(lesson, "test_class/l08-debate-1") == []
+    payload = public_lesson_payload(cls, lesson, set(), set())
+    assert payload["deck"] is None
+    assert payload["debates"] == debates
+
+
+@pytest.mark.parametrize(
+    ("debates", "message"),
+    [
+        ("not a list", "debates must be a list"),
+        ([{"id": "Bad ID", "title": "T", "teams": [{"id": "a", "name": "A"}, {"id": "b", "name": "B"}]}],
+         "lowercase slug"),
+        ([{"id": "d1", "title": "T", "teams": [{"id": "a", "name": "A"}]}],
+         "at least 2 teams"),
+        ([{"id": "d1", "title": "T", "teams": [{"id": "a", "name": "A"}, {"id": "a", "name": "B"}]}],
+         "duplicate team id"),
+        ([{"id": "d1", "title": "T", "teams": [{"id": "a", "name": "A", "members": [""]}, {"id": "b", "name": "B"}]}],
+         "members must be a list"),
+        (
+            [
+                {"id": "d1", "title": "T1", "teams": [{"id": "a", "name": "A"}, {"id": "b", "name": "B"}]},
+                {"id": "d1", "title": "T2", "teams": [{"id": "a", "name": "A"}, {"id": "b", "name": "B"}]},
+            ],
+            "duplicate debate id",
+        ),
+    ],
+)
+def test_invalid_debates_are_rejected(debates: object, message: str) -> None:
+    errors = validate_debates({"debates": debates}, "test_class/l08-debate-1")
+    assert any(message in error for error in errors)

@@ -123,14 +123,28 @@ export type Milestone = {
   tentative?: boolean;
 };
 
+export type DebateTeamSpec = {
+  id: string;
+  name: string;
+  members?: string[];
+};
+
+export type DebateSpec = {
+  id: string;
+  title: string;
+  motion?: string;
+  teams: DebateTeamSpec[];
+};
+
 export type Lesson = {
   slug: string;
   title: string;
   date: string | null;
-  deck: string;
+  deck: string | null;
   practice: Item[];
   homework: Homework | null;
   milestones?: Milestone[];
+  debates?: DebateSpec[];
 };
 
 export type ClassMeta = {
@@ -444,4 +458,64 @@ export function extractLessonAssignments(
   }
 
   return list;
+}
+
+// --- Debate polls (client-safe types & pure helpers) ------------------------
+
+export type DebateVoterDTO = {
+  userId: string;
+  name: string;
+  email: string | null;
+  teamId: string;
+  votedAt: string;
+};
+
+export type DebateTeamResultDTO = {
+  id: string;
+  name: string;
+  members: string[];
+  votes: number;
+  percent: number;
+};
+
+export type DebatePollDTO = {
+  id: string;
+  title: string;
+  motion: string | null;
+  isOpen: boolean;
+  openedAt: string | null;
+  closedAt: string | null;
+  totalVotes: number;
+  teams: DebateTeamResultDTO[];
+  myVote: string | null;
+  /** Present only for teachers of the class; omitted for everyone else. */
+  voters?: DebateVoterDTO[];
+};
+
+export type LessonDebatesDTO = {
+  now: string;
+  polls: DebatePollDTO[];
+  unavailable?: boolean;
+};
+
+export type DebatePollStatus = "pending" | "open" | "closed";
+
+export function debatePollStatus(
+  poll: Pick<DebatePollDTO, "isOpen" | "openedAt" | "closedAt" | "totalVotes">,
+): DebatePollStatus {
+  if (poll.isOpen) return "open";
+  if (poll.openedAt || poll.closedAt || poll.totalVotes > 0) return "closed";
+  return "pending";
+}
+
+export function teamVotePercent(votes: number, totalVotes: number): number {
+  if (totalVotes <= 0 || votes <= 0) return 0;
+  return Math.round((votes / totalVotes) * 100);
+}
+
+/** Team ids tied for the highest vote count, or empty when nobody has voted. */
+export function winningTeamIds(teams: readonly Pick<DebateTeamResultDTO, "id" | "votes">[]): string[] {
+  const top = teams.reduce((max, t) => (t.votes > max ? t.votes : max), 0);
+  if (top <= 0) return [];
+  return teams.filter((t) => t.votes === top).map((t) => t.id);
 }

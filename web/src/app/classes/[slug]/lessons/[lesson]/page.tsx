@@ -17,11 +17,13 @@ import {
   type TrackableRef,
 } from "@/lib/classes";
 import { findNotebookSubmissions, toSubmissionData } from "@/lib/notebook-submissions";
+import { readLessonDebates } from "@/lib/debates";
 import { PresentButton } from "@/components/PresentButton";
 import { ClassModeration } from "@/components/ClassModeration";
 import { ReportClassButton } from "@/components/ReportClassButton";
 import { ClassTeacherNav } from "@/components/ClassTeacherNav";
 import { RefList } from "@/components/LessonItems";
+import { LessonDebates } from "@/components/LessonDebates";
 import { Badge, PageHeader, ProgressBar } from "@/components/ui";
 
 type Params = { slug: string; lesson: string };
@@ -53,19 +55,23 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
   const classId = access.classRow.id;
   const refs = flatten([...lesson.practice, ...(lesson.homework?.items ?? [])]);
   const hasAssignments = refs.some(isAssignment);
+  const hasDeck = Boolean(lesson.deck);
+  const debates = lesson.debates ?? [];
 
-  const [solved, delivered, attendance, userSubmissions] = await Promise.all([
+  const [solved, delivered, attendance, userSubmissions, debateData] = await Promise.all([
     access.userId
       ? solvedKeys([access.userId], refs, {
           classId,
           lessonSlug,
         })
       : Promise.resolve(new Set<string>()),
-    prisma.lessonSession.findFirst({
-      where: { classId, lessonSlug, endedAt: { not: null } },
-      orderBy: { endedAt: "desc" },
-      select: { pdfBytes: true, pdfUrl: true, endedAt: true },
-    }),
+    hasDeck
+      ? prisma.lessonSession.findFirst({
+          where: { classId, lessonSlug, endedAt: { not: null } },
+          orderBy: { endedAt: "desc" },
+          select: { pdfBytes: true, pdfUrl: true, endedAt: true },
+        })
+      : Promise.resolve(null),
     access.userId
       ? prisma.lessonAttendance.findUnique({
           where: {
@@ -81,6 +87,15 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
     hasAssignments && access.userId
       ? findNotebookSubmissions({ where: { userId: access.userId, classId, lessonSlug } })
       : Promise.resolve({ rows: [], unavailable: false }),
+    debates.length > 0
+      ? readLessonDebates({
+          classId,
+          lessonSlug,
+          debates,
+          userId: access.userId,
+          isTeacher: access.isTeacher,
+        })
+      : Promise.resolve(null),
   ]);
 
   const submissionsUnavailable =
@@ -143,53 +158,72 @@ export default async function LessonPage({ params }: { params: Promise<Params> }
 
       <ClassModeration slug={slug} access={access} />
 
-      <div className="class-lesson-actions">
-        <a className="btn subtle small" href={slidesUrl} target="_blank" rel="noopener">
-          Open slides
-        </a>
-        {access.isTeacher && <PresentButton classSlug={slug} lessonSlug={lessonSlug} />}
-        {access.isTeacher && (
-          <Link
-            className="btn subtle small"
-            href={`/classes/${slug}/homework?lesson=${lessonSlug}`}
-          >
-            Attendance
-          </Link>
-        )}
-        {attendance?.attended && <Badge tone="success">✓ Attended</Badge>}
-        {/* "Finish lesson" saves the annotated PDF to the teacher's machine and
-            uploads a copy to Blob storage; this appears once that copy lands.
-            The store is private, so the link goes through our own route, which
-            checks membership and signs a short-lived download URL. */}
-        {delivered?.pdfUrl && access.isMember && (
-          <a
-            className="btn subtle small"
-            href={`/api/classes/${slug}/lessons/${lessonSlug}/notes`}
-            data-testid="lecture-pdf"
-          >
-            Download notes (PDF
-            {delivered.pdfBytes
-              ? `, ${Math.round(delivered.pdfBytes / 104857.6) / 10} MB`
-              : ""}
-            )
-          </a>
-        )}
-      </div>
+      {(hasDeck || access.isTeacher || attendance?.attended) && (
+        <div className="class-lesson-actions">
+          {hasDeck && (
+            <a className="btn subtle small" href={slidesUrl} target="_blank" rel="noopener">
+              Open slides
+            </a>
+          )}
+          {hasDeck && access.isTeacher && (
+            <PresentButton classSlug={slug} lessonSlug={lessonSlug} />
+          )}
+          {access.isTeacher && (
+            <Link
+              className="btn subtle small"
+              href={`/classes/${slug}/homework?lesson=${lessonSlug}`}
+            >
+              Attendance
+            </Link>
+          )}
+          {attendance?.attended && <Badge tone="success">✓ Attended</Badge>}
+          {/* "Finish lesson" saves the annotated PDF to the teacher's machine and
+              uploads a copy to Blob storage; this appears once that copy lands.
+              The store is private, so the link goes through our own route, which
+              checks membership and signs a short-lived download URL. */}
+          {hasDeck && delivered?.pdfUrl && access.isMember && (
+            <a
+              className="btn subtle small"
+              href={`/api/classes/${slug}/lessons/${lessonSlug}/notes`}
+              data-testid="lecture-pdf"
+            >
+              Download notes (PDF
+              {delivered.pdfBytes
+                ? `, ${Math.round(delivered.pdfBytes / 104857.6) / 10} MB`
+                : ""}
+              )
+            </a>
+          )}
+        </div>
+      )}
 
-      <p className="muted">
-        {delivered?.endedAt
-          ? `Delivered ${formatDay(delivered.endedAt, { year: true })}` +
-            (delivered.pdfUrl
-              ? access.isMember
-                ? " — the lecture notes above are the slides with everything written on them in class."
-                : " — the annotated lecture notes go to the students of this class; join your group on the class page to get them."
-              : delivered.pdfBytes
-                ? " — notes exported by the teacher, but not published here."
-                : ".")
-          : access.isTeacher
-            ? "Not delivered yet. “Finish lesson” in present mode saves a PDF of every slide with your notes to your downloads and publishes a copy here."
-            : "Lecture notes appear here after the lesson."}
-      </p>
+      {hasDeck && (
+        <p className="muted">
+          {delivered?.endedAt
+            ? `Delivered ${formatDay(delivered.endedAt, { year: true })}` +
+              (delivered.pdfUrl
+                ? access.isMember
+                  ? " — the lecture notes above are the slides with everything written on them in class."
+                  : " — the annotated lecture notes go to the students of this class; join your group on the class page to get them."
+                : delivered.pdfBytes
+                  ? " — notes exported by the teacher, but not published here."
+                  : ".")
+            : access.isTeacher
+              ? "Not delivered yet. “Finish lesson” in present mode saves a PDF of every slide with your notes to your downloads and publishes a copy here."
+              : "Lecture notes appear here after the lesson."}
+        </p>
+      )}
+
+      {debateData && (
+        <LessonDebates
+          classSlug={slug}
+          lessonSlug={lessonSlug}
+          initial={debateData}
+          isSignedIn={Boolean(access.userId)}
+          isMember={access.isMember}
+          isTeacher={access.isTeacher}
+        />
+      )}
 
       {lesson.practice.length > 0 && (
         <section className="lesson-section">

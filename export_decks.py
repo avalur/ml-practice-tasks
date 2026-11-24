@@ -278,6 +278,70 @@ def validate_milestones(lesson: dict, where: str) -> list[str]:
     return errors
 
 
+def validate_debates(lesson: dict, where: str) -> list[str]:
+    debates = lesson.get("debates")
+    if debates is None:
+        return []
+    if not isinstance(debates, list):
+        return [f"{where}: debates must be a list"]
+
+    errors: list[str] = []
+    seen_debates: set[str] = set()
+    for index, debate in enumerate(debates, start=1):
+        label = f"{where} debate {index}"
+        if not isinstance(debate, dict):
+            errors.append(f"{label} must be an object")
+            continue
+        did = debate.get("id")
+        if not isinstance(did, str) or not ASSIGNMENT_ID_RE.match(did):
+            errors.append(
+                f"{label} id must be a lowercase slug matching "
+                f"{ASSIGNMENT_ID_RE.pattern!r}, got {did!r}"
+            )
+        elif did in seen_debates:
+            errors.append(f"{label} duplicate debate id {did!r}")
+        else:
+            seen_debates.add(did)
+        title = debate.get("title")
+        if not isinstance(title, str) or not title.strip():
+            errors.append(f"{label} needs a non-empty title")
+        if "motion" in debate:
+            motion = debate["motion"]
+            if not isinstance(motion, str) or not motion.strip():
+                errors.append(f"{label} motion must be a non-empty string")
+        teams = debate.get("teams")
+        if not isinstance(teams, list) or len(teams) < 2:
+            errors.append(f"{label} needs at least 2 teams")
+            continue
+        seen_teams: set[str] = set()
+        for t_index, team in enumerate(teams, start=1):
+            t_label = f"{label} team {t_index}"
+            if not isinstance(team, dict):
+                errors.append(f"{t_label} must be an object")
+                continue
+            tid = team.get("id")
+            if not isinstance(tid, str) or not ASSIGNMENT_ID_RE.match(tid):
+                errors.append(
+                    f"{t_label} id must be a lowercase slug matching "
+                    f"{ASSIGNMENT_ID_RE.pattern!r}, got {tid!r}"
+                )
+            elif tid in seen_teams:
+                errors.append(f"{t_label} duplicate team id {tid!r}")
+            else:
+                seen_teams.add(tid)
+            t_name = team.get("name")
+            if not isinstance(t_name, str) or not t_name.strip():
+                errors.append(f"{t_label} needs a non-empty name")
+            if "members" in team:
+                members = team["members"]
+                if (
+                    not isinstance(members, list)
+                    or not all(isinstance(m, str) and m.strip() for m in members)
+                ):
+                    errors.append(f"{t_label} members must be a list of non-empty strings")
+    return errors
+
+
 def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[str]:
     """Check every practice/homework id in class.json resolves to real content."""
     errors = []
@@ -288,9 +352,10 @@ def validate_items(cls: dict, problems: set[str], notebooks: set[str]) -> list[s
                       f"got {cls['draft']!r}")
     seen_assignments: dict[str, str] = {}
     for lesson in cls["lessons"]:
-        errors += validate_milestones(lesson, f"{cls['slug']}/{lesson['slug']}")
-        practice, homework, errs = lesson_items(lesson, problems, notebooks,
-                                                f"{cls['slug']}/{lesson['slug']}")
+        loc = f"{cls['slug']}/{lesson['slug']}"
+        errors += validate_milestones(lesson, loc)
+        errors += validate_debates(lesson, loc)
+        practice, homework, errs = lesson_items(lesson, problems, notebooks, loc)
         errors += errs
         for item in practice + homework:
             if item.get("type") == "assignment":
@@ -601,7 +666,9 @@ def absolutize_assets(text: str, class_slug: str) -> str:
 def build_lesson(cls: dict, lesson: dict, problems: set[str],
                  notebooks: set[str]) -> list[str]:
     class_slug = cls["slug"]
-    deck = lesson["deck"]
+    deck = lesson.get("deck")
+    if not deck:
+        return []
     src = CLASSES / class_slug / "decks" / f"{deck}.html"
     if not src.is_file():
         return [f"{class_slug}/{lesson['slug']}: missing deck file "
@@ -657,12 +724,14 @@ def public_lesson_payload(cls: dict, lesson: dict, problems: set[str],
         "slug": lesson["slug"],
         "title": lesson["title"],
         "date": lesson.get("date"),
-        "deck": lesson["deck"],
+        "deck": lesson.get("deck"),
         "practice": practice,
         "homework": {**homework, "items": hw_items} if homework else None,
     }
     if "milestones" in lesson:
         payload["milestones"] = lesson["milestones"]
+    if "debates" in lesson:
+        payload["debates"] = lesson["debates"]
     return payload
 
 
@@ -705,7 +774,10 @@ def stale_dirs(classes: list[dict]) -> list[Path]:
     """
     if not OUT_BASE.is_dir():
         return []
-    wanted = {c["slug"]: {l["slug"] for l in c["lessons"]} for c in classes}
+    wanted = {
+        c["slug"]: {l["slug"] for l in c["lessons"] if l.get("deck")}
+        for c in classes
+    }
     stale = []
     for d in sorted(OUT_BASE.iterdir()):
         if not d.is_dir() or d.name == SHARED.name:
@@ -759,6 +831,8 @@ def needed_assets(cls: dict) -> set[str]:
     """
     out: set[str] = set()
     for lesson in cls["lessons"]:
+        if not lesson.get("deck"):
+            continue
         deck = CLASSES / cls["slug"] / "decks" / f"{lesson['deck']}.html"
         if deck.is_file():
             out |= deck_assets(cls["slug"], deck)
@@ -840,7 +914,7 @@ def rebuild_changed(changed: set[Path]) -> None:
             log(f"{cls['slug']}: {n} assets re-copied ({skipped} unused)")
         decks = {p.stem for p in changed if p.parent == base / "decks"}
         for lesson in cls["lessons"]:
-            if lesson["deck"] not in decks:
+            if not lesson.get("deck") or lesson["deck"] not in decks:
                 continue
             errs = build_lesson(cls, lesson, problems, notebooks)
             for e in errs:
@@ -921,6 +995,9 @@ def build() -> int:
         for line in describe_groups(cls, problems, notebooks):
             print(f"    ↳ {line}")
         for lesson in cls["lessons"]:
+            if not lesson.get("deck"):
+                print(f"    {lesson['slug']} … ✓  (no slides)")
+                continue
             errs = build_lesson(cls, lesson, problems, notebooks)
             if errs:
                 errors += errs
@@ -986,6 +1063,8 @@ def check() -> int:
                               f"it any more: {name}")
         for lesson in cls["lessons"]:
             total += 1
+            if not lesson.get("deck"):
+                continue
             out = OUT_BASE / cls["slug"] / lesson["slug"] / "present.html"
             deck = CLASSES / cls["slug"] / "decks" / f"{lesson['deck']}.html"
             if not deck.is_file():

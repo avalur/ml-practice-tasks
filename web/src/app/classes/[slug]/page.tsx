@@ -173,8 +173,11 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                 </Link>
                 <span className="meta">
                   {lesson.date && <span className="muted">{lesson.date}</span>}
+                  {lesson.debates && lesson.debates.length > 0 && (
+                    <span className="badge tone-info">debate</span>
+                  )}
                   {delivered && <span className="badge tone-success">delivered</span>}
-                  {lesson.milestones && lesson.milestones.length > 0 && (
+                  {lesson.deck && lesson.milestones && lesson.milestones.length > 0 && (
                     <a
                       href={`/classes/${slug}/${lesson.slug}/present.html`}
                       className="muted"
@@ -183,7 +186,7 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                     </a>
                   )}
                   {/* Notes are the one members-only thing here. */}
-                  {hasPdf && access.isMember && (
+                  {lesson.deck && hasPdf && access.isMember && (
                     <a
                       href={`/api/classes/${slug}/lessons/${lesson.slug}/notes`}
                       className="muted"
@@ -193,6 +196,19 @@ export default async function ClassPage({ params }: { params: Promise<Params> })
                   )}
                 </span>
               </div>
+
+              {lesson.debates && lesson.debates.length > 0 && (
+                <p className="class-lesson-line">
+                  <span className="muted">Teams:</span>{" "}
+                  {lesson.debates.map((d, i) => (
+                    <span key={d.id}>
+                      {i > 0 && " · "}
+                      {d.teams.map((t) => t.name).join(" vs. ")}{" "}
+                      <Link href={`/classes/${slug}/lessons/${lesson.slug}`}>Vote →</Link>
+                    </span>
+                  ))}
+                </p>
+              )}
 
               {lesson.milestones && lesson.milestones.length > 0 && (
                 <ul className="class-milestones" data-testid="class-milestones">
